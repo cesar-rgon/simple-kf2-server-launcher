@@ -1,0 +1,130 @@
+package dtos;
+
+public class ProfileDto {
+
+    private final String name;
+    private final SelectDto language;
+    private final SelectDto gametype;
+    private final SelectDto map;
+    private final SelectDto difficulty;
+    private final SelectDto length;
+    private final SelectDto maxPlayers;
+    private final String serverName;
+    private final String serverPassword;
+    private final Boolean webPage;
+    private final String webPassword;
+    private final Integer webPort;
+    private final Integer gamePort;
+    private final Integer queryPort;
+    private final String yourClan;
+    private final String yourWebLink;
+    private final String urlImageServer;
+    private final String welcomeMessage;
+    private final String customParameters;
+
+    public ProfileDto(String name, SelectDto language, SelectDto gametype, SelectDto map, SelectDto difficulty, SelectDto length, SelectDto maxPlayers,
+                   String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
+                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters) {
+        super();
+        this.name = name;
+        this.language = language;
+        this.gametype = gametype;
+        this.map = map;
+        this.difficulty = difficulty;
+        this.length = length;
+        this.maxPlayers = maxPlayers;
+        this.serverName = serverName;
+        this.serverPassword = serverPassword;
+        this.webPage = webPage;
+        this.webPassword = webPassword;
+        this.webPort = webPort;
+        this.gamePort = gamePort;
+        this.queryPort = queryPort;
+        this.yourClan = yourClan;
+        this.yourWebLink = yourWebLink;
+        this.urlImageServer = urlImageServer;
+        this.welcomeMessage = welcomeMessage;
+        this.customParameters = customParameters;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public SelectDto getLanguage() {
+        return language;
+    }
+
+    public SelectDto getGametype() {
+        return gametype;
+    }
+
+    public SelectDto getMap() {
+        return map;
+    }
+
+    public SelectDto getDifficulty() {
+        return difficulty;
+    }
+
+    public SelectDto getLength() {
+        return length;
+    }
+
+    public SelectDto getMaxPlayers() {
+        return maxPlayers;
+    }
+
+    public String getServerName() {
+        return serverName;
+    }
+
+    public String getServerPassword() {
+        return serverPassword;
+    }
+
+    public Boolean getWebPage() {
+        return webPage;
+    }
+
+    public String getWebPassword() {
+        return webPassword;
+    }
+
+    public Integer getWebPort() {
+        return webPort;
+    }
+
+    public Integer getGamePort() {
+        return gamePort;
+    }
+
+    public Integer getQueryPort() {
+        return queryPort;
+    }
+
+    public String getYourClan() {
+        return yourClan;
+    }
+
+    public String getYourWebLink() {
+        return yourWebLink;
+    }
+
+    public String getUrlImageServer() {
+        return urlImageServer;
+    }
+
+    public String getWelcomeMessage() {
+        return welcomeMessage;
+    }
+
+    public String getCustomParameters() {
+        return customParameters;
+    }
+
+    @Override
+    public String toString() {
+        return name;
+    }
+}

@@ -1,0 +1,92 @@
+.menu-bar, #bottomPanel, .combo-box, .combo-box-popup .list-view .list-cell, .text-field, .text-area .content {
+    -fx-background-color: #191513;
+}
+
+.menu-button:hover, .menu-item:hover {
+    -fx-background-color: #c15d11;
+    -fx-cursor: hand;
+}
+
+.menu:disabled {
+    -fx-background-color: black;
+    -fx-opacity: 0.7;
+}
+
+.menu .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 16;
+}
+
+.menu-item .label {
+    -fx-text-fill: #191513;
+    -fx-font-weight: bold;
+    -fx-font-size: 14;
+}
+
+#leftPane, #rightPane, #centerGridPanel, #centerGridPane {
+    -fx-background-color: black;
+}
+
+.label {
+    -fx-font-size: 15;
+    -fx-text-fill: white;
+}
+
+.button {
+    -fx-background-color: #4d0304;
+    -fx-font-weight: bold;
+    -fx-font-size: 15;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+
+.combo-box {
+    -fx-font-size: 14;
+    -fx-cursor: hand;
+}
+
+.combo-box .cell:selected {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.combo-box-popup .list-view {
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+
+.combo-box-popup .list-view .list-cell {
+    -fx-text-fill: white;
+}
+
+.combo-box:hover, .combo-box-popup .list-view .list-cell:hover, .text-field:hover, .text-area .content:hover, .button:hover, .check-box:hover {
+    -fx-background-color: #c15d11;
+    -fx-text-fill: white;
+}
+
+.text-field, .text-area {
+    -fx-text-box-border: transparent;
+    -fx-font-size: 14;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+#console {
+    -fx-font-weight: normal;
+}
+
+.check-box {
+    -fx-font-size: 14;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.check-box:selected .mark {
+    -fx-background-color: #191513;
+}
+
+.web-view body {
+    background-color: black;
+}

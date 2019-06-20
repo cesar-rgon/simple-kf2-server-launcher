@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" stylesheets="@../css/custom.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.template.TemplateController">
+   <top>
+      <MenuBar id="topMenuBar" fx:id="menuBar" BorderPane.alignment="CENTER">
+        <menus>
+          <Menu fx:id="mainPage" disable="true" mnemonicParsing="false" />
+          <Menu fx:id="webAdmin" mnemonicParsing="false" />
+          <Menu fx:id="installUpdateServer" mnemonicParsing="false" />
+          <Menu mnemonicParsing="false" text="Edition">
+            <items>
+              <MenuItem disable="true" mnemonicParsing="false" text="Profiles" />
+                  <MenuItem disable="true" mnemonicParsing="false" text="Game types" />
+                  <MenuItem disable="true" mnemonicParsing="false" text="Maps" />
+                  <MenuItem disable="true" mnemonicParsing="false" text="Difficulties" />
+                  <MenuItem disable="true" mnemonicParsing="false" text="Lengths" />
+                  <MenuItem disable="true" mnemonicParsing="false" text="Max. players" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Help">
+            <items>
+              <MenuItem disable="true" mnemonicParsing="false" text="About" />
+            </items>
+          </Menu>
+        </menus>
+      </MenuBar>
+   </top>
+    <center>
+        <GridPane id="centerGridPane" fx:id="content" alignment="CENTER" BorderPane.alignment="CENTER" />
+    </center>
+   <bottom>
+      <Pane id="bottomPanel" prefHeight="35.0" BorderPane.alignment="CENTER" />
+   </bottom>
+   <right>
+      <Pane id="rightPane" prefWidth="35.0" BorderPane.alignment="CENTER" />
+   </right>
+   <left>
+      <Pane id="leftPane" prefWidth="35.0" BorderPane.alignment="CENTER" />
+   </left>
+</BorderPane>

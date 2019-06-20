@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<fx:root id="centerGridPane" fx:id="installUpdateServerContent" gridLinesVisible="true" prefHeight="730.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.installupdateserver.InstallUpdateServerController">
+   <rowConstraints>
+      <RowConstraints minHeight="10.0" prefHeight="730.0" />
+      <RowConstraints minHeight="10.0" prefHeight="730.0" />
+      <RowConstraints minHeight="10.0" prefHeight="730.0" />
+      <RowConstraints minHeight="10.0" prefHeight="730.0" />
+      <RowConstraints minHeight="10.0" prefHeight="730.0" />
+      <RowConstraints minHeight="10.0" prefHeight="730.0" />
+      <RowConstraints minHeight="10.0" prefHeight="730.0" />
+   </rowConstraints>
+   <columnConstraints>
+      <ColumnConstraints minWidth="10.0" prefWidth="1210.0" />
+      <ColumnConstraints minWidth="1.0" prefWidth="1210.0" />
+      <ColumnConstraints minWidth="10.0" prefWidth="1210.0" />
+   </columnConstraints>
+   <children>
+      <ImageView fitHeight="700.0" fitWidth="741.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+         <image>
+            <Image url="@../images/radiation700.png" />
+         </image>
+         <GridPane.margin>
+            <Insets top="2.0" />
+         </GridPane.margin>
+      </ImageView>
+       <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+           <image>
+               <Image url="@../images/label.png" />
+           </image>
+       </ImageView>
+       <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+           <image>
+               <Image url="@../images/label.png" />
+           </image>
+       </ImageView>
+       <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
+           <image>
+               <Image url="@../images/label.png" />
+           </image>
+       </ImageView>
+       <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
+           <image>
+               <Image url="@../images/label.png" />
+           </image>
+       </ImageView>
+       <Label text="INSTALLATION FOLDER*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+           <GridPane.margin>
+               <Insets right="10.0" />
+           </GridPane.margin>
+       </Label>
+       <Label text="VALIDATE FILES" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+           <GridPane.margin>
+               <Insets right="10.0" />
+           </GridPane.margin>
+       </Label>
+       <Label text="UPDATE TO BETA?" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
+           <GridPane.margin>
+               <Insets right="10.0" />
+           </GridPane.margin>
+       </Label>
+       <Label text="BETA BRUNCH" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
+           <GridPane.margin>
+               <Insets right="10.0" />
+           </GridPane.margin>
+       </Label>
+       <TextField fx:id="installationFolder" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+       <Button maxWidth="178.0" mnemonicParsing="false" onAction="#exploreFolderOnAction" text="EXPLORE" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+           <GridPane.margin>
+               <Insets left="20.0" />
+           </GridPane.margin>
+       </Button>
+       <CheckBox fx:id="validateFiles" lineSpacing="0.9" mnemonicParsing="false" onAction="#validateFilesOnAction" opacity="0.75" text="Enabled to check files integrity" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+       <CheckBox fx:id="isBeta" lineSpacing="0.9" mnemonicParsing="false" onAction="#isBetaOnAction" opacity="0.75" text="Disabled to update to official version. Enabled for beta." textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+       <TextField fx:id="betaBrunch" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+       <Button maxWidth="178.0" mnemonicParsing="false" onAction="#installUpdateServer" text="INSTALL / UPDATE" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="6" GridPane.valignment="TOP">
+           <GridPane.margin>
+               <Insets left="20.0" />
+           </GridPane.margin>
+       </Button>
+   </children>
+</fx:root>
