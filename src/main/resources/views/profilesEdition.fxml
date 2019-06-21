@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<fx:root id="centerGridPane" fx:id="profilesEdition" prefHeight="730.0" prefWidth="1210.0" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label text="Profile list" />
+      <TableView fx:id="profilesTable" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+        <columns>
+          <TableColumn prefWidth="1100.0" text="Name" />
+          <TableColumn prefWidth="110.0" />
+        </columns>
+      </TableView>
+   </children>
+   <columnConstraints>
+      <ColumnConstraints prefWidth="1210.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints minHeight="10.0" prefHeight="120.0" />
+      <RowConstraints prefHeight="730.0" />
+   </rowConstraints>
+</fx:root>

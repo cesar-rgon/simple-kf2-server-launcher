@@ -16,7 +16,7 @@
           <Menu fx:id="installUpdateServer" mnemonicParsing="false" />
           <Menu mnemonicParsing="false" text="Edition">
             <items>
-              <MenuItem disable="true" mnemonicParsing="false" text="Profiles" />
+              <MenuItem fx:id="profilesMenu" mnemonicParsing="false" onAction="#profilesMenuOnAction" text="Profiles" />
                   <MenuItem disable="true" mnemonicParsing="false" text="Game types" />
                   <MenuItem disable="true" mnemonicParsing="false" text="Maps" />
                   <MenuItem disable="true" mnemonicParsing="false" text="Difficulties" />
