@@ -64,5 +64,10 @@
             <artifactId>zip4j</artifactId>
             <version>1.3.3</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.sarxos</groupId>
+            <artifactId>windows-registry-util</artifactId>
+            <version>0.3</version>
+        </dependency>
     </dependencies>
 </project>

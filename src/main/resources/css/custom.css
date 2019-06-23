@@ -29,7 +29,7 @@
 }
 
 .label {
-    -fx-font-size: 15;
+    -fx-font-size: 14;
     -fx-text-fill: white;
 }
 
@@ -90,3 +90,35 @@
 .web-view body {
     background-color: black;
 }
+
+.table-view .table-cell {
+    -fx-font-size: 16;
+    -fx-text-fill: white;
+}
+
+.table-view .table-row-cell:selected .text {
+    -fx-font-weight: bold;
+    -fx-font-size: 20;
+    -fx-cursor: hand;
+}
+
+.table-view .table-cell:hover {
+    -fx-background-color: #c15d11;
+}
+
+.table-view .table-cell:hover:empty {
+    -fx-background-color: transparent;
+}
+
+.table-view .column-header {
+    -fx-background-color: #4d0304;
+}
+
+.table-row-cell{
+    -fx-background-color: #191513;
+}
+
+.table-row-cell:odd{
+    -fx-background-color: #201c1a;
+}
+

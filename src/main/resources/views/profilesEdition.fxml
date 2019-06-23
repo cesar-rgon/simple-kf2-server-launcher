@@ -1,24 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
 
-<fx:root id="centerGridPane" fx:id="profilesEdition" prefHeight="730.0" prefWidth="1210.0" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root id="centerGridPane" fx:id="profilesEdition" prefHeight="730.0" prefWidth="1210.0" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.profilesedition.ProfilesEditionController">
    <children>
-      <Label text="Profile list" />
-      <TableView fx:id="profilesTable" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1">
+      <Label text="Editable Profile list" GridPane.valignment="TOP">
+         <font>
+            <Font size="20.0" />
+         </font></Label>
+      <TableView fx:id="profilesTable" editable="true" maxWidth="850.0" prefHeight="670.0" prefWidth="475.0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="1">
         <columns>
-          <TableColumn prefWidth="1100.0" text="Name" />
-          <TableColumn prefWidth="110.0" />
+          <TableColumn fx:id="profileNameColumn" prefWidth="850.0" resizable="false" text="Profile Name" />
         </columns>
       </TableView>
+      <Button fx:id="addProfile" mnemonicParsing="false" onAction="#addProfileOnAction" text="Add new profile" GridPane.columnIndex="1" GridPane.halignment="LEFT">
+         <GridPane.margin>
+            <Insets />
+         </GridPane.margin></Button>
+      <Button fx:id="removeProfile" mnemonicParsing="false" onAction="#removeProfileOnAction" text="Remove selected profile" GridPane.columnIndex="1" GridPane.halignment="LEFT">
+         <GridPane.margin>
+            <Insets left="200.0" />
+         </GridPane.margin></Button>
+      <Label text="One click to select a profile name. Double click to edit it" GridPane.valignment="CENTER" />
    </children>
    <columnConstraints>
       <ColumnConstraints prefWidth="1210.0" />
+      <ColumnConstraints minWidth="10.0" prefWidth="1210.0" />
    </columnConstraints>
    <rowConstraints>
       <RowConstraints minHeight="10.0" prefHeight="120.0" />
