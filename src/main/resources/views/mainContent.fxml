@@ -141,7 +141,7 @@
             <Insets left="7.0" />
          </GridPane.margin>
         </ImageView>
-        <ComboBox fx:id="profileSelect" disable="true" onAction="#profileOnAction" opacity="0.75" prefWidth="240.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <ComboBox fx:id="profileSelect" onAction="#profileOnAction" opacity="0.75" prefWidth="240.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
         <ComboBox fx:id="languageSelect" disable="true" onAction="#languageOnAction" opacity="0.75" prefWidth="240.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
         <ComboBox fx:id="gameTypeSelect" onAction="#gameTypeOnAction" opacity="0.75" prefWidth="240.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
         <ComboBox fx:id="mapSelect" onAction="#mapOnAction" opacity="0.75" prefWidth="240.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />

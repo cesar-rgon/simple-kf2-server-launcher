@@ -28,7 +28,7 @@ public class ProfileDao extends CommonDao<Profile> {
     }
 
     public List<Profile> listAll() throws SQLException {
-        String query = "select p from entities.Profile p order by p.id asc";
+        String query = "select p from entities.Profile p order by p.name asc";
         return list(query, null);
     }
 

@@ -2,12 +2,17 @@ package pojos.kf2factory;
 
 import constants.PropertyKey;
 import dtos.ProfileDto;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import stories.installupdateserver.InstallUpdateServerFacade;
 import stories.installupdateserver.InstallUpdateServerFacadeImpl;
 import utils.Utils;
 
 import java.io.File;
+import java.io.FilenameFilter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 
 public abstract class Kf2Common {
@@ -34,6 +39,7 @@ public abstract class Kf2Common {
             String errorMessage = validateParameters(profileDto);
             if (StringUtils.isEmpty(errorMessage)) {
                 String installationFolder = installUpdateServerFacade.findPropertyValue(PropertyKey.INSTALLATION_FOLDER);
+                createConfigFolder(installationFolder, profileDto);
                 return runKf2Server(installationFolder, profileDto);
             } else {
                 Utils.errorDialog("Error validating parameters. The server can not be launched!", errorMessage, null);
@@ -72,6 +78,32 @@ public abstract class Kf2Common {
             errorMessage.append("The server name can not be empty.\n");
         }
         return errorMessage.toString();
+    }
+
+    protected void createConfigFolder(String installationFolder, ProfileDto profileDto) {
+        try {
+            File configFolder = new File(installationFolder + "\\KFGame\\Config");
+            File profileFolder = new File(configFolder.getAbsolutePath() + "\\" + profileDto.getName());
+            if (!profileFolder.isDirectory() || !profileFolder.exists()) {
+                if (profileFolder.mkdir()) {
+                    File[] sourceFiles = configFolder.listFiles(new FilenameFilter() {
+                        @Override
+                        public boolean accept(File dir, String name) {
+                            if(name.endsWith(".ini")) {
+                                return true;
+                            } else {
+                                return false;
+                            }
+                        }
+                    });
+                    for (File sourceFile: sourceFiles) {
+                        FileUtils.copyFileToDirectory(sourceFile, profileFolder);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            Utils.errorDialog("Error copying files to profiles's config folder", "See stacktrace for more details", e);
+        }
     }
 
     protected abstract String runKf2Server(String installationFolder, ProfileDto profile);

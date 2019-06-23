@@ -1,8 +1,11 @@
 package dtos;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 public class ProfileDto {
 
-    private final String name;
+    private final StringProperty name;
     private final SelectDto language;
     private final SelectDto gametype;
     private final SelectDto map;
@@ -26,7 +29,7 @@ public class ProfileDto {
                    String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
                    String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters) {
         super();
-        this.name = name;
+        this.name = new SimpleStringProperty(name);
         this.language = language;
         this.gametype = gametype;
         this.map = map;
@@ -47,8 +50,12 @@ public class ProfileDto {
         this.customParameters = customParameters;
     }
 
-    public String getName() {
+    public StringProperty getNameProperty() {
         return name;
+    }
+
+    public String getName() {
+        return name.get();
     }
 
     public SelectDto getLanguage() {
@@ -125,6 +132,6 @@ public class ProfileDto {
 
     @Override
     public String toString() {
-        return name;
+        return getName();
     }
 }

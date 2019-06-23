@@ -79,6 +79,22 @@ public class Profile extends CommonEntity {
     }
 
     public Profile(String name, Language language, GameType gametype, Map map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,
+                   String serverName, Integer webPort, Integer gamePort, Integer queryPort) {
+        super();
+        this.name = name;
+        this.language = language;
+        this.gametype = gametype;
+        this.map = map;
+        this.difficulty = difficulty;
+        this.length = length;
+        this.maxPlayers = maxPlayers;
+        this.serverName = serverName;
+        this.webPort = webPort;
+        this.gamePort = gamePort;
+        this.queryPort = queryPort;
+    }
+
+    public Profile(String name, Language language, GameType gametype, Map map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,
                    String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
                    String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters) {
         super();

@@ -60,49 +60,18 @@ public class MainContentController implements Initializable {
             profileSelect.setValue(!profileOptions.isEmpty()? profileOptions.get(0): null);
             Session.getInstance().setActualProfile(profileSelect.getValue());
             languageSelect.setItems(facade.listAllLanguages());
-            languageSelect.setValue(profileSelect.getValue() != null? profileSelect.getValue().getLanguage(): null);
             gameTypeSelect.setItems(facade.listAllGameTypes());
-            gameTypeSelect.setValue(profileSelect.getValue() != null? profileSelect.getValue().getGametype(): null);
             mapSelect.setItems(facade.listAllMaps());
-            mapSelect.setValue(profileSelect.getValue() != null? profileSelect.getValue().getMap(): null);
             difficultySelect.setItems(facade.listAllDifficulties());
-            difficultySelect.setValue(profileSelect.getValue() != null? profileSelect.getValue().getDifficulty(): null);
             lengthSelect.setItems(facade.listAllLengths());
-            lengthSelect.setValue(profileSelect.getValue() != null? profileSelect.getValue().getLength(): null);
             maxPlayersSelect.setItems(facade.listAllPlayers());
-            maxPlayersSelect.setValue(profileSelect.getValue() != null? profileSelect.getValue().getMaxPlayers(): null);
             console.setText(Session.getInstance().getConsole());
         } catch (SQLException e) {
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
 
         if (profileSelect.getValue() != null) {
-            serverName.setText(profileSelect.getValue().getServerName());
-            Integer webPortValue = profileSelect.getValue().getWebPort();
-            webPort.setText(webPortValue != null? String.valueOf(webPortValue): "");
-            Integer gamePortValue = profileSelect.getValue().getGamePort();
-            gamePort.setText(gamePortValue != null? String.valueOf(gamePortValue): "");
-            Integer queryPortValue = profileSelect.getValue().getQueryPort();
-            queryPort.setText(queryPortValue != null? String.valueOf(queryPortValue): "");
-            yourClan.setText(profileSelect.getValue().getYourClan());
-            yourWebLink.setText(profileSelect.getValue().getYourWebLink());
-            urlImageServer.setText(profileSelect.getValue().getUrlImageServer());
-            welcomeMessage.setText(profileSelect.getValue().getWelcomeMessage());
-            customParameters.setText(profileSelect.getValue().getCustomParameters());
-            webPage.setSelected(profileSelect.getValue().getWebPage() != null ? profileSelect.getValue().getWebPage(): false);
-            try {
-                if (StringUtils.isNotEmpty(urlImageServer.getText())) {
-                    imageWebView.getEngine().load(urlImageServer.getText());
-                    imageWebView.setVisible(true);
-                } else {
-                    imageWebView.setVisible(false);
-                    imageWebView.getEngine().load(null);
-                }
-                serverPassword.setText(Utils.decryptAES(profileSelect.getValue().getServerPassword()));
-                webPassword.setText(Utils.decryptAES(profileSelect.getValue().getWebPassword()));
-            } catch (Exception e) {
-                Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
-            }
+            loadActualProfile(profileSelect.getValue());
         }
 
         serverName.focusedProperty().addListener(new ChangeListener<Boolean>() {
@@ -313,10 +282,54 @@ public class MainContentController implements Initializable {
         });
     }
 
+    private void loadActualProfile(ProfileDto profile) {
+        languageSelect.setValue(profile.getLanguage());
+        gameTypeSelect.setValue(profile.getGametype());
+        mapSelect.setValue(profile.getMap());
+        difficultySelect.setValue(profile.getDifficulty());
+        lengthSelect.setValue(profile.getLength());
+        maxPlayersSelect.setValue(profile.getMaxPlayers());
+
+        serverName.setText(profile.getServerName());
+        Integer webPortValue = profile.getWebPort();
+        webPort.setText(webPortValue != null? String.valueOf(webPortValue): "");
+        Integer gamePortValue = profile.getGamePort();
+        gamePort.setText(gamePortValue != null? String.valueOf(gamePortValue): "");
+        Integer queryPortValue = profile.getQueryPort();
+        queryPort.setText(queryPortValue != null? String.valueOf(queryPortValue): "");
+        yourClan.setText(profile.getYourClan());
+        yourWebLink.setText(profile.getYourWebLink());
+        urlImageServer.setText(profile.getUrlImageServer());
+        welcomeMessage.setText(profile.getWelcomeMessage());
+        customParameters.setText(profile.getCustomParameters());
+        webPage.setSelected(profile.getWebPage() != null ? profile.getWebPage(): false);
+        try {
+            if (StringUtils.isNotEmpty(urlImageServer.getText())) {
+                imageWebView.getEngine().load(urlImageServer.getText());
+                imageWebView.setVisible(true);
+            } else {
+                imageWebView.setVisible(false);
+                imageWebView.getEngine().load(null);
+            }
+            serverPassword.setText(Utils.decryptAES(profile.getServerPassword()));
+            webPassword.setText(Utils.decryptAES(profile.getWebPassword()));
+        } catch (Exception e) {
+            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+        }
+    }
+
 
     @FXML
     private void profileOnAction() {
-        Session.getInstance().setActualProfile(profileSelect.getValue());
+        String headerText = "Error loading the profile information";
+        String contentText = "The profile could not be changed!";
+        try {
+            ProfileDto databaseProfile = facade.findProfileByName(profileSelect.getValue().getName());
+            loadActualProfile(databaseProfile);
+            Session.getInstance().setActualProfile(profileSelect.getValue());
+        } catch (SQLException e) {
+            Utils.errorDialog(headerText, contentText, e);
+        }
     }
 
     @FXML

@@ -31,7 +31,7 @@ public abstract class CommonDao<T extends CommonEntity> {
 	 * @param id
 	 * @return Entity
 	 */
-	public T get(String id) throws SQLException {
+	public T get(Integer id) throws SQLException {
 		EntityManager em = null;
 		try {
 			em = emf.createEntityManager();
@@ -157,6 +157,7 @@ public abstract class CommonDao<T extends CommonEntity> {
 		try {
 			em = emf.createEntityManager();
 			em.getTransaction().begin();
+			entity = em.merge(entity);
 			em.remove(entity);
 			em.getTransaction().commit();
 			em.close();
