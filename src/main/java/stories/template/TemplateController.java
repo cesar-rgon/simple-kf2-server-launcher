@@ -60,4 +60,24 @@ public class TemplateController implements Initializable {
     private void profilesMenuOnAction() {
         loadNewContent(MenuTitle.PROFILES_EDITION, "/views/profilesEdition.fxml");
     }
+
+    @FXML
+    private void gameTypesMenuOnAction() {
+        loadNewContent(MenuTitle.GAMETYPES_EDITION, "/views/gameTypesEdition.fxml");
+    }
+
+    @FXML
+    private void difficultiesMenuOnAction() {
+        loadNewContent(MenuTitle.DIFFICULTIES_EDITION, "/views/difficultiesEdition.fxml");
+    }
+
+    @FXML
+    private void lengthMenuOnAction() {
+        loadNewContent(MenuTitle.LENGTH_EDITION, "/views/lengthEdition.fxml");
+    }
+
+    @FXML
+    private void maxPlayersMenuOnAction() {
+        loadNewContent(MenuTitle.MAXPLAYERS_EDITION, "/views/maxPlayersEdition.fxml");
+    }
 }

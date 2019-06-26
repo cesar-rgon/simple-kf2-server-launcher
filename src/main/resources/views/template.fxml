@@ -17,11 +17,11 @@
           <Menu mnemonicParsing="false" text="Edition">
             <items>
               <MenuItem fx:id="profilesMenu" mnemonicParsing="false" onAction="#profilesMenuOnAction" text="Profiles" />
-                  <MenuItem disable="true" mnemonicParsing="false" text="Game types" />
+                  <MenuItem fx:id="gameTypesMenu" mnemonicParsing="false" onAction="#gameTypesMenuOnAction" text="Game types" />
                   <MenuItem disable="true" mnemonicParsing="false" text="Maps" />
-                  <MenuItem disable="true" mnemonicParsing="false" text="Difficulties" />
-                  <MenuItem disable="true" mnemonicParsing="false" text="Lengths" />
-                  <MenuItem disable="true" mnemonicParsing="false" text="Max. players" />
+                  <MenuItem fx:id="difficultiesMenu" mnemonicParsing="false" onAction="#difficultiesMenuOnAction" text="Difficulties" />
+                  <MenuItem fx:id="lengthMenu" mnemonicParsing="false" onAction="#lengthMenuOnAction" text="Lengths" />
+                  <MenuItem fx:id="maxPlayersMenu" mnemonicParsing="false" onAction="#maxPlayersMenuOnAction" text="Max. players" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Help">

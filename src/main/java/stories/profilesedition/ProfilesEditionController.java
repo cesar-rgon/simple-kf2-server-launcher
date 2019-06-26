@@ -2,17 +2,14 @@ package stories.profilesedition;
 
 import constants.PropertyKey;
 import dtos.ProfileDto;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.TextFieldTableCell;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import pojos.session.Session;
 import utils.Utils;
 
@@ -36,11 +33,9 @@ public class ProfilesEditionController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            profileNameColumn.setCellValueFactory(cellData -> cellData.getValue().getNameProperty());
-            ObservableList<ProfileDto> allProfiles = facade.listAllProfiles();
-            profilesTable.setItems(allProfiles);
-            // The tableview is editable
             profileNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+            profileNameColumn.setCellValueFactory(cellData -> cellData.getValue().getNameProperty());
+            profilesTable.setItems(facade.listAllProfiles());
         } catch (SQLException e) {
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }

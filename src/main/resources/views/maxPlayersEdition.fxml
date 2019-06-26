@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
+
+<fx:root id="centerGridPane" fx:id="maxPlayersEdition" prefHeight="730.0" prefWidth="1210.0" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maxplayersedition.MaxPlayersEditionController">
+   <children>
+      <ImageView fitHeight="700.0" fitWidth="741.0" pickOnBounds="true" preserveRatio="true" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowSpan="4" GridPane.valignment="CENTER">
+         <image>
+            <Image url="@../images/radiation700.png" />
+         </image>
+      </ImageView>
+      <Label fx:id="titleConfigLabel" alignment="TOP_LEFT" text="Max. players list" textAlignment="CENTER" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+         <font>
+            <Font size="20.0" />
+         </font></Label>
+      <TableView fx:id="maxPlayersTable" editable="true" maxHeight="650.0" maxWidth="900.0" opacity="0.8" prefHeight="650.0" prefWidth="900.0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+        <columns>
+          <TableColumn fx:id="maxPlayersCodeColumn" maxWidth="450.0" onEditCommit="#maxPlayersCodeColumnOnEditCommit" prefWidth="450.0" resizable="false" text="Max. players code" />
+          <TableColumn fx:id="maxPlayersDescriptionColumn" maxWidth="450.0" onEditCommit="#maxPlayersDescriptionColumnOnEditCommit" prefWidth="450.0" resizable="false" text="Max. players description" />
+        </columns>
+      </TableView>
+      <Button fx:id="addMaxPlayers" mnemonicParsing="false" onAction="#addMaxPlayersOnAction" text="Add new max. players" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+         <GridPane.margin>
+            <Insets right="70.0" />
+         </GridPane.margin></Button>
+      <Button fx:id="removeMaxPlayers" mnemonicParsing="false" onAction="#removeMaxPlayersOnAction" text="Remove selected max. players" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+         <GridPane.margin>
+            <Insets left="5.0" />
+         </GridPane.margin></Button>
+      <Label text="One click on a max. players to select it, double click to edit it" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" />
+   </children>
+   <columnConstraints>
+      <ColumnConstraints prefWidth="1210.0" />
+      <ColumnConstraints minWidth="10.0" prefWidth="1210.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints minHeight="10.0" prefHeight="150.0" />
+      <RowConstraints minHeight="10.0" prefHeight="120.0" />
+      <RowConstraints prefHeight="560.0" />
+      <RowConstraints minHeight="10.0" prefHeight="120.0" />
+   </rowConstraints>
+</fx:root>
