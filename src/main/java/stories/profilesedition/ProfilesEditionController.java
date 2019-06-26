@@ -2,17 +2,14 @@ package stories.profilesedition;
 
 import constants.PropertyKey;
 import dtos.ProfileDto;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.TextFieldTableCell;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import pojos.session.Session;
 import utils.Utils;
 
