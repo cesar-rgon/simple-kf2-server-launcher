@@ -1,6 +1,6 @@
 package stories.installupdateserver;
 
-import constants.PropertyKey;
+import constants.Constants;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -35,9 +35,9 @@ public class InstallUpdateServerController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            installationFolder.setText(facade.findPropertyValue(PropertyKey.INSTALLATION_FOLDER));
-            isBeta.setSelected(Boolean.parseBoolean(facade.findPropertyValue(PropertyKey.IS_BETA)));
-            betaBrunch.setText(facade.findPropertyValue(PropertyKey.BETA_BRUNCH));
+            installationFolder.setText(facade.findPropertyValue(Constants.KEY_INSTALLATION_FOLDER));
+            isBeta.setSelected(Boolean.parseBoolean(facade.findPropertyValue(Constants.KEY_IS_BETA)));
+            betaBrunch.setText(facade.findPropertyValue(Constants.KEY_BETA_BRUNCH));
         } catch (SQLException e) {
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
@@ -47,7 +47,7 @@ public class InstallUpdateServerController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
-                        if (!facade.saveOrUpdateProperty(PropertyKey.INSTALLATION_FOLDER, installationFolder.getText())) {
+                        if (!facade.saveOrUpdateProperty(Constants.KEY_INSTALLATION_FOLDER, installationFolder.getText())) {
                             Utils.errorDialog("Error updating the property information", "The installation folder value could not be saved!", null);
                         }
                     }
@@ -62,7 +62,7 @@ public class InstallUpdateServerController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
-                        if (!facade.saveOrUpdateProperty(PropertyKey.BETA_BRUNCH, betaBrunch.getText())) {
+                        if (!facade.saveOrUpdateProperty(Constants.KEY_BETA_BRUNCH, betaBrunch.getText())) {
                             Utils.errorDialog("Error updating the property information", "The beta brunch value could not be saved!", null);
                         }
                     }
@@ -81,7 +81,7 @@ public class InstallUpdateServerController implements Initializable {
         if (selectedDirectory != null) {
             installationFolder.setText(selectedDirectory.getAbsolutePath());
             try {
-                if (!facade.saveOrUpdateProperty(PropertyKey.INSTALLATION_FOLDER, installationFolder.getText())) {
+                if (!facade.saveOrUpdateProperty(Constants.KEY_INSTALLATION_FOLDER, installationFolder.getText())) {
                     Utils.errorDialog("Error updating the property information", "The installation folder value could not be saved!", null);
                 }
             } catch (SQLException e) {
@@ -93,7 +93,7 @@ public class InstallUpdateServerController implements Initializable {
     @FXML
     private void isBetaOnAction() {
         try {
-            if (!facade.saveOrUpdateProperty(PropertyKey.IS_BETA, String.valueOf(isBeta.isSelected()))) {
+            if (!facade.saveOrUpdateProperty(Constants.KEY_IS_BETA, String.valueOf(isBeta.isSelected()))) {
                 Utils.errorDialog("Error updating the property information", "The is beta value could not be saved!", null);
             }
         } catch (Exception e) {
@@ -105,7 +105,7 @@ public class InstallUpdateServerController implements Initializable {
     @FXML
     private void validateFilesOnAction() {
         try {
-            if (!facade.saveOrUpdateProperty(PropertyKey.VALIDATE_FILES, String.valueOf(validateFiles.isSelected()))) {
+            if (!facade.saveOrUpdateProperty(Constants.KEY_VALIDATE_FILES, String.valueOf(validateFiles.isSelected()))) {
                 Utils.errorDialog("Error updating the property information", "The validate files value could not be saved!", null);
             }
         } catch (Exception e) {

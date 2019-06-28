@@ -2,14 +2,13 @@ package stories.gametypesedition;
 
 import dtos.ProfileDto;
 import dtos.SelectDto;
-import entities.GameType;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.scene.layout.GridPane;
-import javafx.util.Callback;
+import org.apache.commons.lang3.StringUtils;
+import pojos.session.Session;
 import utils.Utils;
 
 import java.net.URL;
@@ -44,49 +43,78 @@ public class GameTypesEditionController implements Initializable {
     }
 
     @FXML
-    private void gameTypeCodeColumnOnEditCommit() {
-
+    private void gameTypeCodeColumnOnEditCommit(TableColumn.CellEditEvent<?,?> event) {
+        int edittedRowIndex = event.getTablePosition().getRow();
+        String oldGameTypeCode = (String)event.getOldValue();
+        String newGameTypeCode = (String)event.getNewValue();
+        try {
+            SelectDto updatedGameTypeDto = facade.updateChangedGameTypeCode(oldGameTypeCode, newGameTypeCode);
+            if (updatedGameTypeDto != null) {
+                gameTypesTable.getItems().remove(edittedRowIndex);
+                gameTypesTable.getItems().add(updatedGameTypeDto);
+            } else {
+                gameTypesTable.refresh();
+                Utils.errorDialog("The game type can not be renamed in database", "Update operation is aborted!", null);
+            }
+        } catch (SQLException e) {
+            gameTypesTable.refresh();
+            Utils.errorDialog("The game type can not be updated!", "See stacktrace for more details", e);
+        }
     }
 
     @FXML
-    private void gameTypeDescriptionColumnOnEditCommit() {
-
+    private void gameTypeDescriptionColumnOnEditCommit(TableColumn.CellEditEvent<?,?> event) {
+        int edittedRowIndex = event.getTablePosition().getRow();
+        String oldGameTypeDescription = (String)event.getOldValue();
+        String newGameTypeDescription = (String)event.getNewValue();
+        try {
+            String code = gameTypesTable.getItems().get(edittedRowIndex).getKey();
+            SelectDto selectedLanguage = Session.getInstance().getActualProfile().getLanguage();
+            SelectDto updatedGameTypeDto = facade.updateChangedGameTypeDescription(code, oldGameTypeDescription, newGameTypeDescription, selectedLanguage);
+            if (updatedGameTypeDto != null) {
+                gameTypesTable.getItems().remove(edittedRowIndex);
+                gameTypesTable.getItems().add(updatedGameTypeDto);
+            } else {
+                gameTypesTable.refresh();
+                Utils.errorDialog("The game type can not be renamed in database", "Update operation is aborted!", null);
+            }
+        } catch (SQLException e) {
+            gameTypesTable.refresh();
+            Utils.errorDialog("The game type can not be updated!", "See stacktrace for more details", e);
+        }
     }
 
     @FXML
     private void addGameTypeOnAction() {
-        Dialog<SelectDto> dialog = new Dialog<SelectDto>();
-        dialog.setTitle("Simple Killing Floor 2 Server Launcher");
-        dialog.setHeaderText("Add a new game type");
-        dialog.setResizable(true);
-        Label code = new Label("Game type code: ");
-        Label description = new Label("Game type description: ");
-        TextField codeText = new TextField();
-        TextField descriptionText = new TextField();
-        GridPane grid = new GridPane();
-        grid.add(code, 1, 1);
-        grid.add(codeText, 2, 1);
-        grid.add(description, 1, 2);
-        grid.add(descriptionText, 2, 2);
-        dialog.getDialogPane().setContent(grid);
-        ButtonType buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
-        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-        dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
-        dialog.getDialogPane().getButtonTypes().add(buttonTypeCancel);
-        dialog.setResultConverter(new Callback<ButtonType, SelectDto>() {
-            @Override
-            public SelectDto call(ButtonType b) {
-                if (b == buttonTypeOk) {
-                    return new SelectDto(codeText.getText(), descriptionText.getText());
-                }
-                return null;
+        try {
+            Optional<SelectDto> result = Utils.TwoTextInputsDialog();
+            if (result.isPresent() && StringUtils.isNotBlank(result.get().getKey()) && StringUtils.isNotBlank(result.get().getValue())) {
+                String code = result.get().getKey();
+                String description = result.get().getValue();
+                SelectDto selectedLanguage = Session.getInstance().getActualProfile().getLanguage();
+                gameTypesTable.getItems().add(facade.createNewGameType(code, description, selectedLanguage));
             }
-        });
-        Optional<SelectDto> result = dialog.showAndWait();
+        } catch (SQLException e) {
+            Utils.errorDialog("The game type can not be created!", "See stacktrace for more details", e);
+        }
     }
 
     @FXML
     private void removeGameTypeOnAction() {
-
+        try {
+            int selectedIndex = gameTypesTable.getSelectionModel().getSelectedIndex();
+            if (selectedIndex >= 0) {
+                SelectDto selectedGameType = gameTypesTable.getSelectionModel().getSelectedItem();
+                if (facade.deleteSelectedGameType(selectedGameType.getKey())) {
+                    gameTypesTable.getItems().remove(selectedIndex);
+                } else {
+                    Utils.errorDialog("The game type can not be deleted from database", "Delete operation is aborted!", null);
+                }
+            } else {
+                Utils.errorDialog("No selected game type", "Delete operation is aborted!", null);
+            }
+        } catch (SQLException e) {
+            Utils.errorDialog("The game type can not be deleted!", "See stacktrace for more details", e);
+        }
     }
 }

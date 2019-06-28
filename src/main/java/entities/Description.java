@@ -11,10 +11,10 @@ public class Description extends CommonEntity {
     @Column(name="ID", updatable=false, nullable=false)
     private Integer id;
 
-    @Column(name="EN", length=255, unique=true, nullable=false)
+    @Column(name="EN", length=255, unique=false, nullable=false)
     private String englishText;
 
-    @Column(name="ES", length=255, unique=true, nullable=false)
+    @Column(name="ES", length=255, unique=false, nullable=false)
     private String spanishText;
 
     public Description() {

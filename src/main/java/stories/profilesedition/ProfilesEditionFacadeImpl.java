@@ -1,7 +1,6 @@
 package stories.profilesedition;
 
-import constants.PropertyKey;
-import constants.PropertyValue;
+import constants.Constants;
 import daos.*;
 import dtos.ProfileDto;
 import dtos.factories.ProfileDtoFactory;
@@ -31,10 +30,10 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
 
     @Override
     public ProfileDto createNewProfile(String profileName) throws Exception {
-        Optional<Property> defaultServernameOpt = PropertyDao.getInstance().findByKey(PropertyKey.DEFAULT_SERVERNAME);
-        Optional<Property> defaultWebPort = PropertyDao.getInstance().findByKey(PropertyKey.DEFAULT_WEB_PORT);
-        Optional<Property> defaultGamePort = PropertyDao.getInstance().findByKey(PropertyKey.DEFAULT_GAME_PORT);
-        Optional<Property> defaultQueryPort = PropertyDao.getInstance().findByKey(PropertyKey.DEFAULT_QUERY_PORT);
+        Optional<Property> defaultServernameOpt = PropertyDao.getInstance().findByKey(Constants.KEY_DEFAULT_SERVERNAME);
+        Optional<Property> defaultWebPort = PropertyDao.getInstance().findByKey(Constants.KEY_DEFAULT_WEB_PORT);
+        Optional<Property> defaultGamePort = PropertyDao.getInstance().findByKey(Constants.KEY_DEFAULT_GAME_PORT);
+        Optional<Property> defaultQueryPort = PropertyDao.getInstance().findByKey(Constants.KEY_DEFAULT_QUERY_PORT);
         Profile newProfile = new Profile(
                 profileName,
                 LanguageDao.getInstance().get(FIRST_ELEMENT_ID),
@@ -43,10 +42,10 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                 DifficultyDao.getInstance().get(FIRST_ELEMENT_ID),
                 LengthDao.getInstance().get(FIRST_ELEMENT_ID),
                 MaxPlayersDao.getInstance().get(FIRST_ELEMENT_ID),
-                defaultServernameOpt.isPresent() ? defaultServernameOpt.get().getValue(): PropertyValue.DEFAULT_SERVERNAME,
-                defaultWebPort.isPresent() ? Integer.parseInt(defaultWebPort.get().getValue()): PropertyValue.DEFAULT_WEB_PORT,
-                defaultGamePort.isPresent() ? Integer.parseInt(defaultGamePort.get().getValue()): PropertyValue.DEFAULT_GAME_PORT,
-                defaultQueryPort.isPresent() ? Integer.parseInt(defaultQueryPort.get().getValue()): PropertyValue.DEFAULT_QUERY_PORT
+                defaultServernameOpt.isPresent() ? defaultServernameOpt.get().getValue(): Constants.VALUE_DEFAULT_SERVERNAME,
+                defaultWebPort.isPresent() ? Integer.parseInt(defaultWebPort.get().getValue()): Constants.VALUE_DEFAULT_WEB_PORT,
+                defaultGamePort.isPresent() ? Integer.parseInt(defaultGamePort.get().getValue()): Constants.VALUE_DEFAULT_GAME_PORT,
+                defaultQueryPort.isPresent() ? Integer.parseInt(defaultQueryPort.get().getValue()): Constants.VALUE_DEFAULT_QUERY_PORT
         );
         ProfileDao.getInstance().insert(newProfile);
         return profileDtoFactory.newDto(newProfile);

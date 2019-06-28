@@ -7,8 +7,6 @@ public class Session {
     private static Session instance = null;
 
     private ProfileDto actualProfile;
-    private boolean showWebAdmin;
-    private Integer webPort;
     private String console;
 
     /**
@@ -16,8 +14,6 @@ public class Session {
      */
     private Session() {
         super();
-        showWebAdmin = false;
-        webPort = 8080;
         console = "";
     }
 
@@ -34,22 +30,6 @@ public class Session {
 
     public void setActualProfile(ProfileDto actualProfile) {
         this.actualProfile = actualProfile;
-    }
-
-    public boolean isShowWebAdmin() {
-        return showWebAdmin;
-    }
-
-    public void setShowWebAdmin(boolean showWebAdmin) {
-        this.showWebAdmin = showWebAdmin;
-    }
-
-    public Integer getWebPort() {
-        return webPort;
-    }
-
-    public void setWebPort(Integer webPort) {
-        this.webPort = webPort;
     }
 
     public String getConsole() {

@@ -20,7 +20,7 @@ public class InstallUpdateServerFacadeImpl implements InstallUpdateServerFacade 
             return PropertyDao.getInstance().update(propertyOpt.get());
         } else {
             Property property = new Property(key, newValue);
-            return PropertyDao.getInstance().insert(property);
+            return PropertyDao.getInstance().insert(property) != null;
         }
     }
 

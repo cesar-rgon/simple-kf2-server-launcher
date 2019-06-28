@@ -1,9 +1,11 @@
 package utils;
 
-import javafx.scene.control.Alert;
-import javafx.scene.control.TextArea;
+import constants.Constants;
+import dtos.SelectDto;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
+import javafx.util.Callback;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -13,14 +15,13 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.security.Key;
+import java.util.Optional;
 
 public class Utils {
 
-    private final static String AES_ENCRIPTION_KEY = "SimplKillingFloor2ServerLauncher";
-
     public static void errorDialog(String headerText, String contentText, Throwable e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Simple Killing Floor 2 Server Launcher");
+        alert.setTitle(Constants.APPLICATION_TITLE);
         alert.setHeaderText(headerText);
         alert.setContentText(contentText);
 
@@ -43,11 +44,53 @@ public class Utils {
         alert.showAndWait();
     }
 
+
+    public static Optional<String> OneTextInputDialog() {
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle(Constants.APPLICATION_TITLE);
+        dialog.setHeaderText("Add a new item");
+        dialog.setContentText("Please enter item name:");
+        return dialog.showAndWait();
+    }
+
+    public static Optional<SelectDto> TwoTextInputsDialog() {
+        Dialog<SelectDto> dialog = new Dialog<SelectDto>();
+        dialog.setTitle(Constants.APPLICATION_TITLE);
+        dialog.setHeaderText("Add a new item");
+        dialog.setResizable(false);
+        Label code = new Label("Item code: ");
+        Label description = new Label("Item description: ");
+        TextField codeText = new TextField();
+        TextField descriptionText = new TextField();
+        Label separator = new Label("");
+        GridPane grid = new GridPane();
+        grid.add(code, 1, 1);
+        grid.add(codeText, 2, 1);
+        grid.add(separator, 1, 2);
+        grid.add(description, 1, 3);
+        grid.add(descriptionText, 2, 3);
+        dialog.getDialogPane().setContent(grid);
+        ButtonType buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeCancel);
+        dialog.setResultConverter(new Callback<ButtonType, SelectDto>() {
+            @Override
+            public SelectDto call(ButtonType b) {
+                if (b == buttonTypeOk) {
+                    return new SelectDto(codeText.getText(), descriptionText.getText());
+                }
+                return null;
+            }
+        });
+        return dialog.showAndWait();
+    }
+
     public static String encryptAES(String password) throws Exception {
         if (password == null) {
             return null;
         }
-        Key aesKey = new SecretKeySpec(AES_ENCRIPTION_KEY.getBytes(), "AES");
+        Key aesKey = new SecretKeySpec(Constants.UTILS_AES_ENCRIPTION_KEY.getBytes(), "AES");
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, aesKey);
         byte[] encrypted = cipher.doFinal(password.getBytes());
@@ -58,7 +101,7 @@ public class Utils {
         if (encryptedPassword == null) {
             return null;
         }
-        Key aesKey = new SecretKeySpec(AES_ENCRIPTION_KEY.getBytes(), "AES");
+        Key aesKey = new SecretKeySpec(Constants.UTILS_AES_ENCRIPTION_KEY.getBytes(), "AES");
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, aesKey);
         byte[] decrypted = new BASE64Decoder().decodeBuffer(encryptedPassword);

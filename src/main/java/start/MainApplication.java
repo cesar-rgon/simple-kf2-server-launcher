@@ -1,5 +1,6 @@
 package start;
 
+import constants.Constants;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -19,6 +20,7 @@ public class MainApplication extends Application {
         mainContent.setRoot(template.getNamespace().get("content"));
         mainContent.load();
         primaryStage.getIcons().add(new Image("file:src/main/resources/images/kf2ico.png"));
+        primaryStage.setTitle(Constants.APPLICATION_TITLE);
         primaryStage.setScene(scene);
         primaryStage.setMinWidth(1280);
         primaryStage.setMinHeight(800);

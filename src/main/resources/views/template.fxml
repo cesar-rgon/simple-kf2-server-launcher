@@ -14,11 +14,11 @@
           <Menu fx:id="mainPage" disable="true" mnemonicParsing="false" />
           <Menu fx:id="webAdmin" mnemonicParsing="false" />
           <Menu fx:id="installUpdateServer" mnemonicParsing="false" />
-          <Menu mnemonicParsing="false" text="Edition">
+          <Menu mnemonicParsing="false" text="Configuration">
             <items>
+                  <MenuItem disable="true" mnemonicParsing="false" text="Maps" />
               <MenuItem fx:id="profilesMenu" mnemonicParsing="false" onAction="#profilesMenuOnAction" text="Profiles" />
                   <MenuItem fx:id="gameTypesMenu" mnemonicParsing="false" onAction="#gameTypesMenuOnAction" text="Game types" />
-                  <MenuItem disable="true" mnemonicParsing="false" text="Maps" />
                   <MenuItem fx:id="difficultiesMenu" mnemonicParsing="false" onAction="#difficultiesMenuOnAction" text="Difficulties" />
                   <MenuItem fx:id="lengthMenu" mnemonicParsing="false" onAction="#lengthMenuOnAction" text="Lengths" />
                   <MenuItem fx:id="maxPlayersMenu" mnemonicParsing="false" onAction="#maxPlayersMenuOnAction" text="Max. players" />

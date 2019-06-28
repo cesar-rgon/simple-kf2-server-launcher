@@ -1,6 +1,6 @@
 package stories.template;
 
-import constants.MenuTitle;
+import constants.Constants;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -23,9 +23,9 @@ public class TemplateController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        mainPage.setGraphic(getLabelWithHandler(MenuTitle.MAIN_PAGE, "/views/mainContent.fxml"));
-        installUpdateServer.setGraphic(getLabelWithHandler(MenuTitle.INSTALL_UPDATE_SERVER, "/views/installUpdateServer.fxml"));
-        webAdmin.setGraphic(getLabelWithHandler(MenuTitle.WEB_ADMIN, "/views/webAdmin.fxml"));
+        mainPage.setGraphic(getLabelWithHandler(Constants.MENU_MAIN_PAGE, "/views/mainContent.fxml"));
+        installUpdateServer.setGraphic(getLabelWithHandler(Constants.MENU_INSTALL_UPDATE_SERVER, "/views/installUpdateServer.fxml"));
+        webAdmin.setGraphic(getLabelWithHandler(Constants.MENU_WEB_ADMIN, "/views/webAdmin.fxml"));
     }
 
     private Label getLabelWithHandler(String title, String fxmlFilePath) {
@@ -48,9 +48,9 @@ public class TemplateController implements Initializable {
             FXMLLoader content = new FXMLLoader(getClass().getResource(fxmlFilePath));
             content.setRoot(MainApplication.getTemplate().getNamespace().get("content"));
             content.load();
-            mainPage.setDisable(MenuTitle.MAIN_PAGE.equals(title));
-            installUpdateServer.setDisable(MenuTitle.INSTALL_UPDATE_SERVER.equals(title));
-            webAdmin.setDisable(MenuTitle.WEB_ADMIN.equals(title));
+            mainPage.setDisable(Constants.MENU_MAIN_PAGE.equals(title));
+            installUpdateServer.setDisable(Constants.MENU_INSTALL_UPDATE_SERVER.equals(title));
+            webAdmin.setDisable(Constants.MENU_WEB_ADMIN.equals(title));
         } catch (Exception e) {
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
@@ -58,26 +58,26 @@ public class TemplateController implements Initializable {
 
     @FXML
     private void profilesMenuOnAction() {
-        loadNewContent(MenuTitle.PROFILES_EDITION, "/views/profilesEdition.fxml");
+        loadNewContent(Constants.MENU_PROFILES_EDITION, "/views/profilesEdition.fxml");
     }
 
     @FXML
     private void gameTypesMenuOnAction() {
-        loadNewContent(MenuTitle.GAMETYPES_EDITION, "/views/gameTypesEdition.fxml");
+        loadNewContent(Constants.MENU_GAMETYPES_EDITION, "/views/gameTypesEdition.fxml");
     }
 
     @FXML
     private void difficultiesMenuOnAction() {
-        loadNewContent(MenuTitle.DIFFICULTIES_EDITION, "/views/difficultiesEdition.fxml");
+        loadNewContent(Constants.MENU_DIFFICULTIES_EDITION, "/views/difficultiesEdition.fxml");
     }
 
     @FXML
     private void lengthMenuOnAction() {
-        loadNewContent(MenuTitle.LENGTH_EDITION, "/views/lengthEdition.fxml");
+        loadNewContent(Constants.MENU_LENGTH_EDITION, "/views/lengthEdition.fxml");
     }
 
     @FXML
     private void maxPlayersMenuOnAction() {
-        loadNewContent(MenuTitle.MAXPLAYERS_EDITION, "/views/maxPlayersEdition.fxml");
+        loadNewContent(Constants.MENU_MAXPLAYERS_EDITION, "/views/maxPlayersEdition.fxml");
     }
 }

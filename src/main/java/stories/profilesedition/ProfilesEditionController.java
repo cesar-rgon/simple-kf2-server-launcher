@@ -1,15 +1,14 @@
 package stories.profilesedition;
 
-import constants.PropertyKey;
+import constants.Constants;
 import dtos.ProfileDto;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.cell.TextFieldTableCell;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import pojos.session.Session;
 import utils.Utils;
 
@@ -43,13 +42,9 @@ public class ProfilesEditionController implements Initializable {
 
     @FXML
     private void addProfileOnAction() {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Simple Killing Floor 2 Server Launcher");
-        dialog.setHeaderText("Add a new profile");
-        dialog.setContentText("Please enter profile name:");
-        Optional<String> profileNameOpt = dialog.showAndWait();
+        Optional<String> profileNameOpt = Utils.OneTextInputDialog();
         try {
-            if (profileNameOpt.isPresent() && !profileNameOpt.get().isEmpty()){
+            if (profileNameOpt.isPresent() && StringUtils.isNotBlank(profileNameOpt.get())){
                 profilesTable.getItems().add(facade.createNewProfile(profileNameOpt.get()));
             }
         } catch (Exception e) {
@@ -65,7 +60,7 @@ public class ProfilesEditionController implements Initializable {
                 ProfileDto selectedProfile = profilesTable.getSelectionModel().getSelectedItem();
                 if (facade.deleteSelectedProfile(selectedProfile.getName())) {
                     profilesTable.getItems().remove(selectedIndex);
-                    File profileConfigFolder = new File(facade.findPropertyValue(PropertyKey.INSTALLATION_FOLDER) + "\\KFGame\\Config\\" + Session.getInstance().getActualProfile().getName());
+                    File profileConfigFolder = new File(facade.findPropertyValue(Constants.KEY_INSTALLATION_FOLDER) + "\\KFGame\\Config\\" + Session.getInstance().getActualProfile().getName());
                     FileUtils.deleteDirectory(profileConfigFolder);
                 } else {
                     Utils.errorDialog("The profile can not be deleted from database", "Delete operation is aborted!", null);
@@ -88,7 +83,7 @@ public class ProfilesEditionController implements Initializable {
             if (updatedProfileDto != null) {
                 profilesTable.getItems().remove(edittedRowIndex);
                 profilesTable.getItems().add(updatedProfileDto);
-                String configFolder = facade.findPropertyValue(PropertyKey.INSTALLATION_FOLDER) + "\\KFGame\\Config\\";
+                String configFolder = facade.findPropertyValue(Constants.KEY_INSTALLATION_FOLDER) + "\\KFGame\\Config\\";
                 File oldProfileConfigFolder = new File(configFolder + oldProfileName);
                 if (oldProfileConfigFolder.exists() && oldProfileConfigFolder.isDirectory()) {
                     File newProfileConfigFolder = new File(configFolder + newProfileName);

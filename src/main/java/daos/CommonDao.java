@@ -110,7 +110,7 @@ public abstract class CommonDao<T extends CommonEntity> {
 	 * @param entity
 	 * @return True in case of success
 	 */
-	public Boolean insert(T entity) throws SQLException {
+	public T insert(T entity) throws SQLException {
 		EntityManager em = null;
 		try{
 			em = emf.createEntityManager();
@@ -118,7 +118,7 @@ public abstract class CommonDao<T extends CommonEntity> {
 			em.persist(entity);
 			em.getTransaction().commit();
 			em.close();
-			return true;
+			return entity;
 		} catch (Exception e){
 			String errorMessage = String.format("Database error. Error trying to insert the element %s in entity %s", entity.getId(), entityClass.getName());
 			endTransaction(em);

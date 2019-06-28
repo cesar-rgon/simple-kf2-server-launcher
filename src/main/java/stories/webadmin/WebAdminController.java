@@ -1,5 +1,6 @@
 package stories.webadmin;
 
+import dtos.ProfileDto;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -13,35 +14,48 @@ import pojos.session.Session;
 import utils.Utils;
 
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 public class WebAdminController implements Initializable {
 
+    private final WebAdminFacade facade;
+
     @FXML private WebView webAdmin;
+
+    public WebAdminController() {
+        super();
+        this.facade = new WebAdminFacadeImpl();
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        WebEngine webEngine = webAdmin.getEngine();
-        webEngine.documentProperty().addListener(new ChangeListener<Document>() {
-                                                  @Override
-                                                  public void changed(ObservableValue<? extends Document> ov, Document oldDoc, Document doc) {
-                                                      if (doc != null) {
-                                                          Element usernameInput = doc.getElementById("username");
-                                                          usernameInput.setAttribute("value", "admin");
-                                                          Element passwordInput = doc.getElementById("password");
-                                                          try {
-                                                              passwordInput.setAttribute("value", Utils.decryptAES(Session.getInstance().getActualProfile().getWebPassword()));
-                                                          } catch (Exception e) {
-                                                              Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
-                                                          }
-                                                          HTMLFormElement form = (HTMLFormElement)doc.getElementById("loginform");
-                                                          form.submit();
-                                                      }
-                                                  }
-                                              });
-        if (Session.getInstance().isShowWebAdmin()) {
-            webEngine.load("http://127.0.0.1:" + Session.getInstance().getWebPort() + "/ServerAdmin");
-            webAdmin.setVisible(true);
+        try {
+            WebEngine webEngine = webAdmin.getEngine();
+            webEngine.documentProperty().addListener(new ChangeListener<Document>() {
+                @Override
+                public void changed(ObservableValue<? extends Document> ov, Document oldDoc, Document doc) {
+                    if (doc != null) {
+                        Element usernameInput = doc.getElementById("username");
+                        usernameInput.setAttribute("value", "admin");
+                        Element passwordInput = doc.getElementById("password");
+                        try {
+                            passwordInput.setAttribute("value", Utils.decryptAES(Session.getInstance().getActualProfile().getWebPassword()));
+                        } catch (Exception e) {
+                            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+                        }
+                        HTMLFormElement form = (HTMLFormElement) doc.getElementById("loginform");
+                        form.submit();
+                    }
+                }
+            });
+            ProfileDto databaseProfile = facade.findProfileByName(Session.getInstance().getActualProfile().getName());
+            if (databaseProfile.getWebPage() != null && databaseProfile.getWebPage()) {
+                webEngine.load("http://127.0.0.1:" + databaseProfile.getWebPort() + "/ServerAdmin");
+                webAdmin.setVisible(true);
+            }
+        } catch (SQLException e) {
+            Utils.errorDialog("The WebAdmin page can not be loaded!", "See stacktrace for more details", e);
         }
     }
 }

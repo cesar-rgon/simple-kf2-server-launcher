@@ -1,6 +1,6 @@
 package pojos.kf2factory;
 
-import constants.PropertyKey;
+import constants.Constants;
 import dtos.ProfileDto;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -11,8 +11,6 @@ import utils.Utils;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 
 public abstract class Kf2Common {
@@ -38,7 +36,7 @@ public abstract class Kf2Common {
         try {
             String errorMessage = validateParameters(profileDto);
             if (StringUtils.isEmpty(errorMessage)) {
-                String installationFolder = installUpdateServerFacade.findPropertyValue(PropertyKey.INSTALLATION_FOLDER);
+                String installationFolder = installUpdateServerFacade.findPropertyValue(Constants.KEY_INSTALLATION_FOLDER);
                 createConfigFolder(installationFolder, profileDto);
                 return runKf2Server(installationFolder, profileDto);
             } else {

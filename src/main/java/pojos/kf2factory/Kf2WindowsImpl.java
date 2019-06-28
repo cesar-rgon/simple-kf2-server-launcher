@@ -3,7 +3,7 @@ package pojos.kf2factory;
 import com.github.sarxos.winreg.HKey;
 import com.github.sarxos.winreg.RegistryException;
 import com.github.sarxos.winreg.WindowsRegistry;
-import constants.PropertyKey;
+import constants.Constants;
 import dtos.ProfileDto;
 import net.lingala.zip4j.core.ZipFile;
 import org.apache.commons.io.FileUtils;
@@ -34,10 +34,10 @@ public class Kf2WindowsImpl extends Kf2Common {
                 File steamcmdZipFile = new File(installationFolder + "\\steamcmd.zip");
                 // Download SteamCmd
                 FileUtils.copyURLToFile(
-                        new URL(installUpdateServerFacade.findPropertyValue(PropertyKey.URL_STEAMCMD)),
+                        new URL(installUpdateServerFacade.findPropertyValue(Constants.KEY_URL_STEAMCMD)),
                         steamcmdZipFile,
-                        Integer.parseInt(installUpdateServerFacade.findPropertyValue(PropertyKey.DOWNLOAD_CONNECTION_TIMEOUT)),
-                        Integer.parseInt(installUpdateServerFacade.findPropertyValue(PropertyKey.DOWNLOAD_READ_TIMEOUT)));
+                        Integer.parseInt(installUpdateServerFacade.findPropertyValue(Constants.KEY_DOWNLOAD_CONNECTION_TIMEOUT)),
+                        Integer.parseInt(installUpdateServerFacade.findPropertyValue(Constants.KEY_DOWNLOAD_READ_TIMEOUT)));
 
                 // Decompress SteamCmd
                 ZipFile zipFile = new ZipFile(installationFolder + "\\steamcmd.zip");

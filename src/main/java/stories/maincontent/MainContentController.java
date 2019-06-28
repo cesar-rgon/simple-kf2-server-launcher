@@ -459,10 +459,6 @@ public class MainContentController implements Initializable {
             if (profileSelect.getValue() != null) {
                 databaseProfile = facade.findProfileByName(profileSelect.getValue().getName());
                 profileSelect.setValue(databaseProfile);
-                if (webPage.isSelected()) {
-                    Session.getInstance().setShowWebAdmin(true);
-                    Session.getInstance().setWebPort(profileSelect.getValue().getWebPort());
-                }
             }
             console.setText(kf2Common.runServer(databaseProfile));
             Session.getInstance().setConsole(console.getText());

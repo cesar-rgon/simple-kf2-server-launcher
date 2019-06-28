@@ -6,10 +6,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
+import org.apache.commons.lang3.StringUtils;
+import pojos.session.Session;
 import utils.Utils;
 
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class LengthEditionController implements Initializable {
@@ -40,18 +43,78 @@ public class LengthEditionController implements Initializable {
     }
 
     @FXML
-    private void lengthCodeColumnOnEditCommit() {
+    private void lengthCodeColumnOnEditCommit(TableColumn.CellEditEvent<?,?> event) {
+        int edittedRowIndex = event.getTablePosition().getRow();
+        String oldLengthCode = (String)event.getOldValue();
+        String newLengthCode = (String)event.getNewValue();
+        try {
+            SelectDto updatedLengthDto = facade.updateChangedLengthCode(oldLengthCode, newLengthCode);
+            if (updatedLengthDto != null) {
+                lengthTable.getItems().remove(edittedRowIndex);
+                lengthTable.getItems().add(updatedLengthDto);
+            } else {
+                lengthTable.refresh();
+                Utils.errorDialog("The length can not be renamed in database", "Update operation is aborted!", null);
+            }
+        } catch (SQLException e) {
+            lengthTable.refresh();
+            Utils.errorDialog("The length can not be updated!", "See stacktrace for more details", e);
+        }
     }
 
     @FXML
-    private void lengthDescriptionColumnOnEditCommit() {
+    private void lengthDescriptionColumnOnEditCommit(TableColumn.CellEditEvent<?,?> event) {
+        int edittedRowIndex = event.getTablePosition().getRow();
+        String oldLengthDescription = (String)event.getOldValue();
+        String newLengthDescription = (String)event.getNewValue();
+        try {
+            String code = lengthTable.getItems().get(edittedRowIndex).getKey();
+            SelectDto selectedLanguage = Session.getInstance().getActualProfile().getLanguage();
+            SelectDto updatedLengthDto = facade.updateChangedLengthDescription(code, oldLengthDescription, newLengthDescription, selectedLanguage);
+            if (updatedLengthDto != null) {
+                lengthTable.getItems().remove(edittedRowIndex);
+                lengthTable.getItems().add(updatedLengthDto);
+            } else {
+                lengthTable.refresh();
+                Utils.errorDialog("The length can not be renamed in database", "Update operation is aborted!", null);
+            }
+        } catch (SQLException e) {
+            lengthTable.refresh();
+            Utils.errorDialog("The length can not be updated!", "See stacktrace for more details", e);
+        }
     }
 
     @FXML
     private void addLengthOnAction() {
+        try {
+            Optional<SelectDto> result = Utils.TwoTextInputsDialog();
+            if (result.isPresent() && StringUtils.isNotBlank(result.get().getKey()) && StringUtils.isNotBlank(result.get().getValue())) {
+                String code = result.get().getKey();
+                String description = result.get().getValue();
+                SelectDto selectedLanguage = Session.getInstance().getActualProfile().getLanguage();
+                lengthTable.getItems().add(facade.createNewLength(code, description, selectedLanguage));
+            }
+        } catch (SQLException e) {
+            Utils.errorDialog("The game type can not be created!", "See stacktrace for more details", e);
+        }
     }
 
     @FXML
     private void removeLengthOnAction() {
+        try {
+            int selectedIndex = lengthTable.getSelectionModel().getSelectedIndex();
+            if (selectedIndex >= 0) {
+                SelectDto selectedLength = lengthTable.getSelectionModel().getSelectedItem();
+                if (facade.deleteSelectedLength(selectedLength.getKey())) {
+                    lengthTable.getItems().remove(selectedIndex);
+                } else {
+                    Utils.errorDialog("The length can not be deleted from database", "Delete operation is aborted!", null);
+                }
+            } else {
+                Utils.errorDialog("No selected length", "Delete operation is aborted!", null);
+            }
+        } catch (SQLException e) {
+            Utils.errorDialog("The length can not be deleted!", "See stacktrace for more details", e);
+        }
     }
 }
