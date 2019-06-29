@@ -1,18 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TableColumn?>
-<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<fx:root id="centerGridPane" fx:id="profilesEdition" prefHeight="730.0" prefWidth="1210.0" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.profilesedition.ProfilesEditionController">
+<fx:root fx:id="profilesEdition" prefHeight="730.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" alignment="CENTER" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.profilesedition.ProfilesEditionController">
    <children>
       <ImageView fitHeight="700.0" fitWidth="741.0" pickOnBounds="true" preserveRatio="true" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowSpan="4" GridPane.valignment="CENTER">
          <image>
@@ -24,9 +19,9 @@
             <Font size="20.0" />
          </font></Label>
       <TableView fx:id="profilesTable" editable="true" maxHeight="650.0" maxWidth="650.0" opacity="0.8" prefHeight="650.0" prefWidth="650.0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2">
-        <columns>
-          <TableColumn fx:id="profileNameColumn" maxWidth="650.0" onEditCommit="#profileNameColumnOnEditCommit" prefWidth="650.0" resizable="false" text="Profile Name" />
-        </columns>
+         <columns>
+            <TableColumn fx:id="profileNameColumn" maxWidth="650.0" onEditCommit="#profileNameColumnOnEditCommit" prefWidth="650.0" resizable="false" text="Profile Name" />
+         </columns>
       </TableView>
       <Button fx:id="addProfile" mnemonicParsing="false" onAction="#addProfileOnAction" text="Add new profile" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
          <GridPane.margin>

@@ -1,5 +1,6 @@
 package stories.maincontent;
 
+import dtos.MapDto;
 import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.beans.value.ChangeListener;
@@ -26,7 +27,7 @@ public class MainContentController implements Initializable {
     @FXML private ComboBox<ProfileDto> profileSelect;
     @FXML private ComboBox<SelectDto> languageSelect;
     @FXML private ComboBox<SelectDto> gameTypeSelect;
-    @FXML private ComboBox<SelectDto> mapSelect;
+    @FXML private ComboBox<MapDto> mapSelect;
     @FXML private ComboBox<SelectDto> difficultySelect;
     @FXML private ComboBox<SelectDto> lengthSelect;
     @FXML private ComboBox<SelectDto> maxPlayersSelect;

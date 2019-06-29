@@ -80,4 +80,9 @@ public class TemplateController implements Initializable {
     private void maxPlayersMenuOnAction() {
         loadNewContent(Constants.MENU_MAXPLAYERS_EDITION, "/views/maxPlayersEdition.fxml");
     }
+
+    @FXML
+    private void mapsMenuOnAction() {
+        loadNewContent(Constants.MENU_MAPS_EDITION, "/views/mapsEdition.fxml");
+    }
 }

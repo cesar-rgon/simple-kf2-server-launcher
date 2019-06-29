@@ -28,7 +28,7 @@
     -fx-font-size: 14;
 }
 
-#leftPane, #rightPane, #centerGridPanel, #centerGridPane {
+#leftPane, #rightPane, #centerPane {
     -fx-background-color: black;
 }
 
@@ -134,4 +134,8 @@
     -fx-text-fill: #fba140;
     -fx-font-weight: bold;
     -fx-font-size: 34;
+}
+
+.scroll-bar:vertical{
+    -fx-background-color: #c15d11;
 }

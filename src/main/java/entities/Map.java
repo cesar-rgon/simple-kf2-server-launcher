@@ -18,14 +18,22 @@ public class Map extends CommonEntity {
     @JoinColumn(name="ID_DESCRIPTION", referencedColumnName="ID", unique=true, nullable=false)
     private Description description;
 
+    @Column(name="OFFICIAL", nullable=false)
+    private Boolean official;
+
+    @Column(name="URL_INFO", length=255)
+    private String urlInfo;
+
     public Map() {
         super();
     }
 
-    public Map(String code, Description description) {
+    public Map(String code, Description description, Boolean official, String urlInfo) {
         super();
         this.code = code;
         this.description = description;
+        this.official = official;
+        this.urlInfo = urlInfo;
     }
 
     @Override
@@ -52,5 +60,21 @@ public class Map extends CommonEntity {
 
     public void setDescription(Description description) {
         this.description = description;
+    }
+
+    public Boolean getOfficial() {
+        return official;
+    }
+
+    public void setOfficial(Boolean official) {
+        this.official = official;
+    }
+
+    public String getUrlInfo() {
+        return urlInfo;
+    }
+
+    public void setUrlInfo(String urlInfo) {
+        this.urlInfo = urlInfo;
     }
 }

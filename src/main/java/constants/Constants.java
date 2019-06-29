@@ -14,6 +14,7 @@ public class Constants {
     public static final String MENU_DIFFICULTIES_EDITION = "Difficulties";
     public static final String MENU_LENGTH_EDITION = "Length";
     public static final String MENU_MAXPLAYERS_EDITION = "Max. players";
+    public static final String MENU_MAPS_EDITION = "Maps";
 
     // UTILS
     public final static String UTILS_AES_ENCRIPTION_KEY = "SimplKillingFloor2ServerLauncher";

@@ -1,6 +1,7 @@
 package stories.maincontent;
 
 import daos.*;
+import dtos.MapDto;
 import dtos.ProfileDto;
 import dtos.SelectDto;
 import dtos.factories.*;
@@ -52,7 +53,7 @@ public class MainContentFacadeImpl implements MainContentFacade {
     }
 
     @Override
-    public ObservableList<SelectDto> listAllMaps() throws SQLException {
+    public ObservableList<MapDto> listAllMaps() throws SQLException {
         List<Map> maps = MapDao.getInstance().listAll();
         return mapDtoFactory.newDtos(maps);
     }

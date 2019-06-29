@@ -1,11 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Menu?>
-<?import javafx.scene.control.MenuBar?>
-<?import javafx.scene.control.MenuItem?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" stylesheets="@../css/custom.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.template.TemplateController">
    <top>
@@ -16,7 +12,7 @@
           <Menu fx:id="installUpdateServer" mnemonicParsing="false" />
           <Menu mnemonicParsing="false" text="Configuration">
             <items>
-                  <MenuItem disable="true" mnemonicParsing="false" text="Maps" />
+                  <MenuItem fx:id="mapsMenu" mnemonicParsing="false" onAction="#mapsMenuOnAction" text="Maps" />
               <MenuItem fx:id="profilesMenu" mnemonicParsing="false" onAction="#profilesMenuOnAction" text="Profiles" />
                   <MenuItem fx:id="gameTypesMenu" mnemonicParsing="false" onAction="#gameTypesMenuOnAction" text="Game types" />
                   <MenuItem fx:id="difficultiesMenu" mnemonicParsing="false" onAction="#difficultiesMenuOnAction" text="Difficulties" />

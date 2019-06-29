@@ -1,5 +1,6 @@
 package stories.maincontent;
 
+import dtos.MapDto;
 import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.collections.ObservableList;
@@ -11,7 +12,7 @@ public interface MainContentFacade {
     ObservableList<ProfileDto> listAllProfiles() throws SQLException;
     ObservableList<SelectDto> listAllLanguages() throws SQLException;
     ObservableList<SelectDto> listAllGameTypes() throws SQLException;
-    ObservableList<SelectDto> listAllMaps() throws SQLException;
+    ObservableList<MapDto> listAllMaps() throws SQLException;
     ObservableList<SelectDto> listAllDifficulties() throws SQLException;
     ObservableList<SelectDto> listAllLengths() throws SQLException;
     ObservableList<SelectDto> listAllPlayers() throws SQLException;

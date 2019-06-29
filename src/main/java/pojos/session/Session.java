@@ -1,5 +1,6 @@
 package pojos.session;
 
+import dtos.MapDto;
 import dtos.ProfileDto;
 
 public class Session {
@@ -8,6 +9,7 @@ public class Session {
 
     private ProfileDto actualProfile;
     private String console;
+    private MapDto map;
 
     /**
      * Singleton constructor
@@ -15,6 +17,7 @@ public class Session {
     private Session() {
         super();
         console = "";
+        map = null;
     }
 
     public static Session getInstance() {
@@ -38,5 +41,13 @@ public class Session {
 
     public void setConsole(String console) {
         this.console = console;
+    }
+
+    public MapDto getMap() {
+        return map;
+    }
+
+    public void setMap(MapDto map) {
+        this.map = map;
     }
 }
