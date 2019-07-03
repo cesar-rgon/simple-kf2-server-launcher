@@ -1,12 +1,13 @@
 package stories.mapsedition;
 
+import constants.Constants;
 import daos.MapDao;
 import daos.PropertyDao;
 import dtos.MapDto;
-import dtos.SelectDto;
 import dtos.factories.MapDtoFactory;
 import entities.Map;
 import entities.Property;
+import org.apache.commons.lang3.StringUtils;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -35,5 +36,16 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
         } else {
             return "";
         }
+    }
+
+    @Override
+    public MapDto createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto) throws SQLException {
+        if ((StringUtils.isBlank(mapName) || idWorkShop == null)) {
+            return null;
+        }
+        String urlInfo = Constants.MAP_BASE_URL_WORKSHOP + idWorkShop;
+        Map customMap = new Map(mapName, null, false, urlInfo, idWorkShop, urlPhoto);
+        MapDao.getInstance().insert(customMap);
+        return mapDtoFactory.newDto(customMap);
     }
 }

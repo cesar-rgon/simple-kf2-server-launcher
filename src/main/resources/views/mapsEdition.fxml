@@ -14,8 +14,8 @@
 
 <fx:root id="centerPane" fx:id="mapsEditionGridPane" prefHeight="730.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapsedition.MapsEditionController">
    <children>
-      <TextField />
-      <Button mnemonicParsing="false" text="Add new map" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+      <TextField fx:id="searchMaps" onKeyReleased="#searchMapsKeyReleased" />
+      <Button fx:id="addNewMap" mnemonicParsing="false" onAction="#addNewMapOnAction" text="Add new map" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
       <Label text="View" GridPane.columnIndex="3" />
       <Button alignment="CENTER" mnemonicParsing="false" text="Remove selected map" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
       <ComboBox fx:id="viewPaneCombo" onAction="#viewPaneComboOnAction" prefWidth="200.0" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
@@ -35,7 +35,7 @@
       </ScrollPane>
       <ScrollPane fx:id="customMapsScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" GridPane.columnSpan="5" GridPane.rowIndex="4">
          <content>
-            <FlowPane fx:id="customMapsFlowPane" style="-fx-background-color: black;;">
+            <FlowPane fx:id="customMapsFlowPane" hgap="50.0" style="-fx-background-color: black;;" vgap="50.0">
                <padding>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </padding></FlowPane>

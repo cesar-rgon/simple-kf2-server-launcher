@@ -6,14 +6,19 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.util.Callback;
+import org.apache.commons.io.FileUtils;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URL;
+import java.net.URLConnection;
 import java.security.Key;
 import java.util.Optional;
 
@@ -107,5 +112,17 @@ public class Utils {
         byte[] decrypted = new BASE64Decoder().decodeBuffer(encryptedPassword);
         byte[] decryptedValue = cipher.doFinal(decrypted);
         return new String(decryptedValue);
+    }
+
+    public static File downloadImageFromUrlToFile(String strUrlImage, String targetFolder, String fileName) throws IOException {
+        URL urlImage = new URL(strUrlImage);
+        URLConnection connection = urlImage.openConnection();
+        String mimeType = connection.getContentType();
+        String[] array = mimeType.split("/");
+        String fileExtension = array[1];
+        String localUrlMapImage = targetFolder + "\\" + fileName + "." + fileExtension;
+        File file = new File(localUrlMapImage);
+        FileUtils.copyURLToFile(urlImage,file);
+        return file;
     }
 }

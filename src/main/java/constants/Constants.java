@@ -40,4 +40,7 @@ public class Constants {
 
     // DESCRIPTIONS
     public final static String DESCRIPTION_DEFAULT_TEXT = "<No description>";
+
+    // MAPS
+    public final static String MAP_BASE_URL_WORKSHOP = "https://steamcommunity.com/sharedfiles/filedetails/?id=";
 }
