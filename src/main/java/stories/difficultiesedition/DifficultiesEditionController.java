@@ -110,7 +110,7 @@ public class DifficultiesEditionController implements Initializable {
                     Utils.errorDialog("The difficulty can not be deleted from database", "Delete operation is aborted!", null);
                 }
             } else {
-                Utils.errorDialog("No selected difficulty", "Delete operation is aborted!", null);
+                Utils.warningDialog("No selected difficulty", "Delete operation is aborted!");
             }
         } catch (SQLException e) {
             Utils.errorDialog("The difficulty can not be deleted!", "See stacktrace for more details", e);

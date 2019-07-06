@@ -15,7 +15,7 @@ public class Map extends CommonEntity {
     private String code;
 
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="ID_DESCRIPTION", referencedColumnName="ID", unique=true, nullable=true)
+    @JoinColumn(name="ID_DESCRIPTION", referencedColumnName="ID", unique=false, nullable=true)
     private Description description;
 
     @Column(name="OFFICIAL", nullable=false)

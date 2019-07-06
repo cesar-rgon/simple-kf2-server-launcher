@@ -42,7 +42,7 @@ public class ProfilesEditionController implements Initializable {
 
     @FXML
     private void addProfileOnAction() {
-        Optional<String> profileNameOpt = Utils.OneTextInputDialog();
+        Optional<String> profileNameOpt = Utils.OneTextInputDialog("Add a new profile", "Enter profile name:");
         try {
             if (profileNameOpt.isPresent() && StringUtils.isNotBlank(profileNameOpt.get())){
                 profilesTable.getItems().add(facade.createNewProfile(profileNameOpt.get()));
@@ -66,7 +66,7 @@ public class ProfilesEditionController implements Initializable {
                     Utils.errorDialog("The profile can not be deleted from database", "Delete operation is aborted!", null);
                 }
             } else {
-                Utils.errorDialog("No selected profile", "Delete operation is aborted!", null);
+                Utils.warningDialog("No selected profile", "Delete operation is aborted!");
             }
         } catch (Exception e) {
             Utils.errorDialog("The profile can not be deleted!", "See stacktrace for more details", e);

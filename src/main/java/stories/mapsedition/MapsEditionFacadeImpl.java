@@ -2,6 +2,7 @@ package stories.mapsedition;
 
 import constants.Constants;
 import daos.MapDao;
+import daos.ProfileDao;
 import daos.PropertyDao;
 import dtos.MapDto;
 import dtos.factories.MapDtoFactory;
@@ -47,5 +48,17 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
         Map customMap = new Map(mapName, null, false, urlInfo, idWorkShop, urlPhoto);
         MapDao.getInstance().insert(customMap);
         return mapDtoFactory.newDto(customMap);
+    }
+
+    @Override
+    public boolean deleteSelectedMap(String mapName) throws SQLException {
+        if (StringUtils.isBlank(mapName)) {
+            return false;
+        }
+        Optional<Map> mapOpt = MapDao.getInstance().findByCode(mapName);
+        if (mapOpt.isPresent()) {
+            return MapDao.getInstance().remove(mapOpt.get());
+        }
+        return false;
     }
 }

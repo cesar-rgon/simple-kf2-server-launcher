@@ -3,12 +3,14 @@ package stories.mapsedition;
 import constants.Constants;
 import dtos.MapDto;
 import enums.MapViewOptions;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
 import javafx.scene.Cursor;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -16,6 +18,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Check;
 import pojos.session.Session;
 import start.MainApplication;
 import utils.Utils;
@@ -25,7 +28,9 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class MapsEditionController implements Initializable {
@@ -43,7 +48,6 @@ public class MapsEditionController implements Initializable {
     @FXML private Label officialMapsLabel;
     @FXML private Label customMapsLabel;
     @FXML private TextField searchMaps;
-    @FXML private Button addNewMap;
 
     public MapsEditionController() {
         super();
@@ -58,7 +62,7 @@ public class MapsEditionController implements Initializable {
             installationFolder = facade.findPropertyValue(Constants.KEY_INSTALLATION_FOLDER);
             mapList = facade.listAllMaps();
             for (MapDto map: mapList) {
-                GridPane gridpane = createMapGridPane(map, installationFolder + map.getUrlPhoto());
+                GridPane gridpane = createMapGridPane(map);
                 if (map.getOfficial()) {
                     officialMapsFlowPane.getChildren().add(gridpane);
                 } else {
@@ -71,12 +75,11 @@ public class MapsEditionController implements Initializable {
     }
 
 
-    private GridPane createMapGridPane(MapDto map, String urlPhoto) {
-        Label mapNameLabel = new Label(map.getValue());
+    private GridPane createMapGridPane(MapDto map) {
+        Label mapNameLabel = new Label(map.getValue() != null ? map.getValue(): map.getKey());
         Image image = null;
-        String uriPhoto = urlPhoto.replace(installationFolder, "");
-        if (StringUtils.isNotBlank(uriPhoto) && !"null".equalsIgnoreCase(uriPhoto)) {
-            image = new Image("file:" + urlPhoto);
+        if (StringUtils.isNotBlank(map.getUrlPhoto())) {
+            image = new Image("file:" + installationFolder + "/" + map.getUrlPhoto());
         } else {
             image = new Image("file:src/main/resources/images/photo-borders.png");
         }
@@ -98,7 +101,14 @@ public class MapsEditionController implements Initializable {
         }
         GridPane gridpane = new GridPane();
         gridpane.add(mapPreview, 1, 1);
-        gridpane.add(mapNameLabel, 1, 2);
+        if (map.getOfficial()) {
+            gridpane.add(mapNameLabel, 1, 2);
+        } else {
+            GridPane.setColumnSpan(mapPreview, 2);
+            gridpane.add(new CheckBox(), 1, 2);
+            gridpane.add(mapNameLabel, 2, 2);
+        }
+
         GridPane.setHalignment(mapNameLabel, HPos.CENTER);
         return gridpane;
     }
@@ -177,9 +187,9 @@ public class MapsEditionController implements Initializable {
         officialMapsFlowPane.getChildren().clear();
         customMapsFlowPane.getChildren().clear();
         for (MapDto map: mapList) {
-            if (StringUtils.upperCase(map.getValue()).contains(StringUtils.upperCase(searchMaps.getText()))) {
-                String urlMapImage = "file:" + installationFolder + "/KFGame/Web/images/maps/" + map.getKey() + ".jpg";
-                GridPane gridpane = createMapGridPane(map, urlMapImage);
+            String mapLabel = StringUtils.upperCase(map.getValue() != null ? map.getValue(): map.getKey());
+            if (mapLabel.contains(StringUtils.upperCase(searchMaps.getText()))) {
+                GridPane gridpane = createMapGridPane(map);
                 if (map.getOfficial()) {
                     officialMapsFlowPane.getChildren().add(gridpane);
                 } else {
@@ -191,11 +201,22 @@ public class MapsEditionController implements Initializable {
 
     @FXML
     private void addNewMapOnAction() {
-        String result = "1770092066";
+        if (MapViewOptions.VIEW_OFFICIAL.equals(viewPaneCombo.getValue())) {
+            viewPaneCombo.setValue(MapViewOptions.VIEW_BOTH);
+        }
+        Optional<String> result = Utils.OneTextInputDialog("Add a new custom map", "Enter url / id WorkShop");
         try {
-            if (StringUtils.isNotBlank(result)) {
-                Long idWorkShop = Long.parseLong(result);
-                URL urlWorkShop = new URL(Constants.MAP_BASE_URL_WORKSHOP + idWorkShop);
+            if (result.isPresent() && StringUtils.isNotBlank(result.get())) {
+                Long idWorkShop = null;
+                URL urlWorkShop = null;
+                if (result.get().contains("http")) {
+                    urlWorkShop = new URL(result.get());
+                    String[] array = result.get().split("=");
+                    idWorkShop = Long.parseLong(array[1]);
+                } else {
+                    idWorkShop = Long.parseLong(result.get());
+                    urlWorkShop = new URL(Constants.MAP_BASE_URL_WORKSHOP + idWorkShop);
+                }
                 BufferedReader reader = new BufferedReader(new InputStreamReader(urlWorkShop.openStream()));
                 String strUrlMapImage = null;
                 String mapName = null;
@@ -215,11 +236,14 @@ public class MapsEditionController implements Initializable {
                     }
                 }
                 reader.close();
-                String targetFolder = installationFolder + "/KFGame/Web/images/maps/custom";
-                File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, targetFolder, mapName);
-                MapDto customMap = facade.createNewCustomMap(mapName, idWorkShop, localfile.getAbsolutePath());
+                String absoluteTargetFolder = installationFolder + Constants.MAP_CUSTOM_LOCAL_FOLDER;
+                File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
+                String relativeTargetFolder = Constants.MAP_CUSTOM_LOCAL_FOLDER + "/" + localfile.getName();
+                MapDto customMap = facade.createNewCustomMap(mapName,
+                                                            idWorkShop,
+                                                            relativeTargetFolder);
                 if (customMap != null) {
-                    GridPane gridpane = createMapGridPane(customMap, localfile.getAbsolutePath());
+                    GridPane gridpane = createMapGridPane(customMap);
                     customMapsFlowPane.getChildren().add(gridpane);
                 } else {
                     Utils.errorDialog("Error adding new custom map", "The map could not be found", null);
@@ -227,6 +251,46 @@ public class MapsEditionController implements Initializable {
             }
         } catch (Exception e) {
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+        }
+    }
+
+    @FXML
+    private void removeMapsOnAction() {
+        List<Node> removeList = new ArrayList<Node>();
+        StringBuffer message = new StringBuffer();
+        ObservableList<Node> nodes = customMapsFlowPane.getChildren();
+        for (Node node: nodes) {
+            GridPane gridpane = (GridPane) node;
+            CheckBox checkbox = (CheckBox)gridpane.getChildren().get(1);
+            Label mapNameLabel = (Label)gridpane.getChildren().get(2);
+            if (checkbox.isSelected()) {
+                removeList.add(gridpane);
+                message.append(mapNameLabel.getText()).append("\n");
+            }
+        }
+        if (removeList.isEmpty()) {
+            Utils.warningDialog("No maps selected", "You must select at least one map to be deleted");
+        } else {
+            Optional<ButtonType> result = Utils.questionDialog("Are you sure that you want to delete next maps?", message.toString());
+            if (result.isPresent() && result.get().equals(ButtonType.OK)) {
+                StringBuffer errors = new StringBuffer();
+                for (Node node: removeList) {
+                    try {
+                        GridPane gridpane = (GridPane) node;
+                        Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                        if (facade.deleteSelectedMap(mapNameLabel.getText())) {
+                            customMapsFlowPane.getChildren().remove(gridpane);
+                        } else {
+                            errors.append(mapNameLabel.getText()).append("\n");
+                        }
+                    } catch (SQLException e) {
+                        Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+                    }
+                }
+                if (StringUtils.isNotBlank(errors.toString())) {
+                    Utils.errorDialog("Next maps could not be deleted", errors.toString(), null);
+                }
+            }
         }
     }
 }

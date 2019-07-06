@@ -50,11 +50,11 @@ public class Utils {
     }
 
 
-    public static Optional<String> OneTextInputDialog() {
+    public static Optional<String> OneTextInputDialog(String header, String content) {
         TextInputDialog dialog = new TextInputDialog();
         dialog.setTitle(Constants.APPLICATION_TITLE);
-        dialog.setHeaderText("Add a new item");
-        dialog.setContentText("Please enter item name:");
+        dialog.setHeaderText(header);
+        dialog.setContentText(content);
         return dialog.showAndWait();
     }
 
@@ -91,6 +91,22 @@ public class Utils {
         return dialog.showAndWait();
     }
 
+    public static Optional<ButtonType> questionDialog(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(Constants.APPLICATION_TITLE);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        return alert.showAndWait();
+    }
+
+    public static void warningDialog(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle(Constants.APPLICATION_TITLE);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
     public static String encryptAES(String password) throws Exception {
         if (password == null) {
             return null;
@@ -120,7 +136,7 @@ public class Utils {
         String mimeType = connection.getContentType();
         String[] array = mimeType.split("/");
         String fileExtension = array[1];
-        String localUrlMapImage = targetFolder + "\\" + fileName + "." + fileExtension;
+        String localUrlMapImage = targetFolder + "/" + fileName + "." + fileExtension;
         File file = new File(localUrlMapImage);
         FileUtils.copyURLToFile(urlImage,file);
         return file;

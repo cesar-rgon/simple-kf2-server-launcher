@@ -111,7 +111,7 @@ public class GameTypesEditionController implements Initializable {
                     Utils.errorDialog("The game type can not be deleted from database", "Delete operation is aborted!", null);
                 }
             } else {
-                Utils.errorDialog("No selected game type", "Delete operation is aborted!", null);
+                Utils.warningDialog("No selected game type", "Delete operation is aborted!");
             }
         } catch (SQLException e) {
             Utils.errorDialog("The game type can not be deleted!", "See stacktrace for more details", e);

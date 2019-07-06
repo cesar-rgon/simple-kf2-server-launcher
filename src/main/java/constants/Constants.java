@@ -43,4 +43,6 @@ public class Constants {
 
     // MAPS
     public final static String MAP_BASE_URL_WORKSHOP = "https://steamcommunity.com/sharedfiles/filedetails/?id=";
+    public final static String MAP_OFFICIAL_LOCAL_FOLDER = "/KFGame/Web/images/maps";
+    public final static String MAP_CUSTOM_LOCAL_FOLDER = "/KFGame/Web/images/maps/custom";
 }

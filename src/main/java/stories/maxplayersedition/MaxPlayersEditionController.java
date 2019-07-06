@@ -112,7 +112,7 @@ public class MaxPlayersEditionController implements Initializable {
                     Utils.errorDialog("The max. players can not be deleted from database", "Delete operation is aborted!", null);
                 }
             } else {
-                Utils.errorDialog("No selected max. players", "Delete operation is aborted!", null);
+                Utils.warningDialog("No selected max. players", "Delete operation is aborted!");
             }
         } catch (SQLException e) {
             Utils.errorDialog("The max. players can not be deleted!", "See stacktrace for more details", e);

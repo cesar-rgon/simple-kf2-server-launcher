@@ -111,7 +111,7 @@ public class LengthEditionController implements Initializable {
                     Utils.errorDialog("The length can not be deleted from database", "Delete operation is aborted!", null);
                 }
             } else {
-                Utils.errorDialog("No selected length", "Delete operation is aborted!", null);
+                Utils.warningDialog("No selected length", "Delete operation is aborted!");
             }
         } catch (SQLException e) {
             Utils.errorDialog("The length can not be deleted!", "See stacktrace for more details", e);
