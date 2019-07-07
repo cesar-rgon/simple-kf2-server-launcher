@@ -99,7 +99,7 @@ public class Kf2WindowsImpl extends Kf2Common {
             command.append("?ConfigSubDir=").append(profile.getName());
 
             replaceInFileKfWebIni(installationFolder, profile);
-            replaceInFilePcServerKfGameIni(installationFolder, profile);
+            replaceInFileKfGameIni("PCServer-KFGame.ini", installationFolder, profile);
 
             Runtime.getRuntime().exec("cmd /C start " + command.toString(),null, new File(installationFolder));
             return command.toString();
@@ -107,85 +107,6 @@ public class Kf2WindowsImpl extends Kf2Common {
             Utils.errorDialog("Error executing Killing Floor 2 server", "See stacktrace for more details", e);
             return null;
         }
-    }
-
-    private void replaceInFileKfWebIni(String installationFolder, ProfileDto profile) throws Exception {
-        String kfWebIniFile = installationFolder + "\\KFGame\\Config\\" + profile.getName() + "\\KFWeb.ini";
-        StringBuilder contentBuilder = new StringBuilder();
-        Path filePath = Paths.get(kfWebIniFile);
-        Stream<String> stream = Files.lines( filePath, StandardCharsets.UTF_8);
-        stream.forEach(line -> contentBuilder.append(replaceLineKfWebIni(line, profile)).append("\n"));
-        stream.close();
-        PrintWriter outputFile = new PrintWriter(kfWebIniFile);
-        outputFile.println(contentBuilder.toString());
-        outputFile.close();
-    }
-
-    private String replaceLineKfWebIni(String line, ProfileDto profile){
-        String modifiedLine = line;
-        if (profile.getWebPort() != null && line.contains("ListenPort=")) {
-            modifiedLine = "ListenPort=" + profile.getWebPort();
-        }
-        if (line.contains("bEnabled=")) {
-            if (profile.getWebPage() == null || !profile.getWebPage()) {
-                modifiedLine = "bEnabled=false";
-            } else {
-                modifiedLine = "bEnabled=true";
-            }
-        }
-        return modifiedLine;
-    }
-
-    private void replaceInFilePcServerKfGameIni(String installationFolder, ProfileDto profile) throws Exception {
-        String pcServerKFGameIni = installationFolder + "\\KFGame\\Config\\" + profile.getName() + "\\PCServer-KFGame.ini";
-        StringBuilder contentBuilder = new StringBuilder();
-        Path filePath = Paths.get(pcServerKFGameIni);
-        Stream<String> stream = Files.lines( filePath, StandardCharsets.UTF_8);
-        stream.forEach(line -> contentBuilder.append(replaceLinePcServerKFGameIni(line, profile)).append("\n"));
-        stream.close();
-        PrintWriter outputFile = new PrintWriter(pcServerKFGameIni);
-        outputFile.println(contentBuilder.toString());
-        outputFile.close();
-    }
-
-    private String replaceLinePcServerKFGameIni(String line, ProfileDto profile) {
-        String modifiedLine = line;
-
-        if (line.contains("GameDifficulty=")) {
-            modifiedLine = "GameDifficulty=" + profile.getDifficulty().getKey();
-        }
-        if (line.contains("GameLength=")) {
-            modifiedLine = "GameLength=" + profile.getLength().getKey();
-        }
-        if (line.contains("ServerName=")) {
-            modifiedLine = "ServerName=" + profile.getServerName();
-        }
-        try {
-            if (line.contains("GamePassword=")) {
-                modifiedLine = "GamePassword=" + Utils.decryptAES(profile.getServerPassword());
-            }
-            if (line.contains("AdminPassword=")) {
-                modifiedLine = "AdminPassword=" + Utils.decryptAES(profile.getWebPassword());
-            }
-        } catch (Exception e) {
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
-        }
-        if (line.contains("BannerLink=")) {
-            modifiedLine = "BannerLink=" + profile.getUrlImageServer();
-        }
-        if (line.contains("ClanMotto=")) {
-            modifiedLine = "ClanMotto=" + profile.getYourClan();
-        }
-        if (line.contains("WebsiteLink=")) {
-            modifiedLine = "WebsiteLink=" + profile.getYourWebLink();
-        }
-        if (line.contains("ServerMOTD=")) {
-            modifiedLine = "ServerMOTD=" + profile.getWelcomeMessage();
-            modifiedLine = modifiedLine.replaceAll("\n","\\\\n");
-        }
-        // PENDIENTE setear GameMapCycle
-
-        return modifiedLine;
     }
 
     @Override
@@ -202,27 +123,6 @@ public class Kf2WindowsImpl extends Kf2Common {
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
         return null;
-    }
-
-    @Override
-    protected void joinToKf2Server(File steamExeFile, ProfileDto profile) {
-        try {
-            String serverPassword = Utils.decryptAES(profile.getServerPassword());
-            String passwordParam = "";
-            if (StringUtils.isNotEmpty(serverPassword)) {
-                passwordParam = "?password=" + serverPassword;
-            }
-            String gamePortParam = "";
-            if (profile.getGamePort() != null) {
-                gamePortParam = ":" + profile.getGamePort();
-            }
-            StringBuffer command = new StringBuffer(steamExeFile.getAbsolutePath());
-            command.append(" -applaunch 232090 127.0.0.1").append(gamePortParam).append(passwordParam).append(" -nostartupmovies");
-            Runtime.getRuntime().exec(command.toString(),null, steamExeFile.getParentFile());
-        } catch (Exception e) {
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
-        }
-
     }
 }
 

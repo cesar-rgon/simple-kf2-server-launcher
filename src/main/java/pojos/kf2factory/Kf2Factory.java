@@ -10,6 +10,10 @@ public class Kf2Factory {
         if (StringUtils.isNotEmpty(os)) {
             if (os.contains("Windows")) {
                 return new Kf2WindowsImpl();
+            } else {
+                if (os.contains("Linux")) {
+                    return new Kf2LinuxImpl();
+                }
             }
         } else {
             Utils.errorDialog("Error when detecting the operating system", "The proccess is aborted!", null);

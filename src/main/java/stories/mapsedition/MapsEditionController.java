@@ -278,8 +278,11 @@ public class MapsEditionController implements Initializable {
                     try {
                         GridPane gridpane = (GridPane) node;
                         Label mapNameLabel = (Label) gridpane.getChildren().get(2);
-                        if (facade.deleteSelectedMap(mapNameLabel.getText())) {
+                        MapDto customMap = facade.deleteSelectedMap(mapNameLabel.getText());
+                        if (customMap != null) {
                             customMapsFlowPane.getChildren().remove(gridpane);
+                            File photo = new File(installationFolder + customMap.getUrlPhoto());
+                            photo.delete();
                         } else {
                             errors.append(mapNameLabel.getText()).append("\n");
                         }

@@ -51,14 +51,14 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
     }
 
     @Override
-    public boolean deleteSelectedMap(String mapName) throws SQLException {
+    public MapDto deleteSelectedMap(String mapName) throws SQLException {
         if (StringUtils.isBlank(mapName)) {
-            return false;
+            return null;
         }
         Optional<Map> mapOpt = MapDao.getInstance().findByCode(mapName);
-        if (mapOpt.isPresent()) {
-            return MapDao.getInstance().remove(mapOpt.get());
+        if (mapOpt.isPresent() && MapDao.getInstance().remove(mapOpt.get())) {
+            return mapDtoFactory.newDto(mapOpt.get());
         }
-        return false;
+        return null;
     }
 }
