@@ -1,11 +1,14 @@
 package pojos.kf2factory;
 
-import dtos.ProfileDto;
+import entities.Map;
+import entities.Profile;
 import org.apache.commons.lang3.StringUtils;
+import pojos.session.Session;
 import utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 public class Kf2LinuxImpl extends Kf2Common {
 
@@ -48,14 +51,14 @@ public class Kf2LinuxImpl extends Kf2Common {
     }
 
     @Override
-    protected String runKf2Server(String installationFolder, ProfileDto profile) {
+    protected String runKf2Server(String installationFolder, Profile profile) {
         try {
             StringBuffer command = new StringBuffer();
             command.append(installationFolder).append("/Binaries/Win64/KFGameSteamServer.bin.x86_64 ");
-            command.append(profile.getMap().getKey());
-            command.append("?Game=").append(profile.getGametype().getKey());
-            command.append("?Difficulty=").append(profile.getDifficulty().getKey());
-            command.append("?MaxPlayers=").append(profile.getMaxPlayers().getKey());
+            command.append(profile.getMap().getCode());
+            command.append("?Game=").append(profile.getGametype().getCode());
+            command.append("?Difficulty=").append(profile.getDifficulty().getCode());
+            command.append("?MaxPlayers=").append(profile.getMaxPlayers().getCode());
             if (profile.getGamePort() != null) {
                 command.append("?Port=").append(profile.getGamePort());
             }
@@ -70,7 +73,8 @@ public class Kf2LinuxImpl extends Kf2Common {
             replaceInFileKfWebIni(installationFolder, profile);
             replaceInFileKfGameIni("LinuxServer-KFGame.ini", installationFolder, profile);
 
-            Runtime.getRuntime().exec(new String[]{"x-terminal-emulator","-e",command.toString()},null, new File(installationFolder));
+            Process proccess = Runtime.getRuntime().exec(new String[]{"x-terminal-emulator","-e",command.toString()},null, new File(installationFolder));
+            Session.getInstance().getProcessList().add(proccess);
 
             return command.toString();
         } catch (Exception e) {
@@ -88,4 +92,23 @@ public class Kf2LinuxImpl extends Kf2Common {
         return null;
     }
 
+    @Override
+    public void addCustomMapToKfEngineIni(Long idWorkShop, String installationFolder, String profileName) {
+        addCustomMapToKfEngineIni(idWorkShop, installationFolder, profileName, "LinuxServer-KFEngine.ini");
+    }
+
+    @Override
+    public void removeCustomMapsFromKfEngineIni(List<Long> idWorkShopList, String installationFolder, String profileName) {
+        removeCustomMapsFromKfEngineIni(idWorkShopList, installationFolder, profileName, "LinuxServer-KFEngine.ini");
+    }
+
+    @Override
+    public void addCustomMapToKfGameIni(String mapName, String installationFolder, String profileName, List<Map> mapList) {
+        addCustomMapToKfGameIni(mapName, installationFolder, profileName, mapList, "LinuxServer-KFGame.ini");
+    }
+
+    @Override
+    public void removeCustomMapsFromKfGameIni(List<String> mapNameList, String installationFolder, String profileName, List<Map> mapList) {
+        removeCustomMapsFromKfGameIni(mapNameList, installationFolder, profileName, mapList, "LinuxServer-KFGame.ini");
+    }
 }

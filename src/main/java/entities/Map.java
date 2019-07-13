@@ -30,11 +30,14 @@ public class Map extends CommonEntity {
     @Column(name="URL_PHOTO")
     private String urlPhoto;
 
+    @Column(name="DOWNLOADED", nullable=false)
+    private Boolean downloaded;
+
     public Map() {
         super();
     }
 
-    public Map(String code, Description description, Boolean official, String urlInfo, Long idWorkShop, String urlPhoto) {
+    public Map(String code, Description description, Boolean official, String urlInfo, Long idWorkShop, String urlPhoto, Boolean downloaded) {
         super();
         this.code = code;
         this.description = description;
@@ -42,6 +45,7 @@ public class Map extends CommonEntity {
         this.urlInfo = urlInfo;
         this.idWorkShop = idWorkShop;
         this.urlPhoto = urlPhoto;
+        this.downloaded = downloaded;
     }
 
     @Override
@@ -100,5 +104,13 @@ public class Map extends CommonEntity {
 
     public void setUrlPhoto(String urlPhoto) {
         this.urlPhoto = urlPhoto;
+    }
+
+    public Boolean getDownloaded() {
+        return downloaded;
+    }
+
+    public void setDownloaded(Boolean downloaded) {
+        this.downloaded = downloaded;
     }
 }

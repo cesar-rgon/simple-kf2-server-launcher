@@ -17,7 +17,8 @@ public class MapDtoFactory {
                           map.getOfficial(),
                           map.getUrlInfo(),
                           map.getIdWorkShop(),
-                          map.getUrlPhoto());
+                          map.getUrlPhoto(),
+                          map.getDownloaded());
     }
 
     public ObservableList<MapDto> newDtos(List<Map> maps) {

@@ -7,6 +7,8 @@ import dtos.SelectDto;
 import dtos.factories.*;
 import entities.*;
 import javafx.collections.ObservableList;
+import pojos.kf2factory.Kf2Common;
+import pojos.kf2factory.Kf2Factory;
 import utils.Utils;
 
 import java.sql.SQLException;
@@ -53,8 +55,8 @@ public class MainContentFacadeImpl implements MainContentFacade {
     }
 
     @Override
-    public ObservableList<MapDto> listAllMaps() throws SQLException {
-        List<Map> maps = MapDao.getInstance().listAll();
+    public ObservableList<MapDto> listDownloadedMaps() throws SQLException {
+        List<Map> maps = MapDao.getInstance().listDownloadedMaps();
         return mapDtoFactory.newDtos(maps);
     }
 
@@ -299,6 +301,26 @@ public class MainContentFacadeImpl implements MainContentFacade {
             return profileDtoFactory.newDto(profileOpt.get());
         } else {
             return null;
+        }
+    }
+
+    @Override
+    public String runServer(String profileName) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Kf2Common kf2Common = Kf2Factory.getInstance();
+            return kf2Common.runServer(profileOpt.get());
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public void joinServer(String profileName) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Kf2Common kf2Common = Kf2Factory.getInstance();
+            kf2Common.joinServer(profileOpt.get());
         }
     }
  }

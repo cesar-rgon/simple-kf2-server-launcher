@@ -10,14 +10,16 @@ public class MapDto {
     private final String urlInfo;
     private final Long idWorkShop;
     private final String urlPhoto;
+    private final Boolean downloaded;
 
-    public MapDto(String key, String value, Boolean official, String urlInfo, Long idWorkShop, String urlPhoto) {
+    public MapDto(String key, String value, Boolean official, String urlInfo, Long idWorkShop, String urlPhoto, Boolean downloaded) {
         this.key = key;
         this.value = value;
         this.official = official;
         this.urlInfo = urlInfo;
         this.idWorkShop = idWorkShop;
         this.urlPhoto = urlPhoto;
+        this.downloaded = downloaded;
     }
 
     public String getKey() {
@@ -40,6 +42,14 @@ public class MapDto {
         return idWorkShop;
     }
 
+    public String getUrlPhoto() {
+        return urlPhoto;
+    }
+
+    public Boolean getDownloaded() {
+        return downloaded;
+    }
+
     @Override
     public String toString() {
         if (StringUtils.isNotBlank(value)) {
@@ -47,9 +57,5 @@ public class MapDto {
         } else {
             return key;
         }
-    }
-
-    public String getUrlPhoto() {
-        return urlPhoto;
     }
 }

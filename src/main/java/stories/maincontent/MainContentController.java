@@ -62,7 +62,7 @@ public class MainContentController implements Initializable {
             Session.getInstance().setActualProfile(profileSelect.getValue());
             languageSelect.setItems(facade.listAllLanguages());
             gameTypeSelect.setItems(facade.listAllGameTypes());
-            mapSelect.setItems(facade.listAllMaps());
+            mapSelect.setItems(facade.listDownloadedMaps());
             difficultySelect.setItems(facade.listAllDifficulties());
             lengthSelect.setItems(facade.listAllLengths());
             maxPlayersSelect.setItems(facade.listAllPlayers());
@@ -455,13 +455,11 @@ public class MainContentController implements Initializable {
     @FXML
     private void runServerOnAction() {
         try {
-            Kf2Common kf2Common = Kf2Factory.getInstance();
-            ProfileDto databaseProfile = null;
             if (profileSelect.getValue() != null) {
-                databaseProfile = facade.findProfileByName(profileSelect.getValue().getName());
-                profileSelect.setValue(databaseProfile);
+                ProfileDto databaseProfileDto = facade.findProfileByName(profileSelect.getValue().getName());
+                profileSelect.setValue(databaseProfileDto);
             }
-            console.setText(kf2Common.runServer(databaseProfile));
+            console.setText(facade.runServer(profileSelect.getValue() != null ? profileSelect.getValue().getName(): null));
             Session.getInstance().setConsole(console.getText());
         } catch (SQLException e) {
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
@@ -471,12 +469,11 @@ public class MainContentController implements Initializable {
     @FXML
     private void joinServerOnAction() {
         try {
-            Kf2Common kf2Common = Kf2Factory.getInstance();
             if (profileSelect.getValue() != null) {
-                ProfileDto databaseProfile = facade.findProfileByName(profileSelect.getValue().getName());
-                profileSelect.setValue(databaseProfile);
+                ProfileDto databaseProfileDto = facade.findProfileByName(profileSelect.getValue().getName());
+                profileSelect.setValue(databaseProfileDto);
             }
-            kf2Common.joinServer(profileSelect.getValue());
+            facade.joinServer(profileSelect.getValue() != null ? profileSelect.getValue().getName(): null);
         } catch (SQLException e) {
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }

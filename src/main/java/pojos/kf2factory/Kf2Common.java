@@ -1,30 +1,31 @@
 package pojos.kf2factory;
 
 import constants.Constants;
-import dtos.ProfileDto;
+import entities.Map;
+import entities.Profile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import stories.installupdateserver.InstallUpdateServerFacade;
-import stories.installupdateserver.InstallUpdateServerFacadeImpl;
+import pojos.session.Session;
+import services.DatabaseService;
+import services.DatabaseServiceImpl;
 import utils.Utils;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.stream.Stream;
 
 public abstract class Kf2Common {
 
-    protected final InstallUpdateServerFacade installUpdateServerFacade;
+    protected final DatabaseService databaseService;
 
     protected Kf2Common() {
-        this.installUpdateServerFacade = new InstallUpdateServerFacadeImpl();
+        super();
+        databaseService = new DatabaseServiceImpl();
     }
 
     public void installOrUpdateServer(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) {
@@ -38,13 +39,13 @@ public abstract class Kf2Common {
     protected abstract boolean prepareSteamCmd(String installationFolder);
     protected abstract void installUpdateKf2Server(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch);
 
-    public String runServer(ProfileDto profileDto) {
+    public String runServer(Profile profile) {
         try {
-            String errorMessage = validateParameters(profileDto);
+            String errorMessage = validateParameters(profile);
             if (StringUtils.isEmpty(errorMessage)) {
-                String installationFolder = installUpdateServerFacade.findPropertyValue(Constants.KEY_INSTALLATION_FOLDER);
-                createConfigFolder(installationFolder, profileDto);
-                return runKf2Server(installationFolder, profileDto);
+                String installationFolder = databaseService.findPropertyValue(Constants.KEY_INSTALLATION_FOLDER);
+                createConfigFolder(installationFolder, profile);
+                return runKf2Server(installationFolder, profile);
             } else {
                 Utils.errorDialog("Error validating parameters. The server can not be launched!", errorMessage, null);
             }
@@ -54,40 +55,40 @@ public abstract class Kf2Common {
         return null;
     }
 
-    protected String validateParameters(ProfileDto profileDto) {
+    protected String validateParameters(Profile profile) {
         StringBuffer errorMessage = new StringBuffer();
 
-        if (profileDto == null || StringUtils.isEmpty(profileDto.getName())) {
+        if (profile == null || StringUtils.isEmpty(profile.getName())) {
             return errorMessage.append("The profile name can not be empty.").toString();
         }
-        if (profileDto.getLanguage() == null) {
+        if (profile.getLanguage() == null) {
             errorMessage.append("The language can not be empty.\n");
         }
-        if (profileDto.getGametype() == null) {
+        if (profile.getGametype() == null) {
             errorMessage.append("The game type can not be empty.\n");
         }
-        if (profileDto.getMap() == null) {
+        if (profile.getMap() == null) {
             errorMessage.append("The map can not be empty.\n");
         }
-        if (profileDto.getDifficulty() == null) {
+        if (profile.getDifficulty() == null) {
             errorMessage.append("The difficulty can not be empty.\n");
         }
-        if (profileDto.getLength() == null) {
+        if (profile.getLength() == null) {
             errorMessage.append("The length can not be empty.\n");
         }
-        if (profileDto.getMaxPlayers() == null) {
+        if (profile.getMaxPlayers() == null) {
             errorMessage.append("The max.players can not be empty.\n");
         }
-        if (StringUtils.isEmpty(profileDto.getServerName())) {
+        if (StringUtils.isEmpty(profile.getServerName())) {
             errorMessage.append("The server name can not be empty.\n");
         }
         return errorMessage.toString();
     }
 
-    protected void createConfigFolder(String installationFolder, ProfileDto profileDto) {
+    protected void createConfigFolder(String installationFolder, Profile profile) {
         try {
             File configFolder = new File(installationFolder + "/KFGame/Config");
-            File profileFolder = new File(configFolder.getAbsolutePath() + "/" + profileDto.getName());
+            File profileFolder = new File(configFolder.getAbsolutePath() + "/" + profile.getName());
             if (!profileFolder.isDirectory() || !profileFolder.exists()) {
                 if (profileFolder.mkdir()) {
                     File[] sourceFiles = configFolder.listFiles(new FilenameFilter() {
@@ -110,9 +111,9 @@ public abstract class Kf2Common {
         }
     }
 
-    protected abstract String runKf2Server(String installationFolder, ProfileDto profile);
+    protected abstract String runKf2Server(String installationFolder, Profile profile);
 
-    protected void replaceInFileKfWebIni(String installationFolder, ProfileDto profile) throws Exception {
+    protected void replaceInFileKfWebIni(String installationFolder, Profile profile) throws Exception {
         String kfWebIniFile = installationFolder + "/KFGame/Config/" + profile.getName() + "/KFWeb.ini";
         StringBuilder contentBuilder = new StringBuilder();
         Path filePath = Paths.get(kfWebIniFile);
@@ -124,7 +125,7 @@ public abstract class Kf2Common {
         outputFile.close();
     }
 
-    protected String replaceLineKfWebIni(String line, ProfileDto profile){
+    protected String replaceLineKfWebIni(String line, Profile profile){
         String modifiedLine = line;
         if (profile.getWebPort() != null && line.contains("ListenPort=")) {
             modifiedLine = "ListenPort=" + profile.getWebPort();
@@ -139,7 +140,7 @@ public abstract class Kf2Common {
         return modifiedLine;
     }
 
-    protected void replaceInFileKfGameIni(String filename, String installationFolder, ProfileDto profile) throws Exception {
+    protected void replaceInFileKfGameIni(String filename, String installationFolder, Profile profile) throws Exception {
         String pcServerKFGameIni = installationFolder + "/KFGame/Config/" + profile.getName() + "/" + filename;
         StringBuilder contentBuilder = new StringBuilder();
         Path filePath = Paths.get(pcServerKFGameIni);
@@ -151,14 +152,14 @@ public abstract class Kf2Common {
         outputFile.close();
     }
 
-    protected String replaceLinePcServerKFGameIni(String line, ProfileDto profile) {
+    protected String replaceLinePcServerKFGameIni(String line, Profile profile) {
         String modifiedLine = line;
 
         if (line.contains("GameDifficulty=")) {
-            modifiedLine = "GameDifficulty=" + profile.getDifficulty().getKey();
+            modifiedLine = "GameDifficulty=" + profile.getDifficulty().getCode();
         }
         if (line.contains("GameLength=")) {
-            modifiedLine = "GameLength=" + profile.getLength().getKey();
+            modifiedLine = "GameLength=" + profile.getLength().getCode();
         }
         if (line.contains("ServerName=")) {
             modifiedLine = "ServerName=" + profile.getServerName();
@@ -191,7 +192,7 @@ public abstract class Kf2Common {
         return modifiedLine;
     }
 
-    public void joinServer(ProfileDto profile) {
+    public void joinServer(Profile profile) {
         File steamExeFile = getSteamExeFile();
         if (steamExeFile != null) {
             joinToKf2Server(steamExeFile, profile);
@@ -202,7 +203,7 @@ public abstract class Kf2Common {
 
     protected abstract File getSteamExeFile();
 
-    protected void joinToKf2Server(File steamExeFile, ProfileDto profile) {
+    protected void joinToKf2Server(File steamExeFile, Profile profile) {
         try {
             String serverPassword = Utils.decryptAES(profile.getServerPassword());
             String passwordParam = "";
@@ -221,4 +222,150 @@ public abstract class Kf2Common {
         }
 
     }
+
+    protected void addCustomMapToKfEngineIni(Long idWorkShop, String installationFolder, String profileName, String filename) {
+        File kfEngineIni = new File(installationFolder + "/KFGame/Config/" + profileName + "/" + filename);
+        try (BufferedReader br = new BufferedReader(new FileReader(kfEngineIni))) {
+            String strTempFile = installationFolder + "/KFGame/Config/" + profileName + "/" + filename + ".tmp";
+            File tempFile = new File(strTempFile);
+            PrintWriter pw = new PrintWriter(new FileWriter(strTempFile));
+            String line;
+            boolean customMapAdded = false;
+            while ((line = br.readLine()) != null) {
+                pw.println(line);
+                if (StringUtils.isNotBlank(line) && line.contains("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]")) {
+                    pw.println("ServerSubscribedWorkshopItems=" + idWorkShop);
+                    customMapAdded = true;
+                }
+            }
+            if (!customMapAdded) {
+                pw.println("\n[OnlineSubsystemSteamworks.KFWorkshopSteamworks]");
+                pw.println("ServerSubscribedWorkshopItems=" + idWorkShop);
+            }
+            br.close();
+            pw.close();
+            kfEngineIni.delete();
+            tempFile.renameTo(kfEngineIni);
+        } catch (Exception e) {
+            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+        }
+    }
+
+    public abstract void addCustomMapToKfEngineIni(Long idWorkShop, String installationFolder, String profileName);
+
+    protected void removeCustomMapsFromKfEngineIni(List<Long> idWorkShopList, String installationFolder, String profileName, String filename) {
+        File kfEngineIni = new File(installationFolder + "/KFGame/Config/" + profileName + "/" + filename);
+        try (BufferedReader br = new BufferedReader(new FileReader(kfEngineIni))) {
+            String strTempFile = installationFolder + "/KFGame/Config/" + profileName + "/" + filename + ".tmp";
+            File tempFile = new File(strTempFile);
+            PrintWriter pw = new PrintWriter(new FileWriter(strTempFile));
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.contains("ServerSubscribedWorkshopItems=")) {
+                    String[] array = line.split("=");
+                    Long idWorkshop = Long.parseLong(array[1]);
+                    if (idWorkShopList.contains(idWorkshop)) {
+                        idWorkShopList.remove(idWorkshop);
+                    } else {
+                        pw.println(line);
+                    }
+                } else {
+                    pw.println(line);
+                }
+            }
+            br.close();
+            pw.close();
+            kfEngineIni.delete();
+            tempFile.renameTo(kfEngineIni);
+        } catch (Exception e) {
+            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+        }
+    }
+
+    public abstract void removeCustomMapsFromKfEngineIni(List<Long> idWorkShopList, String installationFolder, String profileName);
+
+    private String generateMapCycleLine(List<Map> mapList) {
+        StringBuffer sb = new StringBuffer("GameMapCycles=(Maps=(");
+        if (!mapList.isEmpty()) {
+            for (Map map: mapList) {
+                sb.append("\"").append(map.getCode()).append("\"");
+                if (mapList.indexOf(map) < (mapList.size() - 1)) {
+                    sb.append(",");
+                }
+            }
+        }
+        sb.append("))");
+        return sb.toString();
+    }
+
+    protected void addCustomMapToKfGameIni(String mapName, String installationFolder, String profileName, List<Map> mapList, String filename) {
+        // TODO: Este método tiene que ser modificado para permitir añadir múltiples mapas al fichero
+        File kfGameIni = new File(installationFolder + "/KFGame/Config/" + profileName + "/" + filename);
+        try (BufferedReader br = new BufferedReader(new FileReader(kfGameIni))) {
+            String strTempFile = installationFolder + "/KFGame/Config/" + profileName + "/" + filename + ".tmp";
+            File tempFile = new File(strTempFile);
+            PrintWriter pw = new PrintWriter(new FileWriter(strTempFile));
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (StringUtils.isNotBlank(line) && line.contains("GameMapCycles=(Maps=(")) {
+                    pw.println(generateMapCycleLine(mapList));
+                    continue;
+                }
+                pw.println(line);
+            }
+            pw.println("[" + mapName + " KFMapSummary]");
+            pw.println("MapName=" + mapName);
+            pw.println("");
+            br.close();
+            pw.close();
+            kfGameIni.delete();
+            tempFile.renameTo(kfGameIni);
+        } catch (Exception e) {
+            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+        }
+    }
+
+    public abstract void addCustomMapToKfGameIni(String mapName, String installationFolder, String profileName, List<Map> mapList);
+
+    protected void removeCustomMapsFromKfGameIni(List<String> mapNameList, String installationFolder, String profileName, List<Map> mapList, String filename) {
+        File kfGameIni = new File(installationFolder + "/KFGame/Config/" + profileName + "/" + filename);
+        try (BufferedReader br = new BufferedReader(new FileReader(kfGameIni))) {
+            String strTempFile = installationFolder + "/KFGame/Config/" + profileName + "/" + filename + ".tmp";
+            File tempFile = new File(strTempFile);
+            PrintWriter pw = new PrintWriter(new FileWriter(strTempFile));
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (StringUtils.isNotBlank(line)) {
+                    if (line.contains("GameMapCycles=(Maps=(")) {
+                        pw.println(generateMapCycleLine(mapList));
+                        continue;
+                    }
+                    if (line.contains(" KFMapSummary]")) {
+                        String[] array = line.split(" ");
+                        String mapName = array[0].replace("[","");
+                        if (mapNameList.contains(mapName)) {
+                            continue;
+                        }
+                    }
+                    if (line.contains("MapName=")) {
+                        String[] array = line.split("=");
+                        String mapName = array[1];
+                        if (mapNameList.contains(mapName)) {
+                            continue;
+                        }
+                    }
+                }
+                pw.println(line);
+            }
+            br.close();
+            pw.close();
+            kfGameIni.delete();
+            tempFile.renameTo(kfGameIni);
+        } catch (Exception e) {
+            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+        }
+    }
+
+    public abstract void removeCustomMapsFromKfGameIni(List<String> mapNameList, String installationFolder, String profileName, List<Map> mapList);
+
 }

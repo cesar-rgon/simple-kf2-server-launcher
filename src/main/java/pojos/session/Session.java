@@ -3,6 +3,9 @@ package pojos.session;
 import dtos.MapDto;
 import dtos.ProfileDto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Session {
 
     private static Session instance = null;
@@ -10,6 +13,7 @@ public class Session {
     private ProfileDto actualProfile;
     private String console;
     private MapDto map;
+    private List<Process> processList;
 
     /**
      * Singleton constructor
@@ -18,6 +22,7 @@ public class Session {
         super();
         console = "";
         map = null;
+        processList = new ArrayList<Process>();
     }
 
     public static Session getInstance() {
@@ -49,5 +54,13 @@ public class Session {
 
     public void setMap(MapDto map) {
         this.map = map;
+    }
+
+    public List<Process> getProcessList() {
+        return processList;
+    }
+
+    public void setProcessList(List<Process> processList) {
+        this.processList = processList;
     }
 }

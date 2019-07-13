@@ -4,21 +4,18 @@ import com.github.sarxos.winreg.HKey;
 import com.github.sarxos.winreg.RegistryException;
 import com.github.sarxos.winreg.WindowsRegistry;
 import constants.Constants;
-import dtos.ProfileDto;
+import entities.Map;
+import entities.Profile;
 import net.lingala.zip4j.core.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import pojos.session.Session;
 import utils.Utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.stream.Stream;
+import java.util.List;
 
 public class Kf2WindowsImpl extends Kf2Common {
 
@@ -34,10 +31,10 @@ public class Kf2WindowsImpl extends Kf2Common {
                 File steamcmdZipFile = new File(installationFolder + "\\steamcmd.zip");
                 // Download SteamCmd
                 FileUtils.copyURLToFile(
-                        new URL(installUpdateServerFacade.findPropertyValue(Constants.KEY_URL_STEAMCMD)),
+                        new URL(databaseService.findPropertyValue(Constants.KEY_URL_STEAMCMD)),
                         steamcmdZipFile,
-                        Integer.parseInt(installUpdateServerFacade.findPropertyValue(Constants.KEY_DOWNLOAD_CONNECTION_TIMEOUT)),
-                        Integer.parseInt(installUpdateServerFacade.findPropertyValue(Constants.KEY_DOWNLOAD_READ_TIMEOUT)));
+                        Integer.parseInt(databaseService.findPropertyValue(Constants.KEY_DOWNLOAD_CONNECTION_TIMEOUT)),
+                        Integer.parseInt(databaseService.findPropertyValue(Constants.KEY_DOWNLOAD_READ_TIMEOUT)));
 
                 // Decompress SteamCmd
                 ZipFile zipFile = new ZipFile(installationFolder + "\\steamcmd.zip");
@@ -79,14 +76,14 @@ public class Kf2WindowsImpl extends Kf2Common {
     }
 
     @Override
-    protected String runKf2Server(String installationFolder, ProfileDto profile) {
+    protected String runKf2Server(String installationFolder, Profile profile) {
         try {
             StringBuffer command = new StringBuffer();
             command.append(installationFolder).append("\\Binaries\\Win64\\KFServer.exe ");
-            command.append(profile.getMap().getKey());
-            command.append("?Game=").append(profile.getGametype().getKey());
-            command.append("?Difficulty=").append(profile.getDifficulty().getKey());
-            command.append("?MaxPlayers=").append(profile.getMaxPlayers().getKey());
+            command.append(profile.getMap().getCode());
+            command.append("?Game=").append(profile.getGametype().getCode());
+            command.append("?Difficulty=").append(profile.getDifficulty().getCode());
+            command.append("?MaxPlayers=").append(profile.getMaxPlayers().getCode());
             if (profile.getGamePort() != null) {
                 command.append("?Port=").append(profile.getGamePort());
             }
@@ -101,7 +98,8 @@ public class Kf2WindowsImpl extends Kf2Common {
             replaceInFileKfWebIni(installationFolder, profile);
             replaceInFileKfGameIni("PCServer-KFGame.ini", installationFolder, profile);
 
-            Runtime.getRuntime().exec("cmd /C start " + command.toString(),null, new File(installationFolder));
+            Process proccess = Runtime.getRuntime().exec("cmd /C " + command.toString(),null, new File(installationFolder));
+            Session.getInstance().getProcessList().add(proccess);
             return command.toString();
         } catch (Exception e) {
             Utils.errorDialog("Error executing Killing Floor 2 server", "See stacktrace for more details", e);
@@ -123,6 +121,26 @@ public class Kf2WindowsImpl extends Kf2Common {
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
         return null;
+    }
+
+    @Override
+    public void addCustomMapToKfEngineIni(Long idWorkShop, String installationFolder, String profileName) {
+        addCustomMapToKfEngineIni(idWorkShop, installationFolder, profileName, "PCServer-KFEngine.ini");
+    }
+
+    @Override
+    public void removeCustomMapsFromKfEngineIni(List<Long> idWorkShopList, String installationFolder, String profileName) {
+        removeCustomMapsFromKfEngineIni(idWorkShopList, installationFolder, profileName, "PCServer-KFEngine.ini");
+    }
+
+    @Override
+    public void addCustomMapToKfGameIni(String mapName, String installationFolder, String profileName, List<Map> mapList) {
+        addCustomMapToKfGameIni(mapName, installationFolder, profileName, mapList, "PCServer-KFGame.ini");
+    }
+
+    @Override
+    public void removeCustomMapsFromKfGameIni(List<String> mapNameList, String installationFolder, String profileName, List<Map> mapList) {
+        removeCustomMapsFromKfGameIni(mapNameList, installationFolder, profileName, mapList, "PCServer-KFGame.ini");
     }
 }
 

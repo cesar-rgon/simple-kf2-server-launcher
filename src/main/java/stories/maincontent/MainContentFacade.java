@@ -12,7 +12,7 @@ public interface MainContentFacade {
     ObservableList<ProfileDto> listAllProfiles() throws SQLException;
     ObservableList<SelectDto> listAllLanguages() throws SQLException;
     ObservableList<SelectDto> listAllGameTypes() throws SQLException;
-    ObservableList<MapDto> listAllMaps() throws SQLException;
+    ObservableList<MapDto> listDownloadedMaps() throws SQLException;
     ObservableList<SelectDto> listAllDifficulties() throws SQLException;
     ObservableList<SelectDto> listAllLengths() throws SQLException;
     ObservableList<SelectDto> listAllPlayers() throws SQLException;
@@ -35,4 +35,6 @@ public interface MainContentFacade {
     boolean updateProfileSetCustomParameters(String profileName, String customParameters) throws SQLException;
     boolean updateProfileSetWebPage(String profileName, boolean isSelected) throws SQLException;
     ProfileDto findProfileByName(String name) throws SQLException;
+    String runServer(String profileName) throws SQLException;
+    void joinServer(String profileName) throws SQLException;
 }

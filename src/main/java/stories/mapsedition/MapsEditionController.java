@@ -2,6 +2,7 @@ package stories.mapsedition;
 
 import constants.Constants;
 import dtos.MapDto;
+import entities.Map;
 import enums.MapViewOptions;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -18,26 +19,26 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.annotations.Check;
+import pojos.kf2factory.Kf2Common;
+import pojos.kf2factory.Kf2Factory;
 import pojos.session.Session;
 import start.MainApplication;
 import utils.Utils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class MapsEditionController implements Initializable {
 
     private final MapsEditionFacade facade;
     private String installationFolder;
-    private List<MapDto> mapList;
+    private List<Map> mapList;
 
     @FXML private Slider mapsSlider;
     @FXML private ComboBox<MapViewOptions> viewPaneCombo;
@@ -61,7 +62,8 @@ public class MapsEditionController implements Initializable {
             viewPaneCombo.setValue(MapViewOptions.VIEW_BOTH);
             installationFolder = facade.findPropertyValue(Constants.KEY_INSTALLATION_FOLDER);
             mapList = facade.listAllMaps();
-            for (MapDto map: mapList) {
+            List<MapDto> mapListDto = facade.getDtos(mapList);
+            for (MapDto map: mapListDto) {
                 GridPane gridpane = createMapGridPane(map);
                 if (map.getOfficial()) {
                     officialMapsFlowPane.getChildren().add(gridpane);
@@ -107,8 +109,14 @@ public class MapsEditionController implements Initializable {
             GridPane.setColumnSpan(mapPreview, 2);
             gridpane.add(new CheckBox(), 1, 2);
             gridpane.add(mapNameLabel, 2, 2);
+            if (!map.getDownloaded()) {
+                Label warningMessage = new Label("Start server to download it");
+                warningMessage.setStyle("-fx-text-fill: yellow;");
+                GridPane.setColumnSpan(warningMessage, 2);
+                gridpane.add(warningMessage,1,3);
+                GridPane.setHalignment(warningMessage, HPos.CENTER);
+            }
         }
-
         GridPane.setHalignment(mapNameLabel, HPos.CENTER);
         return gridpane;
     }
@@ -186,7 +194,8 @@ public class MapsEditionController implements Initializable {
     private void searchMapsKeyReleased() {
         officialMapsFlowPane.getChildren().clear();
         customMapsFlowPane.getChildren().clear();
-        for (MapDto map: mapList) {
+        List<MapDto> mapListDto = facade.getDtos(mapList);
+        for (MapDto map: mapListDto) {
             String mapLabel = StringUtils.upperCase(map.getValue() != null ? map.getValue(): map.getKey());
             if (mapLabel.contains(StringUtils.upperCase(searchMaps.getText()))) {
                 GridPane gridpane = createMapGridPane(map);
@@ -239,11 +248,14 @@ public class MapsEditionController implements Initializable {
                 String absoluteTargetFolder = installationFolder + Constants.MAP_CUSTOM_LOCAL_FOLDER;
                 File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
                 String relativeTargetFolder = Constants.MAP_CUSTOM_LOCAL_FOLDER + "/" + localfile.getName();
-                MapDto customMap = facade.createNewCustomMap(mapName,
-                                                            idWorkShop,
-                                                            relativeTargetFolder);
+                Map customMap = facade.createNewCustomMap(mapName,
+                                                          idWorkShop,
+                                                          relativeTargetFolder);
                 if (customMap != null) {
-                    GridPane gridpane = createMapGridPane(customMap);
+                    mapList.add(customMap);
+                    Kf2Common kf2Common = Kf2Factory.getInstance();
+                    kf2Common.addCustomMapToKfEngineIni(customMap.getIdWorkShop(), installationFolder, Session.getInstance().getActualProfile().getName());
+                    GridPane gridpane = createMapGridPane(facade.getDto(customMap));
                     customMapsFlowPane.getChildren().add(gridpane);
                 } else {
                     Utils.errorDialog("Error adding new custom map", "The map could not be found", null);
@@ -273,6 +285,7 @@ public class MapsEditionController implements Initializable {
         } else {
             Optional<ButtonType> result = Utils.questionDialog("Are you sure that you want to delete next maps?", message.toString());
             if (result.isPresent() && result.get().equals(ButtonType.OK)) {
+                List<MapDto> mapsToRemove = new ArrayList<MapDto>();
                 StringBuffer errors = new StringBuffer();
                 for (Node node: removeList) {
                     try {
@@ -280,6 +293,7 @@ public class MapsEditionController implements Initializable {
                         Label mapNameLabel = (Label) gridpane.getChildren().get(2);
                         MapDto customMap = facade.deleteSelectedMap(mapNameLabel.getText());
                         if (customMap != null) {
+                            mapsToRemove.add(customMap);
                             customMapsFlowPane.getChildren().remove(gridpane);
                             File photo = new File(installationFolder + customMap.getUrlPhoto());
                             photo.delete();
@@ -289,6 +303,19 @@ public class MapsEditionController implements Initializable {
                     } catch (SQLException e) {
                         Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
                     }
+                }
+                if (!mapsToRemove.isEmpty()) {
+                    try {
+                        mapList.clear();
+                        mapList = facade.listAllMaps();
+                    } catch (SQLException e) {
+                        Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+                    }
+                    List<Long> idWorkShopListToRemove = mapsToRemove.stream().map(m -> m.getIdWorkShop()).collect(Collectors.toList());
+                    Kf2Common kf2Common = Kf2Factory.getInstance();
+                    kf2Common.removeCustomMapsFromKfEngineIni(idWorkShopListToRemove, installationFolder, Session.getInstance().getActualProfile().getName());
+                    List<String> mapNameListToRemove = mapsToRemove.stream().map(m -> m.getKey()).collect(Collectors.toList());
+                    kf2Common.removeCustomMapsFromKfGameIni(mapNameListToRemove, installationFolder, Session.getInstance().getActualProfile().getName(), mapList);
                 }
                 if (StringUtils.isNotBlank(errors.toString())) {
                     Utils.errorDialog("Next maps could not be deleted", errors.toString(), null);

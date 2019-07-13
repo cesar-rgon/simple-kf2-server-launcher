@@ -30,6 +30,16 @@ public class MapDao extends CommonDao<Map> {
         return list(query, null);
     }
 
+    public List<Map> listDownloadedMaps() throws SQLException {
+        String query="select m from entities.Map m where m.downloaded=true order by m.id asc";
+        return list(query, null);
+    }
+
+    public List<Map> listNotDownloadedMaps() throws SQLException {
+        String query="select m from entities.Map m where m.downloaded=false order by m.id asc";
+        return list(query, null);
+    }
+
     public Optional<Map> findByCode(String code) throws SQLException {
         String query="select m from entities.Map m where m.code = :CODE";
         java.util.Map<String,Object> parameters = new HashMap<String,Object>();
