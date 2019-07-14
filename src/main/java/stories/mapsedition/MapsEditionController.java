@@ -18,6 +18,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
@@ -254,7 +255,7 @@ public class MapsEditionController implements Initializable {
                 if (customMap != null) {
                     mapList.add(customMap);
                     Kf2Common kf2Common = Kf2Factory.getInstance();
-                    kf2Common.addCustomMapToKfEngineIni(customMap.getIdWorkShop(), installationFolder, Session.getInstance().getActualProfile().getName());
+                    kf2Common.addCustomMapToKfEngineIni(customMap.getIdWorkShop(), installationFolder);
                     GridPane gridpane = createMapGridPane(facade.getDto(customMap));
                     customMapsFlowPane.getChildren().add(gridpane);
                 } else {
@@ -297,10 +298,12 @@ public class MapsEditionController implements Initializable {
                             customMapsFlowPane.getChildren().remove(gridpane);
                             File photo = new File(installationFolder + customMap.getUrlPhoto());
                             photo.delete();
+                            File cacheFoler = new File(installationFolder + "/KFGame/Cache/" + customMap.getIdWorkShop());
+                            FileUtils.deleteDirectory(cacheFoler);
                         } else {
                             errors.append(mapNameLabel.getText()).append("\n");
                         }
-                    } catch (SQLException e) {
+                    } catch (Exception e) {
                         Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
                     }
                 }
@@ -313,9 +316,9 @@ public class MapsEditionController implements Initializable {
                     }
                     List<Long> idWorkShopListToRemove = mapsToRemove.stream().map(m -> m.getIdWorkShop()).collect(Collectors.toList());
                     Kf2Common kf2Common = Kf2Factory.getInstance();
-                    kf2Common.removeCustomMapsFromKfEngineIni(idWorkShopListToRemove, installationFolder, Session.getInstance().getActualProfile().getName());
+                    kf2Common.removeCustomMapsFromKfEngineIni(idWorkShopListToRemove, installationFolder);
                     List<String> mapNameListToRemove = mapsToRemove.stream().map(m -> m.getKey()).collect(Collectors.toList());
-                    kf2Common.removeCustomMapsFromKfGameIni(mapNameListToRemove, installationFolder, Session.getInstance().getActualProfile().getName(), mapList);
+                    kf2Common.removeCustomMapsFromKfGameIni(mapNameListToRemove, installationFolder, mapList);
                 }
                 if (StringUtils.isNotBlank(errors.toString())) {
                     Utils.errorDialog("Next maps could not be deleted", errors.toString(), null);

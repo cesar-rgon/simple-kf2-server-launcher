@@ -7,17 +7,29 @@ import pojos.session.Session;
 import utils.Utils;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Kf2LinuxImpl extends Kf2Common {
 
     @Override
     protected boolean prepareSteamCmd(String installationFolder) {
         try {
+            File xtermFile = new File("/usr/bin/xterm");
+            if (!xtermFile.exists()) {
+                Runtime.getRuntime().exec(new String[]{"x-terminal-emulator","-e","echo Installing package xterm && sudo apt -y install xterm"});
+                Utils.warningDialog("Install package xterm", "When installation is completed, press this button");
+            }
             File steamcmdFile = new File("/usr/games/steamcmd");
             if (!steamcmdFile.exists()) {
-                Runtime.getRuntime().exec(new String[]{"x-terminal-emulator","-e","sudo apt -y install steamcmd"});
+                Process process = Runtime.getRuntime().exec(new String[]{"xterm",
+                        "-T", "Installing SteamCmd",
+                        "-fa", "DejaVu Sans Mono",
+                        "-fs", "11",
+                        "-geometry", "120x25+0-0",
+                        "-xrm", "XTerm.vt100.allowTitleOps: false",
+                        "-e","sudo apt -y install steamcmd"});
+                process.waitFor();
             }
             return true;
         } catch (Exception e) {
@@ -29,8 +41,11 @@ public class Kf2LinuxImpl extends Kf2Common {
     @Override
     protected void installUpdateKf2Server(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) {
         try {
-            StringBuffer command = new StringBuffer("x-terminal-emulator -e ");
-            command.append("/usr/games/steamcmd +login anonymous +force_install_dir ");
+            File cacheFolder = new File(installationFolder + "/KFGame/Cache");
+            if (!cacheFolder.exists()) {
+                cacheFolder.mkdir();
+            }
+            StringBuffer command = new StringBuffer("/usr/games/steamcmd +login anonymous +force_install_dir ");
             command.append(installationFolder);
             command.append(" +app_update 232130 ");
             if (validateFiles) {
@@ -44,9 +59,36 @@ public class Kf2LinuxImpl extends Kf2Common {
             command.append(" +exit");
 
             // Execute steamcmd and install / update the kf2 server
-            Runtime.getRuntime().exec(command.toString());
-        } catch (IOException e) {
-            Utils.errorDialog("Error preparing SteamCmd to be able to install KF2 server", "See stacktrace for more details", e);
+            Process process = Runtime.getRuntime().exec(new String[]{"xterm",
+                    "-T", "Installing/Updating the server",
+                    "-fa", "DejaVu Sans Mono",
+                    "-fs", "11",
+                    "-geometry", "120x25+0-0",
+                    "-xrm", "XTerm.vt100.allowTitleOps: false",
+                    "-e", command.toString()});
+            process.waitFor();
+
+            // If it's the first time, run the server to create needed config files
+            File kfEngineIni = new File(installationFolder + "/KFGame/Config/LinuxServer-KFEngine.ini");
+            File kfGameIni = new File(installationFolder + "/KFGame/Config/LinuxServer-KFGame.ini");
+            if (!kfEngineIni.exists() || !kfGameIni.exists()) {
+                process = Runtime.getRuntime().exec(new String[]{"xterm",
+                                "-T", "Wait until config files are generated",
+                                "-fa", "DejaVu Sans Mono",
+                                "-fs", "11",
+                                "-geometry", "120x25+0-0",
+                                "-xrm", "XTerm.vt100.allowTitleOps: false",
+                                "-e", installationFolder + "/Binaries/Win64/KFGameSteamServer.bin.x86_64 KF-BioticsLab"},
+                        null, new File(installationFolder));
+                while (process.isAlive() && (!kfEngineIni.exists() || !kfGameIni.exists())) {
+                    process.waitFor(5, TimeUnit.SECONDS);
+                }
+                if (process.isAlive()) {
+                    process.destroy();
+                }
+            }
+        } catch (Exception e) {
+            Utils.errorDialog("Error installing KF2 server", "See stacktrace for more details", e);
         }
     }
 
@@ -73,7 +115,14 @@ public class Kf2LinuxImpl extends Kf2Common {
             replaceInFileKfWebIni(installationFolder, profile);
             replaceInFileKfGameIni("LinuxServer-KFGame.ini", installationFolder, profile);
 
-            Process proccess = Runtime.getRuntime().exec(new String[]{"x-terminal-emulator","-e",command.toString()},null, new File(installationFolder));
+            Process proccess = Runtime.getRuntime().exec(new String[]{"xterm",
+                    "-T", "Running the server",
+                    "-fa", "DejaVu Sans Mono",
+                    "-fs", "11",
+                    "-geometry", "120x25+0-0",
+                    "-xrm", "XTerm.vt100.allowTitleOps: false",
+                    "-e",command.toString()},
+                    null, new File(installationFolder));
             Session.getInstance().getProcessList().add(proccess);
 
             return command.toString();
@@ -93,22 +142,22 @@ public class Kf2LinuxImpl extends Kf2Common {
     }
 
     @Override
-    public void addCustomMapToKfEngineIni(Long idWorkShop, String installationFolder, String profileName) {
-        addCustomMapToKfEngineIni(idWorkShop, installationFolder, profileName, "LinuxServer-KFEngine.ini");
+    public void addCustomMapToKfEngineIni(Long idWorkShop, String installationFolder) {
+        addCustomMapToKfEngineIni(idWorkShop, installationFolder,"LinuxServer-KFEngine.ini");
     }
 
     @Override
-    public void removeCustomMapsFromKfEngineIni(List<Long> idWorkShopList, String installationFolder, String profileName) {
-        removeCustomMapsFromKfEngineIni(idWorkShopList, installationFolder, profileName, "LinuxServer-KFEngine.ini");
+    public void removeCustomMapsFromKfEngineIni(List<Long> idWorkShopList, String installationFolder) {
+        removeCustomMapsFromKfEngineIni(idWorkShopList, installationFolder,"LinuxServer-KFEngine.ini");
     }
 
     @Override
-    public void addCustomMapToKfGameIni(String mapName, String installationFolder, String profileName, List<Map> mapList) {
-        addCustomMapToKfGameIni(mapName, installationFolder, profileName, mapList, "LinuxServer-KFGame.ini");
+    public void addCustomMapsToKfGameIni(List<String> mapNameList, String installationFolder, List<Map> mapList) {
+        addCustomMapsToKfGameIni(mapNameList, installationFolder, mapList, "LinuxServer-KFGame.ini");
     }
 
     @Override
-    public void removeCustomMapsFromKfGameIni(List<String> mapNameList, String installationFolder, String profileName, List<Map> mapList) {
-        removeCustomMapsFromKfGameIni(mapNameList, installationFolder, profileName, mapList, "LinuxServer-KFGame.ini");
+    public void removeCustomMapsFromKfGameIni(List<String> mapNameList, String installationFolder, List<Map> mapList) {
+        removeCustomMapsFromKfGameIni(mapNameList, installationFolder, mapList, "LinuxServer-KFGame.ini");
     }
 }

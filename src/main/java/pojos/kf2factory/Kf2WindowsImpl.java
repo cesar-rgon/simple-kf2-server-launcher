@@ -13,9 +13,9 @@ import pojos.session.Session;
 import utils.Utils;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Kf2WindowsImpl extends Kf2Common {
 
@@ -53,7 +53,7 @@ public class Kf2WindowsImpl extends Kf2Common {
     @Override
     protected void installUpdateKf2Server(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) {
         try {
-            StringBuffer command = new StringBuffer("cmd /C start ");
+            StringBuffer command = new StringBuffer("cmd /C ");
             command.append(installationFolder);
             command.append("\\steamcmd\\steamcmd.exe +login anonymous +force_install_dir ");
             command.append(installationFolder);
@@ -69,9 +69,26 @@ public class Kf2WindowsImpl extends Kf2Common {
             command.append(" +exit");
 
             // Execute steamcmd and install / update the kf2 server
-            Runtime.getRuntime().exec(command.toString(),null, new File(installationFolder + "\\steamcmd\\"));
-        } catch (IOException e) {
-            Utils.errorDialog("Error preparing SteamCmd to be able to install KF2 server", "See stacktrace for more details", e);
+            Process process = Runtime.getRuntime().exec(command.toString(),null, new File(installationFolder + "\\steamcmd\\"));
+            process.waitFor();
+
+            // If it's the first time, run the server to create needed config files
+            File kfEngineIni = new File(installationFolder + "\\KFGame\\Config\\PCServer-KFEngine.ini");
+            File kfGameIni = new File(installationFolder + "\\KFGame\\Config\\PCServer-KFGame.ini");
+            if (!kfEngineIni.exists() || !kfGameIni.exists()) {
+                Process proccess = Runtime.getRuntime().exec("cmd /C " + installationFolder + "\\Binaries\\Win64\\KFServer.exe KF-BioticsLab",
+                        null,
+                        new File(installationFolder));
+                while (process.isAlive() && (!kfEngineIni.exists() || !kfGameIni.exists())) {
+                    process.waitFor(5, TimeUnit.SECONDS);
+                }
+                if (process.isAlive()) {
+                    process.destroy();
+                }
+            }
+
+        } catch (Exception e) {
+            Utils.errorDialog("Error installing KF2 server", "See stacktrace for more details", e);
         }
     }
 
@@ -124,23 +141,23 @@ public class Kf2WindowsImpl extends Kf2Common {
     }
 
     @Override
-    public void addCustomMapToKfEngineIni(Long idWorkShop, String installationFolder, String profileName) {
-        addCustomMapToKfEngineIni(idWorkShop, installationFolder, profileName, "PCServer-KFEngine.ini");
+    public void addCustomMapToKfEngineIni(Long idWorkShop, String installationFolder) {
+        addCustomMapToKfEngineIni(idWorkShop, installationFolder,"PCServer-KFEngine.ini");
     }
 
     @Override
-    public void removeCustomMapsFromKfEngineIni(List<Long> idWorkShopList, String installationFolder, String profileName) {
-        removeCustomMapsFromKfEngineIni(idWorkShopList, installationFolder, profileName, "PCServer-KFEngine.ini");
+    public void removeCustomMapsFromKfEngineIni(List<Long> idWorkShopList, String installationFolder) {
+        removeCustomMapsFromKfEngineIni(idWorkShopList, installationFolder,"PCServer-KFEngine.ini");
     }
 
     @Override
-    public void addCustomMapToKfGameIni(String mapName, String installationFolder, String profileName, List<Map> mapList) {
-        addCustomMapToKfGameIni(mapName, installationFolder, profileName, mapList, "PCServer-KFGame.ini");
+    public void addCustomMapsToKfGameIni(List<String> mapNameList, String installationFolder, List<Map> mapList) {
+        addCustomMapsToKfGameIni(mapNameList, installationFolder, mapList, "PCServer-KFGame.ini");
     }
 
     @Override
-    public void removeCustomMapsFromKfGameIni(List<String> mapNameList, String installationFolder, String profileName, List<Map> mapList) {
-        removeCustomMapsFromKfGameIni(mapNameList, installationFolder, profileName, mapList, "PCServer-KFGame.ini");
+    public void removeCustomMapsFromKfGameIni(List<String> mapNameList, String installationFolder, List<Map> mapList) {
+        removeCustomMapsFromKfGameIni(mapNameList, installationFolder, mapList, "PCServer-KFGame.ini");
     }
 }
 

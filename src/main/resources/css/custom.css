@@ -139,3 +139,7 @@
 .scroll-bar:vertical{
     -fx-background-color: #c15d11;
 }
+
+#searchMaps, #viewPaneCombo {
+    -fx-background-color: #c15d11;
+}

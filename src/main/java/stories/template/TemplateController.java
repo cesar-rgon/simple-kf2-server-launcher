@@ -20,12 +20,14 @@ public class TemplateController implements Initializable {
     @FXML private Menu mainPage;
     @FXML private Menu installUpdateServer;
     @FXML private Menu webAdmin;
+    @FXML private Menu mapsMenu;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         mainPage.setGraphic(getLabelWithHandler(Constants.MENU_MAIN_PAGE, "/views/mainContent.fxml"));
         installUpdateServer.setGraphic(getLabelWithHandler(Constants.MENU_INSTALL_UPDATE_SERVER, "/views/installUpdateServer.fxml"));
         webAdmin.setGraphic(getLabelWithHandler(Constants.MENU_WEB_ADMIN, "/views/webAdmin.fxml"));
+        mapsMenu.setGraphic(getLabelWithHandler(Constants.MENU_MAPS_EDITION, "/views/mapsEdition.fxml"));
     }
 
     private Label getLabelWithHandler(String title, String fxmlFilePath) {

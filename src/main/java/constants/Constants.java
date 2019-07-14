@@ -7,7 +7,7 @@ public class Constants {
 
     // MENU
     public static final String MENU_MAIN_PAGE = "Main Page";
-    public static final String MENU_INSTALL_UPDATE_SERVER = "Install/Update Server";
+    public static final String MENU_INSTALL_UPDATE_SERVER = "Install/Update";
     public static final String MENU_WEB_ADMIN = "WebAdmin";
     public static final String MENU_PROFILES_EDITION = "Profiles";
     public static final String MENU_GAMETYPES_EDITION = "Game types";
