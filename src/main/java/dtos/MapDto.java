@@ -5,16 +5,14 @@ import org.apache.commons.lang3.StringUtils;
 public class MapDto {
 
     private final String key;
-    private final String value;
     private final Boolean official;
     private final String urlInfo;
     private final Long idWorkShop;
     private final String urlPhoto;
     private final Boolean downloaded;
 
-    public MapDto(String key, String value, Boolean official, String urlInfo, Long idWorkShop, String urlPhoto, Boolean downloaded) {
+    public MapDto(String key, Boolean official, String urlInfo, Long idWorkShop, String urlPhoto, Boolean downloaded) {
         this.key = key;
-        this.value = value;
         this.official = official;
         this.urlInfo = urlInfo;
         this.idWorkShop = idWorkShop;
@@ -24,10 +22,6 @@ public class MapDto {
 
     public String getKey() {
         return key;
-    }
-
-    public String getValue() {
-        return value;
     }
 
     public Boolean getOfficial() {
@@ -52,10 +46,6 @@ public class MapDto {
 
     @Override
     public String toString() {
-        if (StringUtils.isNotBlank(value)) {
-            return value;
-        } else {
-            return key;
-        }
+        return key;
     }
 }

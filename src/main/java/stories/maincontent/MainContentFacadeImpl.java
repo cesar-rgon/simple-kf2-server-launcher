@@ -307,12 +307,8 @@ public class MainContentFacadeImpl implements MainContentFacade {
     @Override
     public String runServer(String profileName) throws SQLException {
         Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
-        if (profileOpt.isPresent()) {
-            Kf2Common kf2Common = Kf2Factory.getInstance();
-            return kf2Common.runServer(profileOpt.get());
-        } else {
-            return null;
-        }
+        Kf2Common kf2Common = Kf2Factory.getInstance();
+        return kf2Common.runServer(profileOpt.isPresent()? profileOpt.get(): null);
     }
 
     @Override

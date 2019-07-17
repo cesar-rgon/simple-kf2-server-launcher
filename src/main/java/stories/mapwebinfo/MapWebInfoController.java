@@ -24,7 +24,7 @@ public class MapWebInfoController implements Initializable {
     @FXML
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        mapNameLabel.setText(Session.getInstance().getMap().getValue());
+        mapNameLabel.setText(Session.getInstance().getMap().getKey());
         WebEngine webEngine = mapInfoWebView.getEngine();
         webEngine.load(Session.getInstance().getMap().getUrlInfo());
     }

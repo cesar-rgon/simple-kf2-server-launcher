@@ -30,7 +30,7 @@ public class TimeListener extends TimerTask {
 
     @Override
     public void run() {
-        if (!isRunningProcess()) {
+        if (!Session.getInstance().isRunningProcess()) {
             try {
                 List<Map> notDownloadedMapList = databaseService.listNotDownloadedMaps();
                 if (notDownloadedMapList != null && !notDownloadedMapList.isEmpty()) {
@@ -64,17 +64,5 @@ public class TimeListener extends TimerTask {
                 e.printStackTrace();
             }
         }
-    }
-
-    private boolean isRunningProcess() {
-        if (Session.getInstance().getProcessList().isEmpty()) {
-            return false;
-        }
-        for (Process process: Session.getInstance().getProcessList()) {
-            if (process.isAlive()) {
-                return true;
-            }
-        }
-        return false;
     }
 }

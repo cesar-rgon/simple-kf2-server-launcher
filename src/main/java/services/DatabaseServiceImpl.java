@@ -46,4 +46,14 @@ public class DatabaseServiceImpl implements DatabaseService {
     public List<Profile> listAllProfiles() throws SQLException {
         return ProfileDao.getInstance().listAll();
     }
+
+    @Override
+    public List<Map> listOfficialMaps() throws SQLException {
+        return MapDao.getInstance().listOfficialMaps();
+    }
+
+    @Override
+    public Map insertMap(Map map) throws SQLException {
+        return MapDao.getInstance().insert(map);
+    }
 }

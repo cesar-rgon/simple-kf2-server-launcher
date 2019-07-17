@@ -12,6 +12,8 @@ import javafx.scene.layout.GridPane;
 import start.MainApplication;
 import utils.Utils;
 
+import java.awt.*;
+import java.net.URI;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -21,6 +23,10 @@ public class TemplateController implements Initializable {
     @FXML private Menu installUpdateServer;
     @FXML private Menu webAdmin;
     @FXML private Menu mapsMenu;
+
+    public TemplateController() {
+        super();
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -53,6 +59,7 @@ public class TemplateController implements Initializable {
             mainPage.setDisable(Constants.MENU_MAIN_PAGE.equals(title));
             installUpdateServer.setDisable(Constants.MENU_INSTALL_UPDATE_SERVER.equals(title));
             webAdmin.setDisable(Constants.MENU_WEB_ADMIN.equals(title));
+            mapsMenu.setDisable(Constants.MENU_MAPS_EDITION.equals(title));
         } catch (Exception e) {
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
@@ -84,7 +91,25 @@ public class TemplateController implements Initializable {
     }
 
     @FXML
-    private void mapsMenuOnAction() {
-        loadNewContent(Constants.MENU_MAPS_EDITION, "/views/mapsEdition.fxml");
+    private void aboutMenuOnAction() {
+        Utils.infoDialog("Developed by cesar-rgon", "Version: " + Constants.APPLICATION_VERSION);
+    }
+
+    @FXML
+    private void documentationMenuOnAction() {
+        try {
+            Desktop.getDesktop().browse(new URI(Constants.HELP_README_URL));
+        } catch (Exception e) {
+            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+        }
+    }
+
+    @FXML
+    private void githubMenuOnAction() {
+        try {
+            Desktop.getDesktop().browse(new URI(Constants.HELP_GITHUB_PROJECT_URL));
+        } catch (Exception e) {
+            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+        }
     }
 }

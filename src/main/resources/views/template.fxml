@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" stylesheets="@../css/custom.css" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.template.TemplateController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" stylesheets="@../css/custom.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.template.TemplateController">
    <top>
       <MenuBar id="topMenuBar" fx:id="menuBar" BorderPane.alignment="CENTER">
         <menus>
@@ -22,7 +23,9 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Help">
             <items>
-              <MenuItem disable="true" mnemonicParsing="false" text="About" />
+              <MenuItem fx:id="aboutMenu" mnemonicParsing="false" onAction="#aboutMenuOnAction" text="About" />
+                  <MenuItem fx:id="documentationMenu" mnemonicParsing="false" onAction="#documentationMenuOnAction" text="Documentation" />
+                  <MenuItem fx:id="githubMenu" mnemonicParsing="false" onAction="#githubMenuOnAction" text="GitHub Project" />
             </items>
           </Menu>
         </menus>

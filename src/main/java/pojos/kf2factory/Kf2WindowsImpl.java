@@ -13,9 +13,15 @@ import pojos.session.Session;
 import utils.Utils;
 
 import java.io.File;
+import java.io.PrintWriter;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 public class Kf2WindowsImpl extends Kf2Common {
 
@@ -53,7 +59,7 @@ public class Kf2WindowsImpl extends Kf2Common {
     @Override
     protected void installUpdateKf2Server(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) {
         try {
-            StringBuffer command = new StringBuffer("cmd /C ");
+            StringBuffer command = new StringBuffer("cmd /C start ");
             command.append(installationFolder);
             command.append("\\steamcmd\\steamcmd.exe +login anonymous +force_install_dir ");
             command.append(installationFolder);
@@ -76,17 +82,16 @@ public class Kf2WindowsImpl extends Kf2Common {
             File kfEngineIni = new File(installationFolder + "\\KFGame\\Config\\PCServer-KFEngine.ini");
             File kfGameIni = new File(installationFolder + "\\KFGame\\Config\\PCServer-KFGame.ini");
             if (!kfEngineIni.exists() || !kfGameIni.exists()) {
-                Process proccess = Runtime.getRuntime().exec("cmd /C " + installationFolder + "\\Binaries\\Win64\\KFServer.exe KF-BioticsLab",
+                Process processTwo = Runtime.getRuntime().exec("cmd /C " + installationFolder + "\\Binaries\\Win64\\KFServer.exe KF-BioticsLab",
                         null,
                         new File(installationFolder));
-                while (process.isAlive() && (!kfEngineIni.exists() || !kfGameIni.exists())) {
-                    process.waitFor(5, TimeUnit.SECONDS);
+                while (processTwo.isAlive() && (!kfEngineIni.exists() || !kfGameIni.exists())) {
+                    processTwo.waitFor(5, TimeUnit.SECONDS);
                 }
-                if (process.isAlive()) {
-                    process.destroy();
+                if (processTwo.isAlive()) {
+                    processTwo.destroy();
                 }
             }
-
         } catch (Exception e) {
             Utils.errorDialog("Error installing KF2 server", "See stacktrace for more details", e);
         }
@@ -113,7 +118,7 @@ public class Kf2WindowsImpl extends Kf2Common {
             command.append("?ConfigSubDir=").append(profile.getName());
 
             replaceInFileKfWebIni(installationFolder, profile);
-            replaceInFileKfGameIni("PCServer-KFGame.ini", installationFolder, profile);
+            replaceInFileKfGameIni(installationFolder, profile);
 
             Process proccess = Runtime.getRuntime().exec("cmd /C " + command.toString(),null, new File(installationFolder));
             Session.getInstance().getProcessList().add(proccess);
@@ -122,6 +127,30 @@ public class Kf2WindowsImpl extends Kf2Common {
             Utils.errorDialog("Error executing Killing Floor 2 server", "See stacktrace for more details", e);
             return null;
         }
+    }
+
+    private void replaceInFileKfWebIni(String installationFolder, Profile profile) throws Exception {
+        String kfWebIniFile = installationFolder + "/KFGame/Config/" + profile.getName() + "/KFWeb.ini";
+        StringBuilder contentBuilder = new StringBuilder();
+        Path filePath = Paths.get(kfWebIniFile);
+        Stream<String> stream = Files.lines( filePath, StandardCharsets.ISO_8859_1);
+        stream.forEach(line -> contentBuilder.append(replaceLineKfWebIni(line, profile)).append("\n"));
+        stream.close();
+        PrintWriter outputFile = new PrintWriter(kfWebIniFile);
+        outputFile.println(contentBuilder.toString());
+        outputFile.close();
+    }
+
+    private void replaceInFileKfGameIni(String installationFolder, Profile profile) throws Exception {
+        String pcServerKFGameIni = installationFolder + "/KFGame/Config/" + profile.getName() + "/" + "PCServer-KFGame.ini";
+        StringBuilder contentBuilder = new StringBuilder();
+        Path filePath = Paths.get(pcServerKFGameIni);
+        Stream<String> stream = Files.lines( filePath, StandardCharsets.ISO_8859_1);
+        stream.forEach(line -> contentBuilder.append(replaceLinePcServerKFGameIni(line, profile)).append("\n"));
+        stream.close();
+        PrintWriter outputFile = new PrintWriter(pcServerKFGameIni);
+        outputFile.println(contentBuilder.toString());
+        outputFile.close();
     }
 
     @Override
@@ -158,6 +187,11 @@ public class Kf2WindowsImpl extends Kf2Common {
     @Override
     public void removeCustomMapsFromKfGameIni(List<String> mapNameList, String installationFolder, List<Map> mapList) {
         removeCustomMapsFromKfGameIni(mapNameList, installationFolder, mapList, "PCServer-KFGame.ini");
+    }
+
+    @Override
+    public void checkForNewOfficialMaps(String installationFolder) {
+        checkForNewOfficialMaps(installationFolder, "PCServer-KFGame.ini");
     }
 }
 

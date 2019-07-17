@@ -32,6 +32,18 @@ public class Session {
         return instance;
     }
 
+    public boolean isRunningProcess() {
+        if (processList.isEmpty()) {
+            return false;
+        }
+        for (Process process: processList) {
+            if (process.isAlive()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public ProfileDto getActualProfile() {
         return actualProfile;
     }

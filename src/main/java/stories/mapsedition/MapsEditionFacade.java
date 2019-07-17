@@ -13,4 +13,5 @@ public interface MapsEditionFacade {
     String findPropertyValue(String key) throws SQLException;
     Map createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto) throws SQLException;
     MapDto deleteSelectedMap(String mapName) throws SQLException;
+    boolean isCorrectInstallationFolder(String installationFolder);
 }

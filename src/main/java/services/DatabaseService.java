@@ -12,4 +12,6 @@ public interface DatabaseService {
     List<Map> listNotDownloadedMaps() throws SQLException;
     boolean updateMap(Map map) throws SQLException;
     List<Profile> listAllProfiles() throws SQLException;
+    List<Map> listOfficialMaps() throws SQLException;
+    Map insertMap(Map map) throws SQLException;
 }

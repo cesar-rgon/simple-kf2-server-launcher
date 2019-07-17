@@ -107,6 +107,14 @@ public class Utils {
         alert.showAndWait();
     }
 
+    public static void infoDialog(String header, String content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(Constants.APPLICATION_TITLE);
+        alert.setHeaderText(header);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+
     public static String encryptAES(String password) throws Exception {
         if (password == null) {
             return null;

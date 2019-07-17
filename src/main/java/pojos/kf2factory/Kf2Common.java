@@ -5,19 +5,13 @@ import entities.Map;
 import entities.Profile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import pojos.session.Session;
 import services.DatabaseService;
 import services.DatabaseServiceImpl;
 import utils.Utils;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Stream;
 
 public abstract class Kf2Common {
 
@@ -31,6 +25,7 @@ public abstract class Kf2Common {
     public void installOrUpdateServer(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) {
         if (prepareSteamCmd(installationFolder)) {
             installUpdateKf2Server(installationFolder, validateFiles, isBeta, betaBrunch);
+            checkForNewOfficialMaps(installationFolder);
         } else {
             Utils.errorDialog("Error preparing SteamCmd to be able to install KF2 server", "The installation process is aborted.", null);
         }
@@ -44,7 +39,8 @@ public abstract class Kf2Common {
             String errorMessage = validateParameters(profile);
             if (StringUtils.isEmpty(errorMessage)) {
                 String installationFolder = databaseService.findPropertyValue(Constants.KEY_INSTALLATION_FOLDER);
-                createConfigFolder(installationFolder, profile);
+                createConfigFolder(installationFolder, profile.getName());
+                checkForNewOfficialMaps(installationFolder);
                 return runKf2Server(installationFolder, profile);
             } else {
                 Utils.errorDialog("Error validating parameters. The server can not be launched!", errorMessage, null);
@@ -59,7 +55,7 @@ public abstract class Kf2Common {
         StringBuffer errorMessage = new StringBuffer();
 
         if (profile == null || StringUtils.isEmpty(profile.getName())) {
-            return errorMessage.append("The profile name can not be empty.").toString();
+            return "The profile name can not be empty.";
         }
         if (profile.getLanguage() == null) {
             errorMessage.append("The language can not be empty.\n");
@@ -85,12 +81,12 @@ public abstract class Kf2Common {
         return errorMessage.toString();
     }
 
-    protected void createConfigFolder(String installationFolder, Profile profile) {
+    public void createConfigFolder(String installationFolder, String profileName) {
         try {
             File configFolder = new File(installationFolder + "/KFGame/Config");
-            File profileFolder = new File(configFolder.getAbsolutePath() + "/" + profile.getName());
-            if (!profileFolder.isDirectory() || !profileFolder.exists()) {
-                if (profileFolder.mkdir()) {
+            File profileFolder = new File(configFolder.getAbsolutePath() + "/" + profileName);
+            if (!profileFolder.exists() || !profileFolder.isDirectory()) {
+                if (profileFolder.mkdirs()) {
                     File[] sourceFiles = configFolder.listFiles(new FilenameFilter() {
                         @Override
                         public boolean accept(File dir, String name) {
@@ -113,18 +109,6 @@ public abstract class Kf2Common {
 
     protected abstract String runKf2Server(String installationFolder, Profile profile);
 
-    protected void replaceInFileKfWebIni(String installationFolder, Profile profile) throws Exception {
-        String kfWebIniFile = installationFolder + "/KFGame/Config/" + profile.getName() + "/KFWeb.ini";
-        StringBuilder contentBuilder = new StringBuilder();
-        Path filePath = Paths.get(kfWebIniFile);
-        Stream<String> stream = Files.lines( filePath, StandardCharsets.UTF_8);
-        stream.forEach(line -> contentBuilder.append(replaceLineKfWebIni(line, profile)).append("\n"));
-        stream.close();
-        PrintWriter outputFile = new PrintWriter(kfWebIniFile);
-        outputFile.println(contentBuilder.toString());
-        outputFile.close();
-    }
-
     protected String replaceLineKfWebIni(String line, Profile profile){
         String modifiedLine = line;
         if (profile.getWebPort() != null && line.contains("ListenPort=")) {
@@ -138,18 +122,6 @@ public abstract class Kf2Common {
             }
         }
         return modifiedLine;
-    }
-
-    protected void replaceInFileKfGameIni(String filename, String installationFolder, Profile profile) throws Exception {
-        String pcServerKFGameIni = installationFolder + "/KFGame/Config/" + profile.getName() + "/" + filename;
-        StringBuilder contentBuilder = new StringBuilder();
-        Path filePath = Paths.get(pcServerKFGameIni);
-        Stream<String> stream = Files.lines( filePath, StandardCharsets.UTF_8);
-        stream.forEach(line -> contentBuilder.append(replaceLinePcServerKFGameIni(line, profile)).append("\n"));
-        stream.close();
-        PrintWriter outputFile = new PrintWriter(pcServerKFGameIni);
-        outputFile.println(contentBuilder.toString());
-        outputFile.close();
     }
 
     protected String replaceLinePcServerKFGameIni(String line, Profile profile) {
@@ -169,7 +141,12 @@ public abstract class Kf2Common {
                 modifiedLine = "GamePassword=" + Utils.decryptAES(profile.getServerPassword());
             }
             if (line.contains("AdminPassword=")) {
-                modifiedLine = "AdminPassword=" + Utils.decryptAES(profile.getWebPassword());
+                String decryptedPassword = Utils.decryptAES(profile.getWebPassword());
+                if (StringUtils.isNotEmpty(decryptedPassword)){
+                    modifiedLine = "AdminPassword=" + decryptedPassword;
+                } else {
+                    modifiedLine = "AdminPassword=admin";
+                }
             }
         } catch (Exception e) {
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
@@ -232,12 +209,29 @@ public abstract class Kf2Common {
                     File tempFile = new File(strTempFile);
                     PrintWriter pw = new PrintWriter(new FileWriter(strTempFile));
                     String line;
+                    boolean firstDownloadManager = true;
                     boolean customMapAdded = false;
                     while ((line = br.readLine()) != null) {
-                        pw.println(line);
-                        if (StringUtils.isNotBlank(line) && line.contains("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]")) {
-                            pw.println("ServerSubscribedWorkshopItems=" + idWorkShop);
-                            customMapAdded = true;
+                        if (firstDownloadManager) {
+                            if (StringUtils.isNotBlank(line) && line.contains("DownloadManagers=")) {
+                                firstDownloadManager = false;
+                                if (!line.contains("DownloadManagers=OnlineSubsystemSteamworks.SteamWorkshopDownload")) {
+                                    pw.println("DownloadManagers=OnlineSubsystemSteamworks.SteamWorkshopDownload");
+                                }
+                            }
+                            pw.println(line);
+                            if (StringUtils.isNotBlank(line) && line.contains("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]")) {
+                                pw.println("ServerSubscribedWorkshopItems=" + idWorkShop);
+                                customMapAdded = true;
+                            }
+                        } else {
+                            if (StringUtils.isBlank(line) || !line.contains("DownloadManagers=OnlineSubsystemSteamworks.SteamWorkshopDownload")) {
+                                pw.println(line);
+                                if (StringUtils.isNotBlank(line) && line.contains("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]")) {
+                                    pw.println("ServerSubscribedWorkshopItems=" + idWorkShop);
+                                    customMapAdded = true;
+                                }
+                            }
                         }
                     }
                     if (!customMapAdded) {
@@ -391,4 +385,43 @@ public abstract class Kf2Common {
 
     public abstract void removeCustomMapsFromKfGameIni(List<String> mapNameList, String installationFolder, List<Map> mapList);
 
+    protected void checkForNewOfficialMaps(String installationFolder, String filename) {
+        try {
+            List<Map> officialMapList = databaseService.listOfficialMaps();
+            File kfGameIni = new File(installationFolder + "/KFGame/Config/" + filename);
+            BufferedReader br = new BufferedReader(new FileReader(kfGameIni));
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (StringUtils.isNotBlank(line) && line.contains("GameMapCycles=(Maps=(")) {
+                    String[] array = line.replace("GameMapCycles=(Maps=(", "").replace("))", "").replaceAll("\"", "").split(",");
+                    if (array != null && array.length > 0) {
+                        for (String value: array) {
+                            if (value.startsWith("KF-")) {
+                                // It's an official map
+                                String mapInMapCycle = value;
+                                boolean found = false;
+                                for (Map databaseMap: officialMapList) {
+                                    if (databaseMap.getCode().equalsIgnoreCase(mapInMapCycle)) {
+                                        officialMapList.remove(databaseMap);
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (!found) {
+                                    // It's a new map, it must be stored in database
+                                    Map newOfficialMap = new Map(mapInMapCycle, true, null, null, "/KFGame/Web/images/maps/" + mapInMapCycle + ".jpg", true);
+                                    databaseService.insertMap(newOfficialMap);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            br.close();
+        } catch (Exception e) {
+            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+        }
+    }
+
+    public abstract void checkForNewOfficialMaps(String installationFolder);
 }

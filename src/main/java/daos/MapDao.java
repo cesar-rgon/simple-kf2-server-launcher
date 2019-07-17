@@ -46,4 +46,9 @@ public class MapDao extends CommonDao<Map> {
         parameters.put("CODE", code);
         return find(query, parameters);
     }
+
+    public List<Map> listOfficialMaps() throws SQLException {
+        String query="select m from entities.Map m where m.official=true order by m.id asc";
+        return list(query, null);
+    }
 }

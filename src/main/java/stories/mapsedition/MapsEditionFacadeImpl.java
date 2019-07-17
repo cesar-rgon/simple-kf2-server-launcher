@@ -9,6 +9,7 @@ import entities.Map;
 import entities.Property;
 import org.apache.commons.lang3.StringUtils;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -53,7 +54,7 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
             return null;
         }
         String urlInfo = Constants.MAP_BASE_URL_WORKSHOP + idWorkShop;
-        Map customMap = new Map(mapName, null, false, urlInfo, idWorkShop, urlPhoto, false);
+        Map customMap = new Map(mapName, false, urlInfo, idWorkShop, urlPhoto, false);
         return MapDao.getInstance().insert(customMap);
     }
 
@@ -67,5 +68,17 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
             return mapDtoFactory.newDto(mapOpt.get());
         }
         return null;
+    }
+
+    @Override
+    public boolean isCorrectInstallationFolder(String installationFolder) {
+        if (StringUtils.isNotBlank(installationFolder)) {
+            File windowsExecutable = new File(installationFolder + "/Binaries/Win64/KFServer.exe");
+            File linuxExecutable = new File(installationFolder + "/Binaries/Win64/KFGameSteamServer.bin.x86_64");
+            if (windowsExecutable.exists() && linuxExecutable.exists()) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -14,10 +14,6 @@ public class Map extends CommonEntity {
     @Column(name="CODE", length=100, unique=true, nullable=false)
     private String code;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="ID_DESCRIPTION", referencedColumnName="ID", unique=false, nullable=true)
-    private Description description;
-
     @Column(name="OFFICIAL", nullable=false)
     private Boolean official;
 
@@ -37,10 +33,9 @@ public class Map extends CommonEntity {
         super();
     }
 
-    public Map(String code, Description description, Boolean official, String urlInfo, Long idWorkShop, String urlPhoto, Boolean downloaded) {
+    public Map(String code, Boolean official, String urlInfo, Long idWorkShop, String urlPhoto, Boolean downloaded) {
         super();
         this.code = code;
-        this.description = description;
         this.official = official;
         this.urlInfo = urlInfo;
         this.idWorkShop = idWorkShop;
@@ -64,14 +59,6 @@ public class Map extends CommonEntity {
 
     public void setCode(String code) {
         this.code = code;
-    }
-
-    public Description getDescription() {
-        return description;
-    }
-
-    public void setDescription(Description description) {
-        this.description = description;
     }
 
     public Boolean getOfficial() {

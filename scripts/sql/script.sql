@@ -1,8 +1,8 @@
 -----------------------------------
 -- LANGUAGES
 -----------------------------------
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (1, 'English', 'Inglés');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (2, 'Spanish', 'Español');
+INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (1, 'English', 'InglÃ©s');
+INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (2, 'Spanish', 'EspaÃ±ol');
 
 INSERT INTO KF2DATABASE.LANGUAGES VALUES(1, 'en', 1);
 INSERT INTO KF2DATABASE.LANGUAGES VALUES(2, 'es', 2);
@@ -68,61 +68,33 @@ INSERT INTO KF2DATABASE.MAX_PLAYERS VALUES (6, '1', 19);
 -----------------------------------
 -- OFFICIAL MAPS
 -----------------------------------
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (20, 'Burning Paris', 'París arde');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (21, 'BioticsLab', 'Laboratorio biótico');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (22, 'Outpost', 'Avanzada');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (23, 'Volter Manor', 'Mansión Volter');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (24, 'Catacombs', 'Catacumbas');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (25, 'Evacuation Point', 'Punto de evacuación');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (26, 'Farmhouse', 'Casa rural');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (27, 'Black Forest', 'Selva negra');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (28, 'Prison', 'Cárcel');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (29, 'Containment Station', 'Puesto de contención');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (30, 'Hostile Grounds', 'Tierra hostil');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (31, 'Infernal Realm', 'Reino infernal');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (32, 'Zed Landing', 'Aterrizaje Zed');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (33, 'Nuked', 'Bombardeado');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (34, 'The Descent', 'El descendiente');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (35, 'The Tragic Kingdom', 'El reino trágico');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (36, 'Nightmare', 'Pesadilla');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (37, 'Krampus Lair', 'Guarida de Krampus');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (38, 'Die Sector', 'Sector mortal');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (39, 'PowerCore', 'Núcleo de poder');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (40, 'Airship', 'Aeronave');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (41, 'Lockdown', 'Bloqueo');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (42, 'Monster Ball', 'Baile de monstruos');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (43, 'Santas Workshop', 'El taller de Papa Noel');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (44, 'Shopping Spree', 'Compra compulsiva');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (45, 'Spillway', 'Desagüe');
-INSERT INTO KF2DATABASE.DESCRIPTIONS VALUES (46, 'Steam Fortress', 'Steam Fortress');
-
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (1, 'KF-BurningParis', 20, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Burning_Paris','/KFGame/Web/images/maps/KF-BurningParis.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (2, 'KF-BioticsLab', 21, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Biotics_Lab_(Killing_Floor_2)','/KFGame/Web/images/maps/KF-BioticsLab.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (3, 'KF-Outpost', 22, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Outpost','/KFGame/Web/images/maps/KF-Outpost.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (4, 'KF-VolterManor', 23, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Volter_Manor','/KFGame/Web/images/maps/KF-VolterManor.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (5, 'KF-Catacombs', 24, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Catacombs','/KFGame/Web/images/maps/KF-Catacombs.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (6, 'KF-EvacuationPoint', 25, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Evacuation_Point','/KFGame/Web/images/maps/KF-EvacuationPoint.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (7, 'KF-Farmhouse', 26, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Farmhouse','/KFGame/Web/images/maps/KF-Farmhouse.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (8, 'KF-BlackForest', 27, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Black_Forest','/KFGame/Web/images/maps/KF-BlackForest.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (9, 'KF-Prison', 28, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Prison','/KFGame/Web/images/maps/KF-Prison.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (10, 'KF-ContainmentStation', 29, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Containment_Station','/KFGame/Web/images/maps/KF-ContainmentStation.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (11, 'KF-HostileGrounds', 30, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Hostile_Grounds','/KFGame/Web/images/maps/KF-HostileGrounds.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (12, 'KF-InfernalRealm', 31, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Infernal_Realm','/KFGame/Web/images/maps/KF-InfernalRealm.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (13, 'KF-ZedLanding', 32, TRUE, 'https://wiki.killingfloor2.com/index.php?title=ZED_Landing','/KFGame/Web/images/maps/KF-ZedLanding.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (14, 'KF-Nuked', 33, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Nuked','/KFGame/Web/images/maps/KF-Nuked.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (15, 'KF-TheDescent', 34, TRUE, 'https://wiki.killingfloor2.com/index.php?title=The_Descent','/KFGame/Web/images/maps/KF-TheDescent.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (16, 'KF-TragicKingdom', 35, TRUE, 'https://wiki.killingfloor2.com/index.php?title=The_Tragic_Kingdom','/KFGame/Web/images/maps/KF-TragicKingdom.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (17, 'KF-Nightmare', 36, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Nightmare','/KFGame/Web/images/maps/KF-Nightmare.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (18, 'KF-KrampusLair', 37, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Krampus_Lair','/KFGame/Web/images/maps/KF-KrampusLair.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (19, 'KF-DieSector', 38, TRUE, 'https://wiki.killingfloor2.com/index.php?title=DieSector','/KFGame/Web/images/maps/KF-DieSector.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (20, 'KF-PowerCore_Holdout', 39, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Powercore','/KFGame/Web/images/maps/KF-PowerCore_Holdout.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (21, 'KF-Airship', 40, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Airship','/KFGame/Web/images/maps/KF-Airship.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (22, 'KF-Lockdown', 41, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Lockdown','/KFGame/Web/images/maps/KF-Lockdown.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (23, 'KF-MonsterBall', 42, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Monster_Ball','/KFGame/Web/images/maps/KF-MonsterBall.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (24, 'KF-SantasWorkshop', 43, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Santa%27s_Workshop','/KFGame/Web/images/maps/KF-SantasWorkshop.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (25, 'KF-ShoppingSpree', 44, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Shopping_Spree','/KFGame/Web/images/maps/KF-ShoppingSpree.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (26, 'KF-Spillway', 45, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Spillway','/KFGame/Web/images/maps/KF-Spillway.jpg', TRUE);
-INSERT INTO KF2DATABASE.MAPS(ID, CODE, ID_DESCRIPTION, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (27, 'KF-SteamFortress', 46, TRUE, 'https://wiki.killingfloor2.com/index.php?title=Steam_Fortress','/KFGame/Web/images/maps/KF-SteamFortress.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (1, 'KF-BurningParis', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Burning_Paris','/KFGame/Web/images/maps/KF-BurningParis.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (2, 'KF-Bioticslab', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Biotics_Lab_(Killing_Floor_2)','/KFGame/Web/images/maps/KF-Bioticslab.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (3, 'KF-Outpost', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Outpost','/KFGame/Web/images/maps/KF-Outpost.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (4, 'KF-VolterManor', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Volter_Manor','/KFGame/Web/images/maps/KF-VolterManor.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (5, 'KF-Catacombs', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Catacombs','/KFGame/Web/images/maps/KF-Catacombs.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (6, 'KF-EvacuationPoint', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Evacuation_Point','/KFGame/Web/images/maps/KF-EvacuationPoint.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (7, 'KF-Farmhouse', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Farmhouse','/KFGame/Web/images/maps/KF-Farmhouse.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (8, 'KF-BlackForest', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Black_Forest','/KFGame/Web/images/maps/KF-BlackForest.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (9, 'KF-Prison', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Prison','/KFGame/Web/images/maps/KF-Prison.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (10, 'KF-ContainmentStation', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Containment_Station','/KFGame/Web/images/maps/KF-ContainmentStation.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (11, 'KF-HostileGrounds', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Hostile_Grounds','/KFGame/Web/images/maps/KF-HostileGrounds.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (12, 'KF-InfernalRealm', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Infernal_Realm','/KFGame/Web/images/maps/KF-InfernalRealm.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (13, 'KF-ZedLanding', TRUE, 'https://wiki.killingfloor2.com/index.php?title=ZED_Landing','/KFGame/Web/images/maps/KF-ZedLanding.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (14, 'KF-Nuked', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Nuked','/KFGame/Web/images/maps/KF-Nuked.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (15, 'KF-TheDescent', TRUE, 'https://wiki.killingfloor2.com/index.php?title=The_Descent','/KFGame/Web/images/maps/KF-TheDescent.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (16, 'KF-TragicKingdom', TRUE, 'https://wiki.killingfloor2.com/index.php?title=The_Tragic_Kingdom','/KFGame/Web/images/maps/KF-TragicKingdom.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (17, 'KF-Nightmare', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Nightmare','/KFGame/Web/images/maps/KF-Nightmare.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (18, 'KF-KrampusLair', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Krampus_Lair','/KFGame/Web/images/maps/KF-KrampusLair.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (19, 'KF-DieSector', TRUE, 'https://wiki.killingfloor2.com/index.php?title=DieSector','/KFGame/Web/images/maps/KF-DieSector.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (20, 'KF-Powercore_Holdout', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Powercore','/KFGame/Web/images/maps/KF-Powercore_Holdout.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (21, 'KF-Airship', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Airship','/KFGame/Web/images/maps/KF-Airship.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (22, 'KF-Lockdown', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Lockdown','/KFGame/Web/images/maps/KF-Lockdown.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (23, 'KF-MonsterBall', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Monster_Ball','/KFGame/Web/images/maps/KF-MonsterBall.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (24, 'KF-SantasWorkshop', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Santa%27s_Workshop','/KFGame/Web/images/maps/KF-SantasWorkshop.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (25, 'KF-ShoppingSpree', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Shopping_Spree','/KFGame/Web/images/maps/KF-ShoppingSpree.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (26, 'KF-Spillway', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Spillway','/KFGame/Web/images/maps/KF-Spillway.jpg', TRUE);
+INSERT INTO KF2DATABASE.MAPS(ID, CODE, OFFICIAL, URL_INFO, URL_PHOTO, DOWNLOADED) VALUES (27, 'KF-SteamFortress', TRUE, 'https://wiki.killingfloor2.com/index.php?title=Steam_Fortress','/KFGame/Web/images/maps/KF-SteamFortress.jpg', TRUE);
 
 
 -----------------------------------
@@ -133,11 +105,11 @@ INSERT INTO KF2DATABASE.PROFILES(ID, NAME, ID_LANGUAGE, ID_GAMETYPE, ID_MAP, ID_
 -----------------------------------
 -- PROPERTIES
 -----------------------------------
-INSERT INTO KF2DATABASE.PROPERTIES VALUES (101, 'prop.key.urlSteamcmd', 'https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip');
-INSERT INTO KF2DATABASE.PROPERTIES VALUES (102, 'prop.key.betaBrunch', 'preview');
-INSERT INTO KF2DATABASE.PROPERTIES VALUES (103, 'prop.key.downloadConnectionTimeout', '10000');
-INSERT INTO KF2DATABASE.PROPERTIES VALUES (104, 'prop.key.downloadReadTimeout', '30000');
-INSERT INTO KF2DATABASE.PROPERTIES VALUES (105, 'prop.key.defaultServername', 'Killing Floor 2 Server');
-INSERT INTO KF2DATABASE.PROPERTIES VALUES (106, 'prop.key.defaultWebPort', '8080');
-INSERT INTO KF2DATABASE.PROPERTIES VALUES (107, 'prop.key.defaultGamePort', '7777');
-INSERT INTO KF2DATABASE.PROPERTIES VALUES (108, 'prop.key.defaultQueryPort', '27015');
+INSERT INTO KF2DATABASE.PROPERTIES VALUES (1, 'prop.key.urlSteamcmd', 'https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip');
+INSERT INTO KF2DATABASE.PROPERTIES VALUES (2, 'prop.key.betaBrunch', 'preview');
+INSERT INTO KF2DATABASE.PROPERTIES VALUES (3, 'prop.key.downloadConnectionTimeout', '10000');
+INSERT INTO KF2DATABASE.PROPERTIES VALUES (4, 'prop.key.downloadReadTimeout', '30000');
+INSERT INTO KF2DATABASE.PROPERTIES VALUES (5, 'prop.key.defaultServername', 'Killing Floor 2 Server');
+INSERT INTO KF2DATABASE.PROPERTIES VALUES (6, 'prop.key.defaultWebPort', '8080');
+INSERT INTO KF2DATABASE.PROPERTIES VALUES (7, 'prop.key.defaultGamePort', '7777');
+INSERT INTO KF2DATABASE.PROPERTIES VALUES (8, 'prop.key.defaultQueryPort', '27015');

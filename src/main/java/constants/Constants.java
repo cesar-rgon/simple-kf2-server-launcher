@@ -4,6 +4,7 @@ public class Constants {
 
     // APPLICATION
     public final static String APPLICATION_TITLE = "Simple Killing Floor 2 Server Launcher";
+    public final static String APPLICATION_VERSION = "2.0 beta 20190725";
 
     // MENU
     public static final String MENU_MAIN_PAGE = "Main Page";
@@ -45,4 +46,8 @@ public class Constants {
     public final static String MAP_BASE_URL_WORKSHOP = "https://steamcommunity.com/sharedfiles/filedetails/?id=";
     public final static String MAP_OFFICIAL_LOCAL_FOLDER = "/KFGame/Web/images/maps";
     public final static String MAP_CUSTOM_LOCAL_FOLDER = "/KFGame/Web/images/maps/custom";
+
+    // HELP
+    public final static String HELP_GITHUB_PROJECT_URL = "https://github.com/cesar-rgon/simple-kf2-server-launcher";
+    public final static String HELP_README_URL = "https://github.com/cesar-rgon/simple-kf2-server-launcher/blob/master/README.md";
 }

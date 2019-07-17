@@ -8,8 +8,8 @@
 }
 
 .menu:disabled {
-    -fx-background-color: black;
-    -fx-opacity: 0.7;
+    -fx-background-color: #22573d;
+    -fx-opacity: 1;
 }
 
 .menu .label {

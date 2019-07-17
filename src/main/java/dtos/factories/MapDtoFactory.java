@@ -13,7 +13,6 @@ public class MapDtoFactory {
 
     public MapDto newDto(Map map) {
         return new MapDto(map.getCode(),
-                          map.getDescription() != null ? map.getDescription().getEnglishText(): null,
                           map.getOfficial(),
                           map.getUrlInfo(),
                           map.getIdWorkShop(),

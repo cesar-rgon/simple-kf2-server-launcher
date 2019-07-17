@@ -79,12 +79,12 @@ public class MapsEditionController implements Initializable {
 
 
     private GridPane createMapGridPane(MapDto map) {
-        Label mapNameLabel = new Label(map.getValue() != null ? map.getValue(): map.getKey());
+        Label mapNameLabel = new Label(map.getKey());
         Image image = null;
-        if (StringUtils.isNotBlank(map.getUrlPhoto())) {
+        if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(map.getUrlPhoto())) {
             image = new Image("file:" + installationFolder + "/" + map.getUrlPhoto());
         } else {
-            image = new Image("file:src/main/resources/images/photo-borders.png");
+            image = new Image("file:src/main/resources/images/no-photo.png");
         }
         ImageView mapPreview = new ImageView(image);
         mapPreview.setPreserveRatio(false);
@@ -197,7 +197,7 @@ public class MapsEditionController implements Initializable {
         customMapsFlowPane.getChildren().clear();
         List<MapDto> mapListDto = facade.getDtos(mapList);
         for (MapDto map: mapListDto) {
-            String mapLabel = StringUtils.upperCase(map.getValue() != null ? map.getValue(): map.getKey());
+            String mapLabel = StringUtils.upperCase(map.getKey());
             if (mapLabel.contains(StringUtils.upperCase(searchMaps.getText()))) {
                 GridPane gridpane = createMapGridPane(map);
                 if (map.getOfficial()) {
@@ -211,6 +211,14 @@ public class MapsEditionController implements Initializable {
 
     @FXML
     private void addNewMapOnAction() {
+        if (!facade.isCorrectInstallationFolder(installationFolder)) {
+            Utils.warningDialog("No maps can be added!", "The installation folder is not correct.\nSet it up in Install / Update section.");
+            return;
+        }
+        if (Session.getInstance().isRunningProcess()) {
+            Utils.warningDialog("No maps can be added!", "At least one instance of the server is running. Close them.");
+            return;
+        }
         if (MapViewOptions.VIEW_OFFICIAL.equals(viewPaneCombo.getValue())) {
             viewPaneCombo.setValue(MapViewOptions.VIEW_BOTH);
         }
@@ -269,6 +277,14 @@ public class MapsEditionController implements Initializable {
 
     @FXML
     private void removeMapsOnAction() {
+        if (!facade.isCorrectInstallationFolder(installationFolder)) {
+            Utils.warningDialog("No maps can be removed!", "The installation folder is not correct.\nSet it up in Install / Update section.");
+            return;
+        }
+        if (Session.getInstance().isRunningProcess()) {
+            Utils.warningDialog("No maps can be removed!", "At least one instance of the server is running. Close them.");
+            return;
+        }
         List<Node> removeList = new ArrayList<Node>();
         StringBuffer message = new StringBuffer();
         ObservableList<Node> nodes = customMapsFlowPane.getChildren();

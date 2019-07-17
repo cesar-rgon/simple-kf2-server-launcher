@@ -11,8 +11,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.web.WebView;
 import org.apache.commons.lang3.StringUtils;
-import pojos.kf2factory.Kf2Common;
-import pojos.kf2factory.Kf2Factory;
 import pojos.session.Session;
 import utils.Utils;
 

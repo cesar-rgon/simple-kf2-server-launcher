@@ -1,6 +1,7 @@
 package stories.profilesedition;
 
 import dtos.ProfileDto;
+import entities.Profile;
 import javafx.collections.ObservableList;
 
 import java.sql.SQLException;
