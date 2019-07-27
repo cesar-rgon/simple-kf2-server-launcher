@@ -152,16 +152,16 @@ public abstract class Kf2Common {
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
         if (line.contains("BannerLink=")) {
-            modifiedLine = "BannerLink=" + profile.getUrlImageServer();
+            modifiedLine = "BannerLink=" + (profile.getUrlImageServer() != null ? profile.getUrlImageServer(): "");
         }
         if (line.contains("ClanMotto=")) {
-            modifiedLine = "ClanMotto=" + profile.getYourClan();
+            modifiedLine = "ClanMotto=" + (profile.getYourClan() != null ? profile.getYourClan(): "");
         }
         if (line.contains("WebsiteLink=")) {
-            modifiedLine = "WebsiteLink=" + profile.getYourWebLink();
+            modifiedLine = "WebsiteLink=" + (profile.getYourWebLink() != null ? profile.getYourWebLink(): "");
         }
         if (line.contains("ServerMOTD=")) {
-            modifiedLine = "ServerMOTD=" + profile.getWelcomeMessage();
+            modifiedLine = "ServerMOTD=" + (profile.getWelcomeMessage() != null ? profile.getWelcomeMessage(): "");
             modifiedLine = modifiedLine.replaceAll("\n","\\\\n");
         }
         return modifiedLine;

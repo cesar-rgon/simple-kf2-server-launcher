@@ -56,7 +56,11 @@ public class MainContentController implements Initializable {
         try {
             ObservableList<ProfileDto> profileOptions = facade.listAllProfiles();
             profileSelect.setItems(profileOptions);
-            profileSelect.setValue(!profileOptions.isEmpty()? profileOptions.get(0): null);
+            if (!profileOptions.isEmpty()) {
+                profileSelect.setValue(Session.getInstance().getActualProfile() != null? Session.getInstance().getActualProfile(): profileOptions.get(0));
+            } else {
+                profileSelect.setValue(null);
+            }
             Session.getInstance().setActualProfile(profileSelect.getValue());
             languageSelect.setItems(facade.listAllLanguages());
             gameTypeSelect.setItems(facade.listAllGameTypes());

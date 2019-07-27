@@ -7,6 +7,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.util.Callback;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -116,8 +117,8 @@ public class Utils {
     }
 
     public static String encryptAES(String password) throws Exception {
-        if (password == null) {
-            return null;
+        if (StringUtils.isBlank(password)) {
+            return "";
         }
         Key aesKey = new SecretKeySpec(Constants.UTILS_AES_ENCRIPTION_KEY.getBytes(), "AES");
         Cipher cipher = Cipher.getInstance("AES");
@@ -127,8 +128,8 @@ public class Utils {
     }
 
     public static String decryptAES(String encryptedPassword) throws Exception {
-        if (encryptedPassword == null) {
-            return null;
+        if (StringUtils.isBlank(encryptedPassword)) {
+            return "";
         }
         Key aesKey = new SecretKeySpec(Constants.UTILS_AES_ENCRIPTION_KEY.getBytes(), "AES");
         Cipher cipher = Cipher.getInstance("AES");

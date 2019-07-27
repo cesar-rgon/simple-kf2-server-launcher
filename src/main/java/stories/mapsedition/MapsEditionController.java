@@ -84,7 +84,12 @@ public class MapsEditionController implements Initializable {
         if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(map.getUrlPhoto())) {
             image = new Image("file:" + installationFolder + "/" + map.getUrlPhoto());
         } else {
-            image = new Image("file:src/main/resources/images/no-photo.png");
+            File imageFile = new File(System.getProperty("user.dir") + "/images/no-photo.png");
+            if (imageFile.exists()) {
+                image = new Image("file:" + System.getProperty("user.dir") + "/images/no-photo.png");
+            } else {
+                image = new Image("@../../images/no-photo.png");
+            }
         }
         ImageView mapPreview = new ImageView(image);
         mapPreview.setPreserveRatio(false);

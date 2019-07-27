@@ -59,7 +59,7 @@ public class Kf2WindowsImpl extends Kf2Common {
     @Override
     protected void installUpdateKf2Server(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) {
         try {
-            StringBuffer command = new StringBuffer("cmd /C start ");
+            StringBuffer command = new StringBuffer("cmd /C start /wait ");
             command.append(installationFolder);
             command.append("\\steamcmd\\steamcmd.exe +login anonymous +force_install_dir ");
             command.append(installationFolder);
@@ -75,21 +75,19 @@ public class Kf2WindowsImpl extends Kf2Common {
             command.append(" +exit");
 
             // Execute steamcmd and install / update the kf2 server
-            Process process = Runtime.getRuntime().exec(command.toString(),null, new File(installationFolder + "\\steamcmd\\"));
-            process.waitFor();
+            Process installUpdateProcess = Runtime.getRuntime().exec(command.toString(),null, new File(installationFolder + "\\steamcmd\\"));
+            installUpdateProcess.waitFor();
 
             // If it's the first time, run the server to create needed config files
             File kfEngineIni = new File(installationFolder + "\\KFGame\\Config\\PCServer-KFEngine.ini");
             File kfGameIni = new File(installationFolder + "\\KFGame\\Config\\PCServer-KFGame.ini");
             if (!kfEngineIni.exists() || !kfGameIni.exists()) {
-                Process processTwo = Runtime.getRuntime().exec("cmd /C " + installationFolder + "\\Binaries\\Win64\\KFServer.exe KF-BioticsLab",
-                        null,
-                        new File(installationFolder));
-                while (processTwo.isAlive() && (!kfEngineIni.exists() || !kfGameIni.exists())) {
-                    processTwo.waitFor(5, TimeUnit.SECONDS);
+                Process runServerFirstTimeProcess = Runtime.getRuntime().exec("cmd /C start /wait " + installationFolder + "\\Binaries\\Win64\\KFServer.exe KF-BioticsLab",null, new File(installationFolder));
+                while (runServerFirstTimeProcess.isAlive() && (!kfEngineIni.exists() || !kfGameIni.exists())) {
+                    runServerFirstTimeProcess.waitFor(1, TimeUnit.SECONDS);
                 }
-                if (processTwo.isAlive()) {
-                    processTwo.destroy();
+                if (runServerFirstTimeProcess.isAlive()) {
+                    Utils.infoDialog("The config files have been created", "You can close the server's console right now.");
                 }
             }
         } catch (Exception e) {
@@ -120,7 +118,7 @@ public class Kf2WindowsImpl extends Kf2Common {
             replaceInFileKfWebIni(installationFolder, profile);
             replaceInFileKfGameIni(installationFolder, profile);
 
-            Process proccess = Runtime.getRuntime().exec("cmd /C " + command.toString(),null, new File(installationFolder));
+            Process proccess = Runtime.getRuntime().exec("cmd /C start " + command.toString(),null, new File(installationFolder));
             Session.getInstance().getProcessList().add(proccess);
             return command.toString();
         } catch (Exception e) {
