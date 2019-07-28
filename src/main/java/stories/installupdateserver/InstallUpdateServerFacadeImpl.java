@@ -1,7 +1,5 @@
 package stories.installupdateserver;
 
-import daos.PropertyDao;
-import entities.Property;
 import services.DatabaseService;
 import services.DatabaseServiceImpl;
 

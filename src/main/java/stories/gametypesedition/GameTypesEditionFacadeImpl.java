@@ -1,11 +1,9 @@
 package stories.gametypesedition;
 
 import constants.Constants;
-import daos.DescriptionDao;
 import daos.GameTypeDao;
 import dtos.SelectDto;
 import dtos.factories.GameTypeDtoFactory;
-import entities.Description;
 import entities.GameType;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;

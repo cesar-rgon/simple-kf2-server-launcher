@@ -1,11 +1,9 @@
 package stories.maxplayersedition;
 
 import constants.Constants;
-import daos.DescriptionDao;
 import daos.MaxPlayersDao;
 import dtos.SelectDto;
 import dtos.factories.MaxPlayersDtoFactory;
-import entities.Description;
 import entities.MaxPlayers;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;

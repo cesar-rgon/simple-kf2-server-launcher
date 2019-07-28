@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 public class LanguageDtoFactory {
 
     public SelectDto newDto(Language language) {
-        return new SelectDto(language.getCode(), language.getDescription().getEnglishText());
+        return new SelectDto(language.getCode(), language.getDescription());
     }
 
     public ObservableList<SelectDto> newDtos(List<Language> languages) {

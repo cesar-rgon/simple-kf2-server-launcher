@@ -5,7 +5,6 @@ import daos.*;
 import dtos.ProfileDto;
 import dtos.factories.ProfileDtoFactory;
 import entities.Profile;
-import entities.Property;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 

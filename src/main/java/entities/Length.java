@@ -14,18 +14,13 @@ public class Length extends CommonEntity {
     @Column(name="CODE", length=100, unique=true, nullable=false)
     private String code;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="ID_DESCRIPTION", referencedColumnName="ID", unique=true, nullable=false)
-    private Description description;
-
     public Length() {
         super();
     }
 
-    public Length(String code, Description description) {
+    public Length(String code) {
         super();
         this.code = code;
-        this.description = description;
     }
 
     @Override
@@ -44,13 +39,5 @@ public class Length extends CommonEntity {
 
     public void setCode(String code) {
         this.code = code;
-    }
-
-    public Description getDescription() {
-        return description;
-    }
-
-    public void setDescription(Description description) {
-        this.description = description;
     }
 }

@@ -11,18 +11,17 @@ public class Language extends CommonEntity {
     @Column(name="ID", updatable=false, nullable=false)
     private Integer id;
 
-    @Column(name="CODE", length=100, unique=true, nullable=false)
+    @Column(name="CODE", length=3, unique=true, nullable=false)
     private String code;
 
-    @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="ID_DESCRIPTION", referencedColumnName="ID", unique=true, nullable=false)
-    private Description description;
+    @Column(name="DESCRIPTION", length=100, unique=true, nullable=false)
+    private String description;
 
     public Language() {
         super();
     }
 
-    public Language(String code, Description description) {
+    public Language(String code, String description) {
         super();
         this.code = code;
         this.description = description;
@@ -46,11 +45,11 @@ public class Language extends CommonEntity {
         this.code = code;
     }
 
-    public Description getDescription() {
+    public String getDescription() {
         return description;
     }
 
-    public void setDescription(Description description) {
+    public void setDescription(String description) {
         this.description = description;
     }
 }

@@ -2,10 +2,8 @@ package services;
 
 import daos.MapDao;
 import daos.ProfileDao;
-import daos.PropertyDao;
 import entities.Map;
 import entities.Profile;
-import entities.Property;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -15,16 +13,6 @@ public class DatabaseServiceImpl implements DatabaseService {
 
     public DatabaseServiceImpl() {
         super();
-    }
-
-    @Override
-    public String findPropertyValue(String key) throws SQLException {
-        Optional<Property> propertyOpt = PropertyDao.getInstance().findByKey(key);
-        if (propertyOpt.isPresent()) {
-            return propertyOpt.get().getValue();
-        } else {
-            return "";
-        }
     }
 
     @Override

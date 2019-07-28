@@ -23,11 +23,18 @@ public abstract class Kf2Common {
     }
 
     public void installOrUpdateServer(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) {
-        if (prepareSteamCmd(installationFolder)) {
+        if (isValid(installationFolder) && prepareSteamCmd(installationFolder)) {
             installUpdateKf2Server(installationFolder, validateFiles, isBeta, betaBrunch);
             checkForNewOfficialMaps(installationFolder);
+        }
+    }
+
+    private boolean isValid(String installationFolder) {
+        if (StringUtils.isBlank(installationFolder) || installationFolder.contains(" ")) {
+            Utils.warningDialog("The operation can not be done", "Installation folder can not be empty\nand can not constain whitespaces.\nDefine in Install/Update section.");
+            return false;
         } else {
-            Utils.errorDialog("Error preparing SteamCmd to be able to install KF2 server", "The installation process is aborted.", null);
+            return true;
         }
     }
 
@@ -39,9 +46,11 @@ public abstract class Kf2Common {
             String errorMessage = validateParameters(profile);
             if (StringUtils.isEmpty(errorMessage)) {
                 String installationFolder = databaseService.findPropertyValue(Constants.KEY_INSTALLATION_FOLDER);
-                createConfigFolder(installationFolder, profile.getName());
-                checkForNewOfficialMaps(installationFolder);
-                return runKf2Server(installationFolder, profile);
+                if (isValid(installationFolder)) {
+                    createConfigFolder(installationFolder, profile.getName());
+                    checkForNewOfficialMaps(installationFolder);
+                    return runKf2Server(installationFolder, profile);
+                }
             } else {
                 Utils.errorDialog("Error validating parameters. The server can not be launched!", errorMessage, null);
             }

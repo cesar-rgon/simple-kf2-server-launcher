@@ -3,7 +3,6 @@
     <persistence-unit name="kf2database" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
-        <class>entities.Description</class>
         <class>entities.Difficulty</class>
         <class>entities.GameType</class>
         <class>entities.Language</class>
@@ -11,7 +10,6 @@
         <class>entities.Map</class>
         <class>entities.MaxPlayers</class>
         <class>entities.Profile</class>
-        <class>entities.Property</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
         <properties>

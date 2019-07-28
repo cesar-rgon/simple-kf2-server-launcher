@@ -52,8 +52,8 @@ public class Kf2WindowsImpl extends Kf2Common {
             return true;
         } catch (Exception e) {
             Utils.errorDialog("Error preparing SteamCmd to be able to install KF2 server", "See stacktrace for more details", e);
+            return false;
         }
-        return false;
     }
 
     @Override

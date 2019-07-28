@@ -1,11 +1,9 @@
 package stories.difficultiesedition;
 
 import constants.Constants;
-import daos.DescriptionDao;
 import daos.DifficultyDao;
 import dtos.SelectDto;
 import dtos.factories.DifficultyDtoFactory;
-import entities.Description;
 import entities.Difficulty;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;

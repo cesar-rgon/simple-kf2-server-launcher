@@ -7,8 +7,8 @@ import java.sql.SQLException;
 
 public interface LengthEditionFacade {
     ObservableList<SelectDto> listAllLength() throws SQLException;
-    SelectDto createNewLength(String code, String description, SelectDto selectedLanguage) throws SQLException;
-    boolean deleteSelectedLength(String code) throws SQLException;
+    SelectDto createNewLength(String code, String description) throws Exception;
+    boolean deleteSelectedLength(String code) throws Exception;
     SelectDto updateChangedLengthCode(String oldCode, String newCode) throws SQLException;
-    SelectDto updateChangedLengthDescription(String code, String oldDescription, String newDescription, SelectDto selectedLanguage) throws SQLException;
+    SelectDto updateChangedLengthDescription(String code, String oldDescription, String newDescription) throws Exception;
 }

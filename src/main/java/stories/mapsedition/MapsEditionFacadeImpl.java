@@ -2,11 +2,9 @@ package stories.mapsedition;
 
 import constants.Constants;
 import daos.MapDao;
-import daos.PropertyDao;
 import dtos.MapDto;
 import dtos.factories.MapDtoFactory;
 import entities.Map;
-import entities.Property;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
