@@ -55,7 +55,7 @@ public class DifficultiesEditionController implements Initializable {
                 difficultiesTable.refresh();
                 Utils.errorDialog("The difficulty can not be renamed in database", "Update operation is aborted!", null);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             difficultiesTable.refresh();
             Utils.errorDialog("The difficulty can not be updated!", "See stacktrace for more details", e);
         }
@@ -68,8 +68,7 @@ public class DifficultiesEditionController implements Initializable {
         String newDifficultyDescription = (String)event.getNewValue();
         try {
             String code = difficultiesTable.getItems().get(edittedRowIndex).getKey();
-            SelectDto selectedLanguage = Session.getInstance().getActualProfile().getLanguage();
-            SelectDto updatedGameTypeDto = facade.updateChangedDifficultyDescription(code, oldDifficultyDescription, newDifficultyDescription, selectedLanguage);
+            SelectDto updatedGameTypeDto = facade.updateChangedDifficultyDescription(code, oldDifficultyDescription, newDifficultyDescription);
             if (updatedGameTypeDto != null) {
                 difficultiesTable.getItems().remove(edittedRowIndex);
                 difficultiesTable.getItems().add(updatedGameTypeDto);
@@ -77,7 +76,7 @@ public class DifficultiesEditionController implements Initializable {
                 difficultiesTable.refresh();
                 Utils.errorDialog("The difficulty can not be renamed in database", "Update operation is aborted!", null);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             difficultiesTable.refresh();
             Utils.errorDialog("The difficulty can not be updated!", "See stacktrace for more details", e);
         }
@@ -90,10 +89,9 @@ public class DifficultiesEditionController implements Initializable {
             if (result.isPresent() && StringUtils.isNotBlank(result.get().getKey()) && StringUtils.isNotBlank(result.get().getValue())) {
                 String code = result.get().getKey();
                 String description = result.get().getValue();
-                SelectDto selectedLanguage = Session.getInstance().getActualProfile().getLanguage();
-                difficultiesTable.getItems().add(facade.createNewDifficulty(code, description, selectedLanguage));
+                difficultiesTable.getItems().add(facade.createNewDifficulty(code, description));
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             Utils.errorDialog("The game type can not be created!", "See stacktrace for more details", e);
         }
     }
@@ -112,7 +110,7 @@ public class DifficultiesEditionController implements Initializable {
             } else {
                 Utils.warningDialog("No selected difficulty", "Delete operation is aborted!");
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             Utils.errorDialog("The difficulty can not be deleted!", "See stacktrace for more details", e);
         }
     }

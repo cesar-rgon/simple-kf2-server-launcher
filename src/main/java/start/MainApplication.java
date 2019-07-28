@@ -7,6 +7,8 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import pojos.listener.TimeListener;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -24,8 +26,10 @@ public class MainApplication extends Application {
         FXMLLoader mainContent = new FXMLLoader(getClass().getResource("/views/mainContent.fxml"));
         mainContent.setRoot(template.getNamespace().get("content"));
         mainContent.load();
-        primaryStage.getIcons().add(new Image("file:src/main/resources/images/kf2ico.png"));
-        primaryStage.setTitle(Constants.APPLICATION_TITLE);
+        primaryStage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("images/kf2ico.png")));
+        PropertyService propertyService = new PropertyServiceImpl();
+        String applicationTitle = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_TITLE);
+        primaryStage.setTitle(applicationTitle);
         primaryStage.setScene(scene);
         primaryStage.setMinWidth(1280);
         primaryStage.setMinHeight(800);
@@ -53,4 +57,5 @@ public class MainApplication extends Application {
     public static Stage getPrimaryStage() {
         return primaryStage;
     }
+
 }

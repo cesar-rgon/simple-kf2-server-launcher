@@ -26,7 +26,7 @@ public class MaxPlayersDao extends CommonDao<MaxPlayers> {
     }
 
     public List<MaxPlayers> listAll() throws SQLException {
-        String query="select mp from entities.MaxPlayers mp order by mp.id asc";
+        String query="select mp from entities.MaxPlayers mp order by mp.code desc";
         return list(query, null);
     }
 

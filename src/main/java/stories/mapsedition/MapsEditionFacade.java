@@ -10,8 +10,8 @@ public interface MapsEditionFacade {
     List<Map> listAllMaps() throws SQLException;
     List<MapDto> getDtos(List<Map> mapList);
     MapDto getDto(Map map);
-    String findPropertyValue(String key) throws SQLException;
-    Map createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto) throws SQLException;
+    String findPropertyValue(String key) throws Exception;
+    Map createNewCustomMapFromWorkshop(String urlIdWorkshop, String installationFolder) throws Exception;
     MapDto deleteSelectedMap(String mapName) throws SQLException;
     boolean isCorrectInstallationFolder(String installationFolder);
 }

@@ -8,11 +8,12 @@ import javafx.scene.layout.Priority;
 import javafx.util.Callback;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import javax.crypto.Cipher;
-import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +28,13 @@ public class Utils {
 
     public static void errorDialog(String headerText, String contentText, Throwable e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(Constants.APPLICATION_TITLE);
+        try {
+            PropertyService propertyService = new PropertyServiceImpl();
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_TITLE);
+            alert.setTitle(applicationTitle);
+        } catch (Exception ex) {
+            alert.setTitle("");
+        }
         alert.setHeaderText(headerText);
         alert.setContentText(contentText);
 
@@ -53,7 +60,13 @@ public class Utils {
 
     public static Optional<String> OneTextInputDialog(String header, String content) {
         TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle(Constants.APPLICATION_TITLE);
+        try {
+            PropertyService propertyService = new PropertyServiceImpl();
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_TITLE);
+            dialog.setTitle(applicationTitle);
+        } catch (Exception ex) {
+            dialog.setTitle("");
+        }
         dialog.setHeaderText(header);
         dialog.setContentText(content);
         return dialog.showAndWait();
@@ -61,7 +74,13 @@ public class Utils {
 
     public static Optional<SelectDto> TwoTextInputsDialog() {
         Dialog<SelectDto> dialog = new Dialog<SelectDto>();
-        dialog.setTitle(Constants.APPLICATION_TITLE);
+        try {
+            PropertyService propertyService = new PropertyServiceImpl();
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_TITLE);
+            dialog.setTitle(applicationTitle);
+        } catch (Exception ex) {
+            dialog.setTitle("");
+        }
         dialog.setHeaderText("Add a new item");
         dialog.setResizable(false);
         Label code = new Label("Item code: ");
@@ -94,7 +113,13 @@ public class Utils {
 
     public static Optional<ButtonType> questionDialog(String header, String content) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(Constants.APPLICATION_TITLE);
+        try {
+            PropertyService propertyService = new PropertyServiceImpl();
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_TITLE);
+            alert.setTitle(applicationTitle);
+        } catch (Exception ex) {
+            alert.setTitle("");
+        }
         alert.setHeaderText(header);
         alert.setContentText(content);
         return alert.showAndWait();
@@ -102,7 +127,13 @@ public class Utils {
 
     public static void warningDialog(String header, String content) {
         Alert alert = new Alert(Alert.AlertType.WARNING);
-        alert.setTitle(Constants.APPLICATION_TITLE);
+        try {
+            PropertyService propertyService = new PropertyServiceImpl();
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_TITLE);
+            alert.setTitle(applicationTitle);
+        } catch (Exception ex) {
+            alert.setTitle("");
+        }
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
@@ -110,7 +141,13 @@ public class Utils {
 
     public static void infoDialog(String header, String content) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle(Constants.APPLICATION_TITLE);
+        try {
+            PropertyService propertyService = new PropertyServiceImpl();
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_TITLE);
+            alert.setTitle(applicationTitle);
+        } catch (Exception ex) {
+            alert.setTitle("");
+        }
         alert.setHeaderText(header);
         alert.setContentText(content);
         alert.showAndWait();
@@ -120,7 +157,9 @@ public class Utils {
         if (StringUtils.isBlank(password)) {
             return "";
         }
-        Key aesKey = new SecretKeySpec(Constants.UTILS_AES_ENCRIPTION_KEY.getBytes(), "AES");
+        PropertyService propertyService = new PropertyServiceImpl();
+        String aesEncryptionKey = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_AES_ENCRIPTION_KEY);
+        Key aesKey = new SecretKeySpec(aesEncryptionKey.getBytes(), "AES");
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, aesKey);
         byte[] encrypted = cipher.doFinal(password.getBytes());
@@ -131,7 +170,9 @@ public class Utils {
         if (StringUtils.isBlank(encryptedPassword)) {
             return "";
         }
-        Key aesKey = new SecretKeySpec(Constants.UTILS_AES_ENCRIPTION_KEY.getBytes(), "AES");
+        PropertyService propertyService = new PropertyServiceImpl();
+        String aesEncryptionKey = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_AES_ENCRIPTION_KEY);
+        Key aesKey = new SecretKeySpec(aesEncryptionKey.getBytes(), "AES");
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, aesKey);
         byte[] decrypted = new BASE64Decoder().decodeBuffer(encryptedPassword);

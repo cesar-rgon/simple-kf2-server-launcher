@@ -27,7 +27,7 @@ public class LengthDao extends CommonDao<Length> {
     }
 
     public List<Length> listAll() throws SQLException {
-        String query="select l from entities.Length l order by l.id asc";
+        String query="select l from entities.Length l order by l.code asc";
         return list(query, null);
     }
 

@@ -2,25 +2,13 @@
 
 Application to easily customize and launch a Killing Floor 2 server through a visual interface instead of edditing batch files or server's config files. It has been developed with Java, so the interface is compatible on Windows and Linux OS.
 
-```
-Version: 2.0 beta
-Last modification date: 2019/07/25
-Supported OS: Microsoft Windows and Linux (Ubuntu/Debian)
-Author: César Rodríguez González
-Language: English (Spanish soon)
-```
-*Main page on Windows OS*
-![Launcher screenshot](src/main/resources/images/documentation/screenshot00.png)
-
-*Main page on Linux OS*
-![Launcher screenshot](src/main/resources/images/documentation/screenshot01.png)
-
-##### Index
-> 1. [Pre-requisites](#pre-requisites)
-> 2. [Installing and running the launcher](#installing-and-running-the-launcher)
+### Index
+> 1. [Features](#features)
+> 2. [Pre-requisites](#pre-requisites)
+> 3. [Installing and running the launcher](#installing-and-running-the-launcher)
 >   - [On Windows OS](#on-windows-os)
 >   - [On Linux OS](#on-linux-os)
-> 3. [Quick view](#quick-view)
+> 4. [Quick view](#quick-view)
 >   - [Main page](#main-page)
 >   - [WebAdmin page](#webadmin-page)
 >   - [Install or update page](#install-or-update-page)
@@ -30,7 +18,26 @@ Language: English (Spanish soon)
 >   - [Configuration-Difficulties](#configuration-difficulties)
 >   - [Configuration-Length](#configuration-length)
 >   - [Configuration-Maximun players](#configuration-maximun-players)
-> 4. [Author notes](#author-notes)
+> 5. [Author notes](#author-notes)
+
+### Features
+
+```
+Version: 2.0 beta
+Last modification date: 2019/08/01
+Supported OS: Microsoft Windows and Linux (Ubuntu/Debian)
+Author: César Rodríguez González
+Language: English (Spanish soon)
+```
+
+- Install/Update server to the latest official or beta version.
+- Launch the server with specified parameters by the user in launcher's main page.
+- Join the running server's match.
+- Open WebAdmin page to administrate the running server.
+- Add custom maps to the server through Steam's WorkShop.
+- Remove custom maps from the server.
+- Administrate profiles, game types, difficulties, lengths and maximun numer of players that can be selected to launch the server.
+- All those features are available through the launcher's interface on Windows and Linux OS (no need to use console commands at all).
 
 ### Pre-requisites
 - Internet connection to download, update and publish a Killing Floor 2 server.
@@ -68,6 +75,8 @@ $ java -jar SimpleKF2ServerLauncher.jar
 
 ##### Main page
 ![Launcher screenshot](src/main/resources/images/documentation/screenshot00.png)
+
+![Launcher screenshot](src/main/resources/images/documentation/screenshot01.png)
 
 * _Profile_: This combo is mandatory. It allows to customize filter values by profile name.
 

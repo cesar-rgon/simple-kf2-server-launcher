@@ -9,6 +9,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import pojos.session.Session;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import start.MainApplication;
 import utils.Utils;
 
@@ -19,6 +22,8 @@ import java.util.ResourceBundle;
 
 public class TemplateController implements Initializable {
 
+    private final PropertyService propertyService;
+
     @FXML private Menu mainPage;
     @FXML private Menu installUpdateServer;
     @FXML private Menu webAdmin;
@@ -26,14 +31,30 @@ public class TemplateController implements Initializable {
 
     public TemplateController() {
         super();
+        propertyService = new PropertyServiceImpl();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        mainPage.setGraphic(getLabelWithHandler(Constants.MENU_MAIN_PAGE, "/views/mainContent.fxml"));
-        installUpdateServer.setGraphic(getLabelWithHandler(Constants.MENU_INSTALL_UPDATE_SERVER, "/views/installUpdateServer.fxml"));
-        webAdmin.setGraphic(getLabelWithHandler(Constants.MENU_WEB_ADMIN, "/views/webAdmin.fxml"));
-        mapsMenu.setGraphic(getLabelWithHandler(Constants.MENU_MAPS_EDITION, "/views/mapsEdition.fxml"));
+        try {
+            String languageCode = Session.getInstance().getActualProfile() != null ?
+                    Session.getInstance().getActualProfile().getLanguage().getKey():
+                    propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
+
+            String mainPageTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_MAIN_PAGE);
+            mainPage.setGraphic(getLabelWithHandler(mainPageTitle, "/views/mainContent.fxml"));
+
+            String installUpdateTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_INSTALL_UPDATE_SERVER);
+            installUpdateServer.setGraphic(getLabelWithHandler(installUpdateTitle, "/views/installUpdateServer.fxml"));
+
+            String webAdminTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_WEB_ADMIN);
+            webAdmin.setGraphic(getLabelWithHandler(webAdminTitle, "/views/webAdmin.fxml"));
+
+            String mapsTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_MAPS_EDITION);
+            mapsMenu.setGraphic(getLabelWithHandler(mapsTitle, "/views/mapsEdition.fxml"));
+        } catch (Exception e) {
+            Utils.errorDialog("Error setting menu titles", "See stacktrace for more details", e);
+        }
     }
 
     private Label getLabelWithHandler(String title, String fxmlFilePath) {
@@ -56,10 +77,22 @@ public class TemplateController implements Initializable {
             FXMLLoader content = new FXMLLoader(getClass().getResource(fxmlFilePath));
             content.setRoot(MainApplication.getTemplate().getNamespace().get("content"));
             content.load();
-            mainPage.setDisable(Constants.MENU_MAIN_PAGE.equals(title));
-            installUpdateServer.setDisable(Constants.MENU_INSTALL_UPDATE_SERVER.equals(title));
-            webAdmin.setDisable(Constants.MENU_WEB_ADMIN.equals(title));
-            mapsMenu.setDisable(Constants.MENU_MAPS_EDITION.equals(title));
+
+            String languageCode = Session.getInstance().getActualProfile() != null ?
+                    Session.getInstance().getActualProfile().getLanguage().getKey():
+                    propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
+
+            String mainPageTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_MAIN_PAGE);
+            mainPage.setDisable(mainPageTitle.equals(title));
+
+            String installUpdateTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_INSTALL_UPDATE_SERVER);
+            installUpdateServer.setDisable(installUpdateTitle.equals(title));
+
+            String webAdminTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_WEB_ADMIN);
+            webAdmin.setDisable(webAdminTitle.equals(title));
+
+            String mapsTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_MAPS_EDITION);
+            mapsMenu.setDisable(mapsTitle.equals(title));
         } catch (Exception e) {
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
@@ -67,38 +100,89 @@ public class TemplateController implements Initializable {
 
     @FXML
     private void profilesMenuOnAction() {
-        loadNewContent(Constants.MENU_PROFILES_EDITION, "/views/profilesEdition.fxml");
+        try {
+            String languageCode = Session.getInstance().getActualProfile() != null ?
+                    Session.getInstance().getActualProfile().getLanguage().getKey():
+                    propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
+
+            String profilesTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_PROFILES_EDITION);
+            loadNewContent(profilesTitle, "/views/profilesEdition.fxml");
+        } catch (Exception e) {
+            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+        }
     }
 
     @FXML
     private void gameTypesMenuOnAction() {
-        loadNewContent(Constants.MENU_GAMETYPES_EDITION, "/views/gameTypesEdition.fxml");
+        try {
+            String languageCode = Session.getInstance().getActualProfile() != null ?
+                    Session.getInstance().getActualProfile().getLanguage().getKey():
+                    propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
+
+            String gameTypesTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_GAMETYPES_EDITION);
+            loadNewContent(gameTypesTitle, "/views/gameTypesEdition.fxml");
+        } catch (Exception e) {
+            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+        }
     }
 
     @FXML
     private void difficultiesMenuOnAction() {
-        loadNewContent(Constants.MENU_DIFFICULTIES_EDITION, "/views/difficultiesEdition.fxml");
+        try {
+            String languageCode = Session.getInstance().getActualProfile() != null ?
+                    Session.getInstance().getActualProfile().getLanguage().getKey():
+                    propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
+
+            String difficultiesTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_DIFFICULTIES_EDITION);
+            loadNewContent(difficultiesTitle, "/views/difficultiesEdition.fxml");
+        } catch (Exception e) {
+            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+        }
     }
 
     @FXML
     private void lengthMenuOnAction() {
-        loadNewContent(Constants.MENU_LENGTH_EDITION, "/views/lengthEdition.fxml");
+        try {
+            String languageCode = Session.getInstance().getActualProfile() != null ?
+                    Session.getInstance().getActualProfile().getLanguage().getKey():
+                    propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
+
+            String lengthTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_LENGTH_EDITION);
+            loadNewContent(lengthTitle, "/views/lengthEdition.fxml");
+        } catch (Exception e) {
+            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+        }
     }
 
     @FXML
     private void maxPlayersMenuOnAction() {
-        loadNewContent(Constants.MENU_MAXPLAYERS_EDITION, "/views/maxPlayersEdition.fxml");
+        try {
+            String languageCode = Session.getInstance().getActualProfile() != null ?
+                    Session.getInstance().getActualProfile().getLanguage().getKey():
+                    propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
+
+            String maxPlayersTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_MAXPLAYERS_EDITION);
+            loadNewContent(maxPlayersTitle, "/views/maxPlayersEdition.fxml");
+        } catch (Exception e) {
+            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+        }
     }
 
     @FXML
     private void aboutMenuOnAction() {
-        Utils.infoDialog("Developed by cesar-rgon", "Version: " + Constants.APPLICATION_VERSION);
+        try {
+            String applicationVersion = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_VERSION);
+            Utils.infoDialog("Developed by cesar-rgon", "Version: " + applicationVersion);
+        } catch (Exception e) {
+            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+        }
     }
 
     @FXML
     private void documentationMenuOnAction() {
         try {
-            Desktop.getDesktop().browse(new URI(Constants.HELP_README_URL));
+            String readmeUrl = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_HELP_README_URL);
+            Desktop.getDesktop().browse(new URI(readmeUrl));
         } catch (Exception e) {
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
@@ -107,7 +191,8 @@ public class TemplateController implements Initializable {
     @FXML
     private void githubMenuOnAction() {
         try {
-            Desktop.getDesktop().browse(new URI(Constants.HELP_GITHUB_PROJECT_URL));
+            String githubUrl = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_HELP_GITHUB_PROJECT_URL);
+            Desktop.getDesktop().browse(new URI(githubUrl));
         } catch (Exception e) {
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }

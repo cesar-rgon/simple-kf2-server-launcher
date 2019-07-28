@@ -2,52 +2,35 @@ package constants;
 
 public class Constants {
 
-    // APPLICATION
-    public final static String APPLICATION_TITLE = "Simple Killing Floor 2 Server Launcher";
-    public final static String APPLICATION_VERSION = "2.0 beta 20190725";
+    // LANGUAGE PROPERTIES
+    public static final String LANG_MENU_MAIN_PAGE = "prop.menu.mainPage";
+    public static final String LANG_MENU_INSTALL_UPDATE_SERVER = "prop.menu.installUpdateServer";
+    public static final String LANG_MENU_WEB_ADMIN = "prop.menu.webAdmin";
+    public static final String LANG_MENU_MAPS_EDITION = "prop.menu.maps";
+    public static final String LANG_MENU_PROFILES_EDITION = "prop.menu.configuration.profiles";
+    public static final String LANG_MENU_GAMETYPES_EDITION = "prop.menu.configuration.gameTypes";
+    public static final String LANG_MENU_DIFFICULTIES_EDITION = "prop.menu.configuration.difficulties";
+    public static final String LANG_MENU_LENGTH_EDITION = "prop.menu.configuration.length";
+    public static final String LANG_MENU_MAXPLAYERS_EDITION = "prop.menu.configuration.maxPlayers";
 
-    // MENU
-    public static final String MENU_MAIN_PAGE = "Main Page";
-    public static final String MENU_INSTALL_UPDATE_SERVER = "Install/Update";
-    public static final String MENU_WEB_ADMIN = "WebAdmin";
-    public static final String MENU_PROFILES_EDITION = "Profiles";
-    public static final String MENU_GAMETYPES_EDITION = "Game types";
-    public static final String MENU_DIFFICULTIES_EDITION = "Difficulties";
-    public static final String MENU_LENGTH_EDITION = "Length";
-    public static final String MENU_MAXPLAYERS_EDITION = "Max. players";
-    public static final String MENU_MAPS_EDITION = "Maps";
-
-    // UTILS
-    public final static String UTILS_AES_ENCRIPTION_KEY = "SimplKillingFloor2ServerLauncher";
-
-    // PROPERTIES KEYS
-    public final static String KEY_INSTALLATION_FOLDER = "prop.key.installationFolder";
-    public final static String KEY_BETA_BRUNCH = "prop.key.betaBrunch";
-    public final static String KEY_VALIDATE_FILES = "prop.key.validateFiles";
-    public final static String KEY_IS_BETA = "prop.key.isBeta";
-    public final static String KEY_URL_STEAMCMD = "prop.key.urlSteamcmd";
-    public final static String KEY_DOWNLOAD_CONNECTION_TIMEOUT = "prop.key.downloadConnectionTimeout";
-    public final static String KEY_DOWNLOAD_READ_TIMEOUT = "prop.key.downloadReadTimeout";
-    public final static String KEY_DEFAULT_SERVERNAME = "prop.key.defaultServername";
-    public final static String KEY_DEFAULT_WEB_PORT = "prop.key.defaultWebPort";
-    public final static String KEY_DEFAULT_GAME_PORT = "prop.key.defaultGamePort";
-    public final static String KEY_DEFAULT_QUERY_PORT = "prop.key.defaultQueryPort";
-
-    // PROPERTIES VALUES
-    public final static String VALUE_DEFAULT_SERVERNAME = "Killing Floor 2 Server";
-    public final static Integer VALUE_DEFAULT_WEB_PORT = 8080;
-    public final static Integer VALUE_DEFAULT_GAME_PORT = 7777;
-    public final static Integer VALUE_DEFAULT_QUERY_PORT = 27015;
-
-    // DESCRIPTIONS
-    public final static String DESCRIPTION_DEFAULT_TEXT = "<No description>";
-
-    // MAPS
-    public final static String MAP_BASE_URL_WORKSHOP = "https://steamcommunity.com/sharedfiles/filedetails/?id=";
-    public final static String MAP_OFFICIAL_LOCAL_FOLDER = "/KFGame/Web/images/maps";
-    public final static String MAP_CUSTOM_LOCAL_FOLDER = "/KFGame/Web/images/maps/custom";
-
-    // HELP
-    public final static String HELP_GITHUB_PROJECT_URL = "https://github.com/cesar-rgon/simple-kf2-server-launcher";
-    public final static String HELP_README_URL = "https://github.com/cesar-rgon/simple-kf2-server-launcher/blob/master/README.md";
+    // CONFIG PROPERTIES
+    public final static String CONFIG_APPLICATION_TITLE = "prop.config.applicationTitle";
+    public final static String CONFIG_APPLICATION_VERSION = "prop.config.applicationVersion";
+    public final static String CONFIG_INSTALLATION_FOLDER = "prop.config.installationFolder";
+    public final static String CONFIG_BETA_BRUNCH = "prop.config.betaBrunch";
+    public final static String CONFIG_VALIDATE_FILES = "prop.config.validateFiles";
+    public final static String CONFIG_IS_BETA = "prop.config.isBeta";
+    public final static String CONFIG_URL_STEAMCMD = "prop.config.urlSteamcmd";
+    public final static String CONFIG_DOWNLOAD_CONNECTION_TIMEOUT = "prop.config.downloadConnectionTimeout";
+    public final static String CONFIG_DOWNLOAD_READ_TIMEOUT = "prop.config.downloadReadTimeout";
+    public final static String CONFIG_DEFAULT_SERVERNAME = "prop.config.defaultServername";
+    public final static String CONFIG_DEFAULT_WEB_PORT = "prop.config.defaultWebPort";
+    public final static String CONFIG_DEFAULT_GAME_PORT = "prop.config.defaultGamePort";
+    public final static String CONFIG_DEFAULT_QUERY_PORT = "prop.config.defaultQueryPort";
+    public final static String CONFIG_AES_ENCRIPTION_KEY = "prop.config.aesEncryptionKey";
+    public final static String CONFIG_MAP_BASE_URL_WORKSHOP = "prop.config.mapBaseUrlWorkshop";
+    public final static String CONFIG_MAP_CUSTOM_LOCAL_FOLDER = "prop.config.mapCustomLocalFolder";
+    public final static String CONFIG_HELP_GITHUB_PROJECT_URL = "prop.config.helpGithubUrl";
+    public final static String CONFIG_HELP_README_URL = "prop.config.helpReadmeUrl";
+    public final static String CONFIG_DEFAULT_LANGUAGE_CODE = "prop.config.defaultLanguageCode";
 }

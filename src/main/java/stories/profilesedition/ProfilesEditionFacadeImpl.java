@@ -5,9 +5,10 @@ import daos.*;
 import dtos.ProfileDto;
 import dtos.factories.ProfileDtoFactory;
 import entities.Profile;
-import entities.Property;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -15,11 +16,12 @@ import java.util.Optional;
 
 public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
 
-    private final Integer FIRST_ELEMENT_ID = 1;
     private final ProfileDtoFactory profileDtoFactory;
+    private final PropertyService propertyService;
 
     public ProfilesEditionFacadeImpl() {
         profileDtoFactory = new ProfileDtoFactory();
+        propertyService = new PropertyServiceImpl();
     }
 
     @Override
@@ -30,22 +32,23 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
 
     @Override
     public ProfileDto createNewProfile(String profileName) throws Exception {
-        Optional<Property> defaultServernameOpt = PropertyDao.getInstance().findByKey(Constants.KEY_DEFAULT_SERVERNAME);
-        Optional<Property> defaultWebPort = PropertyDao.getInstance().findByKey(Constants.KEY_DEFAULT_WEB_PORT);
-        Optional<Property> defaultGamePort = PropertyDao.getInstance().findByKey(Constants.KEY_DEFAULT_GAME_PORT);
-        Optional<Property> defaultQueryPort = PropertyDao.getInstance().findByKey(Constants.KEY_DEFAULT_QUERY_PORT);
+        String defaultServername = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_SERVERNAME);
+        String defaultWebPort = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_WEB_PORT);
+        String defaultGamePort = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_GAME_PORT);
+        String defaultQueryPort = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_QUERY_PORT);
+
         Profile newProfile = new Profile(
                 profileName,
-                LanguageDao.getInstance().get(FIRST_ELEMENT_ID),
-                GameTypeDao.getInstance().get(FIRST_ELEMENT_ID),
-                MapDao.getInstance().get(FIRST_ELEMENT_ID),
-                DifficultyDao.getInstance().get(FIRST_ELEMENT_ID),
-                LengthDao.getInstance().get(FIRST_ELEMENT_ID),
-                MaxPlayersDao.getInstance().get(FIRST_ELEMENT_ID),
-                defaultServernameOpt.isPresent() ? defaultServernameOpt.get().getValue(): Constants.VALUE_DEFAULT_SERVERNAME,
-                defaultWebPort.isPresent() ? Integer.parseInt(defaultWebPort.get().getValue()): Constants.VALUE_DEFAULT_WEB_PORT,
-                defaultGamePort.isPresent() ? Integer.parseInt(defaultGamePort.get().getValue()): Constants.VALUE_DEFAULT_GAME_PORT,
-                defaultQueryPort.isPresent() ? Integer.parseInt(defaultQueryPort.get().getValue()): Constants.VALUE_DEFAULT_QUERY_PORT
+                LanguageDao.getInstance().listAll().get(0),
+                GameTypeDao.getInstance().listAll().get(0),
+                MapDao.getInstance().listDownloadedMaps().get(0),
+                DifficultyDao.getInstance().listAll().get(0),
+                LengthDao.getInstance().listAll().get(0),
+                MaxPlayersDao.getInstance().listAll().get(0),
+                StringUtils.isNotBlank(defaultServername) ? defaultServername: "Killing Floor 2 Server",
+                Integer.parseInt(defaultWebPort),
+                Integer.parseInt(defaultGamePort),
+                Integer.parseInt(defaultQueryPort)
         );
         ProfileDao.getInstance().insert(newProfile);
         return profileDtoFactory.newDto(newProfile);
@@ -76,12 +79,7 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
     }
 
     @Override
-    public String findPropertyValue(String key) throws SQLException {
-        Optional<Property> propertyOpt = PropertyDao.getInstance().findByKey(key);
-        if (propertyOpt.isPresent()) {
-            return propertyOpt.get().getValue();
-        } else {
-            return "";
-        }
+    public String findPropertyValue(String key) throws Exception {
+        return propertyService.getPropertyValue("properties/config.properties", key);
     }
 }

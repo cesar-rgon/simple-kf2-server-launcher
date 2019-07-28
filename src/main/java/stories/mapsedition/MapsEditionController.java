@@ -61,7 +61,7 @@ public class MapsEditionController implements Initializable {
         try {
             viewPaneCombo.setItems(MapViewOptions.listAll());
             viewPaneCombo.setValue(MapViewOptions.VIEW_BOTH);
-            installationFolder = facade.findPropertyValue(Constants.KEY_INSTALLATION_FOLDER);
+            installationFolder = facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER);
             mapList = facade.listAllMaps();
             List<MapDto> mapListDto = facade.getDtos(mapList);
             for (MapDto map: mapListDto) {
@@ -72,7 +72,7 @@ public class MapsEditionController implements Initializable {
                     customMapsFlowPane.getChildren().add(gridpane);
                 }
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             Utils.errorDialog("Error getting map list", "See stacktrace for more details", e);
         }
     }
@@ -84,12 +84,8 @@ public class MapsEditionController implements Initializable {
         if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(map.getUrlPhoto())) {
             image = new Image("file:" + installationFolder + "/" + map.getUrlPhoto());
         } else {
-            File imageFile = new File(System.getProperty("user.dir") + "/images/no-photo.png");
-            if (imageFile.exists()) {
-                image = new Image("file:" + System.getProperty("user.dir") + "/images/no-photo.png");
-            } else {
-                image = new Image("@../../images/no-photo.png");
-            }
+            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("images/no-photo.png");
+            image = new Image(inputStream);
         }
         ImageView mapPreview = new ImageView(image);
         mapPreview.setPreserveRatio(false);
@@ -230,41 +226,7 @@ public class MapsEditionController implements Initializable {
         Optional<String> result = Utils.OneTextInputDialog("Add a new custom map", "Enter url / id WorkShop");
         try {
             if (result.isPresent() && StringUtils.isNotBlank(result.get())) {
-                Long idWorkShop = null;
-                URL urlWorkShop = null;
-                if (result.get().contains("http")) {
-                    urlWorkShop = new URL(result.get());
-                    String[] array = result.get().split("=");
-                    idWorkShop = Long.parseLong(array[1]);
-                } else {
-                    idWorkShop = Long.parseLong(result.get());
-                    urlWorkShop = new URL(Constants.MAP_BASE_URL_WORKSHOP + idWorkShop);
-                }
-                BufferedReader reader = new BufferedReader(new InputStreamReader(urlWorkShop.openStream()));
-                String strUrlMapImage = null;
-                String mapName = null;
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    if (line.contains("image_src")) {
-                        String[] array = line.split("\"");
-                        strUrlMapImage = array[3];
-                    }
-                    if (line.contains("workshopItemTitle")) {
-                        String[] array = line.split(">");
-                        String[] array2 = array[1].split("<");
-                        mapName = array2[0];
-                    }
-                    if (StringUtils.isNotEmpty(strUrlMapImage) && StringUtils.isNotEmpty(mapName)) {
-                        break;
-                    }
-                }
-                reader.close();
-                String absoluteTargetFolder = installationFolder + Constants.MAP_CUSTOM_LOCAL_FOLDER;
-                File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
-                String relativeTargetFolder = Constants.MAP_CUSTOM_LOCAL_FOLDER + "/" + localfile.getName();
-                Map customMap = facade.createNewCustomMap(mapName,
-                                                          idWorkShop,
-                                                          relativeTargetFolder);
+                Map customMap = facade.createNewCustomMapFromWorkshop(result.get(), installationFolder);
                 if (customMap != null) {
                     mapList.add(customMap);
                     Kf2Common kf2Common = Kf2Factory.getInstance();

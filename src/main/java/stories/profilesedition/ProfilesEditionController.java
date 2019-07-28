@@ -11,7 +11,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
-import pojos.session.Session;
 import utils.Utils;
 
 import java.io.File;
@@ -45,7 +44,7 @@ public class ProfilesEditionController implements Initializable {
     @FXML
     private void addProfileOnAction() {
         try {
-            String installationFolder = facade.findPropertyValue(Constants.KEY_INSTALLATION_FOLDER);
+            String installationFolder = facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER);
             if (StringUtils.isBlank(installationFolder)) {
                 Utils.warningDialog("You can not add a new profile!","You need to define an installation folder in Install/Update section.");
                 return;
@@ -65,7 +64,7 @@ public class ProfilesEditionController implements Initializable {
     @FXML
     private void removeProfileOnAction() {
         try {
-            String installationFolder = facade.findPropertyValue(Constants.KEY_INSTALLATION_FOLDER);
+            String installationFolder = facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER);
             if (StringUtils.isBlank(installationFolder)) {
                 Utils.warningDialog("You can not remove a profile!","You need to define an installation folder in Install/Update section.");
                 return;
@@ -75,7 +74,7 @@ public class ProfilesEditionController implements Initializable {
                 ProfileDto selectedProfile = profilesTable.getSelectionModel().getSelectedItem();
                 if (facade.deleteSelectedProfile(selectedProfile.getName())) {
                     profilesTable.getItems().remove(selectedIndex);
-                    File profileConfigFolder = new File(facade.findPropertyValue(Constants.KEY_INSTALLATION_FOLDER) + "/KFGame/Config/" + selectedProfile.getName());
+                    File profileConfigFolder = new File(facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER) + "/KFGame/Config/" + selectedProfile.getName());
                     FileUtils.deleteDirectory(profileConfigFolder);
                 } else {
                     Utils.errorDialog("The profile can not be deleted from database", "Delete operation is aborted!", null);
@@ -94,7 +93,7 @@ public class ProfilesEditionController implements Initializable {
         String oldProfileName = (String)event.getOldValue();
         String newProfileName = ((String)event.getNewValue()).replaceAll(" ", "_");
         try {
-            String installationFolder = facade.findPropertyValue(Constants.KEY_INSTALLATION_FOLDER);
+            String installationFolder = facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER);
             if (StringUtils.isBlank(installationFolder)) {
                 Utils.warningDialog("You can not edit a profile!","You need to define an installation folder in Install/Update section.");
                 return;

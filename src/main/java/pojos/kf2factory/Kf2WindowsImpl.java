@@ -10,6 +10,8 @@ import net.lingala.zip4j.core.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import pojos.session.Session;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import utils.Utils;
 
 import java.io.File;
@@ -35,12 +37,16 @@ public class Kf2WindowsImpl extends Kf2Common {
             File steamcmdExeFile = new File(installationFolder + "\\steamcmd\\steamcmd.exe");
             if (!steamcmdExeFile.exists()) {
                 File steamcmdZipFile = new File(installationFolder + "\\steamcmd.zip");
+                PropertyService propertyService = new PropertyServiceImpl();
+                String urlSteamCmd = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_URL_STEAMCMD);
+                String downloadConnectionTimeOut = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DOWNLOAD_CONNECTION_TIMEOUT);
+                String downloadReadTimeOut = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DOWNLOAD_READ_TIMEOUT);
                 // Download SteamCmd
                 FileUtils.copyURLToFile(
-                        new URL(databaseService.findPropertyValue(Constants.KEY_URL_STEAMCMD)),
+                        new URL(urlSteamCmd),
                         steamcmdZipFile,
-                        Integer.parseInt(databaseService.findPropertyValue(Constants.KEY_DOWNLOAD_CONNECTION_TIMEOUT)),
-                        Integer.parseInt(databaseService.findPropertyValue(Constants.KEY_DOWNLOAD_READ_TIMEOUT)));
+                        Integer.parseInt(downloadConnectionTimeOut),
+                        Integer.parseInt(downloadReadTimeOut));
 
                 // Decompress SteamCmd
                 ZipFile zipFile = new ZipFile(installationFolder + "\\steamcmd.zip");
@@ -52,8 +58,8 @@ public class Kf2WindowsImpl extends Kf2Common {
             return true;
         } catch (Exception e) {
             Utils.errorDialog("Error preparing SteamCmd to be able to install KF2 server", "See stacktrace for more details", e);
+            return false;
         }
-        return false;
     }
 
     @Override
@@ -118,7 +124,7 @@ public class Kf2WindowsImpl extends Kf2Common {
             replaceInFileKfWebIni(installationFolder, profile);
             replaceInFileKfGameIni(installationFolder, profile);
 
-            Process proccess = Runtime.getRuntime().exec("cmd /C start " + command.toString(),null, new File(installationFolder));
+            Process proccess = Runtime.getRuntime().exec("cmd /C start /wait " + command.toString(),null, new File(installationFolder));
             Session.getInstance().getProcessList().add(proccess);
             return command.toString();
         } catch (Exception e) {

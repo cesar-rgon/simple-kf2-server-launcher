@@ -26,17 +26,17 @@ public class MapDao extends CommonDao<Map> {
     }
 
     public List<Map> listAll() throws SQLException {
-        String query="select m from entities.Map m order by m.id asc";
+        String query="select m from entities.Map m order by m.official desc, m.code asc";
         return list(query, null);
     }
 
     public List<Map> listDownloadedMaps() throws SQLException {
-        String query="select m from entities.Map m where m.downloaded=true order by m.id asc";
+        String query="select m from entities.Map m where m.downloaded=true order by m.official desc, m.code asc";
         return list(query, null);
     }
 
     public List<Map> listNotDownloadedMaps() throws SQLException {
-        String query="select m from entities.Map m where m.downloaded=false order by m.id asc";
+        String query="select m from entities.Map m where m.downloaded=false order by m.code asc";
         return list(query, null);
     }
 
@@ -48,7 +48,7 @@ public class MapDao extends CommonDao<Map> {
     }
 
     public List<Map> listOfficialMaps() throws SQLException {
-        String query="select m from entities.Map m where m.official=true order by m.id asc";
+        String query="select m from entities.Map m where m.official=true order by m.code asc";
         return list(query, null);
     }
 }

@@ -56,7 +56,7 @@ public class GameTypesEditionController implements Initializable {
                 gameTypesTable.refresh();
                 Utils.errorDialog("The game type can not be renamed in database", "Update operation is aborted!", null);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             gameTypesTable.refresh();
             Utils.errorDialog("The game type can not be updated!", "See stacktrace for more details", e);
         }
@@ -69,8 +69,7 @@ public class GameTypesEditionController implements Initializable {
         String newGameTypeDescription = (String)event.getNewValue();
         try {
             String code = gameTypesTable.getItems().get(edittedRowIndex).getKey();
-            SelectDto selectedLanguage = Session.getInstance().getActualProfile().getLanguage();
-            SelectDto updatedGameTypeDto = facade.updateChangedGameTypeDescription(code, oldGameTypeDescription, newGameTypeDescription, selectedLanguage);
+            SelectDto updatedGameTypeDto = facade.updateChangedGameTypeDescription(code, oldGameTypeDescription, newGameTypeDescription);
             if (updatedGameTypeDto != null) {
                 gameTypesTable.getItems().remove(edittedRowIndex);
                 gameTypesTable.getItems().add(updatedGameTypeDto);
@@ -78,7 +77,7 @@ public class GameTypesEditionController implements Initializable {
                 gameTypesTable.refresh();
                 Utils.errorDialog("The game type can not be renamed in database", "Update operation is aborted!", null);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             gameTypesTable.refresh();
             Utils.errorDialog("The game type can not be updated!", "See stacktrace for more details", e);
         }
@@ -91,10 +90,9 @@ public class GameTypesEditionController implements Initializable {
             if (result.isPresent() && StringUtils.isNotBlank(result.get().getKey()) && StringUtils.isNotBlank(result.get().getValue())) {
                 String code = result.get().getKey();
                 String description = result.get().getValue();
-                SelectDto selectedLanguage = Session.getInstance().getActualProfile().getLanguage();
-                gameTypesTable.getItems().add(facade.createNewGameType(code, description, selectedLanguage));
+                gameTypesTable.getItems().add(facade.createNewGameType(code, description));
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             Utils.errorDialog("The game type can not be created!", "See stacktrace for more details", e);
         }
     }
@@ -113,7 +111,7 @@ public class GameTypesEditionController implements Initializable {
             } else {
                 Utils.warningDialog("No selected game type", "Delete operation is aborted!");
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             Utils.errorDialog("The game type can not be deleted!", "See stacktrace for more details", e);
         }
     }

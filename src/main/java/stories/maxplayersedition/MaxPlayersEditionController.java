@@ -57,7 +57,7 @@ public class MaxPlayersEditionController implements Initializable {
                 maxPlayersTable.refresh();
                 Utils.errorDialog("The max. players can not be renamed in database", "Update operation is aborted!", null);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             maxPlayersTable.refresh();
             Utils.errorDialog("The max. players can not be updated!", "See stacktrace for more details", e);
         }
@@ -70,8 +70,7 @@ public class MaxPlayersEditionController implements Initializable {
         String newMaxPlayersDescription = (String)event.getNewValue();
         try {
             String code = maxPlayersTable.getItems().get(edittedRowIndex).getKey();
-            SelectDto selectedLanguage = Session.getInstance().getActualProfile().getLanguage();
-            SelectDto updatedLengthDto = facade.updateChangedMaxPlayersDescription(code, oldMaxPlayersDescription, newMaxPlayersDescription, selectedLanguage);
+            SelectDto updatedLengthDto = facade.updateChangedMaxPlayersDescription(code, oldMaxPlayersDescription, newMaxPlayersDescription);
             if (updatedLengthDto != null) {
                 maxPlayersTable.getItems().remove(edittedRowIndex);
                 maxPlayersTable.getItems().add(updatedLengthDto);
@@ -79,7 +78,7 @@ public class MaxPlayersEditionController implements Initializable {
                 maxPlayersTable.refresh();
                 Utils.errorDialog("The max. players can not be renamed in database", "Update operation is aborted!", null);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             maxPlayersTable.refresh();
             Utils.errorDialog("The max. players can not be updated!", "See stacktrace for more details", e);
         }
@@ -92,10 +91,9 @@ public class MaxPlayersEditionController implements Initializable {
             if (result.isPresent() && StringUtils.isNotBlank(result.get().getKey()) && StringUtils.isNotBlank(result.get().getValue())) {
                 String code = result.get().getKey();
                 String description = result.get().getValue();
-                SelectDto selectedLanguage = Session.getInstance().getActualProfile().getLanguage();
-                maxPlayersTable.getItems().add(facade.createNewMaxPlayers(code, description, selectedLanguage));
+                maxPlayersTable.getItems().add(facade.createNewMaxPlayers(code, description));
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             Utils.errorDialog("The game type can not be created!", "See stacktrace for more details", e);
         }
     }
@@ -114,7 +112,7 @@ public class MaxPlayersEditionController implements Initializable {
             } else {
                 Utils.warningDialog("No selected max. players", "Delete operation is aborted!");
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             Utils.errorDialog("The max. players can not be deleted!", "See stacktrace for more details", e);
         }
     }

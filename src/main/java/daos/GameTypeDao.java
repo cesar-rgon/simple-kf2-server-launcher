@@ -27,7 +27,7 @@ public class GameTypeDao extends CommonDao<GameType> {
     }
 
     public List<GameType> listAll() throws SQLException {
-        String query="select gt from entities.GameType gt order by gt.id asc";
+        String query="select gt from entities.GameType gt order by gt.code asc";
         return list(query, null);
     }
 

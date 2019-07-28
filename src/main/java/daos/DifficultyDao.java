@@ -26,7 +26,7 @@ public class DifficultyDao extends CommonDao<Difficulty> {
     }
 
     public List<Difficulty> listAll() throws SQLException {
-        String query="select d from entities.Difficulty d order by d.id asc";
+        String query="select d from entities.Difficulty d order by d.code asc";
         return list(query, null);
     }
 

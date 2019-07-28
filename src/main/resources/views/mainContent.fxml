@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.web.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.WebView?>
 
-<fx:root id="centerPane" fx:id="mainContent" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" alignment="CENTER" prefHeight="730.0" prefWidth="1210.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maincontent.MainContentController">
+<fx:root id="centerPane" fx:id="mainContent" alignment="CENTER" prefHeight="730.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maincontent.MainContentController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="80.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
-        <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0" prefWidth="10.0" />
+        <ColumnConstraints hgrow="ALWAYS" maxWidth="350.0" minWidth="10.0" prefWidth="140.0" />
         <ColumnConstraints hgrow="SOMETIMES" maxWidth="40.0" minWidth="10.0" prefWidth="10.0" />
-        <ColumnConstraints hgrow="SOMETIMES" maxWidth="100.0" minWidth="10.0" prefWidth="10.0" />
+        <ColumnConstraints hgrow="ALWAYS" maxWidth="200.0" minWidth="10.0" prefWidth="10.0" />
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="80.0" />
     </columnConstraints>
@@ -38,7 +39,7 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
     </rowConstraints>
     <children>
-        <ImageView fitHeight="700.0" fitWidth="741.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="9" GridPane.valignment="CENTER">
+        <ImageView fitHeight="700.0" fitWidth="741.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="9" GridPane.valignment="CENTER">
         <image>
             <Image url="@../images/radiation700.png" />
         </image>
@@ -132,13 +133,13 @@
             <Insets left="7.0" />
          </GridPane.margin>
         </ImageView>
-        <ComboBox fx:id="profileSelect" onAction="#profileOnAction" opacity="0.75" prefWidth="240.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <ComboBox fx:id="languageSelect" disable="true" onAction="#languageOnAction" opacity="0.75" prefWidth="240.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-        <ComboBox fx:id="gameTypeSelect" onAction="#gameTypeOnAction" opacity="0.75" prefWidth="240.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-        <ComboBox fx:id="mapSelect" onAction="#mapOnAction" opacity="0.75" prefWidth="240.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-        <ComboBox fx:id="difficultySelect" onAction="#difficultyOnAction" opacity="0.75" prefWidth="240.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-        <ComboBox fx:id="lengthSelect" onAction="#lengthOnAction" opacity="0.75" prefWidth="240.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-        <ComboBox fx:id="maxPlayersSelect" onAction="#maxPlayersOnAction" opacity="0.75" prefWidth="240.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+        <ComboBox fx:id="profileSelect" onAction="#profileOnAction" opacity="0.75" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <ComboBox fx:id="languageSelect" disable="true" onAction="#languageOnAction" opacity="0.75" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <ComboBox fx:id="gameTypeSelect" onAction="#gameTypeOnAction" opacity="0.75" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+        <ComboBox fx:id="mapSelect" onAction="#mapOnAction" opacity="0.75" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+        <ComboBox fx:id="difficultySelect" onAction="#difficultyOnAction" opacity="0.75" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+        <ComboBox fx:id="lengthSelect" onAction="#lengthOnAction" opacity="0.75" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+        <ComboBox fx:id="maxPlayersSelect" onAction="#maxPlayersOnAction" opacity="0.75" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
         <Label text="PROFILE*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
             <GridPane.margin>
                 <Insets right="10.0" />
@@ -219,10 +220,10 @@
                 <Insets left="132.0" />
             </GridPane.margin>
         </Label>
-        <TextField fx:id="serverName" maxWidth="240.0" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-        <PasswordField fx:id="serverPassword" maxWidth="240.0" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+        <TextField fx:id="serverName" maxWidth="350.0" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+        <PasswordField fx:id="serverPassword" maxWidth="350.0" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="9" />
         <CheckBox fx:id="webPage" lineSpacing="0.9" mnemonicParsing="false" onAction="#webPageOnAction" opacity="0.75" text="Enable WebAdmin" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="10" />
-        <PasswordField fx:id="webPassword" maxWidth="240.0" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+        <PasswordField fx:id="webPassword" maxWidth="350.0" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="11" />
         <TextField fx:id="webPort" maxWidth="65.0" opacity="0.75" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="12">
          <GridPane.margin>
             <Insets />
@@ -235,8 +236,8 @@
          <GridPane.margin>
             <Insets left="140.0" />
          </GridPane.margin></TextField>
-        <TextField fx:id="yourClan" maxWidth="240.0" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="13" />
-        <TextField fx:id="yourWebLink" maxWidth="240.0" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="14" />
+        <TextField fx:id="yourClan" maxWidth="350.0" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="13" />
+        <TextField fx:id="yourWebLink" maxWidth="350.0" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="14" />
         <TextField id="console" fx:id="console" editable="false" opacity="0.75" GridPane.columnSpan="7" GridPane.rowIndex="18">
          <GridPane.margin>
             <Insets left="207.0" />
@@ -245,56 +246,56 @@
          <GridPane.margin>
             <Insets left="207.0" />
          </GridPane.margin></TextField>
-        <ImageView fitHeight="256.0" fitWidth="518.0" opacity="0.76" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="9" GridPane.valignment="BOTTOM">
+        <ImageView fitHeight="256.0" fitWidth="518.0" opacity="0.76" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/photo-borders.png" />
             </image>
             <GridPane.margin>
-                <Insets right="-10.0" />
+                <Insets right="-180.0" />
             </GridPane.margin>
         </ImageView>
-        <WebView fx:id="imageWebView" maxHeight="256.0" maxWidth="512.0" prefHeight="-1.0" prefWidth="-1.0" visible="false" GridPane.columnIndex="3" GridPane.columnSpan="3" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.rowSpan="7" GridPane.valignment="BOTTOM" GridPane.vgrow="ALWAYS">
+        <WebView fx:id="imageWebView" maxHeight="256.0" maxWidth="512.0" prefHeight="-1.0" prefWidth="-1.0" visible="false" GridPane.columnIndex="2" GridPane.columnSpan="3" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.rowSpan="7" GridPane.valignment="BOTTOM" GridPane.vgrow="ALWAYS">
          <GridPane.margin>
             <Insets left="-11.0" />
          </GridPane.margin></WebView>
-        <TextField fx:id="urlImageServer" maxWidth="1.7976931348623157E308" opacity="0.75" GridPane.columnIndex="3" GridPane.columnSpan="3" GridPane.rowIndex="10" />
-        <TextArea fx:id="welcomeMessage" opacity="0.75" prefHeight="56.0" prefWidth="253.0" GridPane.columnIndex="3" GridPane.columnSpan="3" GridPane.rowIndex="12" GridPane.rowSpan="3" />
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="6" GridPane.rowIndex="10">
+        <TextField fx:id="urlImageServer" maxWidth="1.7976931348623157E308" opacity="0.75" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="10" />
+        <TextArea fx:id="welcomeMessage" opacity="0.75" prefHeight="56.0" prefWidth="253.0" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="12" GridPane.rowSpan="3" />
+        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="10">
             <image>
                 <Image url="@../images/label-inverted.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="6" GridPane.rowIndex="12">
+        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="12">
             <image>
                 <Image url="@../images/label-inverted.png" />
             </image>
         </ImageView>
-        <Label text="URL IMAGE SERVER" GridPane.columnIndex="6" GridPane.halignment="LEFT" GridPane.rowIndex="10">
+        <Label text="URL IMAGE SERVER" GridPane.columnIndex="5" GridPane.halignment="LEFT" GridPane.rowIndex="10">
             <GridPane.margin>
                 <Insets left="10.0" />
             </GridPane.margin>
         </Label>
-        <Label text="WELCOME MESSAGE" GridPane.columnIndex="6" GridPane.halignment="LEFT" GridPane.rowIndex="12">
+        <Label text="WELCOME MESSAGE" GridPane.columnIndex="5" GridPane.halignment="LEFT" GridPane.rowIndex="12">
             <GridPane.margin>
                 <Insets left="10.0" />
             </GridPane.margin>
         </Label>
-        <Button fx:id="runServer" maxWidth="178.0" mnemonicParsing="false" onAction="#runServerOnAction" text="RUN SERVER" GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="15" GridPane.valignment="BOTTOM">
+        <Button fx:id="runServer" maxWidth="178.0" mnemonicParsing="false" onAction="#runServerOnAction" text="RUN SERVER" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="15" GridPane.valignment="BOTTOM">
             <GridPane.margin>
                 <Insets right="20.0" />
             </GridPane.margin>
         </Button>
-        <Button fx:id="joinServer" maxWidth="178.0" mnemonicParsing="false" onAction="#joinServerOnAction" text="JOIN SERVER" GridPane.columnIndex="6" GridPane.halignment="LEFT" GridPane.rowIndex="15" GridPane.valignment="BOTTOM">
+        <Button fx:id="joinServer" maxWidth="178.0" mnemonicParsing="false" onAction="#joinServerOnAction" text="JOIN SERVER" GridPane.columnIndex="5" GridPane.halignment="LEFT" GridPane.rowIndex="15" GridPane.valignment="BOTTOM">
             <GridPane.margin>
                 <Insets left="20.0" />
             </GridPane.margin>
         </Button>
-        <ImageView fitHeight="121.0" fitWidth="558.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="6" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+        <ImageView fitHeight="121.0" fitWidth="558.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
             <image>
                 <Image url="@../images/kf2logo.png" />
             </image>
          <GridPane.margin>
-            <Insets top="20.0" />
+            <Insets right="-200.0" top="20.0" />
          </GridPane.margin>
         </ImageView>
     </children>

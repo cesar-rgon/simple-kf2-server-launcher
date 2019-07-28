@@ -7,10 +7,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import services.DatabaseService;
 import services.DatabaseServiceImpl;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import utils.Utils;
 
 import java.io.*;
-import java.sql.SQLException;
 import java.util.List;
 
 public abstract class Kf2Common {
@@ -23,11 +24,18 @@ public abstract class Kf2Common {
     }
 
     public void installOrUpdateServer(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) {
-        if (prepareSteamCmd(installationFolder)) {
+        if (isValid(installationFolder) && prepareSteamCmd(installationFolder)) {
             installUpdateKf2Server(installationFolder, validateFiles, isBeta, betaBrunch);
             checkForNewOfficialMaps(installationFolder);
+        }
+    }
+
+    private boolean isValid(String installationFolder) {
+        if (StringUtils.isBlank(installationFolder) || installationFolder.contains(" ")) {
+            Utils.warningDialog("The operation can not be done", "Installation folder can not be empty\nand can not constain whitespaces.\nDefine in Install/Update section.");
+            return false;
         } else {
-            Utils.errorDialog("Error preparing SteamCmd to be able to install KF2 server", "The installation process is aborted.", null);
+            return true;
         }
     }
 
@@ -38,14 +46,17 @@ public abstract class Kf2Common {
         try {
             String errorMessage = validateParameters(profile);
             if (StringUtils.isEmpty(errorMessage)) {
-                String installationFolder = databaseService.findPropertyValue(Constants.KEY_INSTALLATION_FOLDER);
-                createConfigFolder(installationFolder, profile.getName());
-                checkForNewOfficialMaps(installationFolder);
-                return runKf2Server(installationFolder, profile);
+                PropertyService propertyService = new PropertyServiceImpl();
+                String installationFolder = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_INSTALLATION_FOLDER);
+                if (isValid(installationFolder)) {
+                    createConfigFolder(installationFolder, profile.getName());
+                    checkForNewOfficialMaps(installationFolder);
+                    return runKf2Server(installationFolder, profile);
+                }
             } else {
                 Utils.errorDialog("Error validating parameters. The server can not be launched!", errorMessage, null);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             Utils.errorDialog("Error executing Killing Floor 2 server", "See stacktrace for more details", e);
         }
         return null;

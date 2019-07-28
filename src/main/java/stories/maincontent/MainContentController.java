@@ -74,7 +74,7 @@ public class MainContentController implements Initializable {
         }
 
         if (profileSelect.getValue() != null) {
-            loadActualProfile(profileSelect.getValue());
+            profileOnAction();
         }
 
         serverName.focusedProperty().addListener(new ChangeListener<Boolean>() {
@@ -82,7 +82,7 @@ public class MainContentController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
-                        String profileName = profileSelect.getValue().getName();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetServerName(profileName, serverName.getText())) {
                             Utils.errorDialog("Error updating the profile information", "The server name value could not be saved!", null);
                         }
@@ -98,7 +98,7 @@ public class MainContentController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
-                        String profileName = profileSelect.getValue().getName();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetServerPassword(profileName, serverPassword.getText())) {
                             Utils.errorDialog("Error updating the profile information", "The server password value could not be saved!", null);
                         }
@@ -114,7 +114,7 @@ public class MainContentController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
-                        String profileName = profileSelect.getValue().getName();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetWebPassword(profileName, webPassword.getText())) {
                             Utils.errorDialog("Error updating the profile information", "The web password value could not be saved!", null);
                         }
@@ -130,7 +130,7 @@ public class MainContentController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
-                        String profileName = profileSelect.getValue().getName();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (StringUtils.isNotEmpty(webPort.getText())) {
                             if (!facade.updateProfileSetWebPort(profileName, Integer.parseInt(webPort.getText()))) {
                                 Utils.errorDialog("Error updating the profile information", "The web port value could not be saved!", null);
@@ -154,7 +154,7 @@ public class MainContentController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
-                        String profileName = profileSelect.getValue().getName();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (StringUtils.isNotEmpty(gamePort.getText())) {
                             if (!facade.updateProfileSetGamePort(profileName, Integer.parseInt(gamePort.getText()))) {
                                 Utils.errorDialog("Error updating the profile information", "The game port value could not be saved!", null);
@@ -178,7 +178,7 @@ public class MainContentController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
-                        String profileName = profileSelect.getValue().getName();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (StringUtils.isNotEmpty(queryPort.getText())) {
                             if (!facade.updateProfileSetQueryPort(profileName, Integer.parseInt(queryPort.getText()))) {
                                 Utils.errorDialog("Error updating the profile information", "The query port value could not be saved!", null);
@@ -202,7 +202,7 @@ public class MainContentController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
-                        String profileName = profileSelect.getValue().getName();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetYourClan(profileName, yourClan.getText())) {
                             Utils.errorDialog("Error updating the profile information", "The clan value could not be saved!", null);
                         }
@@ -218,7 +218,7 @@ public class MainContentController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
-                        String profileName = profileSelect.getValue().getName();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetYourWebLink(profileName, yourWebLink.getText())) {
                             Utils.errorDialog("Error updating the profile information", "The web link value could not be saved!", null);
                         }
@@ -234,7 +234,7 @@ public class MainContentController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
-                        String profileName = profileSelect.getValue().getName();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetUrlImageServer(profileName, urlImageServer.getText())) {
                             Utils.errorDialog("Error updating the profile information", "The image server link value could not be saved!", null);
                         }
@@ -257,7 +257,7 @@ public class MainContentController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
-                        String profileName = profileSelect.getValue().getName();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetWelcomeMessage(profileName, welcomeMessage.getText())) {
                             Utils.errorDialog("Error updating the profile information", "The welcome message value could not be saved!", null);
                         }
@@ -273,7 +273,7 @@ public class MainContentController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
-                        String profileName = profileSelect.getValue().getName();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetCustomParameters(profileName, customParameters.getText())) {
                             Utils.errorDialog("Error updating the profile information", "The custom parameters value could not be saved!", null);
                         }

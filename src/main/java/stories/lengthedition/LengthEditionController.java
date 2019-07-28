@@ -56,7 +56,7 @@ public class LengthEditionController implements Initializable {
                 lengthTable.refresh();
                 Utils.errorDialog("The length can not be renamed in database", "Update operation is aborted!", null);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             lengthTable.refresh();
             Utils.errorDialog("The length can not be updated!", "See stacktrace for more details", e);
         }
@@ -69,8 +69,7 @@ public class LengthEditionController implements Initializable {
         String newLengthDescription = (String)event.getNewValue();
         try {
             String code = lengthTable.getItems().get(edittedRowIndex).getKey();
-            SelectDto selectedLanguage = Session.getInstance().getActualProfile().getLanguage();
-            SelectDto updatedLengthDto = facade.updateChangedLengthDescription(code, oldLengthDescription, newLengthDescription, selectedLanguage);
+            SelectDto updatedLengthDto = facade.updateChangedLengthDescription(code, oldLengthDescription, newLengthDescription);
             if (updatedLengthDto != null) {
                 lengthTable.getItems().remove(edittedRowIndex);
                 lengthTable.getItems().add(updatedLengthDto);
@@ -78,7 +77,7 @@ public class LengthEditionController implements Initializable {
                 lengthTable.refresh();
                 Utils.errorDialog("The length can not be renamed in database", "Update operation is aborted!", null);
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             lengthTable.refresh();
             Utils.errorDialog("The length can not be updated!", "See stacktrace for more details", e);
         }
@@ -91,10 +90,9 @@ public class LengthEditionController implements Initializable {
             if (result.isPresent() && StringUtils.isNotBlank(result.get().getKey()) && StringUtils.isNotBlank(result.get().getValue())) {
                 String code = result.get().getKey();
                 String description = result.get().getValue();
-                SelectDto selectedLanguage = Session.getInstance().getActualProfile().getLanguage();
-                lengthTable.getItems().add(facade.createNewLength(code, description, selectedLanguage));
+                lengthTable.getItems().add(facade.createNewLength(code, description));
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             Utils.errorDialog("The game type can not be created!", "See stacktrace for more details", e);
         }
     }
@@ -113,7 +111,7 @@ public class LengthEditionController implements Initializable {
             } else {
                 Utils.warningDialog("No selected length", "Delete operation is aborted!");
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             Utils.errorDialog("The length can not be deleted!", "See stacktrace for more details", e);
         }
     }

@@ -46,6 +46,10 @@ public class MapDto {
 
     @Override
     public String toString() {
-        return key;
+        if (official) {
+            return key;
+        } else {
+            return "[custom] " + key;
+        }
     }
 }

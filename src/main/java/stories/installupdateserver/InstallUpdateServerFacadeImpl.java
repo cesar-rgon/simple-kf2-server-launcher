@@ -1,36 +1,25 @@
 package stories.installupdateserver;
 
-import daos.PropertyDao;
-import entities.Property;
-import services.DatabaseService;
-import services.DatabaseServiceImpl;
-
-import java.sql.SQLException;
-import java.util.Optional;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 
 public class InstallUpdateServerFacadeImpl implements InstallUpdateServerFacade {
 
-    private final DatabaseService databaseService;
+    private final PropertyService propertyService;
 
     public InstallUpdateServerFacadeImpl() {
         super();
-        databaseService = new DatabaseServiceImpl();
+        propertyService = new PropertyServiceImpl();
     }
 
     @Override
-    public boolean saveOrUpdateProperty(String key, String newValue) throws SQLException {
-        Optional<Property> propertyOpt = PropertyDao.getInstance().findByKey(key);
-        if (propertyOpt.isPresent()) {
-            propertyOpt.get().setValue(newValue);
-            return PropertyDao.getInstance().update(propertyOpt.get());
-        } else {
-            Property property = new Property(key, newValue);
-            return PropertyDao.getInstance().insert(property) != null;
-        }
+    public boolean saveOrUpdateProperty(String key, String newValue) throws Exception {
+        propertyService.setProperty("properties/config.properties", key, newValue);
+        return true;
     }
 
     @Override
-    public String findPropertyValue(String key) throws SQLException {
-        return databaseService.findPropertyValue(key);
+    public String findPropertyValue(String key) throws Exception {
+        return propertyService.getPropertyValue("properties/config.properties", key);
     }
 }
