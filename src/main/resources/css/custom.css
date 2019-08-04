@@ -133,7 +133,7 @@
 #titleConfigLabel {
     -fx-text-fill: #fba140;
     -fx-font-weight: bold;
-    -fx-font-size: 34;
+    -fx-font-size: 30;
 }
 
 .scroll-bar:vertical{

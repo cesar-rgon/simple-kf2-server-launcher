@@ -16,6 +16,7 @@
 
 <fx:root id="centerPane" fx:id="mapsEditionGridPane" prefHeight="730.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapsedition.MapsEditionController">
    <children>
+      <Button fx:id="checkCacheMaps" mnemonicParsing="false" onAction="#checkCacheMapsOnAction" text="Check cache of maps" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
       <TextField fx:id="searchMaps" maxWidth="210.0" onKeyReleased="#searchMapsKeyReleased" />
       <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
          <image>
@@ -29,7 +30,7 @@
          <GridPane.margin>
             <Insets />
          </GridPane.margin></Button>
-      <Label text="View" GridPane.columnIndex="3" GridPane.halignment="RIGHT">
+      <Label text="View" GridPane.columnIndex="4" GridPane.halignment="RIGHT">
          <GridPane.margin>
             <Insets right="270.0" />
          </GridPane.margin></Label>
@@ -37,21 +38,30 @@
          <GridPane.margin>
             <Insets />
          </GridPane.margin></Button>
-      <ComboBox fx:id="viewPaneCombo" onAction="#viewPaneComboOnAction" prefWidth="260.0" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+      <ComboBox fx:id="viewPaneCombo" onAction="#viewPaneComboOnAction" prefWidth="260.0" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets left="60.0" />
          </GridPane.margin></ComboBox>
-      <Label text="Size" GridPane.columnIndex="4" GridPane.halignment="RIGHT">
+      <Label text="Size" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
          <GridPane.margin>
-            <Insets right="200.0" />
+            <Insets bottom="15.0" right="270.0" />
          </GridPane.margin>
       </Label>
-      <Slider fx:id="mapsSlider" blockIncrement="25.0" maxWidth="240.0" minorTickCount="2" onMouseClicked="#mapsSliderOnMouseClicked" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="50.0" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER">
+      <Slider fx:id="mapsSlider" blockIncrement="25.0" maxWidth="240.0" minorTickCount="2" onMouseClicked="#mapsSliderOnMouseClicked" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="50.0" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER" GridPane.rowIndex="1">
          <padding>
-            <Insets left="45.0" right="10.0" top="20.0" />
-         </padding></Slider>
-      <Label id="titleConfigLabel" fx:id="officialMapsLabel" text="Official Maps" GridPane.columnSpan="5" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
-      <Label id="titleConfigLabel" fx:id="customMapsLabel" text="Custom Maps" GridPane.columnSpan="5" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP" />
+            <Insets left="-25.0" right="5.0" top="5.0" />
+         </padding>
+         <GridPane.margin>
+            <Insets />
+         </GridPane.margin></Slider>
+      <Label id="titleConfigLabel" fx:id="officialMapsLabel" text="Official Maps" GridPane.columnSpan="5" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+         <GridPane.margin>
+            <Insets top="10.0" />
+         </GridPane.margin></Label>
+      <Label id="titleConfigLabel" fx:id="customMapsLabel" text="Custom Maps" GridPane.columnSpan="5" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP">
+         <GridPane.margin>
+            <Insets top="10.0" />
+         </GridPane.margin></Label>
       <ScrollPane fx:id="officialMapsScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" GridPane.columnSpan="5" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
          <content>
             <FlowPane fx:id="officialMapsFlowPane" hgap="50.0" style="-fx-background-color: black;" vgap="50.0">
@@ -59,6 +69,9 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </padding></FlowPane>
          </content>
+         <GridPane.margin>
+            <Insets bottom="5.0" />
+         </GridPane.margin>
       </ScrollPane>
       <ScrollPane fx:id="customMapsScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" GridPane.columnSpan="5" GridPane.rowIndex="4">
          <content>
@@ -67,14 +80,17 @@
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                </padding></FlowPane>
          </content>
+         <GridPane.margin>
+            <Insets bottom="5.0" />
+         </GridPane.margin>
       </ScrollPane>
    </children>
    <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" minWidth="240.0" prefWidth="1210.0" />
       <ColumnConstraints hgrow="ALWAYS" minWidth="160.0" prefWidth="1210.0" />
       <ColumnConstraints hgrow="ALWAYS" minWidth="240.0" prefWidth="1210.0" />
-      <ColumnConstraints hgrow="ALWAYS" minWidth="320.0" prefWidth="1210.0" />
       <ColumnConstraints hgrow="ALWAYS" minWidth="250.0" prefWidth="1210.0" />
+      <ColumnConstraints hgrow="ALWAYS" minWidth="320.0" prefWidth="1210.0" />
    </columnConstraints>
    <rowConstraints>
       <RowConstraints prefHeight="100.0" />

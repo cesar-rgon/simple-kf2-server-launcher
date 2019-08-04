@@ -28,6 +28,9 @@ import utils.Utils;
 
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -308,5 +311,27 @@ public class MapsEditionController implements Initializable {
                 }
             }
         }
+    }
+
+    @FXML
+    private void checkCacheMapsOnAction() {
+        Utils.infoDialog("This feature is not implemented yet. Will be enabled for next release.", "It will detect custom maps previously downloaded in the server\nand it will add them to the launcher automatically.");
+        return;
+        /*
+        File cacheFolder = new File(installationFolder + "/KFGame/Cache/");
+        File[] listOfFiles = cacheFolder.listFiles();
+
+        for (int i=0; i < listOfFiles.length; i++) {
+            if (listOfFiles[i].isDirectory()) {
+                try {
+                    Long idWorkShop = Long.parseLong(listOfFiles[i].getName());
+
+
+                } catch (Exception e) {
+                    // TODO: Manage this error
+                }
+            }
+        }
+        */
     }
 }
