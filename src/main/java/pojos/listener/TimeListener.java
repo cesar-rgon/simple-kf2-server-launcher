@@ -45,8 +45,8 @@ public class TimeListener extends TimerTask {
                         try {
                             List<Path> kfmFilesPath = Files.walk(Paths.get(installationFolder + "/KFGame/Cache/" + map.getIdWorkShop()))
                                     .filter(Files::isRegularFile)
-                                    .filter(f -> f.getFileName().toString().startsWith("KF-"))
-                                    .filter(f -> f.getFileName().toString().endsWith(".kfm"))
+                                    .filter(f -> f.getFileName().toString().toUpperCase().startsWith("KF-"))
+                                    .filter(f -> f.getFileName().toString().toUpperCase().endsWith(".KFM"))
                                     .collect(Collectors.toList());
 
                             if (kfmFilesPath != null && !kfmFilesPath.isEmpty()) {

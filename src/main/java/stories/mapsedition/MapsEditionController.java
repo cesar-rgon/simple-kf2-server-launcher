@@ -20,13 +20,17 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
+import pojos.listener.TimeListener;
 import pojos.session.Session;
 import start.MainApplication;
 import utils.Utils;
 
-import java.io.*;
+import java.io.File;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -39,6 +43,8 @@ import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class MapsEditionController implements Initializable {
+
+    private static final Logger logger = LogManager.getLogger(MapsEditionController.class);
 
     private final MapsEditionFacade facade;
     private String installationFolder;
@@ -214,7 +220,7 @@ public class MapsEditionController implements Initializable {
     }
 
     @FXML
-    private void addNewMapOnAction() {
+    private void addNewMapsOnAction() {
         if (!facade.isCorrectInstallationFolder(installationFolder)) {
             Utils.warningDialog("No maps can be added!", "The installation folder is not correct.\nSet it up in Install / Update section.");
             return;
@@ -226,22 +232,38 @@ public class MapsEditionController implements Initializable {
         if (MapViewOptions.VIEW_OFFICIAL.equals(viewPaneCombo.getValue())) {
             viewPaneCombo.setValue(MapViewOptions.VIEW_BOTH);
         }
-        Optional<String> result = Utils.OneTextInputDialog("Add a new custom map", "Enter url / id WorkShop");
-        try {
-            if (result.isPresent() && StringUtils.isNotBlank(result.get())) {
-                Map customMap = facade.createNewCustomMapFromWorkshop(result.get(), installationFolder);
-                if (customMap != null) {
-                    mapList.add(customMap);
-                    Kf2Common kf2Common = Kf2Factory.getInstance();
-                    kf2Common.addCustomMapToKfEngineIni(customMap.getIdWorkShop(), installationFolder);
-                    GridPane gridpane = createMapGridPane(facade.getDto(customMap));
-                    customMapsFlowPane.getChildren().add(gridpane);
-                } else {
-                    Utils.errorDialog("Error adding new custom map", "The map could not be found", null);
+        Optional<String> result = Utils.OneTextInputDialog("Add new custom maps", "Enter url / id WorkShop\nIf more than one\nuse \",\" as separator");
+        if (result.isPresent() && StringUtils.isNotBlank(result.get())) {
+            StringBuffer success = new StringBuffer();
+            StringBuffer errors = new StringBuffer();
+
+            String[] array = result.get().replaceAll(" ", "").split(",");
+            Map customMap = null;
+            for (int i=0; i < array.length; i++) {
+                try {
+                    customMap = facade.createNewCustomMapFromWorkshop(array[i], installationFolder);
+                    if (customMap != null) {
+                        mapList.add(customMap);
+                        Kf2Common kf2Common = Kf2Factory.getInstance();
+                        kf2Common.addCustomMapToKfEngineIni(customMap.getIdWorkShop(), installationFolder);
+                        GridPane gridpane = createMapGridPane(facade.getDto(customMap));
+                        customMapsFlowPane.getChildren().add(gridpane);
+                        success.append("map name: ").append(customMap.getCode()).append(" - idWorkShop: ").append(customMap.getIdWorkShop()).append("\n");
+                    } else {
+                        errors.append("url/id WorkShop: ").append(array[i]).append("\n");
+                    }
+                } catch (Exception e) {
+                    errors.append("url/id WorkShop: ").append(array[i]).append("\n");
                 }
             }
-        } catch (Exception e) {
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+            if (StringUtils.isNotBlank(success)) {
+                Utils.infoDialog("These maps were successfully added to the launcher:", success.toString());
+            } else {
+                Utils.infoDialog("No maps were added", "Check the url/id WorkShop of the maps");
+            }
+            if (StringUtils.isNotBlank(errors)) {
+                Utils.errorDialog("Error adding next maps to the launcher:", errors.toString(), null);
+            }
         }
     }
 
@@ -314,24 +336,71 @@ public class MapsEditionController implements Initializable {
     }
 
     @FXML
-    private void checkCacheMapsOnAction() {
-        Utils.infoDialog("This feature is not implemented yet. Will be enabled for next release.", "It will detect custom maps previously downloaded in the server\nand it will add them to the launcher automatically.");
-        return;
-        /*
-        File cacheFolder = new File(installationFolder + "/KFGame/Cache/");
-        File[] listOfFiles = cacheFolder.listFiles();
+    private void importMapsFromServerOnAction() {
+        if (!facade.isCorrectInstallationFolder(installationFolder)) {
+            Utils.warningDialog("No maps can be imported!", "The installation folder is not correct.\nSet it up in Install / Update section.");
+            return;
+        }
+        if (Session.getInstance().isRunningProcess()) {
+            Utils.warningDialog("No maps can be imported!", "At least one instance of the server is running. Close them.");
+            return;
+        }
 
-        for (int i=0; i < listOfFiles.length; i++) {
-            if (listOfFiles[i].isDirectory()) {
-                try {
-                    Long idWorkShop = Long.parseLong(listOfFiles[i].getName());
+        Optional<ButtonType> result = Utils.questionDialog("Import maps from server to the launcher", "This operation can take a few minutes.\nAre you sure you want to continue?");
+        if (result.isPresent() && result.get().equals(ButtonType.OK)) {
+            logger.info("Starting the process to import maps from the server to the launcher");
 
+            File cacheFolder = new File(installationFolder + "/KFGame/Cache/");
+            File[] listOfFiles = cacheFolder.listFiles();
+            StringBuffer success = new StringBuffer();
+            StringBuffer errors = new StringBuffer();
+            for (int i=0; i < listOfFiles.length; i++) {
+                if (listOfFiles[i].isDirectory()) {
+                    Map customMap = null;
+                    Long idWorkShop = null;
+                    try {
+                        idWorkShop = Long.parseLong(listOfFiles[i].getName());
+                        List<Path> kfmFilesPath = Files.walk(Paths.get(installationFolder + "/KFGame/Cache/" + idWorkShop))
+                                .filter(Files::isRegularFile)
+                                .filter(f -> f.getFileName().toString().toUpperCase().startsWith("KF-"))
+                                .filter(f -> f.getFileName().toString().toUpperCase().endsWith(".KFM"))
+                                .collect(Collectors.toList());
 
-                } catch (Exception e) {
-                    // TODO: Manage this error
+                        if (kfmFilesPath != null && !kfmFilesPath.isEmpty()) {
+                            String filenameWithExtension = kfmFilesPath.get(0).getFileName().toString();
+                            String[] array = filenameWithExtension.split(".kfm");
+                            String mapName = array[0];
+                            Optional<Map> customMapInDataBase = facade.findMapByCode(mapName);
+                            if (!customMapInDataBase.isPresent()) {
+                                customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, mapName, installationFolder);
+                                if (customMap != null) {
+                                    mapList.add(customMap);
+                                    Kf2Common kf2Common = Kf2Factory.getInstance();
+                                    kf2Common.addCustomMapToKfEngineIni(customMap.getIdWorkShop(), installationFolder);
+                                    GridPane gridpane = createMapGridPane(facade.getDto(customMap));
+                                    customMapsFlowPane.getChildren().add(gridpane);
+                                    success.append("map name: ").append(customMap.getCode()).append(" - idWorkShop: ").append(idWorkShop).append("\n");
+                                } else {
+                                    logger.error("Error importing the customMap with idWorkShop: " + idWorkShop);
+                                    errors.append("idWorkShop: ").append(idWorkShop).append("\n");
+                                }
+                            }
+                        }
+                    } catch (Exception e) {
+                        logger.error("Error importing the customMap: " + customMap.getCode() + " with idWorkShop: " + idWorkShop, e);
+                        errors.append("map name: ").append(customMap.getCode()).append(" - idWorkShop: ").append(idWorkShop).append("\n");
+                    }
                 }
             }
+            logger.info("The process to import maps from the server to the launcher has finished.");
+            if (StringUtils.isNotBlank(success)) {
+                Utils.infoDialog("These maps were successfully imported from server to the launcher:", success.toString());
+            } else {
+                Utils.infoDialog("No maps were imported", "The server does not contain new maps to be imported\nor the maps could not be imported successfully\nSee launcher.log file for more details.");
+            }
+            if (StringUtils.isNotBlank(errors)) {
+                Utils.errorDialog("Error importing next maps from server to the launcher:", errors.toString() + "\nSee launcher.log file for more details.", null);
+            }
         }
-        */
     }
 }

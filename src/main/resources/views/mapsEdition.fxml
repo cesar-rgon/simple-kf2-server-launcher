@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
@@ -14,11 +19,11 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<fx:root id="centerPane" fx:id="mapsEditionGridPane" prefHeight="730.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8.0.999-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapsedition.MapsEditionController">
+<fx:root id="centerPane" fx:id="mapsEditionGridPane" prefHeight="730.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapsedition.MapsEditionController">
    <children>
-      <Button fx:id="checkCacheMaps" mnemonicParsing="false" onAction="#checkCacheMapsOnAction" text="Check cache of maps" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-      <TextField fx:id="searchMaps" maxWidth="210.0" onKeyReleased="#searchMapsKeyReleased" />
-      <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+      <Button fx:id="importMapsFromServer" mnemonicParsing="false" onAction="#importMapsFromServerOnAction" text="Import maps from server" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" />
+      <TextField fx:id="searchMaps" maxWidth="210.0" onKeyReleased="#searchMapsKeyReleased" GridPane.valignment="BOTTOM" />
+      <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="LEFT" GridPane.valignment="BOTTOM">
          <image>
             <Image url="@../images/find.png" />
          </image>
@@ -26,7 +31,7 @@
             <Insets left="210.0" />
          </GridPane.margin>
       </ImageView>
-      <Button fx:id="addNewMap" mnemonicParsing="false" onAction="#addNewMapOnAction" text="Add new map" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <Button fx:id="addNewMaps" mnemonicParsing="false" onAction="#addNewMapsOnAction" text="Add new maps" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
          <GridPane.margin>
             <Insets />
          </GridPane.margin></Button>
@@ -34,7 +39,7 @@
          <GridPane.margin>
             <Insets right="270.0" />
          </GridPane.margin></Label>
-      <Button fx:id="removeMaps" alignment="CENTER" mnemonicParsing="false" onAction="#removeMapsOnAction" text="Remove selected maps" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <Button fx:id="removeMaps" alignment="CENTER" mnemonicParsing="false" onAction="#removeMapsOnAction" text="Remove selected maps" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
          <GridPane.margin>
             <Insets />
          </GridPane.margin></Button>
@@ -44,7 +49,7 @@
          </GridPane.margin></ComboBox>
       <Label text="Size" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
          <GridPane.margin>
-            <Insets bottom="15.0" right="270.0" />
+            <Insets bottom="25.0" right="270.0" />
          </GridPane.margin>
       </Label>
       <Slider fx:id="mapsSlider" blockIncrement="25.0" maxWidth="240.0" minorTickCount="2" onMouseClicked="#mapsSliderOnMouseClicked" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="50.0" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER" GridPane.rowIndex="1">
@@ -56,11 +61,11 @@
          </GridPane.margin></Slider>
       <Label id="titleConfigLabel" fx:id="officialMapsLabel" text="Official Maps" GridPane.columnSpan="5" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP">
          <GridPane.margin>
-            <Insets top="10.0" />
+            <Insets top="8.0" />
          </GridPane.margin></Label>
       <Label id="titleConfigLabel" fx:id="customMapsLabel" text="Custom Maps" GridPane.columnSpan="5" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP">
          <GridPane.margin>
-            <Insets top="10.0" />
+            <Insets top="8.0" />
          </GridPane.margin></Label>
       <ScrollPane fx:id="officialMapsScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS" GridPane.columnSpan="5" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
          <content>
@@ -93,7 +98,7 @@
       <ColumnConstraints hgrow="ALWAYS" minWidth="320.0" prefWidth="1210.0" />
    </columnConstraints>
    <rowConstraints>
-      <RowConstraints prefHeight="100.0" />
+      <RowConstraints minHeight="50.0" prefHeight="100.0" />
       <RowConstraints minHeight="50.0" />
       <RowConstraints minHeight="10.0" prefHeight="730.0" />
       <RowConstraints minHeight="50.0" />

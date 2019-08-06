@@ -64,6 +64,8 @@ public class Utils {
             PropertyService propertyService = new PropertyServiceImpl();
             String applicationTitle = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_TITLE);
             dialog.setTitle(applicationTitle);
+            dialog.getDialogPane().setMinWidth(600);
+            dialog.setResizable(true);
         } catch (Exception ex) {
             dialog.setTitle("");
         }

@@ -301,8 +301,14 @@ public abstract class Kf2Common {
 
     private String generateMapCycleLine(List<Map> mapList) {
         StringBuffer sb = new StringBuffer("GameMapCycles=(Maps=(");
+        boolean showSeparator = true;
         if (!mapList.isEmpty()) {
+            sb.append("\"----- OFFICIAL MAPS -----\",");
             for (Map map: mapList) {
+                if (showSeparator && !map.getOfficial()) {
+                    sb.append("\"----- CUSTOM MAPS -----\",");
+                    showSeparator = false;
+                }
                 sb.append("\"").append(map.getCode()).append("\"");
                 if (mapList.indexOf(map) < (mapList.size() - 1)) {
                     sb.append(",");

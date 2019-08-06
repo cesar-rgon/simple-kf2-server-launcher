@@ -49,13 +49,13 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
         return propertyService.getPropertyValue("properties/config.properties", key);
     }
 
-    private Map createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto) throws Exception {
+    private Map createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto, boolean downloaded) throws Exception {
         if ((StringUtils.isBlank(mapName) || idWorkShop == null)) {
             return null;
         }
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_MAP_BASE_URL_WORKSHOP);
         String urlInfo = baseUrlWorkshop + idWorkShop;
-        Map customMap = new Map(mapName, false, urlInfo, idWorkShop, urlPhoto, false);
+        Map customMap = new Map(mapName, false, urlInfo, idWorkShop, urlPhoto, downloaded);
         return MapDao.getInstance().insert(customMap);
     }
 
@@ -96,7 +96,32 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
         File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
 
-        return createNewCustomMap(mapName, idWorkShop, relativeTargetFolder);
+        return createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, false);
+    }
+
+    @Override
+    public Map createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String installationFolder) throws Exception {
+        String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_MAP_BASE_URL_WORKSHOP);
+        URL urlWorkShop = new URL(baseUrlWorkshop + idWorkShop);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(urlWorkShop.openStream()));
+        String strUrlMapImage = null;
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if (line.contains("image_src")) {
+                String[] array = line.split("\"");
+                strUrlMapImage = array[3];
+            }
+            if (StringUtils.isNotEmpty(strUrlMapImage)) {
+                break;
+            }
+        }
+        reader.close();
+        String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_MAP_CUSTOM_LOCAL_FOLDER);
+        String absoluteTargetFolder = installationFolder + customMapLocalFolder;
+        File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
+        String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
+
+        return createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, true);
     }
 
     @Override
@@ -121,5 +146,10 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
             }
         }
         return false;
+    }
+
+    @Override
+    public Optional<Map> findMapByCode(String mapName) throws SQLException {
+        return MapDao.getInstance().findByCode(mapName);
     }
 }
