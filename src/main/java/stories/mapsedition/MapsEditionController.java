@@ -403,4 +403,15 @@ public class MapsEditionController implements Initializable {
             }
         }
     }
+
+    @FXML
+    private void searchInWorkShopOnAction() {
+        Session.getInstance().setMap(null);
+        loadNewContent("/views/mapWebInfo.fxml");
+    }
+
+    @FXML
+    private void selectAllMapsOnAction() {
+        Utils.infoDialog("Not implemented yet!", "It will be available in next release");
+    }
 }

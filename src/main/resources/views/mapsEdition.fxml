@@ -21,9 +21,19 @@
 
 <fx:root id="centerPane" fx:id="mapsEditionGridPane" prefHeight="730.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapsedition.MapsEditionController">
    <children>
-      <Button fx:id="importMapsFromServer" mnemonicParsing="false" onAction="#importMapsFromServerOnAction" text="Import maps from server" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" />
-      <TextField fx:id="searchMaps" maxWidth="210.0" onKeyReleased="#searchMapsKeyReleased" GridPane.valignment="BOTTOM" />
-      <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="LEFT" GridPane.valignment="BOTTOM">
+      <Button fx:id="importMapsFromServer" mnemonicParsing="false" onAction="#importMapsFromServerOnAction" prefWidth="180.0" text="Import server's maps" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+      <Button fx:id="searchInWorkShop" mnemonicParsing="false" onAction="#searchInWorkShopOnAction" prefWidth="180.0" text="Search in WorkShop" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+         <GridPane.margin>
+            <Insets top="10.0" />
+         </GridPane.margin>
+      </Button>
+      <Button fx:id="selectAllMaps" mnemonicParsing="false" onAction="#selectAllMapsOnAction" prefWidth="180.0" text="Select all maps" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+         <GridPane.margin>
+            <Insets top="10.0" />
+         </GridPane.margin>
+      </Button>
+      <TextField fx:id="searchMaps" maxWidth="210.0" onKeyReleased="#searchMapsKeyReleased" GridPane.valignment="CENTER" />
+      <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
          <image>
             <Image url="@../images/find.png" />
          </image>
@@ -31,7 +41,7 @@
             <Insets left="210.0" />
          </GridPane.margin>
       </ImageView>
-      <Button fx:id="addNewMaps" mnemonicParsing="false" onAction="#addNewMapsOnAction" text="Add new maps" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+      <Button fx:id="addNewMaps" mnemonicParsing="false" onAction="#addNewMapsOnAction" prefWidth="180.0" text="Add new maps" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets />
          </GridPane.margin></Button>
@@ -39,7 +49,7 @@
          <GridPane.margin>
             <Insets right="270.0" />
          </GridPane.margin></Label>
-      <Button fx:id="removeMaps" alignment="CENTER" mnemonicParsing="false" onAction="#removeMapsOnAction" text="Remove selected maps" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+      <Button fx:id="removeMaps" alignment="CENTER" mnemonicParsing="false" onAction="#removeMapsOnAction" prefWidth="180.0" text="Delete selected maps" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets />
          </GridPane.margin></Button>
@@ -59,7 +69,7 @@
          <GridPane.margin>
             <Insets />
          </GridPane.margin></Slider>
-      <Label id="titleConfigLabel" fx:id="officialMapsLabel" text="Official Maps" GridPane.columnSpan="5" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+      <Label id="titleConfigLabel" fx:id="officialMapsLabel" text="Official Maps" GridPane.columnSpan="5" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="BOTTOM">
          <GridPane.margin>
             <Insets top="8.0" />
          </GridPane.margin></Label>
@@ -92,14 +102,14 @@
    </children>
    <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" minWidth="240.0" prefWidth="1210.0" />
-      <ColumnConstraints hgrow="ALWAYS" minWidth="160.0" prefWidth="1210.0" />
-      <ColumnConstraints hgrow="ALWAYS" minWidth="240.0" prefWidth="1210.0" />
-      <ColumnConstraints hgrow="ALWAYS" minWidth="250.0" prefWidth="1210.0" />
+      <ColumnConstraints hgrow="ALWAYS" minWidth="216.0" prefWidth="1210.0" />
+      <ColumnConstraints hgrow="ALWAYS" minWidth="216.0" prefWidth="1210.0" />
+      <ColumnConstraints hgrow="ALWAYS" minWidth="217.0" prefWidth="1210.0" />
       <ColumnConstraints hgrow="ALWAYS" minWidth="320.0" prefWidth="1210.0" />
    </columnConstraints>
    <rowConstraints>
       <RowConstraints minHeight="50.0" prefHeight="100.0" />
-      <RowConstraints minHeight="50.0" />
+      <RowConstraints minHeight="70.0" />
       <RowConstraints minHeight="10.0" prefHeight="730.0" />
       <RowConstraints minHeight="50.0" />
       <RowConstraints minHeight="10.0" prefHeight="730.0" />

@@ -51,4 +51,12 @@ public class MapDao extends CommonDao<Map> {
         String query="select m from entities.Map m where m.official=true order by m.code asc";
         return list(query, null);
     }
+
+    public Optional<Map> findByIdWorkShop(Long idWorkShop) throws SQLException {
+        String query="select m from entities.Map m where m.official=false and m.idWorkShop=:IDWORKSHOP";
+        java.util.Map<String,Object> parameters = new HashMap<String,Object>();
+        parameters.put("IDWORKSHOP", idWorkShop);
+        List<Map> list = list(query, parameters);
+        return (list != null && !list.isEmpty())? Optional.ofNullable(list.get(0)): Optional.empty();
+    }
 }
