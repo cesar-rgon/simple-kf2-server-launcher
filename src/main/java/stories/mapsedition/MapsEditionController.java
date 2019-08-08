@@ -24,7 +24,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
-import pojos.listener.TimeListener;
 import pojos.session.Session;
 import start.MainApplication;
 import utils.Utils;
@@ -49,6 +48,7 @@ public class MapsEditionController implements Initializable {
     private final MapsEditionFacade facade;
     private String installationFolder;
     private List<Map> mapList;
+    private boolean selectMaps;
 
     @FXML private Slider mapsSlider;
     @FXML private ComboBox<MapViewOptions> viewPaneCombo;
@@ -59,6 +59,7 @@ public class MapsEditionController implements Initializable {
     @FXML private Label officialMapsLabel;
     @FXML private Label customMapsLabel;
     @FXML private TextField searchMaps;
+    @FXML private Button selectAllMaps;
 
     public MapsEditionController() {
         super();
@@ -68,6 +69,7 @@ public class MapsEditionController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
+            selectMaps = true;
             viewPaneCombo.setItems(MapViewOptions.listAll());
             viewPaneCombo.setValue(MapViewOptions.VIEW_BOTH);
             installationFolder = facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER);
@@ -232,16 +234,16 @@ public class MapsEditionController implements Initializable {
         if (MapViewOptions.VIEW_OFFICIAL.equals(viewPaneCombo.getValue())) {
             viewPaneCombo.setValue(MapViewOptions.VIEW_BOTH);
         }
-        Optional<String> result = Utils.OneTextInputDialog("Add new custom maps", "Enter url / id WorkShop\nIf more than one\nuse \",\" as separator");
+        Optional<String> result = Utils.OneTextInputDialog("Add new custom maps", "Enter url/id WorkShop\nIf more than one use\ncomma as separator");
         if (result.isPresent() && StringUtils.isNotBlank(result.get())) {
             StringBuffer success = new StringBuffer();
             StringBuffer errors = new StringBuffer();
 
-            String[] array = result.get().replaceAll(" ", "").split(",");
+            String[] idUrlWorkShopArray = result.get().replaceAll(" ", "").split(",");
             Map customMap = null;
-            for (int i=0; i < array.length; i++) {
+            for (int i=0; i < idUrlWorkShopArray.length; i++) {
                 try {
-                    customMap = facade.createNewCustomMapFromWorkshop(array[i], installationFolder);
+                    customMap = facade.createNewCustomMapFromWorkshop(idUrlWorkShopArray[i], installationFolder);
                     if (customMap != null) {
                         mapList.add(customMap);
                         Kf2Common kf2Common = Kf2Factory.getInstance();
@@ -250,10 +252,10 @@ public class MapsEditionController implements Initializable {
                         customMapsFlowPane.getChildren().add(gridpane);
                         success.append("map name: ").append(customMap.getCode()).append(" - idWorkShop: ").append(customMap.getIdWorkShop()).append("\n");
                     } else {
-                        errors.append("url/id WorkShop: ").append(array[i]).append("\n");
+                        errors.append("url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
                     }
                 } catch (Exception e) {
-                    errors.append("url/id WorkShop: ").append(array[i]).append("\n");
+                    errors.append("url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
                 }
             }
             if (StringUtils.isNotBlank(success)) {
@@ -412,6 +414,18 @@ public class MapsEditionController implements Initializable {
 
     @FXML
     private void selectAllMapsOnAction() {
-        Utils.infoDialog("Not implemented yet!", "It will be available in next release");
+        ObservableList<Node> nodes = customMapsFlowPane.getChildren();
+        for (Node node: nodes) {
+            GridPane gridpane = (GridPane) node;
+            CheckBox checkbox = (CheckBox)gridpane.getChildren().get(1);
+            checkbox.setSelected(selectMaps);
+        }
+        if (selectMaps) {
+            selectAllMaps.setText("Unselect all maps");
+            selectMaps = false;
+        } else {
+            selectAllMaps.setText("Select all maps");
+            selectMaps = true;
+        }
     }
 }

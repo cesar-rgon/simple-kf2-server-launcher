@@ -136,6 +136,10 @@
     -fx-font-size: 30;
 }
 
+#alreadyInLauncher {
+    -fx-text-fill: #fba140;
+}
+
 .scroll-bar:vertical{
     -fx-background-color: #c15d11;
 }

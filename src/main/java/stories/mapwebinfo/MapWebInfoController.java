@@ -1,5 +1,7 @@
 package stories.mapwebinfo;
 
+import constants.Constants;
+import entities.Map;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -17,6 +19,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import pojos.kf2factory.Kf2Common;
+import pojos.kf2factory.Kf2Factory;
 import pojos.session.Session;
 import start.MainApplication;
 import stories.mapsedition.MapsEditionController;
@@ -29,6 +33,9 @@ public class MapWebInfoController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(MapWebInfoController.class);
     private final MapWebInfoFacade facade;
+    private Long idWorkShop;
+    private String mapName;
+    private String strUrlMapImage;
 
     @FXML private WebView mapInfoWebView;
     @FXML private Label mapNameLabel;
@@ -38,6 +45,9 @@ public class MapWebInfoController implements Initializable {
     public MapWebInfoController() {
         super();
         facade = new MapWebInfoFacadeImpl();
+        idWorkShop = null;
+        mapName = null;
+        strUrlMapImage = null;
     }
 
     @FXML
@@ -47,55 +57,66 @@ public class MapWebInfoController implements Initializable {
         if (Session.getInstance().getMap() != null) {
             mapNameLabel.setText(Session.getInstance().getMap().getKey());
             webEngine.load(Session.getInstance().getMap().getUrlInfo());
+            if (!Session.getInstance().getMap().getOfficial()) {
+                pageLoadListener(webEngine);
+            }
         } else {
             mapNameLabel.setText("");
             webEngine.load("https://steamcommunity.com/app/232090/workshop/");
+            pageLoadListener(webEngine);
+        }
+    }
 
-            webEngine.documentProperty().addListener(new ChangeListener<Document>() {
-                @Override
-                public void changed(ObservableValue<? extends Document> ov, Document oldDoc, Document doc) {
-                    if (doc != null) {
-                        try {
-                            NodeList titleList = doc.getElementsByTagName("title");
-                            String urlWorkShop = doc.getDocumentURI();
-                            String[] array = urlWorkShop.split("=");
+    private void pageLoadListener(WebEngine webEngine) {
+        webEngine.documentProperty().addListener(new ChangeListener<Document>() {
+            @Override
+            public void changed(ObservableValue<? extends Document> ov, Document oldDoc, Document doc) {
+                if (doc != null) {
+                    try {
+                        NodeList titleList = doc.getElementsByTagName("title");
+                        String urlWorkShop = doc.getDocumentURI();
+                        String[] array = urlWorkShop.split("=");
+                        idWorkShop = null;
+                        mapName = null;
+                        strUrlMapImage = null;
+                        if (array != null && array.length > 1) {
                             String[] arrayTwo = array[1].split("&");
-                            Long idWorkShop = Long.parseLong(arrayTwo[0]);
-                            String mapName = null;
-                            if (titleList != null && titleList.getLength() > 0) {
-                                Node title = titleList.item(0);
-                                if (title.getTextContent().toUpperCase().startsWith("STEAM WORKSHOP")) {
-                                    mapName = title.getTextContent().replace("Steam Workshop ::", "");
-                                    NodeList linkList = doc.getElementsByTagName("link");
-                                    for (int i=0; i < linkList.getLength(); i++) {
-                                        Node link = linkList.item(i);
-                                        if (link.hasAttributes()) {
-                                            NamedNodeMap linkAttrList = link.getAttributes();
-                                            if ("image_src".equalsIgnoreCase(linkAttrList.getNamedItem("rel").getTextContent())) {
-                                                String urlPhoto = linkAttrList.getNamedItem("href").getTextContent();
-                                                break;
-                                            }
+                            idWorkShop = Long.parseLong(arrayTwo[0]);
+                        }
+                        if (titleList != null && titleList.getLength() > 0) {
+                            Node title = titleList.item(0);
+                            if (title.getTextContent().toUpperCase().startsWith("STEAM WORKSHOP")) {
+                                mapName = title.getTextContent().replace("Steam Workshop ::", "");
+                                NodeList linkList = doc.getElementsByTagName("link");
+                                for (int i=0; i < linkList.getLength(); i++) {
+                                    Node link = linkList.item(i);
+                                    if (link.hasAttributes()) {
+                                        NamedNodeMap linkAttrList = link.getAttributes();
+                                        if ("image_src".equalsIgnoreCase(linkAttrList.getNamedItem("rel").getTextContent())) {
+                                            strUrlMapImage = linkAttrList.getNamedItem("href").getTextContent();
+                                            break;
                                         }
                                     }
                                 }
                             }
-                            mapNameLabel.setText(mapName);
-                            if (facade.isMapInDataBase(idWorkShop)) {
-                                addMap.setVisible(false);
-                                alreadyInLauncher.setVisible(true);
-                            } else {
-                                addMap.setVisible(StringUtils.isNotBlank(urlWorkShop) && StringUtils.isNotBlank(mapName));
-                                alreadyInLauncher.setVisible(false);
-                            }
-                        } catch (Exception e) {
-                            logger.error("Error in loading process of new page from Steam's WorkShop\nSee stacktrace for more details", e);
-                            mapNameLabel.setText(null);
-                            addMap.setVisible(false);
                         }
+                        mapNameLabel.setText(mapName);
+                        if (idWorkShop != null & facade.isMapInDataBase(idWorkShop)) {
+                            addMap.setVisible(false);
+                            alreadyInLauncher.setVisible(true);
+                        } else {
+                            addMap.setVisible(StringUtils.isNotBlank(urlWorkShop) && StringUtils.isNotBlank(mapName));
+                            alreadyInLauncher.setVisible(false);
+                        }
+                    } catch (Exception e) {
+                        logger.error("Error in loading process of new page from Steam's WorkShop\nSee stacktrace for more details", e);
+                        mapNameLabel.setText(null);
+                        addMap.setVisible(false);
+                        alreadyInLauncher.setVisible(false);
                     }
                 }
-            });
-        }
+            }
+        });
     }
 
     @FXML
@@ -119,6 +140,28 @@ public class MapWebInfoController implements Initializable {
 
     @FXML
     private void addMapOnAction() {
-        Utils.infoDialog("Not implemented yet!", "It will be available in next release");
+        try {
+            String installationFolder = facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER);
+            if (!facade.isCorrectInstallationFolder(installationFolder)) {
+                Utils.warningDialog("No maps can be added!", "The installation folder is not correct.\nSet it up in Install / Update section.");
+                return;
+            }
+            if (Session.getInstance().isRunningProcess()) {
+                Utils.warningDialog("No maps can be added!", "At least one instance of the server is running. Close them.");
+                return;
+            }
+            Map customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, mapName, strUrlMapImage,  installationFolder);
+            if (customMap != null) {
+                Kf2Common kf2Common = Kf2Factory.getInstance();
+                kf2Common.addCustomMapToKfEngineIni(customMap.getIdWorkShop(), installationFolder);
+                addMap.setVisible(false);
+                alreadyInLauncher.setVisible(true);
+                Utils.infoDialog("The map was successfully added to the launcher", "Map name: " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+            } else {
+                Utils.errorDialog("Error adding map to the launcher", "Map name: " + mapName + "\nURL/Id WorkShop: " + idWorkShop, null);
+            }
+        } catch (Exception e) {
+            Utils.errorDialog("Error adding map to the launcher", "See stacktrace for more details", e);
+        }
     }
 }
