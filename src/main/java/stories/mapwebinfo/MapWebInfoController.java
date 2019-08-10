@@ -152,8 +152,6 @@ public class MapWebInfoController implements Initializable {
             }
             Map customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, mapName, strUrlMapImage,  installationFolder);
             if (customMap != null) {
-                Kf2Common kf2Common = Kf2Factory.getInstance();
-                kf2Common.addCustomMapToKfEngineIni(customMap.getIdWorkShop(), installationFolder);
                 addMap.setVisible(false);
                 alreadyInLauncher.setVisible(true);
                 Utils.infoDialog("The map was successfully added to the launcher", "Map name: " + mapName + "\nURL/Id WorkShop: " + idWorkShop);

@@ -246,8 +246,6 @@ public class MapsEditionController implements Initializable {
                     customMap = facade.createNewCustomMapFromWorkshop(idUrlWorkShopArray[i], installationFolder);
                     if (customMap != null) {
                         mapList.add(customMap);
-                        Kf2Common kf2Common = Kf2Factory.getInstance();
-                        kf2Common.addCustomMapToKfEngineIni(customMap.getIdWorkShop(), installationFolder);
                         GridPane gridpane = createMapGridPane(facade.getDto(customMap));
                         customMapsFlowPane.getChildren().add(gridpane);
                         success.append("map name: ").append(customMap.getCode()).append(" - idWorkShop: ").append(customMap.getIdWorkShop()).append("\n");
@@ -324,11 +322,6 @@ public class MapsEditionController implements Initializable {
                     } catch (SQLException e) {
                         Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
                     }
-                    List<Long> idWorkShopListToRemove = mapsToRemove.stream().map(m -> m.getIdWorkShop()).collect(Collectors.toList());
-                    Kf2Common kf2Common = Kf2Factory.getInstance();
-                    kf2Common.removeCustomMapsFromKfEngineIni(idWorkShopListToRemove, installationFolder);
-                    List<String> mapNameListToRemove = mapsToRemove.stream().map(m -> m.getKey()).collect(Collectors.toList());
-                    kf2Common.removeCustomMapsFromKfGameIni(mapNameListToRemove, installationFolder, mapList);
                 }
                 if (StringUtils.isNotBlank(errors.toString())) {
                     Utils.errorDialog("Next maps could not be deleted", errors.toString(), null);
@@ -377,8 +370,6 @@ public class MapsEditionController implements Initializable {
                                 customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, mapName, installationFolder);
                                 if (customMap != null) {
                                     mapList.add(customMap);
-                                    Kf2Common kf2Common = Kf2Factory.getInstance();
-                                    kf2Common.addCustomMapToKfEngineIni(customMap.getIdWorkShop(), installationFolder);
                                     GridPane gridpane = createMapGridPane(facade.getDto(customMap));
                                     customMapsFlowPane.getChildren().add(gridpane);
                                     success.append("map name: ").append(customMap.getCode()).append(" - idWorkShop: ").append(idWorkShop).append("\n");

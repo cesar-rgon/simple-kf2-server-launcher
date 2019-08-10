@@ -13,4 +13,6 @@ public interface DatabaseService {
     List<Profile> listAllProfiles() throws SQLException;
     List<Map> listOfficialMaps() throws SQLException;
     Map insertMap(Map map) throws SQLException;
+    List<Map> listCustomMaps() throws SQLException;
+    Map findMapByName(String mapName) throws SQLException;
 }

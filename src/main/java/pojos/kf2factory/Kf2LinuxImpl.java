@@ -1,20 +1,13 @@
 package pojos.kf2factory;
 
-import entities.Map;
 import entities.Profile;
 import org.apache.commons.lang3.StringUtils;
 import pojos.session.Session;
 import utils.Utils;
 
 import java.io.File;
-import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 public class Kf2LinuxImpl extends Kf2Common {
 
@@ -118,8 +111,9 @@ public class Kf2LinuxImpl extends Kf2Common {
             }
             command.append("?ConfigSubDir=").append(profile.getName());
 
-            replaceInFileKfWebIni(installationFolder, profile);
-            replaceInFileKfGameIni(installationFolder, profile);
+            replaceInFileKfEngineIni(installationFolder, profile, "LinuxServer-KFEngine.ini");
+            replaceInFileKfWebIni(installationFolder, profile, StandardCharsets.UTF_8);
+            replaceInFileKfGameIni(installationFolder, profile, "LinuxServer-KFGame.ini");
 
             Process proccess = Runtime.getRuntime().exec(new String[]{"xterm",
                     "-T", "Running the server",
@@ -138,30 +132,6 @@ public class Kf2LinuxImpl extends Kf2Common {
         }
     }
 
-    private void replaceInFileKfWebIni(String installationFolder, Profile profile) throws Exception {
-        String kfWebIniFile = installationFolder + "/KFGame/Config/" + profile.getName() + "/KFWeb.ini";
-        StringBuilder contentBuilder = new StringBuilder();
-        Path filePath = Paths.get(kfWebIniFile);
-        Stream<String> stream = Files.lines( filePath, StandardCharsets.UTF_8);
-        stream.forEach(line -> contentBuilder.append(replaceLineKfWebIni(line, profile)).append("\n"));
-        stream.close();
-        PrintWriter outputFile = new PrintWriter(kfWebIniFile);
-        outputFile.println(contentBuilder.toString());
-        outputFile.close();
-    }
-
-    private void replaceInFileKfGameIni(String installationFolder, Profile profile) throws Exception {
-        String pcServerKFGameIni = installationFolder + "/KFGame/Config/" + profile.getName() + "/" + "LinuxServer-KFGame.ini";
-        StringBuilder contentBuilder = new StringBuilder();
-        Path filePath = Paths.get(pcServerKFGameIni);
-        Stream<String> stream = Files.lines( filePath, StandardCharsets.UTF_8);
-        stream.forEach(line -> contentBuilder.append(replaceLinePcServerKFGameIni(line, profile)).append("\n"));
-        stream.close();
-        PrintWriter outputFile = new PrintWriter(pcServerKFGameIni);
-        outputFile.println(contentBuilder.toString());
-        outputFile.close();
-    }
-
     @Override
     protected File getSteamExeFile() {
         File steamExeFile = new File("/usr/games/steam");
@@ -169,26 +139,6 @@ public class Kf2LinuxImpl extends Kf2Common {
             return steamExeFile;
         }
         return null;
-    }
-
-    @Override
-    public void addCustomMapToKfEngineIni(Long idWorkShop, String installationFolder) {
-        addCustomMapToKfEngineIni(idWorkShop, installationFolder,"LinuxServer-KFEngine.ini");
-    }
-
-    @Override
-    public void removeCustomMapsFromKfEngineIni(List<Long> idWorkShopList, String installationFolder) {
-        removeCustomMapsFromKfEngineIni(idWorkShopList, installationFolder,"LinuxServer-KFEngine.ini");
-    }
-
-    @Override
-    public void addCustomMapsToKfGameIni(List<String> mapNameList, String installationFolder, List<Map> mapList) {
-        addCustomMapsToKfGameIni(mapNameList, installationFolder, mapList, "LinuxServer-KFGame.ini");
-    }
-
-    @Override
-    public void removeCustomMapsFromKfGameIni(List<String> mapNameList, String installationFolder, List<Map> mapList) {
-        removeCustomMapsFromKfGameIni(mapNameList, installationFolder, mapList, "LinuxServer-KFGame.ini");
     }
 
     @Override

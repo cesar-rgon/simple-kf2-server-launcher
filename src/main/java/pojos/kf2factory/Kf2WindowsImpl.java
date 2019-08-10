@@ -4,7 +4,6 @@ import com.github.sarxos.winreg.HKey;
 import com.github.sarxos.winreg.RegistryException;
 import com.github.sarxos.winreg.WindowsRegistry;
 import constants.Constants;
-import entities.Map;
 import entities.Profile;
 import net.lingala.zip4j.core.ZipFile;
 import org.apache.commons.io.FileUtils;
@@ -15,15 +14,9 @@ import services.PropertyServiceImpl;
 import utils.Utils;
 
 import java.io.File;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 public class Kf2WindowsImpl extends Kf2Common {
 
@@ -121,8 +114,9 @@ public class Kf2WindowsImpl extends Kf2Common {
             }
             command.append("?ConfigSubDir=").append(profile.getName());
 
-            replaceInFileKfWebIni(installationFolder, profile);
-            replaceInFileKfGameIni(installationFolder, profile);
+            replaceInFileKfEngineIni(installationFolder, profile, "PCServer-KFEngine.ini");
+            replaceInFileKfWebIni(installationFolder, profile, StandardCharsets.ISO_8859_1);
+            replaceInFileKfGameIni(installationFolder, profile, "PCServer-KFGame.ini");
 
             Process proccess = Runtime.getRuntime().exec("cmd /C start /wait " + command.toString(),null, new File(installationFolder));
             Session.getInstance().getProcessList().add(proccess);
@@ -131,30 +125,6 @@ public class Kf2WindowsImpl extends Kf2Common {
             Utils.errorDialog("Error executing Killing Floor 2 server", "See stacktrace for more details", e);
             return null;
         }
-    }
-
-    private void replaceInFileKfWebIni(String installationFolder, Profile profile) throws Exception {
-        String kfWebIniFile = installationFolder + "/KFGame/Config/" + profile.getName() + "/KFWeb.ini";
-        StringBuilder contentBuilder = new StringBuilder();
-        Path filePath = Paths.get(kfWebIniFile);
-        Stream<String> stream = Files.lines( filePath, StandardCharsets.ISO_8859_1);
-        stream.forEach(line -> contentBuilder.append(replaceLineKfWebIni(line, profile)).append("\n"));
-        stream.close();
-        PrintWriter outputFile = new PrintWriter(kfWebIniFile);
-        outputFile.println(contentBuilder.toString());
-        outputFile.close();
-    }
-
-    private void replaceInFileKfGameIni(String installationFolder, Profile profile) throws Exception {
-        String pcServerKFGameIni = installationFolder + "/KFGame/Config/" + profile.getName() + "/" + "PCServer-KFGame.ini";
-        StringBuilder contentBuilder = new StringBuilder();
-        Path filePath = Paths.get(pcServerKFGameIni);
-        Stream<String> stream = Files.lines( filePath, StandardCharsets.ISO_8859_1);
-        stream.forEach(line -> contentBuilder.append(replaceLinePcServerKFGameIni(line, profile)).append("\n"));
-        stream.close();
-        PrintWriter outputFile = new PrintWriter(pcServerKFGameIni);
-        outputFile.println(contentBuilder.toString());
-        outputFile.close();
     }
 
     @Override
@@ -171,26 +141,6 @@ public class Kf2WindowsImpl extends Kf2Common {
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
         return null;
-    }
-
-    @Override
-    public void addCustomMapToKfEngineIni(Long idWorkShop, String installationFolder) {
-        addCustomMapToKfEngineIni(idWorkShop, installationFolder,"PCServer-KFEngine.ini");
-    }
-
-    @Override
-    public void removeCustomMapsFromKfEngineIni(List<Long> idWorkShopList, String installationFolder) {
-        removeCustomMapsFromKfEngineIni(idWorkShopList, installationFolder,"PCServer-KFEngine.ini");
-    }
-
-    @Override
-    public void addCustomMapsToKfGameIni(List<String> mapNameList, String installationFolder, List<Map> mapList) {
-        addCustomMapsToKfGameIni(mapNameList, installationFolder, mapList, "PCServer-KFGame.ini");
-    }
-
-    @Override
-    public void removeCustomMapsFromKfGameIni(List<String> mapNameList, String installationFolder, List<Map> mapList) {
-        removeCustomMapsFromKfGameIni(mapNameList, installationFolder, mapList, "PCServer-KFGame.ini");
     }
 
     @Override

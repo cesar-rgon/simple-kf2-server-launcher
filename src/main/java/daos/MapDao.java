@@ -59,4 +59,9 @@ public class MapDao extends CommonDao<Map> {
         List<Map> list = list(query, parameters);
         return (list != null && !list.isEmpty())? Optional.ofNullable(list.get(0)): Optional.empty();
     }
+
+    public List<Map> listCustomMaps() throws SQLException {
+        String query="select m from entities.Map m where m.official=false order by m.code asc";
+        return list(query, null);
+    }
 }

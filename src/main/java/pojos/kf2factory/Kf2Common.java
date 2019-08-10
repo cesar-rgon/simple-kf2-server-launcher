@@ -5,6 +5,9 @@ import entities.Map;
 import entities.Profile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import pojos.listener.TimeListener;
 import services.DatabaseService;
 import services.DatabaseServiceImpl;
 import services.PropertyService;
@@ -12,10 +15,18 @@ import services.PropertyServiceImpl;
 import utils.Utils;
 
 import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public abstract class Kf2Common {
 
+    private static final Logger logger = LogManager.getLogger(Kf2Common.class);
     protected final DatabaseService databaseService;
 
     protected Kf2Common() {
@@ -120,6 +131,120 @@ public abstract class Kf2Common {
 
     protected abstract String runKf2Server(String installationFolder, Profile profile);
 
+    protected void replaceInFileKfEngineIni(String installationFolder, Profile profile, String filename) {
+        try {
+            File kfEngineIni = new File(installationFolder + "/KFGame/Config/" + profile.getName() + "/" + filename);
+            BufferedReader br = new BufferedReader(new FileReader(kfEngineIni));
+            String strTempFile = installationFolder + "/KFGame/Config/" + profile.getName() + "/" + filename + ".tmp";
+            File tempFile = new File(strTempFile);
+            PrintWriter pw = new PrintWriter(new FileWriter(strTempFile));
+            String line;
+            boolean firstDownloadManager = true;
+            while ((line = br.readLine()) != null) {
+                if (firstDownloadManager) {
+                    if (StringUtils.isNotBlank(line) && line.contains("DownloadManagers=")) {
+                        firstDownloadManager = false;
+                        if (!line.contains("DownloadManagers=OnlineSubsystemSteamworks.SteamWorkshopDownload")) {
+                            pw.println("DownloadManagers=OnlineSubsystemSteamworks.SteamWorkshopDownload");
+                        }
+                    }
+                    if (StringUtils.isBlank(line) || (!line.contains("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]") &&
+                            !line.contains("ServerSubscribedWorkshopItems="))) {
+                        pw.println(line);
+                    }
+                } else {
+                    if (StringUtils.isBlank(line) || (!line.contains("DownloadManagers=OnlineSubsystemSteamworks.SteamWorkshopDownload") &&
+                            !line.contains("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]") && !line.contains("ServerSubscribedWorkshopItems="))) {
+                        pw.println(line);
+                    }
+                }
+            }
+
+            List<Map> customMaps = databaseService.listCustomMaps();
+            if (customMaps != null && !customMaps.isEmpty()) {
+                pw.println("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]");
+                for (Map customMap: customMaps) {
+                    pw.println("ServerSubscribedWorkshopItems=" + customMap.getIdWorkShop() + " // " + customMap.getCode());
+                }
+            }
+
+            br.close();
+            pw.close();
+            kfEngineIni.delete();
+            tempFile.renameTo(kfEngineIni);
+        } catch (Exception e) {
+            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+        }
+    }
+
+    protected void replaceInFileKfGameIni(String installationFolder, Profile profile, String filename) {
+        try {
+            File kfGameIni = new File(installationFolder + "/KFGame/Config/" + profile.getName() + "/" + filename);
+            BufferedReader br = new BufferedReader(new FileReader(kfGameIni));
+            String strTempFile = installationFolder + "/KFGame/Config/" + profile.getName() + "/" + filename + ".tmp";
+            File tempFile = new File(strTempFile);
+            PrintWriter pw = new PrintWriter(new FileWriter(strTempFile));
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (StringUtils.isNotBlank(line) && line.contains("KFMapSummary]")) {
+                    String[] array = line.split(" ");
+                    String mapName = array[0].replace("[", "");
+                    Map map = databaseService.findMapByName(mapName);
+                    if (map != null && map.getOfficial() || line.contains("[KF-Default KFMapSummary]")) {
+                        pw.println(line);
+                        while (!line.contains("MapName=")) {
+                            line = br.readLine();
+                        }
+                        pw.println(line);
+                        while (!line.contains("MapAssociation=")) {
+                            line = br.readLine();
+                        }
+                        pw.println(line);
+                        while (!line.contains("ScreenshotPathName=")) {
+                            line = br.readLine();
+                        }
+                        pw.println(line);
+                    }
+                } else {
+                    String modifiedLine = replaceLineKfGameIni(line, profile);
+                    if (modifiedLine != null) {
+                        pw.println(modifiedLine);
+                    }
+                }
+            }
+
+            List<Map> customMaps = databaseService.listCustomMaps();
+            if (customMaps != null && !customMaps.isEmpty()) {
+                for (Map customMap: customMaps) {
+                    pw.println("[" + customMap.getCode() + " KFMapSummary]");
+                    pw.println("MapName=" + customMap.getCode());
+                    pw.println("MapAssociation=2");
+                    pw.println("ScreenshotPathName=");
+                    pw.println("");
+                }
+            }
+
+            br.close();
+            pw.close();
+            kfGameIni.delete();
+            tempFile.renameTo(kfGameIni);
+        } catch (Exception e) {
+            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+        }
+    }
+
+    protected void replaceInFileKfWebIni(String installationFolder, Profile profile, Charset charset) throws Exception {
+        String kfWebIniFile = installationFolder + "/KFGame/Config/" + profile.getName() + "/KFWeb.ini";
+        StringBuilder contentBuilder = new StringBuilder();
+        Path filePath = Paths.get(kfWebIniFile);
+        Stream<String> stream = Files.lines( filePath, charset);
+        stream.forEach(line -> contentBuilder.append(replaceLineKfWebIni(line, profile)).append("\n"));
+        stream.close();
+        PrintWriter outputFile = new PrintWriter(kfWebIniFile);
+        outputFile.println(contentBuilder.toString());
+        outputFile.close();
+    }
+
     protected String replaceLineKfWebIni(String line, Profile profile){
         String modifiedLine = line;
         if (profile.getWebPort() != null && line.contains("ListenPort=")) {
@@ -135,9 +260,21 @@ public abstract class Kf2Common {
         return modifiedLine;
     }
 
-    protected String replaceLinePcServerKFGameIni(String line, Profile profile) {
+    protected String replaceLineKfGameIni(String line, Profile profile) {
         String modifiedLine = line;
 
+        if (line.contains("MapName=") || line.contains("MapAssociation=") || line.contains("ScreenshotPathName=")) {
+            modifiedLine = null;
+        }
+        if (line.contains("GameMapCycles=(Maps=(")) {
+            try {
+                List<Map> mapList = databaseService.listDownloadedMaps();
+                modifiedLine = generateMapCycleLine(mapList);
+            } catch (SQLException e) {
+                modifiedLine = "GameMapCycles=(Maps=())";
+                Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+            }
+        }
         if (line.contains("GameDifficulty=")) {
             modifiedLine = "GameDifficulty=" + profile.getDifficulty().getCode();
         }
@@ -209,96 +346,6 @@ public abstract class Kf2Common {
 
     }
 
-    protected void addCustomMapToKfEngineIni(Long idWorkShop, String installationFolder, String filename) {
-        try {
-            List<Profile> profileList = databaseService.listAllProfiles();
-            if (profileList != null && !profileList.isEmpty()) {
-                for (Profile profile: profileList) {
-                    File kfEngineIni = new File(installationFolder + "/KFGame/Config/" + profile.getName() + "/" + filename);
-                    BufferedReader br = new BufferedReader(new FileReader(kfEngineIni));
-                    String strTempFile = installationFolder + "/KFGame/Config/" + profile.getName() + "/" + filename + ".tmp";
-                    File tempFile = new File(strTempFile);
-                    PrintWriter pw = new PrintWriter(new FileWriter(strTempFile));
-                    String line;
-                    boolean firstDownloadManager = true;
-                    boolean customMapAdded = false;
-                    while ((line = br.readLine()) != null) {
-                        if (firstDownloadManager) {
-                            if (StringUtils.isNotBlank(line) && line.contains("DownloadManagers=")) {
-                                firstDownloadManager = false;
-                                if (!line.contains("DownloadManagers=OnlineSubsystemSteamworks.SteamWorkshopDownload")) {
-                                    pw.println("DownloadManagers=OnlineSubsystemSteamworks.SteamWorkshopDownload");
-                                }
-                            }
-                            pw.println(line);
-                            if (StringUtils.isNotBlank(line) && line.contains("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]")) {
-                                pw.println("ServerSubscribedWorkshopItems=" + idWorkShop);
-                                customMapAdded = true;
-                            }
-                        } else {
-                            if (StringUtils.isBlank(line) || !line.contains("DownloadManagers=OnlineSubsystemSteamworks.SteamWorkshopDownload")) {
-                                pw.println(line);
-                                if (StringUtils.isNotBlank(line) && line.contains("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]")) {
-                                    pw.println("ServerSubscribedWorkshopItems=" + idWorkShop);
-                                    customMapAdded = true;
-                                }
-                            }
-                        }
-                    }
-                    if (!customMapAdded) {
-                        pw.println("\n[OnlineSubsystemSteamworks.KFWorkshopSteamworks]");
-                        pw.println("ServerSubscribedWorkshopItems=" + idWorkShop);
-                    }
-                    br.close();
-                    pw.close();
-                    kfEngineIni.delete();
-                    tempFile.renameTo(kfEngineIni);
-                }
-            }
-        } catch (Exception e) {
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
-        }
-    }
-
-    public abstract void addCustomMapToKfEngineIni(Long idWorkShop, String installationFolder);
-
-    protected void removeCustomMapsFromKfEngineIni(List<Long> idWorkShopList, String installationFolder, String filename) {
-        try {
-            List<Profile> profileList = databaseService.listAllProfiles();
-            if (profileList != null && !profileList.isEmpty()) {
-                for (Profile profile : profileList) {
-                    File kfEngineIni = new File(installationFolder + "/KFGame/Config/" + profile.getName() + "/" + filename);
-                    BufferedReader br = new BufferedReader(new FileReader(kfEngineIni));
-                    String strTempFile = installationFolder + "/KFGame/Config/" + profile.getName() + "/" + filename + ".tmp";
-                    File tempFile = new File(strTempFile);
-                    PrintWriter pw = new PrintWriter(new FileWriter(strTempFile));
-                    String line;
-                    while ((line = br.readLine()) != null) {
-                        if (line.contains("ServerSubscribedWorkshopItems=")) {
-                            String[] array = line.split("=");
-                            Long idWorkshop = Long.parseLong(array[1]);
-                            if (idWorkShopList.contains(idWorkshop)) {
-                                idWorkShopList.remove(idWorkshop);
-                            } else {
-                                pw.println(line);
-                            }
-                        } else {
-                            pw.println(line);
-                        }
-                    }
-                    br.close();
-                    pw.close();
-                    kfEngineIni.delete();
-                    tempFile.renameTo(kfEngineIni);
-                }
-            }
-        } catch (Exception e) {
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
-        }
-    }
-
-    public abstract void removeCustomMapsFromKfEngineIni(List<Long> idWorkShopList, String installationFolder);
-
     private String generateMapCycleLine(List<Map> mapList) {
         StringBuffer sb = new StringBuffer("GameMapCycles=(Maps=(");
         boolean showSeparator = true;
@@ -319,124 +366,40 @@ public abstract class Kf2Common {
         return sb.toString();
     }
 
-    protected void addCustomMapsToKfGameIni(List<String> mapNameList, String installationFolder, List<Map> mapList, String filename) {
-        try {
-            List<Profile> profileList = databaseService.listAllProfiles();
-            if (profileList != null && !profileList.isEmpty()) {
-                for (Profile profile : profileList) {
-                    File kfGameIni = new File(installationFolder + "/KFGame/Config/" + profile.getName() + "/" + filename);
-                    BufferedReader br = new BufferedReader(new FileReader(kfGameIni));
-                    String strTempFile = installationFolder + "/KFGame/Config/" + profile.getName() + "/" + filename + ".tmp";
-                    File tempFile = new File(strTempFile);
-                    PrintWriter pw = new PrintWriter(new FileWriter(strTempFile));
-                    String line;
-                    while ((line = br.readLine()) != null) {
-                        if (StringUtils.isNotBlank(line) && line.contains("GameMapCycles=(Maps=(")) {
-                            pw.println(generateMapCycleLine(mapList));
-                            continue;
-                        }
-                        pw.println(line);
-                    }
-                    for (String mapName: mapNameList) {
-                        pw.println("[" + mapName + " KFMapSummary]");
-                        pw.println("MapName=" + mapName);
-                        pw.println("");
-                    }
-                    br.close();
-                    pw.close();
-                    kfGameIni.delete();
-                    tempFile.renameTo(kfGameIni);
-                }
-            }
-        } catch (Exception e) {
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
-        }
-    }
-
-    public abstract void addCustomMapsToKfGameIni(List<String> mapNameList, String installationFolder, List<Map> mapList);
-
-    protected void removeCustomMapsFromKfGameIni(List<String> mapNameList, String installationFolder, List<Map> mapList, String filename) {
-        try {
-            List<Profile> profileList = databaseService.listAllProfiles();
-            if (profileList != null && !profileList.isEmpty()) {
-                for (Profile profile : profileList) {
-                    File kfGameIni = new File(installationFolder + "/KFGame/Config/" + profile.getName() + "/" + filename);
-                    BufferedReader br = new BufferedReader(new FileReader(kfGameIni));
-                    String strTempFile = installationFolder + "/KFGame/Config/" + profile.getName() + "/" + filename + ".tmp";
-                    File tempFile = new File(strTempFile);
-                    PrintWriter pw = new PrintWriter(new FileWriter(strTempFile));
-                    String line;
-                    while ((line = br.readLine()) != null) {
-                        if (StringUtils.isNotBlank(line)) {
-                            if (line.contains("GameMapCycles=(Maps=(")) {
-                                pw.println(generateMapCycleLine(mapList));
-                                continue;
-                            }
-                            if (line.contains(" KFMapSummary]")) {
-                                String[] array = line.split(" ");
-                                String mapName = array[0].replace("[","");
-                                if (mapNameList.contains(mapName)) {
-                                    continue;
-                                }
-                            }
-                            if (line.contains("MapName=")) {
-                                String[] array = line.split("=");
-                                String mapName = array[1];
-                                if (mapNameList.contains(mapName)) {
-                                    continue;
-                                }
-                            }
-                        }
-                        pw.println(line);
-                    }
-                    br.close();
-                    pw.close();
-                    kfGameIni.delete();
-                    tempFile.renameTo(kfGameIni);
-                }
-            }
-        } catch (Exception e) {
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
-        }
-    }
-
-    public abstract void removeCustomMapsFromKfGameIni(List<String> mapNameList, String installationFolder, List<Map> mapList);
-
     protected void checkForNewOfficialMaps(String installationFolder, String filename) {
+
         try {
-            List<Map> officialMapList = databaseService.listOfficialMaps();
-            File kfGameIni = new File(installationFolder + "/KFGame/Config/" + filename);
-            BufferedReader br = new BufferedReader(new FileReader(kfGameIni));
-            String line;
-            while ((line = br.readLine()) != null) {
-                if (StringUtils.isNotBlank(line) && line.contains("GameMapCycles=(Maps=(")) {
-                    String[] array = line.replace("GameMapCycles=(Maps=(", "").replace("))", "").replaceAll("\"", "").split(",");
-                    if (array != null && array.length > 0) {
-                        for (String value: array) {
-                            if (value.startsWith("KF-")) {
-                                // It's an official map
-                                String mapInMapCycle = value;
-                                boolean found = false;
-                                for (Map databaseMap: officialMapList) {
-                                    if (databaseMap.getCode().equalsIgnoreCase(mapInMapCycle)) {
-                                        officialMapList.remove(databaseMap);
-                                        found = true;
-                                        break;
-                                    }
-                                }
-                                if (!found) {
-                                    // It's a new map, it must be stored in database
-                                    Map newOfficialMap = new Map(mapInMapCycle, true, null, null, "/KFGame/Web/images/maps/" + mapInMapCycle + ".jpg", true);
-                                    databaseService.insertMap(newOfficialMap);
-                                }
-                            }
+            List<Path> kfmFilesPathList = Files.walk(Paths.get(installationFolder + "/KFGame/BrewedPC/Maps"))
+                    .filter(Files::isRegularFile)
+                    .filter(f -> f.getFileName().toString().toUpperCase().startsWith("KF-"))
+                    .filter(f -> f.getFileName().toString().toUpperCase().endsWith(".KFM"))
+                    .collect(Collectors.toList());
+
+            if (kfmFilesPathList != null && !kfmFilesPathList.isEmpty()) {
+                List<Map> officialMapList = databaseService.listOfficialMaps();
+                for (Path kfmFilesPath: kfmFilesPathList) {
+                    String filenameWithExtension = kfmFilesPath.getFileName().toString();
+                    String[] array = filenameWithExtension.split(".kfm");
+                    String mapName = array[0];
+                    boolean found = false;
+                    for (Map databaseMap: officialMapList) {
+                        if (databaseMap.getCode().equalsIgnoreCase(mapName)) {
+                            officialMapList.remove(databaseMap);
+                            found = true;
+                            break;
                         }
+                    }
+                    if (!found) {
+                        // It's a new official map, it must be stored in database
+                        Map newOfficialMap = new Map(mapName, true, null, null, "/KFGame/Web/images/maps/" + mapName + ".jpg", true);
+                        databaseService.insertMap(newOfficialMap);
                     }
                 }
             }
-            br.close();
+
         } catch (Exception e) {
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+            String message = "Error detecting new official maps. See stacktrace for more details:";
+            logger.error(message, e);
         }
     }
 

@@ -44,4 +44,18 @@ public class DatabaseServiceImpl implements DatabaseService {
     public Map insertMap(Map map) throws SQLException {
         return MapDao.getInstance().insert(map);
     }
+
+    @Override
+    public List<Map> listCustomMaps() throws SQLException {
+        return MapDao.getInstance().listCustomMaps();
+    }
+
+    @Override
+    public Map findMapByName(String mapName) throws SQLException {
+        Optional<Map> mapOpt = MapDao.getInstance().findByCode(mapName);
+        if (mapOpt.isPresent()) {
+            return mapOpt.get();
+        }
+        return null;
+    }
 }
