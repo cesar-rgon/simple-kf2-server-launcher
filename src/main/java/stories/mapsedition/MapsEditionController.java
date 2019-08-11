@@ -116,20 +116,17 @@ public class MapsEditionController implements Initializable {
         }
         GridPane gridpane = new GridPane();
         gridpane.add(mapPreview, 1, 1);
-        if (map.getOfficial()) {
-            gridpane.add(mapNameLabel, 1, 2);
-        } else {
-            GridPane.setColumnSpan(mapPreview, 2);
-            gridpane.add(new CheckBox(), 1, 2);
-            gridpane.add(mapNameLabel, 2, 2);
-            if (!map.getDownloaded()) {
-                Label warningMessage = new Label("Start server to download it");
-                warningMessage.setStyle("-fx-text-fill: yellow;");
-                GridPane.setColumnSpan(warningMessage, 2);
-                gridpane.add(warningMessage,1,3);
-                GridPane.setHalignment(warningMessage, HPos.CENTER);
-            }
+        GridPane.setColumnSpan(mapPreview, 2);
+        gridpane.add(new CheckBox(), 1, 2);
+        gridpane.add(mapNameLabel, 2, 2);
+        if (!map.getDownloaded()) {
+            Label warningMessage = new Label("Start server to download it");
+            warningMessage.setStyle("-fx-text-fill: yellow;");
+            GridPane.setColumnSpan(warningMessage, 2);
+            gridpane.add(warningMessage,1,3);
+            GridPane.setHalignment(warningMessage, HPos.CENTER);
         }
+
         GridPane.setHalignment(mapNameLabel, HPos.CENTER);
         return gridpane;
     }
@@ -279,8 +276,20 @@ public class MapsEditionController implements Initializable {
         }
         List<Node> removeList = new ArrayList<Node>();
         StringBuffer message = new StringBuffer();
-        ObservableList<Node> nodes = customMapsFlowPane.getChildren();
-        for (Node node: nodes) {
+        ObservableList<Node> officialNodes = officialMapsFlowPane.getChildren();
+        ObservableList<Node> customNodes = customMapsFlowPane.getChildren();
+
+        for (Node node: officialNodes) {
+            GridPane gridpane = (GridPane) node;
+            CheckBox checkbox = (CheckBox)gridpane.getChildren().get(1);
+            Label mapNameLabel = (Label)gridpane.getChildren().get(2);
+            if (checkbox.isSelected()) {
+                removeList.add(gridpane);
+                message.append(mapNameLabel.getText()).append("\n");
+            }
+        }
+
+        for (Node node: customNodes) {
             GridPane gridpane = (GridPane) node;
             CheckBox checkbox = (CheckBox)gridpane.getChildren().get(1);
             Label mapNameLabel = (Label)gridpane.getChildren().get(2);
@@ -300,14 +309,18 @@ public class MapsEditionController implements Initializable {
                     try {
                         GridPane gridpane = (GridPane) node;
                         Label mapNameLabel = (Label) gridpane.getChildren().get(2);
-                        MapDto customMap = facade.deleteSelectedMap(mapNameLabel.getText());
-                        if (customMap != null) {
-                            mapsToRemove.add(customMap);
-                            customMapsFlowPane.getChildren().remove(gridpane);
-                            File photo = new File(installationFolder + customMap.getUrlPhoto());
-                            photo.delete();
-                            File cacheFoler = new File(installationFolder + "/KFGame/Cache/" + customMap.getIdWorkShop());
-                            FileUtils.deleteDirectory(cacheFoler);
+                        MapDto map = facade.deleteSelectedMap(mapNameLabel.getText());
+                        if (map != null) {
+                            mapsToRemove.add(map);
+                            if (map.getOfficial()) {
+                                officialMapsFlowPane.getChildren().remove(gridpane);
+                            } else {
+                                customMapsFlowPane.getChildren().remove(gridpane);
+                                File photo = new File(installationFolder + map.getUrlPhoto());
+                                photo.delete();
+                                File cacheFoler = new File(installationFolder + "/KFGame/Cache/" + map.getIdWorkShop());
+                                FileUtils.deleteDirectory(cacheFoler);
+                            }
                         } else {
                             errors.append(mapNameLabel.getText()).append("\n");
                         }
@@ -345,54 +358,101 @@ public class MapsEditionController implements Initializable {
         if (result.isPresent() && result.get().equals(ButtonType.OK)) {
             logger.info("Starting the process to import maps from the server to the launcher");
 
-            File cacheFolder = new File(installationFolder + "/KFGame/Cache/");
-            File[] listOfFiles = cacheFolder.listFiles();
-            StringBuffer success = new StringBuffer();
-            StringBuffer errors = new StringBuffer();
-            for (int i=0; i < listOfFiles.length; i++) {
-                if (listOfFiles[i].isDirectory()) {
-                    Map customMap = null;
-                    Long idWorkShop = null;
-                    try {
-                        idWorkShop = Long.parseLong(listOfFiles[i].getName());
-                        List<Path> kfmFilesPath = Files.walk(Paths.get(installationFolder + "/KFGame/Cache/" + idWorkShop))
-                                .filter(Files::isRegularFile)
-                                .filter(f -> f.getFileName().toString().toUpperCase().startsWith("KF-"))
-                                .filter(f -> f.getFileName().toString().toUpperCase().endsWith(".KFM"))
-                                .collect(Collectors.toList());
+            StringBuffer successOfficial = new StringBuffer();
+            StringBuffer successCustom = new StringBuffer();
+            StringBuffer errorsOfficial = new StringBuffer();
+            StringBuffer errorsCustom = new StringBuffer();
+            List<Path> kfmFilesPathList = null;
+            try {
+                kfmFilesPathList = Files.walk(Paths.get(installationFolder + "/KFGame/BrewedPC/Maps"))
+                        .filter(Files::isRegularFile)
+                        .filter(f -> f.getFileName().toString().toUpperCase().startsWith("KF-"))
+                        .filter(f -> f.getFileName().toString().toUpperCase().endsWith(".KFM"))
+                        .collect(Collectors.toList());
 
-                        if (kfmFilesPath != null && !kfmFilesPath.isEmpty()) {
-                            String filenameWithExtension = kfmFilesPath.get(0).getFileName().toString();
-                            String[] array = filenameWithExtension.split(".kfm");
-                            String mapName = array[0];
-                            Optional<Map> customMapInDataBase = facade.findMapByCode(mapName);
-                            if (!customMapInDataBase.isPresent()) {
-                                customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, mapName, installationFolder);
+                kfmFilesPathList.addAll(Files.walk(Paths.get(installationFolder + "/KFGame/Cache"))
+                        .filter(Files::isRegularFile)
+                        .filter(f -> f.getFileName().toString().toUpperCase().startsWith("KF-"))
+                        .filter(f -> f.getFileName().toString().toUpperCase().endsWith(".KFM"))
+                        .collect(Collectors.toList()));
+            } catch (Exception e) {
+                logger.error("Error importing maps from server to the launcher", "See stacktrace for more details", e);
+            }
+
+            if (kfmFilesPathList != null && !kfmFilesPathList.isEmpty()) {
+                for (Path kfmFilePath: kfmFilesPathList) {
+                    boolean officialMap = kfmFilePath.toString().contains("/KFGame/BrewedPC/Maps");
+                    String filenameWithExtension = kfmFilePath.getFileName().toString();
+                    String[] array = filenameWithExtension.split(".kfm");
+                    String mapName = array[0];
+                    Long idWorkShop = null;
+                    if (!officialMap) {
+                        String[] arrayTwo = kfmFilePath.toString().replace(installationFolder, "").replace("/KFGame/Cache/", "").split("/");
+                        idWorkShop = Long.parseLong(arrayTwo[0]);
+                    }
+
+                    try {
+                        Optional<Map> mapInDataBase = facade.findMapByCode(mapName);
+                        if (!mapInDataBase.isPresent()) {
+                            if (officialMap) {
+                                Map newOfficialMap = new Map(mapName, true, null, null, "/KFGame/Web/images/maps/" + mapName + ".jpg", true);
+                                Map insertedMap = facade.insertMap(newOfficialMap);
+                                if (insertedMap != null) {
+                                    mapList.add(insertedMap);
+                                    GridPane gridpane = createMapGridPane(facade.getDto(insertedMap));
+                                    officialMapsFlowPane.getChildren().add(gridpane);
+                                    successOfficial.append("map name: ").append(insertedMap.getCode()).append("\n");
+                                } else {
+                                    logger.error("Error importing the official map with name: " + mapName);
+                                    errorsOfficial.append("mapName: ").append(mapName).append("\n");
+                                }
+                            } else {
+                                Map customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, mapName, installationFolder);
                                 if (customMap != null) {
                                     mapList.add(customMap);
                                     GridPane gridpane = createMapGridPane(facade.getDto(customMap));
                                     customMapsFlowPane.getChildren().add(gridpane);
-                                    success.append("map name: ").append(customMap.getCode()).append(" - idWorkShop: ").append(idWorkShop).append("\n");
+                                    successCustom.append("map name: ").append(customMap.getCode()).append(" - idWorkShop: ").append(idWorkShop).append("\n");
                                 } else {
-                                    logger.error("Error importing the customMap with idWorkShop: " + idWorkShop);
-                                    errors.append("idWorkShop: ").append(idWorkShop).append("\n");
+                                    logger.error("Error importing the custom map with idWorkShop: " + idWorkShop);
+                                    errorsCustom.append("map name: ").append(mapName).append(" - idWorkShop: ").append(idWorkShop).append("\n");
                                 }
                             }
                         }
                     } catch (Exception e) {
-                        logger.error("Error importing the customMap: " + customMap.getCode() + " with idWorkShop: " + idWorkShop, e);
-                        errors.append("map name: ").append(customMap.getCode()).append(" - idWorkShop: ").append(idWorkShop).append("\n");
+                        logger.error("Error importing the map: " + mapName, "See stacktrace for more details", e);
+                        if (officialMap) {
+                            errorsOfficial.append("mapName: ").append(mapName).append("\n");
+                        } else {
+                            errorsCustom.append("map name: ").append(mapName).append(" - idWorkShop: ").append(idWorkShop).append("\n");
+                        }
                     }
+
                 }
             }
+
             logger.info("The process to import maps from the server to the launcher has finished.");
-            if (StringUtils.isNotBlank(success)) {
-                Utils.infoDialog("These maps were successfully imported from server to the launcher:", success.toString());
+            if (StringUtils.isNotBlank(successOfficial) || StringUtils.isNotBlank(successCustom)) {
+                StringBuffer message = new StringBuffer();
+                if (StringUtils.isNotBlank(successOfficial)) {
+                    message.append("\nOFFICIAL MAPS:\n").append(successOfficial);
+                }
+                if (StringUtils.isNotBlank(successCustom)) {
+                    message.append("\nCUSTOM MAPS:\n").append(successCustom);
+                }
+                Utils.infoDialog("These maps were successfully imported from server to the launcher:", message.toString());
             } else {
                 Utils.infoDialog("No maps were imported", "The server does not contain new maps to be imported\nor the maps could not be imported successfully\nSee launcher.log file for more details.");
             }
-            if (StringUtils.isNotBlank(errors)) {
-                Utils.errorDialog("Error importing next maps from server to the launcher:", errors.toString() + "\nSee launcher.log file for more details.", null);
+            if (StringUtils.isNotBlank(errorsOfficial) || StringUtils.isNotBlank(errorsCustom)) {
+                StringBuffer message = new StringBuffer();
+                if (StringUtils.isNotBlank(errorsOfficial)) {
+                    message.append("\nOFFICIAL MAPS:\n").append(errorsOfficial);
+                }
+                if (StringUtils.isNotBlank(errorsCustom)) {
+                    message.append("\nCUSTOM MAPS:\n").append(errorsCustom);
+                }
+                Utils.errorDialog("Error importing next maps from server to the launcher:", message.toString() + "\nSee launcher.log file for more details.", null);
             }
         }
     }
@@ -412,10 +472,10 @@ public class MapsEditionController implements Initializable {
             checkbox.setSelected(selectMaps);
         }
         if (selectMaps) {
-            selectAllMaps.setText("Unselect all maps");
+            selectAllMaps.setText("Unselect custom maps");
             selectMaps = false;
         } else {
-            selectAllMaps.setText("Select all maps");
+            selectAllMaps.setText("Select custom maps");
             selectMaps = true;
         }
     }

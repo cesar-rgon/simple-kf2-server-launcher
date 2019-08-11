@@ -141,8 +141,4 @@ public class Kf2LinuxImpl extends Kf2Common {
         return null;
     }
 
-    @Override
-    public void checkForNewOfficialMaps(String installationFolder) {
-        checkForNewOfficialMaps(installationFolder, "LinuxServer-KFGame.ini");
-    }
 }

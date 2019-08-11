@@ -152,4 +152,9 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
     public Optional<Map> findMapByCode(String mapName) throws SQLException {
         return MapDao.getInstance().findByCode(mapName);
     }
+
+    @Override
+    public Map insertMap(Map map) throws SQLException {
+        return MapDao.getInstance().insert(map);
+    }
 }

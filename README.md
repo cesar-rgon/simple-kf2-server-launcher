@@ -24,7 +24,7 @@ Application to easily customize and launch a Killing Floor 2 server through a vi
 
 ```
 Version: 2.0 beta
-Last modification date: 2019/08/01
+Last modification date: 2019/08/11
 Supported OS: Microsoft Windows and Linux (Ubuntu/Debian)
 Author: César Rodríguez González
 Language: English (Spanish soon)
@@ -37,6 +37,7 @@ Language: English (Spanish soon)
 - Add custom maps to the server through Steam's WorkShop.
 - Remove custom maps from the server.
 - Administrate profiles, game types, difficulties, lengths and maximun numer of players that can be selected to launch the server.
+- Import official and custom maps from the server to the launcher.
 - All those features are available through the launcher's interface on Windows and Linux OS (no need to use console commands at all).
 
 ### Pre-requisites

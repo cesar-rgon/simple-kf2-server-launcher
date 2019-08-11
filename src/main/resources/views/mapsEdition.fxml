@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -21,13 +22,13 @@
 
 <fx:root id="centerPane" fx:id="mapsEditionGridPane" prefHeight="730.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapsedition.MapsEditionController">
    <children>
-      <Button fx:id="importMapsFromServer" mnemonicParsing="false" onAction="#importMapsFromServerOnAction" prefWidth="180.0" text="Import server's maps" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-      <Button fx:id="searchInWorkShop" mnemonicParsing="false" onAction="#searchInWorkShopOnAction" prefWidth="180.0" text="Search in WorkShop" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+      <Button fx:id="importMapsFromServer" mnemonicParsing="false" onAction="#importMapsFromServerOnAction" prefWidth="200.0" text="Import server's maps" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+      <Button fx:id="searchInWorkShop" mnemonicParsing="false" onAction="#searchInWorkShopOnAction" prefWidth="200.0" text="Search in WorkShop" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
          <GridPane.margin>
             <Insets top="10.0" />
          </GridPane.margin>
       </Button>
-      <Button fx:id="selectAllMaps" mnemonicParsing="false" onAction="#selectAllMapsOnAction" prefWidth="180.0" text="Select all maps" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+      <Button fx:id="selectAllMaps" mnemonicParsing="false" onAction="#selectAllMapsOnAction" prefWidth="200.0" text="Select custom maps" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
          <GridPane.margin>
             <Insets top="10.0" />
          </GridPane.margin>
@@ -41,7 +42,7 @@
             <Insets left="210.0" />
          </GridPane.margin>
       </ImageView>
-      <Button fx:id="addNewMaps" mnemonicParsing="false" onAction="#addNewMapsOnAction" prefWidth="180.0" text="Add new maps" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <Button fx:id="addNewMaps" mnemonicParsing="false" onAction="#addNewMapsOnAction" prefWidth="200.0" text="Add new maps" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets />
          </GridPane.margin></Button>
@@ -49,7 +50,7 @@
          <GridPane.margin>
             <Insets right="270.0" />
          </GridPane.margin></Label>
-      <Button fx:id="removeMaps" alignment="CENTER" mnemonicParsing="false" onAction="#removeMapsOnAction" prefWidth="180.0" text="Delete selected maps" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <Button fx:id="removeMaps" alignment="CENTER" mnemonicParsing="false" onAction="#removeMapsOnAction" prefWidth="200.0" text="Delete selected maps" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets />
          </GridPane.margin></Button>

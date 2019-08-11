@@ -17,4 +17,5 @@ public interface MapsEditionFacade {
     MapDto deleteSelectedMap(String mapName) throws SQLException;
     boolean isCorrectInstallationFolder(String installationFolder);
     Optional<Map> findMapByCode(String mapName) throws SQLException;
+    Map insertMap(Map map) throws SQLException;
 }

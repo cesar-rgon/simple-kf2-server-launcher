@@ -37,7 +37,6 @@ public abstract class Kf2Common {
     public void installOrUpdateServer(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) {
         if (isValid(installationFolder) && prepareSteamCmd(installationFolder)) {
             installUpdateKf2Server(installationFolder, validateFiles, isBeta, betaBrunch);
-            checkForNewOfficialMaps(installationFolder);
         }
     }
 
@@ -61,7 +60,6 @@ public abstract class Kf2Common {
                 String installationFolder = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_INSTALLATION_FOLDER);
                 if (isValid(installationFolder)) {
                     createConfigFolder(installationFolder, profile.getName());
-                    checkForNewOfficialMaps(installationFolder);
                     return runKf2Server(installationFolder, profile);
                 }
             } else {
@@ -365,43 +363,4 @@ public abstract class Kf2Common {
         sb.append("))");
         return sb.toString();
     }
-
-    protected void checkForNewOfficialMaps(String installationFolder, String filename) {
-
-        try {
-            List<Path> kfmFilesPathList = Files.walk(Paths.get(installationFolder + "/KFGame/BrewedPC/Maps"))
-                    .filter(Files::isRegularFile)
-                    .filter(f -> f.getFileName().toString().toUpperCase().startsWith("KF-"))
-                    .filter(f -> f.getFileName().toString().toUpperCase().endsWith(".KFM"))
-                    .collect(Collectors.toList());
-
-            if (kfmFilesPathList != null && !kfmFilesPathList.isEmpty()) {
-                List<Map> officialMapList = databaseService.listOfficialMaps();
-                for (Path kfmFilesPath: kfmFilesPathList) {
-                    String filenameWithExtension = kfmFilesPath.getFileName().toString();
-                    String[] array = filenameWithExtension.split(".kfm");
-                    String mapName = array[0];
-                    boolean found = false;
-                    for (Map databaseMap: officialMapList) {
-                        if (databaseMap.getCode().equalsIgnoreCase(mapName)) {
-                            officialMapList.remove(databaseMap);
-                            found = true;
-                            break;
-                        }
-                    }
-                    if (!found) {
-                        // It's a new official map, it must be stored in database
-                        Map newOfficialMap = new Map(mapName, true, null, null, "/KFGame/Web/images/maps/" + mapName + ".jpg", true);
-                        databaseService.insertMap(newOfficialMap);
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            String message = "Error detecting new official maps. See stacktrace for more details:";
-            logger.error(message, e);
-        }
-    }
-
-    public abstract void checkForNewOfficialMaps(String installationFolder);
 }
