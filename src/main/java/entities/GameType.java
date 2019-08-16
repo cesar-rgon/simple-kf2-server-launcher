@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class GameType extends CommonEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="ID", updatable=false, nullable=false)
     private Integer id;
 

@@ -2,6 +2,9 @@ package daos;
 
 
 import entities.CommonEntity;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import pojos.listener.TimeListener;
 
 import javax.persistence.*;
 import java.sql.SQLException;
@@ -13,7 +16,8 @@ import java.util.Optional;
 
 public abstract class CommonDao<T extends CommonEntity> {
 
-	private static EntityManagerFactory emf;
+	private static final Logger logger = LogManager.getLogger(CommonDao.class);
+	protected static EntityManagerFactory emf;
 	private static final String PERSISTENCE_UNIT = "kf2database";
 
 	private final Class<T> entityClass;
@@ -38,12 +42,13 @@ public abstract class CommonDao<T extends CommonEntity> {
 			em.getTransaction().begin();
 			T result = em.find(entityClass, id);
 			em.getTransaction().commit();
-			em.close();
 			return result;
 		} catch (Exception e){
 			String errorMessage = String.format("Database error. Error trying to get the element %s in entity %s", id, entityClass.getName());
-			endTransaction(em);
+			logger.error(errorMessage, e);
 			throw new SQLException(errorMessage, e);
+		} finally {
+			endTransaction(em);
 		}
 	}
 	
@@ -66,12 +71,13 @@ public abstract class CommonDao<T extends CommonEntity> {
 			}
 			List<T> result = (List<T>)queryObject.getResultList();
 			em.getTransaction().commit();
-			em.close();
 			return result;
 		} catch (Exception e) {
 			String errorMessage = String.format("Database error. Error trying to list elements of the entity %s", entityClass.getName());
-			endTransaction(em);
+			logger.error(errorMessage, e);
 			throw new SQLException(errorMessage, e);
+		} finally {
+			endTransaction(em);
 		}
 	}
 	
@@ -94,14 +100,17 @@ public abstract class CommonDao<T extends CommonEntity> {
 			}
 			T result = (T) queryObject.getSingleResult();
 			em.getTransaction().commit();
-			em.close();
 			return Optional.ofNullable(result);
 		} catch (NoResultException e) {
+			String message = String.format("No results were found by the query %s in entity %s", query, entityClass.getName());
+			logger.info(message, e);
 			return Optional.empty();
 		} catch (Exception e) {
 			String errorMessage = String.format("Database error. Error trying to find an element of the entity %s", entityClass.getName());
-			endTransaction(em);
+			logger.error(errorMessage, e);
 			throw new SQLException(errorMessage, e);
+		} finally {
+			endTransaction(em);
 		}
 	}
 	
@@ -117,12 +126,13 @@ public abstract class CommonDao<T extends CommonEntity> {
 			em.getTransaction().begin();
 			em.persist(entity);
 			em.getTransaction().commit();
-			em.close();
 			return entity;
 		} catch (Exception e){
 			String errorMessage = String.format("Database error. Error trying to insert the element %s in entity %s", entity.getId(), entityClass.getName());
-			endTransaction(em);
+			logger.error(errorMessage, e);
 			throw new SQLException(errorMessage, e);
+		} finally {
+			endTransaction(em);
 		}
 	}
 
@@ -138,12 +148,13 @@ public abstract class CommonDao<T extends CommonEntity> {
 			em.getTransaction().begin();
 			em.merge(entity);
 			em.getTransaction().commit();
-			em.close();
 			return true;
 		} catch (Exception e){
 			String errorMessage = String.format("Database error. Error trying to update the element %s in entity %s", entity.getId(), entityClass.getName());
-			endTransaction(em);
+			logger.error(errorMessage, e);
 			throw new SQLException(errorMessage, e);
+		} finally {
+			endTransaction(em);
 		}
 	}
 	
@@ -160,12 +171,13 @@ public abstract class CommonDao<T extends CommonEntity> {
 			entity = em.merge(entity);
 			em.remove(entity);
 			em.getTransaction().commit();
-			em.close();
 			return true;
 		} catch (Exception e){
 			String errorMessage = String.format("Database error. Error trying to remove the element %s in entity %s", entity.getId(), entityClass.getName());
-			endTransaction(em);
+			logger.error(errorMessage, e);
 			throw new SQLException(errorMessage, e);
+		} finally {
+			endTransaction(em);
 		}
 	}
 

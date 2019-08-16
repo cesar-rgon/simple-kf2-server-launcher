@@ -30,8 +30,8 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
     }
 
     @Override
-    public List<Map> listAllMaps() throws SQLException {
-        return MapDao.getInstance().listAll();
+    public List<Map> listAllMapsAndMods() throws SQLException {
+        return MapDao.getInstance().listAllMapsAndMods();
     }
 
     @Override
@@ -49,29 +49,22 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
         return propertyService.getPropertyValue("properties/config.properties", key);
     }
 
-    private Map createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto, boolean downloaded) throws Exception {
+    private Map createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto, boolean downloaded, Boolean isMod) throws Exception {
         if ((StringUtils.isBlank(mapName) || idWorkShop == null)) {
             return null;
         }
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_MAP_BASE_URL_WORKSHOP);
         String urlInfo = baseUrlWorkshop + idWorkShop;
-        Map customMap = new Map(mapName, false, urlInfo, idWorkShop, urlPhoto, downloaded);
+        Map customMap = new Map(mapName, false, urlInfo, idWorkShop, urlPhoto, downloaded, isMod);
         return MapDao.getInstance().insert(customMap);
     }
 
     @Override
-    public Map createNewCustomMapFromWorkshop(String urlIdWorkshop, String installationFolder) throws Exception {
-        Long idWorkShop = null;
+    public Map createNewCustomMapFromWorkshop(Long idWorkShop, String installationFolder, boolean downloaded, Boolean isMod) throws Exception {
         URL urlWorkShop = null;
-        if (urlIdWorkshop.contains("http")) {
-            urlWorkShop = new URL(urlIdWorkshop);
-            String[] array = urlIdWorkshop.split("=");
-            idWorkShop = Long.parseLong(array[1]);
-        } else {
-            idWorkShop = Long.parseLong(urlIdWorkshop);
-            String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_MAP_BASE_URL_WORKSHOP);
-            urlWorkShop = new URL(baseUrlWorkshop + idWorkShop);
-        }
+        String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_MAP_BASE_URL_WORKSHOP);
+        urlWorkShop = new URL(baseUrlWorkshop + idWorkShop);
+
         BufferedReader reader = new BufferedReader(new InputStreamReader(urlWorkShop.openStream()));
         String strUrlMapImage = null;
         String mapName = null;
@@ -96,11 +89,11 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
         File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
 
-        return createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, false);
+        return createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, downloaded, isMod);
     }
 
     @Override
-    public Map createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String installationFolder) throws Exception {
+    public Map createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String installationFolder, boolean downloaded, Boolean isMod) throws Exception {
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_MAP_BASE_URL_WORKSHOP);
         URL urlWorkShop = new URL(baseUrlWorkshop + idWorkShop);
         BufferedReader reader = new BufferedReader(new InputStreamReader(urlWorkShop.openStream()));
@@ -121,7 +114,7 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
         File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
 
-        return createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, true);
+        return createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, downloaded, isMod);
     }
 
     @Override
@@ -149,7 +142,7 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
     }
 
     @Override
-    public Optional<Map> findMapByCode(String mapName) throws SQLException {
+    public Optional<Map> findMapOrModByCode(String mapName) throws SQLException {
         return MapDao.getInstance().findByCode(mapName);
     }
 
@@ -157,4 +150,10 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
     public Map insertMap(Map map) throws SQLException {
         return MapDao.getInstance().insert(map);
     }
+
+    @Override
+    public Optional<Map> findMapOrModByIdWorkShop(Long idWorkShop) throws SQLException {
+        return MapDao.getInstance().findByIdWorkShop(idWorkShop);
+    }
+
 }

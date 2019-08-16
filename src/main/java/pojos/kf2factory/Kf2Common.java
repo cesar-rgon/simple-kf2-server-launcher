@@ -7,7 +7,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.listener.TimeListener;
 import services.DatabaseService;
 import services.DatabaseServiceImpl;
 import services.PropertyService;
@@ -21,7 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class Kf2Common {
@@ -66,7 +64,9 @@ public abstract class Kf2Common {
                 Utils.errorDialog("Error validating parameters. The server can not be launched!", errorMessage, null);
             }
         } catch (Exception e) {
-            Utils.errorDialog("Error executing Killing Floor 2 server", "See stacktrace for more details", e);
+            String message = "Error executing Killing Floor 2 server";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
         return null;
     }
@@ -123,7 +123,9 @@ public abstract class Kf2Common {
                 }
             }
         } catch (IOException e) {
-            Utils.errorDialog("Error copying files to profiles's config folder", "See stacktrace for more details", e);
+            String message = "Error copying files to profiles's config folder";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 
@@ -158,7 +160,7 @@ public abstract class Kf2Common {
                 }
             }
 
-            List<Map> customMaps = databaseService.listCustomMaps();
+            List<Map> customMaps = databaseService.listCustomMapsAndMods();
             if (customMaps != null && !customMaps.isEmpty()) {
                 pw.println("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]");
                 for (Map customMap: customMaps) {
@@ -171,6 +173,7 @@ public abstract class Kf2Common {
             kfEngineIni.delete();
             tempFile.renameTo(kfEngineIni);
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }
@@ -188,7 +191,7 @@ public abstract class Kf2Common {
                     String[] array = line.split(" ");
                     String mapName = array[0].replace("[", "");
                     Map map = databaseService.findMapByName(mapName);
-                    if (map != null && map.getOfficial() || line.contains("[KF-Default KFMapSummary]")) {
+                    if (map != null && map.isOfficial() || line.contains("[KF-Default KFMapSummary]")) {
                         pw.println(line);
                         while (!line.contains("MapName=")) {
                             line = br.readLine();
@@ -227,6 +230,7 @@ public abstract class Kf2Common {
             kfGameIni.delete();
             tempFile.renameTo(kfGameIni);
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }
@@ -270,6 +274,7 @@ public abstract class Kf2Common {
                 modifiedLine = generateMapCycleLine(mapList);
             } catch (SQLException e) {
                 modifiedLine = "GameMapCycles=(Maps=())";
+                logger.error(e.getMessage(), e);
                 Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
             }
         }
@@ -295,6 +300,7 @@ public abstract class Kf2Common {
                 }
             }
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
         if (line.contains("BannerLink=")) {
@@ -339,6 +345,7 @@ public abstract class Kf2Common {
             command.append(" -applaunch 232090 127.0.0.1").append(gamePortParam).append(passwordParam).append(" -nostartupmovies");
             Runtime.getRuntime().exec(command.toString(),null, steamExeFile.getParentFile());
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
 
@@ -350,7 +357,7 @@ public abstract class Kf2Common {
         if (!mapList.isEmpty()) {
             sb.append("\"----- OFFICIAL MAPS -----\",");
             for (Map map: mapList) {
-                if (showSeparator && !map.getOfficial()) {
+                if (showSeparator && !map.isOfficial()) {
                     sb.append("\"----- CUSTOM MAPS -----\",");
                     showSeparator = false;
                 }
@@ -363,4 +370,6 @@ public abstract class Kf2Common {
         sb.append("))");
         return sb.toString();
     }
+
+    public abstract Long getIdWorkShopFromPath(Path path, String installationFolder);
 }

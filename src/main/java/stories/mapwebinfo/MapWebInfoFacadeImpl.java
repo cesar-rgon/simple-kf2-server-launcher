@@ -54,16 +54,16 @@ public class MapWebInfoFacadeImpl implements MapWebInfoFacade {
         String absoluteTargetFolder = installationFolder + customMapLocalFolder;
         File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
-        return createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, false);
+        return createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, false, null);
     }
 
-    private Map createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto, boolean downloaded) throws Exception {
+    private Map createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto, boolean downloaded, Boolean mod) throws Exception {
         if ((StringUtils.isBlank(mapName) || idWorkShop == null)) {
             return null;
         }
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_MAP_BASE_URL_WORKSHOP);
         String urlInfo = baseUrlWorkshop + idWorkShop;
-        Map customMap = new Map(mapName, false, urlInfo, idWorkShop, urlPhoto, downloaded);
+        Map customMap = new Map(mapName, false, urlInfo, idWorkShop, urlPhoto, downloaded, mod);
         return MapDao.getInstance().insert(customMap);
     }
 }

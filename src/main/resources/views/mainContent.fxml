@@ -12,8 +12,8 @@
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="80.0" />
         <ColumnConstraints hgrow="ALWAYS" maxWidth="350.0" minWidth="10.0" prefWidth="140.0" />
-        <ColumnConstraints hgrow="SOMETIMES" maxWidth="40.0" minWidth="10.0" prefWidth="10.0" />
-        <ColumnConstraints hgrow="ALWAYS" maxWidth="200.0" minWidth="10.0" prefWidth="10.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="105.0" minWidth="10.0" prefWidth="10.0" />
+        <ColumnConstraints hgrow="ALWAYS" maxWidth="135.0" minWidth="10.0" prefWidth="10.0" />
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="80.0" />
       <ColumnConstraints />
@@ -40,12 +40,12 @@
         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
     </rowConstraints>
     <children>
-        <ImageView fitHeight="700.0" fitWidth="741.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="9" GridPane.valignment="CENTER">
+        <ImageView fitHeight="665.0" fitWidth="550.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
         <image>
             <Image url="@../images/radiation700.png" />
         </image>
          <GridPane.margin>
-            <Insets bottom="10.0" left="130.0" />
+            <Insets right="-179.0" top="100.0" />
          </GridPane.margin>
     </ImageView>
         <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
@@ -247,7 +247,7 @@
          <GridPane.margin>
             <Insets left="207.0" />
          </GridPane.margin></TextField>
-        <ImageView fitHeight="261.0" fitWidth="531.0" opacity="0.76" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+        <ImageView fitHeight="261.0" fitWidth="531.0" opacity="0.9" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/photo-borders.png" />
             </image>

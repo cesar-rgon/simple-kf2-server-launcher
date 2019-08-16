@@ -9,8 +9,11 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
+import stories.difficultiesedition.DifficultiesEditionController;
 import utils.Utils;
 
 import java.io.File;
@@ -21,6 +24,7 @@ import java.util.ResourceBundle;
 
 public class ProfilesEditionController implements Initializable {
 
+    private static final Logger logger = LogManager.getLogger(ProfilesEditionController.class);
     private final ProfilesEditionFacade facade;
 
     @FXML private TableView<ProfileDto> profilesTable;
@@ -37,6 +41,7 @@ public class ProfilesEditionController implements Initializable {
             profileNameColumn.setCellValueFactory(cellData -> cellData.getValue().getNameProperty());
             profilesTable.setItems(facade.listAllProfiles());
         } catch (SQLException e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }
@@ -46,7 +51,9 @@ public class ProfilesEditionController implements Initializable {
         try {
             String installationFolder = facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER);
             if (StringUtils.isBlank(installationFolder)) {
-                Utils.warningDialog("You can not add a new profile!","You need to define an installation folder in Install/Update section.");
+                String message = "You need to define an installation folder in Install/Update section.";
+                logger.warn(message);
+                Utils.warningDialog("You can not add a new profile!",message);
                 return;
             }
             Optional<String> profileNameOpt = Utils.OneTextInputDialog("Add a new profile", "Enter profile name:");
@@ -57,7 +64,9 @@ public class ProfilesEditionController implements Initializable {
                 kf2Common.createConfigFolder(installationFolder, profileName);
             }
         } catch (Exception e) {
-            Utils.errorDialog("The profile can not be created!", "See stacktrace for more details", e);
+            String message = "The profile can not be created!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 
@@ -66,7 +75,9 @@ public class ProfilesEditionController implements Initializable {
         try {
             String installationFolder = facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER);
             if (StringUtils.isBlank(installationFolder)) {
-                Utils.warningDialog("You can not remove a profile!","You need to define an installation folder in Install/Update section.");
+                String message = "You need to define an installation folder in Install/Update section.";
+                logger.warn(message);
+                Utils.warningDialog("You can not remove a profile!",message);
                 return;
             }
             int selectedIndex = profilesTable.getSelectionModel().getSelectedIndex();
@@ -77,13 +88,19 @@ public class ProfilesEditionController implements Initializable {
                     File profileConfigFolder = new File(facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER) + "/KFGame/Config/" + selectedProfile.getName());
                     FileUtils.deleteDirectory(profileConfigFolder);
                 } else {
-                    Utils.errorDialog("The profile can not be deleted from database", "Delete operation is aborted!", null);
+                    String message = "The profile can not be deleted from database";
+                    logger.warn(message);
+                    Utils.warningDialog(message, "Delete operation is aborted!");
                 }
             } else {
-                Utils.warningDialog("No selected profile", "Delete operation is aborted!");
+                String message = "No selected profile to delete";
+                logger.warn(message);
+                Utils.warningDialog(message, "Delete operation is aborted!");
             }
         } catch (Exception e) {
-            Utils.errorDialog("The profile can not be deleted!", "See stacktrace for more details", e);
+            String message = "The profile can not be deleted!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 
@@ -95,7 +112,9 @@ public class ProfilesEditionController implements Initializable {
         try {
             String installationFolder = facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER);
             if (StringUtils.isBlank(installationFolder)) {
-                Utils.warningDialog("You can not edit a profile!","You need to define an installation folder in Install/Update section.");
+                String message = "You need to define an installation folder in Install/Update section.";
+                logger.warn(message);
+                Utils.warningDialog("You can not edit a profile!",message);
                 return;
             }
             ProfileDto updatedProfileDto = facade.updateChangedProfile(oldProfileName, newProfileName);
@@ -110,11 +129,15 @@ public class ProfilesEditionController implements Initializable {
                 }
             } else {
                 profilesTable.refresh();
-                Utils.errorDialog("The profile can not be renamed in database", "Update operation is aborted!", null);
+                String message = "The profile can not be renamed in database: [old profile name = " + oldProfileName + ", new profile name = " + newProfileName + "]";
+                logger.warn(message);
+                Utils.warningDialog("Update operation is aborted!", message);
             }
         } catch (Exception e) {
             profilesTable.refresh();
-            Utils.errorDialog("The profile can not be updated!", "See stacktrace for more details", e);
+            String message = "The profile can not be updated!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 }

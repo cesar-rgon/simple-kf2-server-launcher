@@ -8,6 +8,8 @@ import entities.Profile;
 import net.lingala.zip4j.core.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -16,9 +18,12 @@ import utils.Utils;
 import java.io.File;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
 public class Kf2WindowsImpl extends Kf2Common {
+
+    private static final Logger logger = LogManager.getLogger(Kf2WindowsImpl.class);
 
     public Kf2WindowsImpl() {
         super();
@@ -50,7 +55,9 @@ public class Kf2WindowsImpl extends Kf2Common {
             }
             return true;
         } catch (Exception e) {
-            Utils.errorDialog("Error preparing SteamCmd to be able to install KF2 server", "See stacktrace for more details", e);
+            String message = "Error preparing SteamCmd to be able to install KF2 server";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
             return false;
         }
     }
@@ -90,7 +97,9 @@ public class Kf2WindowsImpl extends Kf2Common {
                 }
             }
         } catch (Exception e) {
-            Utils.errorDialog("Error installing KF2 server", "See stacktrace for more details", e);
+            String message = "Error installing KF2 server";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 
@@ -122,7 +131,9 @@ public class Kf2WindowsImpl extends Kf2Common {
             Session.getInstance().getProcessList().add(proccess);
             return command.toString();
         } catch (Exception e) {
-            Utils.errorDialog("Error executing Killing Floor 2 server", "See stacktrace for more details", e);
+            String message = "Error executing Killing Floor 2 server";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
             return null;
         }
     }
@@ -138,10 +149,21 @@ public class Kf2WindowsImpl extends Kf2Common {
                 }
             }
         } catch (RegistryException e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
         return null;
     }
 
+    @Override
+    public Long getIdWorkShopFromPath(Path path, String installationFolder) {
+        try {
+            String[] array = path.toString().replace(installationFolder, "").replace("\\KFGame\\Cache\\", "").split("\\\\");
+            return Long.parseLong(array[0]);
+        } catch (Exception e) {
+            logger.error("Error getting idWorkShop from path: " + path.toString(), e);
+            return null;
+        }
+    }
 }
 

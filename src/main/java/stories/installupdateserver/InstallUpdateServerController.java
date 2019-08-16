@@ -8,9 +8,12 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import start.MainApplication;
+import stories.gametypesedition.GameTypesEditionController;
 import utils.Utils;
 
 import java.io.File;
@@ -19,6 +22,7 @@ import java.util.ResourceBundle;
 
 public class InstallUpdateServerController implements Initializable {
 
+    private static final Logger logger = LogManager.getLogger(InstallUpdateServerController.class);
     private final InstallUpdateServerFacade facade;
 
     @FXML private TextField installationFolder;
@@ -38,6 +42,7 @@ public class InstallUpdateServerController implements Initializable {
             isBeta.setSelected(Boolean.parseBoolean(facade.findPropertyValue(Constants.CONFIG_IS_BETA)));
             betaBrunch.setText(facade.findPropertyValue(Constants.CONFIG_BETA_BRUNCH));
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
 
@@ -47,10 +52,13 @@ public class InstallUpdateServerController implements Initializable {
                 try {
                     if (!newPropertyValue) {
                         if (!facade.saveOrUpdateProperty(Constants.CONFIG_INSTALLATION_FOLDER, installationFolder.getText())) {
-                            Utils.errorDialog("Error updating the property information", "The installation folder value could not be saved!", null);
+                            String message = "The installation folder value could not be saved!";
+                            logger.warn(message);
+                            Utils.warningDialog("Error updating the property information", message);
                         }
                     }
                 } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
                 }
             }
@@ -62,10 +70,13 @@ public class InstallUpdateServerController implements Initializable {
                 try {
                     if (!newPropertyValue) {
                         if (!facade.saveOrUpdateProperty(Constants.CONFIG_BETA_BRUNCH, betaBrunch.getText())) {
-                            Utils.errorDialog("Error updating the property information", "The beta brunch value could not be saved!", null);
+                            String message = "The beta brunch value could not be saved!";
+                            logger.warn(message);
+                            Utils.warningDialog("Error updating the property information", message);
                         }
                     }
                 } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
                 }
             }
@@ -81,9 +92,12 @@ public class InstallUpdateServerController implements Initializable {
             installationFolder.setText(selectedDirectory.getAbsolutePath());
             try {
                 if (!facade.saveOrUpdateProperty(Constants.CONFIG_INSTALLATION_FOLDER, installationFolder.getText())) {
-                    Utils.errorDialog("Error updating the property information", "The installation folder value could not be saved!", null);
+                    String message = "The installation folder value could not be saved!";
+                    logger.warn(message);
+                    Utils.warningDialog("Error updating the property information", message);
                 }
             } catch (Exception e) {
+                logger.error(e.getMessage(), e);
                 Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
             }
         }
@@ -93,9 +107,12 @@ public class InstallUpdateServerController implements Initializable {
     private void isBetaOnAction() {
         try {
             if (!facade.saveOrUpdateProperty(Constants.CONFIG_IS_BETA, String.valueOf(isBeta.isSelected()))) {
-                Utils.errorDialog("Error updating the property information", "The is beta value could not be saved!", null);
+                String message = "The is beta value could not be saved!";
+                logger.warn(message);
+                Utils.warningDialog("Error updating the property information", message);
             }
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }
@@ -105,9 +122,12 @@ public class InstallUpdateServerController implements Initializable {
     private void validateFilesOnAction() {
         try {
             if (!facade.saveOrUpdateProperty(Constants.CONFIG_VALIDATE_FILES, String.valueOf(validateFiles.isSelected()))) {
-                Utils.errorDialog("Error updating the property information", "The validate files value could not be saved!", null);
+                String message = "The validate files value could not be saved!";
+                logger.warn(message);
+                Utils.warningDialog("Error updating the property information", message);
             }
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }

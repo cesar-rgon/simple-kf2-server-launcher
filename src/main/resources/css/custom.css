@@ -133,7 +133,7 @@
 #titleConfigLabel {
     -fx-text-fill: #fba140;
     -fx-font-weight: bold;
-    -fx-font-size: 30;
+    -fx-font-size: 25;
 }
 
 #alreadyInLauncher {
@@ -146,4 +146,29 @@
 
 #searchMaps, #viewPaneCombo {
     -fx-background-color: #c15d11;
+}
+
+.tab-pane {
+  -fx-tab-min-height:35px;
+  -fx-tab-max-height:35px;
+}
+
+.tab {
+    -fx-text-base-color: white;
+    -fx-background-color: #191513;
+    -fx-cursor: hand;
+}
+
+.tab:hover {
+    -fx-background-color: #c15d11;
+    -fx-cursor: hand;
+}
+
+.tab:selected {
+    -fx-background-color: #22573d ;
+    -fx-cursor: hand;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color:#191513;
 }

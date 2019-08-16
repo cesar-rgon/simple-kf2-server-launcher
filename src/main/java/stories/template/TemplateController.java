@@ -9,10 +9,13 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
+import stories.difficultiesedition.DifficultiesEditionController;
 import utils.Utils;
 
 import java.awt.*;
@@ -22,6 +25,7 @@ import java.util.ResourceBundle;
 
 public class TemplateController implements Initializable {
 
+    private static final Logger logger = LogManager.getLogger(TemplateController.class);
     private final PropertyService propertyService;
 
     @FXML private Menu mainPage;
@@ -53,7 +57,9 @@ public class TemplateController implements Initializable {
             String mapsTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_MAPS_EDITION);
             mapsMenu.setGraphic(getLabelWithHandler(mapsTitle, "/views/mapsEdition.fxml"));
         } catch (Exception e) {
-            Utils.errorDialog("Error setting menu titles", "See stacktrace for more details", e);
+            String message = "Error setting menu titles";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 
@@ -94,6 +100,7 @@ public class TemplateController implements Initializable {
             String mapsTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_MAPS_EDITION);
             mapsMenu.setDisable(mapsTitle.equals(title));
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }
@@ -108,6 +115,7 @@ public class TemplateController implements Initializable {
             String profilesTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_PROFILES_EDITION);
             loadNewContent(profilesTitle, "/views/profilesEdition.fxml");
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }
@@ -122,6 +130,7 @@ public class TemplateController implements Initializable {
             String gameTypesTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_GAMETYPES_EDITION);
             loadNewContent(gameTypesTitle, "/views/gameTypesEdition.fxml");
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }
@@ -136,6 +145,7 @@ public class TemplateController implements Initializable {
             String difficultiesTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_DIFFICULTIES_EDITION);
             loadNewContent(difficultiesTitle, "/views/difficultiesEdition.fxml");
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }
@@ -150,6 +160,7 @@ public class TemplateController implements Initializable {
             String lengthTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_LENGTH_EDITION);
             loadNewContent(lengthTitle, "/views/lengthEdition.fxml");
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }
@@ -164,6 +175,7 @@ public class TemplateController implements Initializable {
             String maxPlayersTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", Constants.LANG_MENU_MAXPLAYERS_EDITION);
             loadNewContent(maxPlayersTitle, "/views/maxPlayersEdition.fxml");
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }
@@ -174,6 +186,7 @@ public class TemplateController implements Initializable {
             String applicationVersion = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_VERSION);
             Utils.infoDialog("Developed by cesar-rgon", "Version: " + applicationVersion);
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }
@@ -184,6 +197,7 @@ public class TemplateController implements Initializable {
             String readmeUrl = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_HELP_README_URL);
             Desktop.getDesktop().browse(new URI(readmeUrl));
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }
@@ -194,6 +208,7 @@ public class TemplateController implements Initializable {
             String githubUrl = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_HELP_GITHUB_PROJECT_URL);
             Desktop.getDesktop().browse(new URI(githubUrl));
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }

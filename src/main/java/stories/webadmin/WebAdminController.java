@@ -8,10 +8,13 @@ import javafx.fxml.Initializable;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.html.HTMLFormElement;
 import pojos.session.Session;
+import stories.difficultiesedition.DifficultiesEditionController;
 import utils.Utils;
 
 import java.net.URL;
@@ -20,6 +23,7 @@ import java.util.ResourceBundle;
 
 public class WebAdminController implements Initializable {
 
+    private static final Logger logger = LogManager.getLogger(WebAdminController.class);
     private final WebAdminFacade facade;
 
     @FXML private WebView webAdmin;
@@ -52,6 +56,7 @@ public class WebAdminController implements Initializable {
                                 passwordInput.setAttribute("value", "admin");
                             }
                         } catch (Exception e) {
+                            logger.error(e.getMessage(), e);
                             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
                         }
                         HTMLFormElement form = (HTMLFormElement) doc.getElementById("loginform");
@@ -67,7 +72,9 @@ public class WebAdminController implements Initializable {
                 }
             }
         } catch (SQLException e) {
-            Utils.errorDialog("The WebAdmin page can not be loaded!", "See stacktrace for more details", e);
+            String message = "The WebAdmin page can not be loaded!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 }

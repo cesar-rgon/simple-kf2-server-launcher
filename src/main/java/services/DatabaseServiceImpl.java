@@ -21,8 +21,8 @@ public class DatabaseServiceImpl implements DatabaseService {
     }
 
     @Override
-    public List<Map> listNotDownloadedMaps() throws SQLException {
-        return MapDao.getInstance().listNotDownloadedMaps();
+    public List<Map> listNotDownloadedMapsAndMods() throws SQLException {
+        return MapDao.getInstance().listNotDownloadedMapsAndMods();
     }
 
     @Override
@@ -31,18 +31,8 @@ public class DatabaseServiceImpl implements DatabaseService {
     }
 
     @Override
-    public List<Profile> listAllProfiles() throws SQLException {
-        return ProfileDao.getInstance().listAll();
-    }
-
-    @Override
-    public List<Map> listOfficialMaps() throws SQLException {
-        return MapDao.getInstance().listOfficialMaps();
-    }
-
-    @Override
-    public Map insertMap(Map map) throws SQLException {
-        return MapDao.getInstance().insert(map);
+    public List<Map> listCustomMapsAndMods() throws SQLException {
+        return MapDao.getInstance().listCustomMapsAndMods();
     }
 
     @Override

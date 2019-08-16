@@ -20,7 +20,7 @@
             <Insets right="170.0" />
          </GridPane.margin>
       </Label>
-      <Button fx:id="addMap" mnemonicParsing="false" onAction="#addMapOnAction" prefWidth="150.0" text="Add map" visible="false" GridPane.halignment="RIGHT">
+      <Button fx:id="addMap" mnemonicParsing="false" onAction="#addMapOnAction" prefWidth="150.0" text="Add map/mod" visible="false" GridPane.halignment="RIGHT">
          <GridPane.margin>
             <Insets right="170.0" />
          </GridPane.margin>

@@ -7,7 +7,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pojos.session.Session;
+import stories.difficultiesedition.DifficultiesEditionController;
 import utils.Utils;
 
 import java.net.URL;
@@ -17,6 +20,7 @@ import java.util.ResourceBundle;
 
 public class LengthEditionController implements Initializable {
 
+    private static final Logger logger = LogManager.getLogger(LengthEditionController.class);
     private final LengthEditionFacade facade;
 
     @FXML private TableView<SelectDto> lengthTable;
@@ -38,6 +42,7 @@ public class LengthEditionController implements Initializable {
             lengthDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().getValueProperty());
             lengthTable.setItems(facade.listAllLength());
         } catch (SQLException e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }
@@ -54,11 +59,15 @@ public class LengthEditionController implements Initializable {
                 lengthTable.getItems().add(updatedLengthDto);
             } else {
                 lengthTable.refresh();
-                Utils.errorDialog("The length can not be renamed in database", "Update operation is aborted!", null);
+                String message = "The length can not be renamed in database: [old length code = " + oldLengthCode + ", new length code = " + newLengthCode + "]";
+                logger.warn(message);
+                Utils.warningDialog("Update operation is aborted!", message);
             }
         } catch (Exception e) {
             lengthTable.refresh();
-            Utils.errorDialog("The length can not be updated!", "See stacktrace for more details", e);
+            String message = "The length can not be updated!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 
@@ -75,11 +84,15 @@ public class LengthEditionController implements Initializable {
                 lengthTable.getItems().add(updatedLengthDto);
             } else {
                 lengthTable.refresh();
-                Utils.errorDialog("The length can not be renamed in database", "Update operation is aborted!", null);
+                String message = "The length can not be renamed in database: [old length description = " + oldLengthDescription + ", new length description = " + newLengthDescription + "]";
+                logger.warn(message);
+                Utils.warningDialog("Update operation is aborted!", message);
             }
         } catch (Exception e) {
             lengthTable.refresh();
-            Utils.errorDialog("The length can not be updated!", "See stacktrace for more details", e);
+            String message = "The length can not be updated!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 
@@ -93,7 +106,9 @@ public class LengthEditionController implements Initializable {
                 lengthTable.getItems().add(facade.createNewLength(code, description));
             }
         } catch (Exception e) {
-            Utils.errorDialog("The game type can not be created!", "See stacktrace for more details", e);
+            String message = "The length can not be created!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 
@@ -106,13 +121,19 @@ public class LengthEditionController implements Initializable {
                 if (facade.deleteSelectedLength(selectedLength.getKey())) {
                     lengthTable.getItems().remove(selectedIndex);
                 } else {
-                    Utils.errorDialog("The length can not be deleted from database", "Delete operation is aborted!", null);
+                    String message = "The length can not be deleted from database";
+                    logger.warn(message);
+                    Utils.warningDialog(message, "Delete operation is aborted!");
                 }
             } else {
-                Utils.warningDialog("No selected length", "Delete operation is aborted!");
+                String message = "No selected length to delete";
+                logger.warn(message);
+                Utils.warningDialog(message, "Delete operation is aborted!");
             }
         } catch (Exception e) {
-            Utils.errorDialog("The length can not be deleted!", "See stacktrace for more details", e);
+            String message = "The length can not be deleted!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 }

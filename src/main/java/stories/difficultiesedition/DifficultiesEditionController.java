@@ -7,6 +7,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import pojos.listener.TimeListener;
 import pojos.session.Session;
 import utils.Utils;
 
@@ -17,6 +20,7 @@ import java.util.ResourceBundle;
 
 public class DifficultiesEditionController implements Initializable {
 
+    private static final Logger logger = LogManager.getLogger(DifficultiesEditionController.class);
     private final DifficultiesEditionFacade facade;
 
     @FXML private TableView<SelectDto> difficultiesTable;
@@ -37,6 +41,7 @@ public class DifficultiesEditionController implements Initializable {
             difficultyDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().getValueProperty());
             difficultiesTable.setItems(facade.listAllDifficulties());
         } catch (SQLException e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }
@@ -53,11 +58,15 @@ public class DifficultiesEditionController implements Initializable {
                 difficultiesTable.getItems().add(updatedDifficultyDto);
             } else {
                 difficultiesTable.refresh();
-                Utils.errorDialog("The difficulty can not be renamed in database", "Update operation is aborted!", null);
+                String message = "The difficulty can not be renamed in database: [old difficulty code = " + oldDifficultyCode + ", new difficulty code = " + newDifficultyCode + "]";
+                logger.warn(message);
+                Utils.warningDialog("Update operation is aborted!", message);
             }
         } catch (Exception e) {
             difficultiesTable.refresh();
-            Utils.errorDialog("The difficulty can not be updated!", "See stacktrace for more details", e);
+            String message = "The difficulty can not be updated!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 
@@ -74,11 +83,15 @@ public class DifficultiesEditionController implements Initializable {
                 difficultiesTable.getItems().add(updatedGameTypeDto);
             } else {
                 difficultiesTable.refresh();
-                Utils.errorDialog("The difficulty can not be renamed in database", "Update operation is aborted!", null);
+                String message = "The difficulty can not be renamed in database: [old difficulty description = " + oldDifficultyDescription + ", new difficulty description = " + newDifficultyDescription + "]";
+                logger.warn(message);
+                Utils.warningDialog("Update operation is aborted!", message);
             }
         } catch (Exception e) {
             difficultiesTable.refresh();
-            Utils.errorDialog("The difficulty can not be updated!", "See stacktrace for more details", e);
+            String message = "The difficulty can not be updated!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 
@@ -92,7 +105,9 @@ public class DifficultiesEditionController implements Initializable {
                 difficultiesTable.getItems().add(facade.createNewDifficulty(code, description));
             }
         } catch (Exception e) {
-            Utils.errorDialog("The game type can not be created!", "See stacktrace for more details", e);
+            String message = "The difficulty can not be created!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 
@@ -105,13 +120,19 @@ public class DifficultiesEditionController implements Initializable {
                 if (facade.deleteSelectedDifficulty(selectedDifficulty.getKey())) {
                     difficultiesTable.getItems().remove(selectedIndex);
                 } else {
-                    Utils.errorDialog("The difficulty can not be deleted from database", "Delete operation is aborted!", null);
+                    String message = "The difficulty can not be deleted from database";
+                    logger.warn(message);
+                    Utils.warningDialog(message, "Delete operation is aborted!");
                 }
             } else {
-                Utils.warningDialog("No selected difficulty", "Delete operation is aborted!");
+                String message = "No selected difficulty to delete";
+                logger.warn(message);
+                Utils.warningDialog(message, "Delete operation is aborted!");
             }
         } catch (Exception e) {
-            Utils.errorDialog("The difficulty can not be deleted!", "See stacktrace for more details", e);
+            String message = "The difficulty can not be deleted!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 }

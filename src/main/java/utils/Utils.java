@@ -46,14 +46,11 @@ public class Utils {
             TextArea textArea = new TextArea(exceptionText);
             textArea.setEditable(false);
             textArea.setWrapText(true);
-            GridPane.setVgrow(textArea, Priority.ALWAYS);
-            GridPane.setHgrow(textArea, Priority.ALWAYS);
-            GridPane expContent = new GridPane();
-            expContent.add(textArea, 0, 1);
+            alert.getDialogPane().setContent(textArea);
             alert.getDialogPane().setMinWidth(600);
             alert.getDialogPane().setMinHeight(400);
-            alert.getDialogPane().setExpandableContent(expContent);
         }
+        alert.setResizable(true);
         alert.showAndWait();
     }
 
@@ -123,7 +120,12 @@ public class Utils {
             alert.setTitle("");
         }
         alert.setHeaderText(header);
-        alert.setContentText(content);
+
+        TextArea area = new TextArea(content);
+        area.setWrapText(true);
+        area.setEditable(false);
+        alert.getDialogPane().setContent(area);
+        alert.setResizable(true);
         return alert.showAndWait();
     }
 
@@ -137,7 +139,12 @@ public class Utils {
             alert.setTitle("");
         }
         alert.setHeaderText(header);
-        alert.setContentText(content);
+
+        TextArea area = new TextArea(content);
+        area.setWrapText(true);
+        area.setEditable(false);
+        alert.getDialogPane().setContent(area);
+        alert.setResizable(true);
         alert.showAndWait();
     }
 
@@ -151,7 +158,12 @@ public class Utils {
             alert.setTitle("");
         }
         alert.setHeaderText(header);
-        alert.setContentText(content);
+
+        TextArea area = new TextArea(content);
+        area.setWrapText(true);
+        area.setEditable(false);
+        alert.getDialogPane().setContent(area);
+        alert.setResizable(true);
         alert.showAndWait();
     }
 

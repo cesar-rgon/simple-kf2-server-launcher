@@ -7,7 +7,10 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pojos.session.Session;
+import stories.difficultiesedition.DifficultiesEditionController;
 import utils.Utils;
 
 import java.net.URL;
@@ -17,6 +20,7 @@ import java.util.ResourceBundle;
 
 public class MaxPlayersEditionController implements Initializable {
 
+    private static final Logger logger = LogManager.getLogger(MaxPlayersEditionController.class);
     private final MaxPlayersEditionFacade facade;
 
     @FXML private TableView<SelectDto> maxPlayersTable;
@@ -38,6 +42,7 @@ public class MaxPlayersEditionController implements Initializable {
             maxPlayersDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().getValueProperty());
             maxPlayersTable.setItems(facade.listAllMaxPlayers());
         } catch (SQLException e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }
@@ -55,11 +60,15 @@ public class MaxPlayersEditionController implements Initializable {
                 maxPlayersTable.getItems().add(updatedMaxPlayersDto);
             } else {
                 maxPlayersTable.refresh();
-                Utils.errorDialog("The max. players can not be renamed in database", "Update operation is aborted!", null);
+                String message = "The max. players can not be renamed in database: [old max. players code = " + oldMaxPlayersCode + ", new max. players code = " + newMaxPlayersCode + "]";
+                logger.warn(message);
+                Utils.warningDialog("Update operation is aborted!", message);
             }
         } catch (Exception e) {
             maxPlayersTable.refresh();
-            Utils.errorDialog("The max. players can not be updated!", "See stacktrace for more details", e);
+            String message = "The max. players can not be updated!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 
@@ -76,11 +85,15 @@ public class MaxPlayersEditionController implements Initializable {
                 maxPlayersTable.getItems().add(updatedLengthDto);
             } else {
                 maxPlayersTable.refresh();
-                Utils.errorDialog("The max. players can not be renamed in database", "Update operation is aborted!", null);
+                String message = "The max. players can not be renamed in database: [old max. players description = " + oldMaxPlayersDescription + ", new max. players description = " + newMaxPlayersDescription + "]";
+                logger.warn(message);
+                Utils.warningDialog("Update operation is aborted!", message);
             }
         } catch (Exception e) {
             maxPlayersTable.refresh();
-            Utils.errorDialog("The max. players can not be updated!", "See stacktrace for more details", e);
+            String message = "The max. players can not be updated!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 
@@ -94,7 +107,9 @@ public class MaxPlayersEditionController implements Initializable {
                 maxPlayersTable.getItems().add(facade.createNewMaxPlayers(code, description));
             }
         } catch (Exception e) {
-            Utils.errorDialog("The game type can not be created!", "See stacktrace for more details", e);
+            String message = "The max. players can not be created!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 
@@ -107,13 +122,19 @@ public class MaxPlayersEditionController implements Initializable {
                 if (facade.deleteSelectedMaxPlayers(selectedMaxPlayers.getKey())) {
                     maxPlayersTable.getItems().remove(selectedIndex);
                 } else {
-                    Utils.errorDialog("The max. players can not be deleted from database", "Delete operation is aborted!", null);
+                    String message = "The max. players can not be deleted from database";
+                    logger.warn(message);
+                    Utils.warningDialog(message, "Delete operation is aborted!");
                 }
             } else {
-                Utils.warningDialog("No selected max. players", "Delete operation is aborted!");
+                String message = "No selected max. players to delete";
+                logger.warn(message);
+                Utils.warningDialog(message, "Delete operation is aborted!");
             }
         } catch (Exception e) {
-            Utils.errorDialog("The max. players can not be deleted!", "See stacktrace for more details", e);
+            String message = "The max. players can not be deleted!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 }

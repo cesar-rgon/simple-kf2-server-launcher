@@ -13,11 +13,12 @@ public class MapDtoFactory {
 
     public MapDto newDto(Map map) {
         return new MapDto(map.getCode(),
-                          map.getOfficial(),
+                          map.isOfficial(),
                           map.getUrlInfo(),
                           map.getIdWorkShop(),
                           map.getUrlPhoto(),
-                          map.getDownloaded());
+                          map.isDownloaded(),
+                          map.getMod());
     }
 
     public ObservableList<MapDto> newDtos(List<Map> maps) {

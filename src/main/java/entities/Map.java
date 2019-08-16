@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class Map extends CommonEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name="ID", updatable=false, nullable=false)
     private Integer id;
 
@@ -15,7 +15,7 @@ public class Map extends CommonEntity {
     private String code;
 
     @Column(name="OFFICIAL", nullable=false)
-    private Boolean official;
+    private boolean official;
 
     @Column(name="URL_INFO", length=255)
     private String urlInfo;
@@ -27,13 +27,16 @@ public class Map extends CommonEntity {
     private String urlPhoto;
 
     @Column(name="DOWNLOADED", nullable=false)
-    private Boolean downloaded;
+    private boolean downloaded;
+
+    @Column(name="MOD")
+    private Boolean mod;
 
     public Map() {
         super();
     }
 
-    public Map(String code, Boolean official, String urlInfo, Long idWorkShop, String urlPhoto, Boolean downloaded) {
+    public Map(String code, boolean official, String urlInfo, Long idWorkShop, String urlPhoto, boolean downloaded, Boolean mod) {
         super();
         this.code = code;
         this.official = official;
@@ -41,6 +44,7 @@ public class Map extends CommonEntity {
         this.idWorkShop = idWorkShop;
         this.urlPhoto = urlPhoto;
         this.downloaded = downloaded;
+        this.mod = mod;
     }
 
     @Override
@@ -61,11 +65,11 @@ public class Map extends CommonEntity {
         this.code = code;
     }
 
-    public Boolean getOfficial() {
+    public boolean isOfficial() {
         return official;
     }
 
-    public void setOfficial(Boolean official) {
+    public void setOfficial(boolean official) {
         this.official = official;
     }
 
@@ -93,11 +97,19 @@ public class Map extends CommonEntity {
         this.urlPhoto = urlPhoto;
     }
 
-    public Boolean getDownloaded() {
+    public boolean isDownloaded() {
         return downloaded;
     }
 
-    public void setDownloaded(Boolean downloaded) {
+    public void setDownloaded(boolean downloaded) {
         this.downloaded = downloaded;
+    }
+
+    public Boolean getMod() {
+        return mod;
+    }
+
+    public void setMod(Boolean mod) {
+        this.mod = mod;
     }
 }

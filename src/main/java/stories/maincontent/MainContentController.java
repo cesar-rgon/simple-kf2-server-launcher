@@ -11,7 +11,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.web.WebView;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pojos.session.Session;
+import stories.difficultiesedition.DifficultiesEditionController;
 import utils.Utils;
 
 import java.net.URL;
@@ -20,6 +23,7 @@ import java.util.ResourceBundle;
 
 public class MainContentController implements Initializable {
 
+    private static final Logger logger = LogManager.getLogger(MainContentController.class);
     private final MainContentFacade facade;
 
     @FXML private ComboBox<ProfileDto> profileSelect;
@@ -70,6 +74,7 @@ public class MainContentController implements Initializable {
             maxPlayersSelect.setItems(facade.listAllPlayers());
             console.setText(Session.getInstance().getConsole());
         } catch (SQLException e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
 
@@ -84,10 +89,13 @@ public class MainContentController implements Initializable {
                     if (!newPropertyValue) {
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetServerName(profileName, serverName.getText())) {
-                            Utils.errorDialog("Error updating the profile information", "The server name value could not be saved!", null);
+                            String message = "The server name value could not be saved!";
+                            logger.warn(message);
+                            Utils.warningDialog("Error updating the profile information", message);
                         }
                     }
                 } catch (SQLException e) {
+                    logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
                 }
             }
@@ -100,10 +108,13 @@ public class MainContentController implements Initializable {
                     if (!newPropertyValue) {
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetServerPassword(profileName, serverPassword.getText())) {
-                            Utils.errorDialog("Error updating the profile information", "The server password value could not be saved!", null);
+                            String message = "The server password value could not be saved!";
+                            logger.warn(message);
+                            Utils.warningDialog("Error updating the profile information", message);
                         }
                     }
                 } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
                 }
             }
@@ -116,10 +127,13 @@ public class MainContentController implements Initializable {
                     if (!newPropertyValue) {
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetWebPassword(profileName, webPassword.getText())) {
-                            Utils.errorDialog("Error updating the profile information", "The web password value could not be saved!", null);
+                            String message = "The web password value could not be saved!";
+                            logger.warn(message);
+                            Utils.warningDialog("Error updating the profile information", message);
                         }
                     }
                 } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
                 }
             }
@@ -133,15 +147,20 @@ public class MainContentController implements Initializable {
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (StringUtils.isNotEmpty(webPort.getText())) {
                             if (!facade.updateProfileSetWebPort(profileName, Integer.parseInt(webPort.getText()))) {
-                                Utils.errorDialog("Error updating the profile information", "The web port value could not be saved!", null);
+                                String message = "The web port value could not be saved!";
+                                logger.warn(message);
+                                Utils.warningDialog("Error updating the profile information", message);
                             }
                         } else {
                             if (!facade.updateProfileSetWebPort(profileName, null)) {
-                                Utils.errorDialog("Error updating the profile information", "The web port value could not be saved!", null);
+                                String message = "The web port value could not be saved!";
+                                logger.warn(message);
+                                Utils.warningDialog("Error updating the profile information", message);
                             }
                         }
                     }
                 } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
                     Integer webPortValue = profileSelect.getValue().getWebPort();
                     webPort.setText(webPortValue != null? String.valueOf(webPortValue): "");
@@ -157,15 +176,20 @@ public class MainContentController implements Initializable {
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (StringUtils.isNotEmpty(gamePort.getText())) {
                             if (!facade.updateProfileSetGamePort(profileName, Integer.parseInt(gamePort.getText()))) {
-                                Utils.errorDialog("Error updating the profile information", "The game port value could not be saved!", null);
+                                String message = "The game port value could not be saved!";
+                                logger.warn(message);
+                                Utils.warningDialog("Error updating the profile information", message);
                             }
                         } else {
                             if (!facade.updateProfileSetGamePort(profileName, null)) {
-                                Utils.errorDialog("Error updating the profile information", "The game port value could not be saved!", null);
+                                String message = "The game port value could not be saved!";
+                                logger.warn(message);
+                                Utils.warningDialog("Error updating the profile information", message);
                             }
                         }
                     }
                 } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
                     Integer gamePortValue = profileSelect.getValue().getGamePort();
                     gamePort.setText(gamePortValue != null? String.valueOf(gamePortValue): "");
@@ -181,15 +205,20 @@ public class MainContentController implements Initializable {
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (StringUtils.isNotEmpty(queryPort.getText())) {
                             if (!facade.updateProfileSetQueryPort(profileName, Integer.parseInt(queryPort.getText()))) {
-                                Utils.errorDialog("Error updating the profile information", "The query port value could not be saved!", null);
+                                String message = "The query port value could not be saved!";
+                                logger.warn(message);
+                                Utils.warningDialog("Error updating the profile information", message);
                             }
                         } else {
                             if (!facade.updateProfileSetQueryPort(profileName, null)) {
-                                Utils.errorDialog("Error updating the profile information", "The query port value could not be saved!", null);
+                                String message = "The query port value could not be saved!";
+                                logger.warn(message);
+                                Utils.warningDialog("Error updating the profile information", message);
                             }
                         }
                     }
                 } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
                     Integer queryPortValue = profileSelect.getValue().getQueryPort();
                     queryPort.setText(queryPortValue != null? String.valueOf(queryPortValue): "");
@@ -204,10 +233,13 @@ public class MainContentController implements Initializable {
                     if (!newPropertyValue) {
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetYourClan(profileName, yourClan.getText())) {
-                            Utils.errorDialog("Error updating the profile information", "The clan value could not be saved!", null);
+                            String message = "The clan value could not be saved!";
+                            logger.warn(message);
+                            Utils.warningDialog("Error updating the profile information", message);
                         }
                     }
                 } catch (SQLException e) {
+                    logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
                 }
             }
@@ -220,10 +252,13 @@ public class MainContentController implements Initializable {
                     if (!newPropertyValue) {
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetYourWebLink(profileName, yourWebLink.getText())) {
-                            Utils.errorDialog("Error updating the profile information", "The web link value could not be saved!", null);
+                            String message = "The web link value could not be saved!";
+                            logger.warn(message);
+                            Utils.warningDialog("Error updating the profile information", message);
                         }
                     }
                 } catch (SQLException e) {
+                    logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
                 }
             }
@@ -236,7 +271,9 @@ public class MainContentController implements Initializable {
                     if (!newPropertyValue) {
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetUrlImageServer(profileName, urlImageServer.getText())) {
-                            Utils.errorDialog("Error updating the profile information", "The image server link value could not be saved!", null);
+                            String message = "The image server link value could not be saved!";
+                            logger.warn(message);
+                            Utils.warningDialog("Error updating the profile information", message);
                         }
                         if (StringUtils.isNotEmpty(urlImageServer.getText())) {
                             imageWebView.getEngine().load(urlImageServer.getText());
@@ -247,6 +284,7 @@ public class MainContentController implements Initializable {
                         }
                     }
                 } catch (SQLException e) {
+                    logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
                 }
             }
@@ -259,10 +297,13 @@ public class MainContentController implements Initializable {
                     if (!newPropertyValue) {
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetWelcomeMessage(profileName, welcomeMessage.getText())) {
-                            Utils.errorDialog("Error updating the profile information", "The welcome message value could not be saved!", null);
+                            String message = "The welcome message value could not be saved!";
+                            logger.warn(message);
+                            Utils.warningDialog("Error updating the profile information", message);
                         }
                     }
                 } catch (SQLException e) {
+                    logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
                 }
             }
@@ -275,10 +316,13 @@ public class MainContentController implements Initializable {
                     if (!newPropertyValue) {
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetCustomParameters(profileName, customParameters.getText())) {
-                            Utils.errorDialog("Error updating the profile information", "The custom parameters value could not be saved!", null);
+                            String message = "The custom parameters value could not be saved!";
+                            logger.warn(message);
+                            Utils.warningDialog("Error updating the profile information", message);
                         }
                     }
                 } catch (SQLException e) {
+                    logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
                 }
             }
@@ -317,6 +361,7 @@ public class MainContentController implements Initializable {
             serverPassword.setText(Utils.decryptAES(profile.getServerPassword()));
             webPassword.setText(Utils.decryptAES(profile.getWebPassword()));
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }
@@ -331,6 +376,7 @@ public class MainContentController implements Initializable {
             loadActualProfile(databaseProfile);
             Session.getInstance().setActualProfile(profileSelect.getValue());
         } catch (SQLException e) {
+            logger.error(contentText, e);
             Utils.errorDialog(headerText, contentText, e);
         }
     }
@@ -348,6 +394,7 @@ public class MainContentController implements Initializable {
                 }
             }
         } catch (Exception e) {
+            logger.error(contentText, e);
             Utils.errorDialog(headerText, contentText, e);
         }
     }
@@ -364,8 +411,11 @@ public class MainContentController implements Initializable {
                 if (!facade.updateProfileSetMap(profileName, mapCode)) {
                     Utils.errorDialog(headerText, contentText, null);
                 }
+                ProfileDto databaseProfile = facade.findProfileByName(profileSelect.getValue().getName());
+                Session.getInstance().setActualProfile(databaseProfile);
             }
         } catch (Exception e) {
+            logger.error(contentText, e);
             Utils.errorDialog(headerText, contentText, e);
         }
     }
@@ -383,6 +433,7 @@ public class MainContentController implements Initializable {
                 }
             }
         } catch (Exception e) {
+            logger.error(contentText, e);
             Utils.errorDialog(headerText, contentText, e);
         }
     }
@@ -400,6 +451,7 @@ public class MainContentController implements Initializable {
                 }
             }
         } catch (Exception e) {
+            logger.error(contentText, e);
             Utils.errorDialog(headerText, contentText, e);
         }
     }
@@ -417,6 +469,7 @@ public class MainContentController implements Initializable {
                 }
             }
         } catch (Exception e) {
+            logger.error(contentText, e);
             Utils.errorDialog(headerText, contentText, e);
         }
     }
@@ -434,6 +487,7 @@ public class MainContentController implements Initializable {
                 }
             }
         } catch (Exception e) {
+            logger.error(contentText, e);
             Utils.errorDialog(headerText, contentText, e);
         }
     }
@@ -450,6 +504,7 @@ public class MainContentController implements Initializable {
                 }
             }
         } catch (Exception e) {
+            logger.error(contentText, e);
             Utils.errorDialog(headerText, contentText, e);
         }
     }
@@ -464,6 +519,7 @@ public class MainContentController implements Initializable {
             console.setText(facade.runServer(profileSelect.getValue() != null ? profileSelect.getValue().getName(): null));
             Session.getInstance().setConsole(console.getText());
         } catch (SQLException e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }
@@ -477,6 +533,7 @@ public class MainContentController implements Initializable {
             }
             facade.joinServer(profileSelect.getValue() != null ? profileSelect.getValue().getName(): null);
         } catch (SQLException e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }

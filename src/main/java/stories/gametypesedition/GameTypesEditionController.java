@@ -1,6 +1,5 @@
 package stories.gametypesedition;
 
-import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -8,7 +7,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
 import org.apache.commons.lang3.StringUtils;
-import pojos.session.Session;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import utils.Utils;
 
 import java.net.URL;
@@ -18,6 +18,7 @@ import java.util.ResourceBundle;
 
 public class GameTypesEditionController implements Initializable {
 
+    private static final Logger logger = LogManager.getLogger(GameTypesEditionController.class);
     private final GameTypesEditionFacade facade;
 
     @FXML private TableView<SelectDto> gameTypesTable;
@@ -38,6 +39,7 @@ public class GameTypesEditionController implements Initializable {
             gameTypeDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().getValueProperty());
             gameTypesTable.setItems(facade.listAllGameTypes());
         } catch (SQLException e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }
@@ -54,11 +56,15 @@ public class GameTypesEditionController implements Initializable {
                 gameTypesTable.getItems().add(updatedGameTypeDto);
             } else {
                 gameTypesTable.refresh();
-                Utils.errorDialog("The game type can not be renamed in database", "Update operation is aborted!", null);
+                String message = "The game type can not be renamed in database: [old game type code = " + oldGameTypeCode + ", new game type code = " + newGameTypeCode + "]";
+                logger.warn(message);
+                Utils.warningDialog("Update operation is aborted!", message);
             }
         } catch (Exception e) {
             gameTypesTable.refresh();
-            Utils.errorDialog("The game type can not be updated!", "See stacktrace for more details", e);
+            String message = "The game type can not be updated!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 
@@ -75,11 +81,15 @@ public class GameTypesEditionController implements Initializable {
                 gameTypesTable.getItems().add(updatedGameTypeDto);
             } else {
                 gameTypesTable.refresh();
-                Utils.errorDialog("The game type can not be renamed in database", "Update operation is aborted!", null);
+                String message = "The game type can not be renamed in database: [old game type description = " + oldGameTypeDescription + ", new game type description = " + newGameTypeDescription + "]";
+                logger.warn(message);
+                Utils.warningDialog("Update operation is aborted!", message);
             }
         } catch (Exception e) {
             gameTypesTable.refresh();
-            Utils.errorDialog("The game type can not be updated!", "See stacktrace for more details", e);
+            String message = "The game type can not be updated!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 
@@ -93,7 +103,9 @@ public class GameTypesEditionController implements Initializable {
                 gameTypesTable.getItems().add(facade.createNewGameType(code, description));
             }
         } catch (Exception e) {
-            Utils.errorDialog("The game type can not be created!", "See stacktrace for more details", e);
+            String message = "The game type can not be created!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 
@@ -106,13 +118,19 @@ public class GameTypesEditionController implements Initializable {
                 if (facade.deleteSelectedGameType(selectedGameType.getKey())) {
                     gameTypesTable.getItems().remove(selectedIndex);
                 } else {
-                    Utils.errorDialog("The game type can not be deleted from database", "Delete operation is aborted!", null);
+                    String message = "The game type can not be deleted from database";
+                    logger.warn(message);
+                    Utils.warningDialog(message, "Delete operation is aborted!");
                 }
             } else {
-                Utils.warningDialog("No selected game type", "Delete operation is aborted!");
+                String message = "No selected game type to delete";
+                logger.warn(message);
+                Utils.warningDialog(message, "Delete operation is aborted!");
             }
         } catch (Exception e) {
-            Utils.errorDialog("The game type can not be deleted!", "See stacktrace for more details", e);
+            String message = "The game type can not be deleted!";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 }

@@ -57,7 +57,7 @@ public class MapWebInfoController implements Initializable {
         if (Session.getInstance().getMap() != null) {
             mapNameLabel.setText(Session.getInstance().getMap().getKey());
             webEngine.load(Session.getInstance().getMap().getUrlInfo());
-            if (!Session.getInstance().getMap().getOfficial()) {
+            if (!Session.getInstance().getMap().isOfficial()) {
                 pageLoadListener(webEngine);
             }
         } else {
@@ -101,7 +101,7 @@ public class MapWebInfoController implements Initializable {
                             }
                         }
                         mapNameLabel.setText(mapName);
-                        if (idWorkShop != null & facade.isMapInDataBase(idWorkShop)) {
+                        if (idWorkShop != null && facade.isMapInDataBase(idWorkShop)) {
                             addMap.setVisible(false);
                             alreadyInLauncher.setVisible(true);
                         } else {
@@ -134,6 +134,7 @@ public class MapWebInfoController implements Initializable {
             content.setRoot(MainApplication.getTemplate().getNamespace().get("content"));
             content.load();
         } catch (Exception e) {
+            logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
         }
     }
@@ -143,23 +144,21 @@ public class MapWebInfoController implements Initializable {
         try {
             String installationFolder = facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER);
             if (!facade.isCorrectInstallationFolder(installationFolder)) {
-                Utils.warningDialog("No maps can be added!", "The installation folder is not correct.\nSet it up in Install / Update section.");
-                return;
-            }
-            if (Session.getInstance().isRunningProcess()) {
-                Utils.warningDialog("No maps can be added!", "At least one instance of the server is running. Close them.");
+                Utils.warningDialog("No maps/mods can be added!", "The installation folder is not correct.\nSet it up in Install / Update section.");
                 return;
             }
             Map customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, mapName, strUrlMapImage,  installationFolder);
             if (customMap != null) {
                 addMap.setVisible(false);
                 alreadyInLauncher.setVisible(true);
-                Utils.infoDialog("The map was successfully added to the launcher", "Map name: " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+                Utils.infoDialog("The map/mod was successfully added to the launcher", "Name: " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
             } else {
-                Utils.errorDialog("Error adding map to the launcher", "Map name: " + mapName + "\nURL/Id WorkShop: " + idWorkShop, null);
+                Utils.errorDialog("Error adding map/mod to the launcher", "Name: " + mapName + "\nURL/Id WorkShop: " + idWorkShop, null);
             }
         } catch (Exception e) {
-            Utils.errorDialog("Error adding map to the launcher", "See stacktrace for more details", e);
+            String message = "Error adding map/mod to the launcher";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 }
