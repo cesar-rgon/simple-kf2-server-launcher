@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
+import pojos.session.Session;
 import stories.difficultiesedition.DifficultiesEditionController;
 import utils.Utils;
 
@@ -119,12 +120,15 @@ public class ProfilesEditionController implements Initializable {
             }
             ProfileDto updatedProfileDto = facade.updateChangedProfile(oldProfileName, newProfileName);
             if (updatedProfileDto != null) {
+                if (Session.getInstance().getActualProfile() != null && oldProfileName.equalsIgnoreCase(Session.getInstance().getActualProfile().getName())) {
+                    Session.getInstance().setActualProfile(updatedProfileDto);
+                }
                 profilesTable.getItems().remove(edittedRowIndex);
                 profilesTable.getItems().add(updatedProfileDto);
                 String configFolder = installationFolder + "/KFGame/Config/";
                 File oldProfileConfigFolder = new File(configFolder + oldProfileName);
-                if (oldProfileConfigFolder.exists() && oldProfileConfigFolder.isDirectory()) {
-                    File newProfileConfigFolder = new File(configFolder + newProfileName);
+                File newProfileConfigFolder = new File(configFolder + newProfileName);
+                if (oldProfileConfigFolder.exists() && oldProfileConfigFolder.isDirectory() && !newProfileConfigFolder.exists()) {
                     FileUtils.moveDirectory(oldProfileConfigFolder, newProfileConfigFolder);
                 }
             } else {
