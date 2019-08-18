@@ -11,7 +11,8 @@ public interface MapsEditionFacade {
     List<Map> listAllMapsAndMods() throws SQLException;
     List<MapDto> getDtos(List<Map> mapList);
     MapDto getDto(Map map);
-    String findPropertyValue(String key) throws Exception;
+    String findConfigPropertyValue(String key) throws Exception;
+    void setConfigPropertyValue(String key, String value) throws Exception;
     Map createNewCustomMapFromWorkshop(Long idWorkShop, String installationFolder, boolean downloaded, Boolean isMod) throws Exception;
     Map createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String installationFolder, boolean downloaded, Boolean isMod) throws Exception;
     MapDto deleteSelectedMap(String mapName) throws SQLException;

@@ -3,20 +3,25 @@ package stories.mapsedition;
 import constants.Constants;
 import dtos.MapDto;
 import entities.Map;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.text.TextAlignment;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -66,7 +71,7 @@ public class MapsEditionController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         try {
             selectMaps = true;
-            installationFolder = facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER);
+            installationFolder = facade.findConfigPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER);
             mapList = facade.listAllMapsAndMods();
             List<MapDto> mapListDto = facade.getDtos(mapList);
             for (MapDto map: mapListDto) {
@@ -79,6 +84,17 @@ public class MapsEditionController implements Initializable {
             }
             officialMapsTab.setGraphic(new Label("(" + officialMapsFlowPane.getChildren().size() + ")"));
             customMapsModsTab.setGraphic(new Label("(" + customMapsFlowPane.getChildren().size() + ")"));
+
+            Double sliderColumns = Double.parseDouble(facade.findConfigPropertyValue(Constants.CONFIG_MAP_SLIDER_VALUE));
+            mapsSlider.setValue(sliderColumns);
+            mapsSliderOnMouseClicked();
+
+            MainApplication.getPrimaryStage().widthProperty().addListener(new ChangeListener<Number>() {
+                @Override
+                public void changed(ObservableValue<? extends Number> observableValue, Number oldSceneWidth, Number newSceneWidth) {
+                    mapsSliderOnMouseClicked();
+                }
+            });
         } catch (Exception e) {
             String message = "Error getting map list";
             logger.error(message, e);
@@ -99,7 +115,7 @@ public class MapsEditionController implements Initializable {
         }
         ImageView mapPreview = new ImageView(image);
         mapPreview.setPreserveRatio(false);
-        Double width = (mapsSlider.getValue() * 3.84) + 128;
+        Double width = getWidthGridPaneByNumberOfColums();
         mapPreview.setFitWidth(width);
         mapPreview.setFitHeight(width/2);
         if (StringUtils.isNotBlank(map.getUrlInfo())) {
@@ -118,13 +134,17 @@ public class MapsEditionController implements Initializable {
         GridPane.setColumnSpan(mapPreview, 2);
         gridpane.add(new CheckBox(), 1, 2);
         gridpane.add(mapNameLabel, 2, 2);
+        mapNameLabel.setMaxWidth(mapPreview.getFitWidth() - 25);
+        mapNameLabel.setAlignment(Pos.CENTER);
+
         int rowIndex = 3;
         if (!map.isDownloaded()) {
             Label warningMessage = new Label("Start server to download it");
             warningMessage.setStyle("-fx-text-fill: yellow;");
             GridPane.setColumnSpan(warningMessage, 2);
             gridpane.add(warningMessage,1, rowIndex);
-            GridPane.setHalignment(warningMessage, HPos.CENTER);
+            warningMessage.setMaxWidth(mapPreview.getFitWidth());
+            warningMessage.setAlignment(Pos.CENTER);
             rowIndex++;
         }
         if (map.getMod() != null && map.getMod()) {
@@ -135,7 +155,6 @@ public class MapsEditionController implements Initializable {
             GridPane.setHalignment(warningMessage, HPos.CENTER);
             rowIndex++;
         }
-        GridPane.setHalignment(mapNameLabel, HPos.CENTER);
         return gridpane;
     }
 
@@ -155,21 +174,40 @@ public class MapsEditionController implements Initializable {
         }
     }
 
+    private Double getWidthGridPaneByNumberOfColums() {
+        return (MainApplication.getPrimaryStage().getWidth() - (50 * mapsSlider.getValue()) - 65) / mapsSlider.getValue();
+    }
+
+    private void resizeGridPane(GridPane gridPane) {
+        ImageView mapPreview = (ImageView) gridPane.getChildren().get(0);
+        Label mapNameLabel = (Label) gridPane.getChildren().get(2);
+        Double width = getWidthGridPaneByNumberOfColums();
+        mapPreview.setFitWidth(width);
+        mapPreview.setFitHeight(width/2);
+        mapNameLabel.setMaxWidth(mapPreview.getFitWidth() - 25);
+        if (gridPane.getChildren().size() > 3) {
+            Label warningMessage = (Label) gridPane.getChildren().get(3);
+            warningMessage.setMaxWidth(mapPreview.getFitWidth());
+            warningMessage.setAlignment(Pos.CENTER);
+        }
+    }
+
     @FXML
     private void mapsSliderOnMouseClicked() {
-        for (int i = 0; i < officialMapsFlowPane.getChildren().size(); i++) {
-            GridPane gridPane = (GridPane)officialMapsFlowPane.getChildren().get(i);
-            ImageView mapPreview = (ImageView) gridPane.getChildren().get(0);
-            Double width = (mapsSlider.getValue() * 3.84) + 128;
-            mapPreview.setFitWidth(width);
-            mapPreview.setFitHeight(width/2);
+        for (int index = 0; index < officialMapsFlowPane.getChildren().size(); index++) {
+            GridPane gridPane = (GridPane)officialMapsFlowPane.getChildren().get(index);
+            resizeGridPane(gridPane);
         }
-        for (int i = 0; i < customMapsFlowPane.getChildren().size(); i++) {
-            GridPane gridPane = (GridPane)customMapsFlowPane.getChildren().get(i);
-            ImageView mapPreview = (ImageView) gridPane.getChildren().get(0);
-            Double width = (mapsSlider.getValue() * 3.84) + 128;
-            mapPreview.setFitWidth(width);
-            mapPreview.setFitHeight(width/2);
+        for (int index = 0; index < customMapsFlowPane.getChildren().size(); index++) {
+            GridPane gridPane = (GridPane)customMapsFlowPane.getChildren().get(index);
+            resizeGridPane(gridPane);
+        }
+        try {
+            facade.setConfigPropertyValue(Constants.CONFIG_MAP_SLIDER_VALUE, String.valueOf(mapsSlider.getValue()));
+        } catch (Exception e) {
+            String message = "Error setting maps slider value in config.properties file";
+            logger.error(message, e);
+            Utils.errorDialog(message, "See stacktrace for more details", e);
         }
     }
 

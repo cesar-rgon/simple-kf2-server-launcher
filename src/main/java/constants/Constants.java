@@ -16,6 +16,7 @@ public class Constants {
     // CONFIG PROPERTIES
     public final static String CONFIG_APPLICATION_TITLE = "prop.config.applicationTitle";
     public final static String CONFIG_APPLICATION_VERSION = "prop.config.applicationVersion";
+    public static final String CONFIG_APPLICATION_MAXIMIZED = "prop.config.applicationMaximized";
     public final static String CONFIG_INSTALLATION_FOLDER = "prop.config.installationFolder";
     public final static String CONFIG_BETA_BRUNCH = "prop.config.betaBrunch";
     public final static String CONFIG_VALIDATE_FILES = "prop.config.validateFiles";
@@ -33,4 +34,5 @@ public class Constants {
     public final static String CONFIG_HELP_GITHUB_PROJECT_URL = "prop.config.helpGithubUrl";
     public final static String CONFIG_HELP_README_URL = "prop.config.helpReadmeUrl";
     public final static String CONFIG_DEFAULT_LANGUAGE_CODE = "prop.config.defaultLanguageCode";
+    public final static String CONFIG_MAP_SLIDER_VALUE = "prop.config.mapSliderValue";
 }

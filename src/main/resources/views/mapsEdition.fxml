@@ -41,17 +41,17 @@
          <GridPane.margin>
             <Insets />
          </GridPane.margin></Button>
-      <Label text="Size" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <Label text="Columns" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
          <GridPane.margin>
-            <Insets right="270.0" />
+            <Insets right="255.0" />
          </GridPane.margin>
       </Label>
-      <Slider fx:id="mapsSlider" blockIncrement="25.0" maxWidth="240.0" minorTickCount="2" onMouseClicked="#mapsSliderOnMouseClicked" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="50.0" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER" GridPane.valignment="CENTER">
+      <Slider fx:id="mapsSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" maxWidth="240.0" min="2.0" minorTickCount="0" onMouseClicked="#mapsSliderOnMouseClicked" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5.0" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER" GridPane.valignment="CENTER">
          <padding>
-            <Insets left="-25.0" right="10.0" />
+            <Insets left="-5.0" right="10.0" />
          </padding>
          <GridPane.margin>
-            <Insets top="32.0" />
+            <Insets top="23.0" />
          </GridPane.margin></Slider>
       <TabPane fx:id="mapsModsTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnSpan="5" GridPane.rowIndex="2">
         <tabs>

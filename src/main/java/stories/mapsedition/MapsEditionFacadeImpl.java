@@ -45,8 +45,13 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
     }
 
     @Override
-    public String findPropertyValue(String key) throws Exception {
+    public String findConfigPropertyValue(String key) throws Exception {
         return propertyService.getPropertyValue("properties/config.properties", key);
+    }
+
+    @Override
+    public void setConfigPropertyValue(String key, String value) throws Exception {
+        propertyService.setProperty("properties/config.properties", key, value);
     }
 
     private Map createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto, boolean downloaded, Boolean isMod) throws Exception {
