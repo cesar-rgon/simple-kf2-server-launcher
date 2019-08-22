@@ -3,6 +3,7 @@ package services;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
+import java.util.Map;
 import java.util.Properties;
 
 public class PropertyServiceImpl implements PropertyService {
@@ -47,6 +48,8 @@ public class PropertyServiceImpl implements PropertyService {
         }
         OutputStream outputStream = new FileOutputStream(propFile);
         prop.store(outputStream, null);
+        inputStream.close();
+        outputStream.close();
     }
 
     @Override
@@ -67,5 +70,23 @@ public class PropertyServiceImpl implements PropertyService {
         }
         OutputStream outputStream = new FileOutputStream(propFile);
         prop.store(outputStream, null);
+        inputStream.close();
+        outputStream.close();
+    }
+
+    @Override
+    public void savePropertiesToFile(Properties prop, File file) throws Exception {
+        OutputStream outputStream = new FileOutputStream(file);
+        prop.store(outputStream, null);
+        outputStream.close();
+    }
+
+    @Override
+    public Properties loadPropertiesFromFile(File file) throws Exception {
+        InputStream inputStream = new FileInputStream(file);
+        Properties prop = new Properties();
+        prop.load(inputStream);
+        inputStream.close();
+        return prop;
     }
 }

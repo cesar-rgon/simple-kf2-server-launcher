@@ -319,18 +319,19 @@ public abstract class Kf2Common {
         return modifiedLine;
     }
 
-    public void joinServer(Profile profile) {
+    public String joinServer(Profile profile) {
         File steamExeFile = getSteamExeFile();
         if (steamExeFile != null) {
-            joinToKf2Server(steamExeFile, profile);
+            return joinToKf2Server(steamExeFile, profile);
         } else {
             Utils.errorDialog("Error validating Steam installation directory", "The process is aborted.", null);
+            return "";
         }
     }
 
     protected abstract File getSteamExeFile();
 
-    protected void joinToKf2Server(File steamExeFile, Profile profile) {
+    protected String joinToKf2Server(File steamExeFile, Profile profile) {
         try {
             String serverPassword = Utils.decryptAES(profile.getServerPassword());
             String passwordParam = "";
@@ -342,11 +343,19 @@ public abstract class Kf2Common {
                 gamePortParam = ":" + profile.getGamePort();
             }
             StringBuffer command = new StringBuffer(steamExeFile.getAbsolutePath());
-            command.append(" -applaunch 232090 127.0.0.1").append(gamePortParam).append(passwordParam).append(" -nostartupmovies");
+            command.append(" -applaunch 232090 ").append(Utils.getPublicIp()).append(gamePortParam).append(passwordParam).append(" -nostartupmovies");
             Runtime.getRuntime().exec(command.toString(),null, steamExeFile.getParentFile());
+            StringBuffer consoleCommand = new StringBuffer();
+            if (StringUtils.isBlank(passwordParam)) {
+                consoleCommand = command;
+            } else {
+                consoleCommand.append(steamExeFile.getAbsolutePath()).append(" -applaunch 232090 ").append(Utils.getPublicIp()).append(gamePortParam).append("?password=*****").append(" -nostartupmovies");
+            }
+            return consoleCommand.toString();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+            return "";
         }
 
     }

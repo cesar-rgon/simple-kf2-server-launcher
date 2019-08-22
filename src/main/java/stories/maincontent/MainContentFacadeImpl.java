@@ -312,11 +312,14 @@ public class MainContentFacadeImpl implements MainContentFacade {
     }
 
     @Override
-    public void joinServer(String profileName) throws SQLException {
+    public String joinServer(String profileName) throws SQLException {
         Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
         if (profileOpt.isPresent()) {
             Kf2Common kf2Common = Kf2Factory.getInstance();
-            kf2Common.joinServer(profileOpt.get());
+            return kf2Common.joinServer(profileOpt.get());
+        } else {
+            Utils.warningDialog("Join operation aborted!", "The profile name can not be empty");
         }
+        return "";
     }
  }

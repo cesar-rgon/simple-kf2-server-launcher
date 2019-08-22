@@ -18,10 +18,8 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.TextAlignment;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -175,7 +173,7 @@ public class MapsEditionController implements Initializable {
     }
 
     private Double getWidthGridPaneByNumberOfColums() {
-        return (MainApplication.getPrimaryStage().getWidth() - (50 * mapsSlider.getValue()) - 65) / mapsSlider.getValue();
+        return (MainApplication.getPrimaryStage().getWidth() - (50 * mapsSlider.getValue()) - 75) / mapsSlider.getValue();
     }
 
     private void resizeGridPane(GridPane gridPane) {

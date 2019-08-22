@@ -14,11 +14,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.session.Session;
-import stories.difficultiesedition.DifficultiesEditionController;
 import utils.Utils;
 
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class MainContentController implements Initializable {
@@ -45,7 +46,7 @@ public class MainContentController implements Initializable {
     @FXML private TextArea welcomeMessage;
     @FXML private TextField customParameters;
     @FXML private CheckBox webPage;
-    @FXML private TextField console;
+    @FXML private TextArea console;
     @FXML private WebView imageWebView;
 
     public MainContentController() {
@@ -512,11 +513,27 @@ public class MainContentController implements Initializable {
     @FXML
     private void runServerOnAction() {
         try {
-            if (profileSelect.getValue() != null) {
-                ProfileDto databaseProfileDto = facade.findProfileByName(profileSelect.getValue().getName());
-                profileSelect.setValue(databaseProfileDto);
+            ObservableList<ProfileDto> allProfiles = facade.listAllProfiles();
+            List<ProfileDto> selectedProfiles = new ArrayList<ProfileDto>();
+            switch (allProfiles.size()) {
+                case 0:
+                    facade.runServer(null);
+                    return;
+                case 1:
+                    selectedProfiles.add(allProfiles.get(0));
+                    profileSelect.setValue(allProfiles.get(0));
+                    break;
+                default:
+                    List<ProfileDto> preSelectedProfiles = new ArrayList<ProfileDto>();
+                    preSelectedProfiles.add(Session.getInstance().getActualProfile());
+                    selectedProfiles = Utils.selectProfilesDialog("Run one server per selected profile:", allProfiles, preSelectedProfiles);
             }
-            console.setText(facade.runServer(profileSelect.getValue() != null ? profileSelect.getValue().getName(): null));
+
+            StringBuffer commands = new StringBuffer(console.getText());
+            for (ProfileDto profile: selectedProfiles) {
+                commands.append(facade.runServer(profile.getName())).append("\n");
+            }
+            console.setText(commands.toString());
             Session.getInstance().setConsole(console.getText());
         } catch (SQLException e) {
             logger.error(e.getMessage(), e);
@@ -527,11 +544,26 @@ public class MainContentController implements Initializable {
     @FXML
     private void joinServerOnAction() {
         try {
-            if (profileSelect.getValue() != null) {
-                ProfileDto databaseProfileDto = facade.findProfileByName(profileSelect.getValue().getName());
-                profileSelect.setValue(databaseProfileDto);
+            ObservableList<ProfileDto> allProfiles = facade.listAllProfiles();
+            ProfileDto selectedProfile = null;
+            switch (allProfiles.size()) {
+                case 0:
+                    facade.joinServer(null);
+                    return;
+                case 1:
+                    selectedProfile = allProfiles.get(0);
+                    profileSelect.setValue(allProfiles.get(0));
+                    break;
+                default:
+                    selectedProfile = Utils.selectProfileDialog(allProfiles);
             }
-            facade.joinServer(profileSelect.getValue() != null ? profileSelect.getValue().getName(): null);
+            if (selectedProfile != null) {
+                StringBuffer commands = new StringBuffer(facade.joinServer(selectedProfile.getName()));
+                if (StringUtils.isNotBlank(commands)) {
+                    commands.append("\n");
+                }
+                console.setText(console.getText() + commands.toString());
+            }
         } catch (SQLException e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);

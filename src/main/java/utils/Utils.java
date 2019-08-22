@@ -1,13 +1,21 @@
 package utils;
 
+import com.sun.javafx.scene.control.skin.VirtualScrollBar;
 import constants.Constants;
+import dtos.ProfileDto;
 import dtos.SelectDto;
+import javafx.collections.ObservableList;
+import javafx.scene.Node;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
 import javafx.util.Callback;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import sun.misc.BASE64Decoder;
@@ -15,14 +23,14 @@ import sun.misc.BASE64Encoder;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.Key;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class Utils {
 
@@ -165,6 +173,163 @@ public class Utils {
         alert.getDialogPane().setContent(area);
         alert.setResizable(true);
         alert.showAndWait();
+    }
+
+    public static List<ProfileDto> selectProfilesDialog(String headerText, ObservableList<ProfileDto> profiles, List<ProfileDto> selectedProfiles) {
+        Dialog<GridPane> dialog = new Dialog<GridPane>();
+        try {
+            PropertyService propertyService = new PropertyServiceImpl();
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_TITLE);
+            dialog.setTitle(applicationTitle);
+        } catch (Exception ex) {
+            dialog.setTitle("");
+        }
+        dialog.setHeaderText(headerText);
+
+        GridPane gridpane = new GridPane();
+        if (profiles != null && !profiles.isEmpty()) {
+            int rowIndex = 1;
+            List<String> selectedProfileNameList = selectedProfiles.stream().map(p -> p.getName()).collect(Collectors.toList());
+            for (ProfileDto profile: profiles) {
+                CheckBox checkbox = new CheckBox(profile.getName());
+                checkbox.setStyle("-fx-padding: 0 0 10px 0; -fx-font-weight: bold;");
+                if (selectedProfileNameList != null && !selectedProfileNameList.isEmpty() && selectedProfileNameList.contains(profile.getName())) {
+                    checkbox.setSelected(true);
+                }
+                gridpane.add(checkbox, 1, rowIndex);
+                Label label = new Label(profile.getGametype() + ", " + profile.getMap() + ", " + profile.getDifficulty() + ", " + profile.getLength());
+                label.setStyle("-fx-padding: -10px 0 0 10px; -fx-font-weight: bold; -fx-text-fill: grey;");
+                gridpane.add(label, 2, rowIndex);
+                rowIndex++;
+            }
+        }
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(gridpane);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        dialog.getDialogPane().setContent(scrollPane);
+        dialog.setResizable(true);
+        dialog.getDialogPane().setMinWidth(400);
+        dialog.getDialogPane().setMinHeight(400);
+        ButtonType buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeCancel);
+        dialog.setResultConverter(new Callback<ButtonType, GridPane>() {
+            @Override
+            public GridPane call(ButtonType b) {
+                if (b == buttonTypeOk) {
+                    return gridpane;
+                }
+                return null;
+            }
+        });
+
+        Optional<GridPane> result = dialog.showAndWait();
+        List<ProfileDto> selectedProfileList = new ArrayList<ProfileDto>();
+        if (result.isPresent() && result.get() != null) {
+            int index = 0;
+            while (index < gridpane.getChildren().size()) {
+                CheckBox checkbox = (CheckBox)result.get().getChildren().get(index);
+                if (checkbox.isSelected()) {
+                    Optional<ProfileDto> profileOpt = profiles.stream().filter(p -> p.getName().equalsIgnoreCase(checkbox.getText())).findFirst();
+                    if (profileOpt.isPresent()) {
+                        selectedProfileList.add(profileOpt.get());
+                    }
+                }
+                index+=2;
+            }
+        }
+        return selectedProfileList;
+    }
+
+    public static ProfileDto selectProfileDialog(ObservableList<ProfileDto> profiles) {
+        Dialog<GridPane> dialog = new Dialog<GridPane>();
+        try {
+            PropertyService propertyService = new PropertyServiceImpl();
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_TITLE);
+            dialog.setTitle(applicationTitle);
+        } catch (Exception ex) {
+            dialog.setTitle("");
+        }
+        dialog.setHeaderText("Join only to one server. Select a profile:");
+
+        GridPane gridpane = new GridPane();
+        if (profiles != null && !profiles.isEmpty()) {
+            int rowIndex = 1;
+            ToggleGroup group = new ToggleGroup();
+            for (ProfileDto profile: profiles) {
+                RadioButton radioButton = new RadioButton(profile.getName());
+                radioButton.setToggleGroup(group);
+                radioButton.setStyle("-fx-padding: 0 0 10px 0; -fx-font-weight: bold;");
+                if (Session.getInstance().getActualProfile() != null && profile.getName().equals(Session.getInstance().getActualProfile().getName())) {
+                    radioButton.setSelected(true);
+                }
+                gridpane.add(radioButton, 1, rowIndex);
+                Label labelGamePort = new Label("Port=" + profile.getGamePort());
+                labelGamePort.setStyle("-fx-padding: -10px 0 0 10px; -fx-text-fill: red;");
+                gridpane.add(labelGamePort, 2, rowIndex);
+                Label label = new Label(profile.getGametype() + ", " + profile.getMap() + ", " + profile.getDifficulty() + ", " + profile.getLength());
+                label.setStyle("-fx-padding: -10px 0 0 10px; -fx-font-weight: bold; -fx-text-fill: grey;");
+                gridpane.add(label, 3, rowIndex);
+                rowIndex++;
+            }
+        }
+
+        ScrollPane scrollPane = new ScrollPane();
+        scrollPane.setContent(gridpane);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.ALWAYS);
+        dialog.getDialogPane().setContent(scrollPane);
+        dialog.setResizable(true);
+        dialog.getDialogPane().setMinWidth(400);
+        dialog.getDialogPane().setMinHeight(400);
+        ButtonType buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeCancel);
+        dialog.setResultConverter(new Callback<ButtonType, GridPane>() {
+            @Override
+            public GridPane call(ButtonType b) {
+                if (b == buttonTypeOk) {
+                    return gridpane;
+                }
+                return null;
+            }
+        });
+
+        Optional<GridPane> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() != null) {
+            int index = 0;
+            while (index < gridpane.getChildren().size()) {
+                RadioButton radioButton = (RadioButton)result.get().getChildren().get(index);
+                if (radioButton.isSelected()) {
+                    Optional<ProfileDto> profileOpt = profiles.stream().filter(p -> p.getName().equalsIgnoreCase(radioButton.getText())).findFirst();
+                    if (profileOpt.isPresent()) {
+                        return profileOpt.get();
+                    }
+                }
+                index+=3;
+            }
+        }
+        return null;
+    }
+
+    public static String getPublicIp() throws Exception {
+        URL myIpCom = new URL("https://api.myip.com");;
+        BufferedReader reader = new BufferedReader(new InputStreamReader(myIpCom.openStream()));
+        String publicIP = "127.0.0.1";
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if (line.contains("ip")) {
+                String[] array = line.split(",");
+                String[] arrayTwo = array[0].split(":");
+                publicIP = arrayTwo[1].replaceAll("\"", "");
+                break;
+            }
+        }
+        reader.close();
+        return publicIP;
     }
 
     public static String encryptAES(String password) throws Exception {

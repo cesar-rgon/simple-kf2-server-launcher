@@ -8,7 +8,7 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 
-<fx:root id="centerPane" fx:id="mapsEditionGridPane" prefHeight="730.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapsedition.MapsEditionController">
+<fx:root id="centerPane" fx:id="mapsEditionGridPane" prefHeight="745.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapsedition.MapsEditionController">
    <children>
       <Button fx:id="importMapsFromServer" mnemonicParsing="false" onAction="#importMapsFromServerOnAction" prefWidth="200.0" text="Import  maps/mods" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
       <Button fx:id="searchInWorkShop" mnemonicParsing="false" onAction="#searchInWorkShopOnAction" prefWidth="200.0" text="Search in WorkShop" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">

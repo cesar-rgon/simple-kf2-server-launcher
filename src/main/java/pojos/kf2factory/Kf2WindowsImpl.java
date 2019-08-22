@@ -119,7 +119,11 @@ public class Kf2WindowsImpl extends Kf2Common {
                 command.append("?QueryPort=").append(profile.getQueryPort());
             }
             if (StringUtils.isNotEmpty(profile.getCustomParameters())) {
-                command.append("?").append(profile.getCustomParameters());
+                if (profile.getCustomParameters().startsWith("?")) {
+                    command.append(profile.getCustomParameters());
+                } else {
+                    command.append("?").append(profile.getCustomParameters());
+                }
             }
             command.append("?ConfigSubDir=").append(profile.getName());
 

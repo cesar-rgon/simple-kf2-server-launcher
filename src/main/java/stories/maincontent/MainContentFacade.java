@@ -36,5 +36,5 @@ public interface MainContentFacade {
     boolean updateProfileSetWebPage(String profileName, boolean isSelected) throws SQLException;
     ProfileDto findProfileByName(String name) throws SQLException;
     String runServer(String profileName) throws SQLException;
-    void joinServer(String profileName) throws SQLException;
+    String joinServer(String profileName) throws SQLException;
 }

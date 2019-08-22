@@ -1,4 +1,4 @@
-.menu-bar, #bottomPanel, .combo-box, .combo-box-popup .list-view .list-cell, .text-field, .text-area .content {
+.menu-bar, .combo-box, .combo-box-popup .list-view .list-cell, .text-field, .text-area .content {
     -fx-background-color: #191513;
 }
 
@@ -28,7 +28,7 @@
     -fx-font-size: 14;
 }
 
-#leftPane, #rightPane, #centerPane {
+#leftPane, #rightPane, #centerPane, #bottomPanel {
     -fx-background-color: black;
 }
 

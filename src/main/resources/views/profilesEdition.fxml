@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
@@ -7,34 +11,51 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<fx:root fx:id="profilesEdition" prefHeight="730.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" alignment="CENTER" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.profilesedition.ProfilesEditionController">
+<fx:root fx:id="profilesEdition" alignment="CENTER" prefHeight="745.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.profilesedition.ProfilesEditionController">
    <children>
-      <ImageView fitHeight="700.0" fitWidth="741.0" pickOnBounds="true" preserveRatio="true" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowSpan="4" GridPane.valignment="CENTER">
+      <ImageView fitHeight="700.0" fitWidth="741.0" pickOnBounds="true" preserveRatio="true" GridPane.columnSpan="5" GridPane.halignment="CENTER" GridPane.rowSpan="4" GridPane.valignment="CENTER">
          <image>
             <Image url="@../images/radiation700.png" />
          </image>
       </ImageView>
-      <Label fx:id="titleConfigLabel" alignment="TOP_LEFT" text="Profile name list" textAlignment="CENTER" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <Label fx:id="titleConfigLabel" alignment="TOP_LEFT" text="Profile name list" textAlignment="CENTER" GridPane.columnSpan="5" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <font>
             <Font size="20.0" />
          </font></Label>
-      <TableView fx:id="profilesTable" editable="true" maxHeight="650.0" maxWidth="650.0" opacity="0.8" prefHeight="650.0" prefWidth="650.0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+      <TableView fx:id="profilesTable" editable="true" maxHeight="650.0" maxWidth="650.0" opacity="0.8" prefHeight="650.0" prefWidth="650.0" GridPane.columnSpan="5" GridPane.halignment="CENTER" GridPane.rowIndex="2">
          <columns>
             <TableColumn fx:id="profileNameColumn" maxWidth="650.0" onEditCommit="#profileNameColumnOnEditCommit" prefWidth="650.0" resizable="false" text="Profile Name" />
          </columns>
       </TableView>
-      <Button fx:id="addProfile" mnemonicParsing="false" onAction="#addProfileOnAction" text="Add new profile" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+      <Button fx:id="addProfile" minWidth="180.0" mnemonicParsing="false" onAction="#addProfileOnAction" text="Add new profile" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
          <GridPane.margin>
-            <Insets right="70.0" />
+            <Insets right="15.0" />
          </GridPane.margin></Button>
-      <Button fx:id="removeProfile" mnemonicParsing="false" onAction="#removeProfileOnAction" text="Remove selected profile" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+      <Button fx:id="removeProfile" minWidth="180.0" mnemonicParsing="false" onAction="#removeProfileOnAction" text="Remove selected profile" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
          <GridPane.margin>
-            <Insets left="5.0" />
+            <Insets />
          </GridPane.margin></Button>
-      <Label text="One click on a profile name to select it, double click to edit it" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" />
+      <Button fx:id="cloneProfile" minWidth="180.0" mnemonicParsing="false" onAction="#cloneProfileOnAction" text="Clone selected profile" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets />
+         </GridPane.margin></Button>
+      <Label text="One click on a profile name to select it, double click to edit it" GridPane.columnSpan="5" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" />
+      <Button fx:id="importProfile" minWidth="180.0" mnemonicParsing="false" onAction="#importProfileOnAction" text="Import profiles" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+         <GridPane.margin>
+            <Insets />
+         </GridPane.margin>
+      </Button>
+      <Button fx:id="exportProfile" minWidth="180.0" mnemonicParsing="false" onAction="#exportProfileOnAction" text="Export profiles" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets left="15.0" />
+         </GridPane.margin>
+      </Button>
    </children>
    <columnConstraints>
       <ColumnConstraints prefWidth="1210.0" />
+      <ColumnConstraints minWidth="210.0" />
+      <ColumnConstraints minWidth="210.0" />
+      <ColumnConstraints minWidth="210.0" />
       <ColumnConstraints minWidth="10.0" prefWidth="1210.0" />
    </columnConstraints>
    <rowConstraints>
