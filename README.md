@@ -26,7 +26,7 @@ Application to easily customize and launch a Killing Floor 2 server through a vi
 >   - [Configuration-Difficulties](#configuration-difficulties)
 >   - [Configuration-Length](#configuration-length)
 >   - [Configuration-Maximun players](#configuration-maximun-players)
-> 5. [Author notes](#author-notes)
+> 5. [Donation](#donation)
 
 ### Features
 
@@ -235,7 +235,9 @@ In this section you can add, edit or remove the max.players to the launcher. Eac
 * _Double click on a max.players code or description_: It allows to edit the field.
 * _Remove selected max.players_: It allows to remove the selected max.players code and description.
 
-### Author notes
-I hope you can find useful this application.
+### Donation
+If you find useful this application, you liked it and you want to contribute, you can donate the amount you desire [here](https://www.paypal.me/cesarrgon).
 
-By a gamer for gamers :)
+![Paypal logo](src/main/resources/images/documentation/paypal-logo.png)
+
+Thank you very much!
