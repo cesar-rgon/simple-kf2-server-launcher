@@ -1,6 +1,7 @@
 package stories.maincontent;
 
 import daos.*;
+import dtos.GameTypeDto;
 import dtos.MapDto;
 import dtos.ProfileDto;
 import dtos.SelectDto;
@@ -49,7 +50,7 @@ public class MainContentFacadeImpl implements MainContentFacade {
     }
 
     @Override
-    public ObservableList<SelectDto> listAllGameTypes() throws SQLException {
+    public ObservableList<GameTypeDto> listAllGameTypes() throws SQLException {
         List<GameType> gameTypes = GameTypeDao.getInstance().listAll();
         return gameTypeDtoFactory.newDtos(gameTypes);
     }

@@ -2,6 +2,7 @@ package stories.gametypesedition;
 
 import constants.Constants;
 import daos.GameTypeDao;
+import dtos.GameTypeDto;
 import dtos.SelectDto;
 import dtos.factories.GameTypeDtoFactory;
 import entities.GameType;
@@ -27,13 +28,13 @@ public class GameTypesEditionFacadeImpl implements GameTypesEditionFacade {
     }
 
     @Override
-    public ObservableList<SelectDto> listAllGameTypes() throws SQLException {
+    public ObservableList<GameTypeDto> listAllGameTypes() throws SQLException {
         List<GameType> gameTypes = GameTypeDao.getInstance().listAll();
         return gameTypeDtoFactory.newDtos(gameTypes);
     }
 
     @Override
-    public SelectDto createNewGameType(String code, String description) throws Exception {
+    public GameTypeDto createNewGameType(String code, String description) throws Exception {
         String languageCode = Session.getInstance().getActualProfile() != null ?
                 Session.getInstance().getActualProfile().getLanguage().getKey():
                 propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
@@ -59,7 +60,7 @@ public class GameTypesEditionFacadeImpl implements GameTypesEditionFacade {
     }
 
     @Override
-    public SelectDto updateChangedGameTypeCode(String oldCode, String newCode) throws Exception {
+    public GameTypeDto updateChangedGameTypeCode(String oldCode, String newCode) throws Exception {
         if (StringUtils.isBlank(newCode) || newCode.equalsIgnoreCase(oldCode)) {
             return null;
         }
@@ -81,7 +82,7 @@ public class GameTypesEditionFacadeImpl implements GameTypesEditionFacade {
     }
 
     @Override
-    public SelectDto updateChangedGameTypeDescription(String code, String oldDescription, String newDescription) throws Exception {
+    public GameTypeDto updateChangedGameTypeDescription(String code, String oldDescription, String newDescription) throws Exception {
         if (StringUtils.isBlank(newDescription) || newDescription.equalsIgnoreCase(oldDescription)) {
             return null;
         }
@@ -93,6 +94,30 @@ public class GameTypesEditionFacadeImpl implements GameTypesEditionFacade {
 
             propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.gametype." + code, newDescription);
             return gameTypeDtoFactory.newDto(gameTypeOpt.get());
+        }
+        return null;
+    }
+
+    @Override
+    public GameTypeDto updateChangedDifficultiesEnabled(String code, Boolean newDifficultiesEnabled) throws SQLException {
+        Optional<GameType> gameTypeOpt = GameTypeDao.getInstance().findByCode(code);
+        if (gameTypeOpt.isPresent()) {
+            gameTypeOpt.get().setDifficultyEnabled(newDifficultiesEnabled);
+            if (GameTypeDao.getInstance().update(gameTypeOpt.get())) {
+                return gameTypeDtoFactory.newDto(gameTypeOpt.get());
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public GameTypeDto updateChangedLengthsEnabled(String code, Boolean newLengthsEnabled) throws SQLException {
+        Optional<GameType> gameTypeOpt = GameTypeDao.getInstance().findByCode(code);
+        if (gameTypeOpt.isPresent()) {
+            gameTypeOpt.get().setLengthEnabled(newLengthsEnabled);
+            if (GameTypeDao.getInstance().update(gameTypeOpt.get())) {
+                return gameTypeDtoFactory.newDto(gameTypeOpt.get());
+            }
         }
         return null;
     }

@@ -1,5 +1,6 @@
 package stories.maincontent;
 
+import dtos.GameTypeDto;
 import dtos.MapDto;
 import dtos.ProfileDto;
 import dtos.SelectDto;
@@ -29,7 +30,7 @@ public class MainContentController implements Initializable {
 
     @FXML private ComboBox<ProfileDto> profileSelect;
     @FXML private ComboBox<SelectDto> languageSelect;
-    @FXML private ComboBox<SelectDto> gameTypeSelect;
+    @FXML private ComboBox<GameTypeDto> gameTypeSelect;
     @FXML private ComboBox<MapDto> mapSelect;
     @FXML private ComboBox<SelectDto> difficultySelect;
     @FXML private ComboBox<SelectDto> lengthSelect;
@@ -335,7 +336,9 @@ public class MainContentController implements Initializable {
         gameTypeSelect.setValue(profile.getGametype());
         mapSelect.setValue(profile.getMap());
         difficultySelect.setValue(profile.getDifficulty());
+        difficultySelect.setDisable(!gameTypeSelect.getValue().isDifficultyEnabled());
         lengthSelect.setValue(profile.getLength());
+        lengthSelect.setDisable(!gameTypeSelect.getValue().isLengthEnabled());
         maxPlayersSelect.setValue(profile.getMaxPlayers());
 
         serverName.setText(profile.getServerName());
@@ -387,6 +390,8 @@ public class MainContentController implements Initializable {
         String headerText = "Error updating the profile information";
         String contentText = "The gametype value could not be saved!";
         try {
+            difficultySelect.setDisable(!gameTypeSelect.getValue().isDifficultyEnabled());
+            lengthSelect.setDisable(!gameTypeSelect.getValue().isLengthEnabled());
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
                 String gameTypeCode = gameTypeSelect.getValue().getKey();

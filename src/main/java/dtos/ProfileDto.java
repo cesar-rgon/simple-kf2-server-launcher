@@ -7,7 +7,7 @@ public class ProfileDto {
 
     private final StringProperty name;
     private final SelectDto language;
-    private final SelectDto gametype;
+    private final GameTypeDto gametype;
     private final MapDto map;
     private final SelectDto difficulty;
     private final SelectDto length;
@@ -25,7 +25,7 @@ public class ProfileDto {
     private final String welcomeMessage;
     private final String customParameters;
 
-    public ProfileDto(String name, SelectDto language, SelectDto gametype, MapDto map, SelectDto difficulty, SelectDto length, SelectDto maxPlayers,
+    public ProfileDto(String name, SelectDto language, GameTypeDto gametype, MapDto map, SelectDto difficulty, SelectDto length, SelectDto maxPlayers,
                    String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
                    String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters) {
         super();
@@ -62,7 +62,7 @@ public class ProfileDto {
         return language;
     }
 
-    public SelectDto getGametype() {
+    public GameTypeDto getGametype() {
         return gametype;
     }
 

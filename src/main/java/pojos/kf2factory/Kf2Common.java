@@ -86,10 +86,10 @@ public abstract class Kf2Common {
         if (profile.getMap() == null) {
             errorMessage.append("The map can not be empty.\n");
         }
-        if (profile.getDifficulty() == null) {
+        if (profile.getGametype().isDifficultyEnabled() && profile.getDifficulty() == null) {
             errorMessage.append("The difficulty can not be empty.\n");
         }
-        if (profile.getLength() == null) {
+        if (profile.getGametype().isLengthEnabled() && profile.getLength() == null) {
             errorMessage.append("The length can not be empty.\n");
         }
         if (profile.getMaxPlayers() == null) {
@@ -282,7 +282,7 @@ public abstract class Kf2Common {
             modifiedLine = "GameDifficulty=" + profile.getDifficulty().getCode();
         }
         if (line.contains("GameLength=")) {
-            modifiedLine = "GameLength=" + profile.getLength().getCode();
+            modifiedLine = "GameLength=" + (profile.getGametype().isLengthEnabled()? profile.getLength().getCode(): "");
         }
         if (line.contains("ServerName=")) {
             modifiedLine = "ServerName=" + profile.getServerName();

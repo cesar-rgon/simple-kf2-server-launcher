@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
@@ -7,35 +11,39 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<fx:root id="centerPane" fx:id="gameTypesEdition" prefHeight="745.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" alignment="CENTER" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.gametypesedition.GameTypesEditionController">
+<fx:root id="centerPane" fx:id="gameTypesEdition" alignment="CENTER" prefHeight="745.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.gametypesedition.GameTypesEditionController">
    <children>
-      <ImageView fitHeight="700.0" fitWidth="741.0" pickOnBounds="true" preserveRatio="true" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowSpan="4" GridPane.valignment="CENTER">
+      <ImageView fitHeight="700.0" fitWidth="741.0" pickOnBounds="true" preserveRatio="true" GridPane.columnSpan="4" GridPane.halignment="CENTER" GridPane.rowSpan="4" GridPane.valignment="CENTER">
          <image>
             <Image url="@../images/radiation700.png" />
          </image>
       </ImageView>
-      <Label fx:id="titleConfigLabel" alignment="TOP_LEFT" text="Game type list" textAlignment="CENTER" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <Label fx:id="titleConfigLabel" alignment="TOP_LEFT" text="Game type list" textAlignment="CENTER" GridPane.columnSpan="4" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <font>
             <Font size="20.0" />
          </font></Label>
-      <TableView fx:id="gameTypesTable" editable="true" maxHeight="650.0" maxWidth="900.0" opacity="0.8" prefHeight="650.0" prefWidth="900.0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+      <TableView fx:id="gameTypesTable" editable="true" maxHeight="650.0" maxWidth="1200.0" opacity="0.8" prefHeight="650.0" prefWidth="1200.0" GridPane.columnSpan="4" GridPane.halignment="CENTER" GridPane.rowIndex="2">
          <columns>
             <TableColumn fx:id="gameTypeCodeColumn" maxWidth="450.0" onEditCommit="#gameTypeCodeColumnOnEditCommit" prefWidth="450.0" resizable="false" text="Game type code" />
             <TableColumn fx:id="gameTypeDescriptionColumn" maxWidth="450.0" onEditCommit="#gameTypeDescriptionColumnOnEditCommit" prefWidth="450.0" resizable="false" text="Game type description" />
+            <TableColumn fx:id="difficultiesEnabledColumn" maxWidth="150.0" prefWidth="150.0" text="Difficulties enabled" />
+            <TableColumn fx:id="lengthsEnabledColumn" maxWidth="150.0" prefWidth="150.0" text="Lengths enabled" />
          </columns>
       </TableView>
-      <Button fx:id="addGameType" mnemonicParsing="false" onAction="#addGameTypeOnAction" text="Add new game type" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+      <Button fx:id="addGameType" mnemonicParsing="false" onAction="#addGameTypeOnAction" text="Add new game type" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets right="70.0" />
          </GridPane.margin></Button>
-      <Button fx:id="removeGameType" mnemonicParsing="false" onAction="#removeGameTypeOnAction" text="Remove selected game type" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+      <Button fx:id="removeGameType" mnemonicParsing="false" onAction="#removeGameTypeOnAction" text="Remove selected game type" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets left="5.0" />
          </GridPane.margin></Button>
-      <Label text="One click on a game-type to select it, double click to edit it" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" />
+      <Label text="One click on a game-type to select it, double click to edit it" GridPane.columnSpan="4" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" />
    </children>
    <columnConstraints>
       <ColumnConstraints prefWidth="1210.0" />
+      <ColumnConstraints minWidth="10.0" prefWidth="1210.0" />
+      <ColumnConstraints minWidth="10.0" prefWidth="1210.0" />
       <ColumnConstraints minWidth="10.0" prefWidth="1210.0" />
    </columnConstraints>
    <rowConstraints>

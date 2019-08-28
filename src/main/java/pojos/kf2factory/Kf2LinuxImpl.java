@@ -107,7 +107,9 @@ public class Kf2LinuxImpl extends Kf2Common {
             command.append(installationFolder).append("/Binaries/Win64/KFGameSteamServer.bin.x86_64 ");
             command.append(profile.getMap().getCode());
             command.append("?Game=").append(profile.getGametype().getCode());
-            command.append("?Difficulty=").append(profile.getDifficulty().getCode());
+            if (profile.getGametype().isDifficultyEnabled()) {
+                command.append("?Difficulty=").append(profile.getDifficulty().getCode());
+            }
             command.append("?MaxPlayers=").append(profile.getMaxPlayers().getCode());
             if (profile.getGamePort() != null) {
                 command.append("?Port=").append(profile.getGamePort());

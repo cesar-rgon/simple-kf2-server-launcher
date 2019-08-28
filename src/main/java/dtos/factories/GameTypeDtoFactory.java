@@ -1,6 +1,7 @@
 package dtos.factories;
 
 import constants.Constants;
+import dtos.GameTypeDto;
 import dtos.SelectDto;
 import entities.GameType;
 import javafx.collections.FXCollections;
@@ -15,7 +16,7 @@ import java.util.stream.Collectors;
 
 public class GameTypeDtoFactory {
 
-    public SelectDto newDto(GameType gameType) {
+    public GameTypeDto newDto(GameType gameType) {
         try {
             PropertyService propertyService = new PropertyServiceImpl();
             String languageCode = Session.getInstance().getActualProfile() != null ?
@@ -23,15 +24,15 @@ public class GameTypeDtoFactory {
                     propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
 
             String description = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.gametype." + gameType.getCode());
-            return new SelectDto(gameType.getCode(), description);
+            return new GameTypeDto(gameType.getCode(), description, gameType.isDifficultyEnabled(), gameType.isLengthEnabled());
         } catch (Exception e) {
             Utils.errorDialog(e.getMessage(), "See stacktrace for more information", e);
             return null;
         }
     }
 
-    public ObservableList<SelectDto> newDtos(List<GameType> gameTypes) {
-        List<SelectDto> dtoList = gameTypes.stream().map(this::newDto).collect(Collectors.toList());
+    public ObservableList<GameTypeDto> newDtos(List<GameType> gameTypes) {
+        List<GameTypeDto> dtoList = gameTypes.stream().map(this::newDto).collect(Collectors.toList());
         return FXCollections.observableArrayList(dtoList);
     }
 

@@ -1,5 +1,6 @@
 package stories.maincontent;
 
+import dtos.GameTypeDto;
 import dtos.MapDto;
 import dtos.ProfileDto;
 import dtos.SelectDto;
@@ -11,7 +12,7 @@ import java.util.Optional;
 public interface MainContentFacade {
     ObservableList<ProfileDto> listAllProfiles() throws SQLException;
     ObservableList<SelectDto> listAllLanguages() throws SQLException;
-    ObservableList<SelectDto> listAllGameTypes() throws SQLException;
+    ObservableList<GameTypeDto> listAllGameTypes() throws SQLException;
     ObservableList<MapDto> listDownloadedMaps() throws SQLException;
     ObservableList<SelectDto> listAllDifficulties() throws SQLException;
     ObservableList<SelectDto> listAllLengths() throws SQLException;
