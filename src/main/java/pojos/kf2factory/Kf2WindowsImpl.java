@@ -3,7 +3,6 @@ package pojos.kf2factory;
 import com.github.sarxos.winreg.HKey;
 import com.github.sarxos.winreg.RegistryException;
 import com.github.sarxos.winreg.WindowsRegistry;
-import constants.Constants;
 import entities.Profile;
 import net.lingala.zip4j.core.ZipFile;
 import org.apache.commons.io.FileUtils;
@@ -11,8 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.session.Session;
-import services.PropertyService;
-import services.PropertyServiceImpl;
 import utils.Utils;
 
 import java.io.File;
@@ -35,10 +32,9 @@ public class Kf2WindowsImpl extends Kf2Common {
             File steamcmdExeFile = new File(installationFolder + "\\steamcmd\\steamcmd.exe");
             if (!steamcmdExeFile.exists()) {
                 File steamcmdZipFile = new File(installationFolder + "\\steamcmd.zip");
-                PropertyService propertyService = new PropertyServiceImpl();
-                String urlSteamCmd = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_URL_STEAMCMD);
-                String downloadConnectionTimeOut = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DOWNLOAD_CONNECTION_TIMEOUT);
-                String downloadReadTimeOut = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DOWNLOAD_READ_TIMEOUT);
+                String urlSteamCmd = propertyService.getPropertyValue("properties/config.properties", "prop.config.urlSteamcmd");
+                String downloadConnectionTimeOut = propertyService.getPropertyValue("properties/config.properties", "prop.config.downloadConnectionTimeout");
+                String downloadReadTimeOut = propertyService.getPropertyValue("properties/config.properties", "prop.config.downloadReadTimeout");
                 // Download SteamCmd
                 FileUtils.copyURLToFile(
                         new URL(urlSteamCmd),
@@ -57,7 +53,7 @@ public class Kf2WindowsImpl extends Kf2Common {
         } catch (Exception e) {
             String message = "Error preparing SteamCmd to be able to install KF2 server";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
             return false;
         }
     }
@@ -99,7 +95,7 @@ public class Kf2WindowsImpl extends Kf2Common {
         } catch (Exception e) {
             String message = "Error installing KF2 server";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 
@@ -139,7 +135,7 @@ public class Kf2WindowsImpl extends Kf2Common {
         } catch (Exception e) {
             String message = "Error executing Killing Floor 2 server";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
             return null;
         }
     }
@@ -156,7 +152,7 @@ public class Kf2WindowsImpl extends Kf2Common {
             }
         } catch (RegistryException e) {
             logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+            Utils.errorDialog(e.getMessage(), e);
         }
         return null;
     }

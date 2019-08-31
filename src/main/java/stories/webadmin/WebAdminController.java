@@ -57,7 +57,7 @@ public class WebAdminController implements Initializable {
                             }
                         } catch (Exception e) {
                             logger.error(e.getMessage(), e);
-                            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+                            Utils.errorDialog(e.getMessage(), e);
                         }
                         HTMLFormElement form = (HTMLFormElement) doc.getElementById("loginform");
                         form.submit();
@@ -74,7 +74,7 @@ public class WebAdminController implements Initializable {
         } catch (SQLException e) {
             String message = "The WebAdmin page can not be loaded!";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 }

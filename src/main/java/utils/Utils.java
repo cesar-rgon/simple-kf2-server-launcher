@@ -1,15 +1,8 @@
 package utils;
 
-import com.sun.javafx.scene.control.skin.VirtualScrollBar;
-import constants.Constants;
 import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.collections.ObservableList;
-import javafx.scene.Node;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
@@ -34,17 +27,16 @@ import java.util.stream.Collectors;
 
 public class Utils {
 
-    public static void errorDialog(String headerText, String contentText, Throwable e) {
+    public static void errorDialog(String headerText, Throwable e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         try {
             PropertyService propertyService = new PropertyServiceImpl();
-            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_TITLE);
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
             alert.setTitle(applicationTitle);
         } catch (Exception ex) {
             alert.setTitle("");
         }
         alert.setHeaderText(headerText);
-        alert.setContentText(contentText);
 
         if (e != null) {
             StringWriter sw = new StringWriter();
@@ -67,7 +59,7 @@ public class Utils {
         TextInputDialog dialog = new TextInputDialog();
         try {
             PropertyService propertyService = new PropertyServiceImpl();
-            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_TITLE);
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
             dialog.setTitle(applicationTitle);
             dialog.getDialogPane().setMinWidth(600);
             dialog.setResizable(true);
@@ -81,17 +73,30 @@ public class Utils {
 
     public static Optional<SelectDto> TwoTextInputsDialog() {
         Dialog<SelectDto> dialog = new Dialog<SelectDto>();
+        Label code = null;
+        Label description = null;
+
         try {
             PropertyService propertyService = new PropertyServiceImpl();
-            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_TITLE);
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
             dialog.setTitle(applicationTitle);
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.addItem");
+            dialog.setHeaderText(headerText);
+
+            String codeLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.itemCode");
+            String descriptionLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.itemDescription");
+            code = new Label(codeLabelText + ": ");
+            description = new Label(descriptionLabelText + ": ");
+
         } catch (Exception ex) {
             dialog.setTitle("");
+            dialog.setHeaderText("Add a new Item");
+            code = new Label("Item code: ");
+            description = new Label("Item description: ");
         }
-        dialog.setHeaderText("Add a new item");
+
         dialog.setResizable(false);
-        Label code = new Label("Item code: ");
-        Label description = new Label("Item description: ");
         TextField codeText = new TextField();
         TextField descriptionText = new TextField();
         Label separator = new Label("");
@@ -122,7 +127,7 @@ public class Utils {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         try {
             PropertyService propertyService = new PropertyServiceImpl();
-            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_TITLE);
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
             alert.setTitle(applicationTitle);
         } catch (Exception ex) {
             alert.setTitle("");
@@ -141,7 +146,7 @@ public class Utils {
         Alert alert = new Alert(Alert.AlertType.WARNING);
         try {
             PropertyService propertyService = new PropertyServiceImpl();
-            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_TITLE);
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
             alert.setTitle(applicationTitle);
         } catch (Exception ex) {
             alert.setTitle("");
@@ -160,7 +165,7 @@ public class Utils {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         try {
             PropertyService propertyService = new PropertyServiceImpl();
-            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_TITLE);
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
             alert.setTitle(applicationTitle);
         } catch (Exception ex) {
             alert.setTitle("");
@@ -179,7 +184,7 @@ public class Utils {
         Dialog<GridPane> dialog = new Dialog<GridPane>();
         try {
             PropertyService propertyService = new PropertyServiceImpl();
-            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_TITLE);
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
             dialog.setTitle(applicationTitle);
         } catch (Exception ex) {
             dialog.setTitle("");
@@ -245,14 +250,19 @@ public class Utils {
 
     public static ProfileDto selectProfileDialog(ObservableList<ProfileDto> profiles) {
         Dialog<GridPane> dialog = new Dialog<GridPane>();
+        PropertyService propertyService = new PropertyServiceImpl();
+        String portLabelText = "";
         try {
-            PropertyService propertyService = new PropertyServiceImpl();
-            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_APPLICATION_TITLE);
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
+            portLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.port");
             dialog.setTitle(applicationTitle);
+            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.joinServer");
+            dialog.setHeaderText(headerText + ":");
         } catch (Exception ex) {
             dialog.setTitle("");
+            dialog.setHeaderText("Join only to one server. Select a profile:");
         }
-        dialog.setHeaderText("Join only to one server. Select a profile:");
 
         GridPane gridpane = new GridPane();
         if (profiles != null && !profiles.isEmpty()) {
@@ -266,7 +276,13 @@ public class Utils {
                     radioButton.setSelected(true);
                 }
                 gridpane.add(radioButton, 1, rowIndex);
-                Label labelGamePort = new Label("Port=" + profile.getGamePort());
+                Label labelGamePort = null;
+                try {
+                    labelGamePort = new Label(portLabelText + "=" + profile.getGamePort());
+                } catch (Exception e) {
+                    labelGamePort = new Label("Port=" + profile.getGamePort());
+                }
+
                 labelGamePort.setStyle("-fx-padding: -10px 0 0 10px; -fx-text-fill: red;");
                 gridpane.add(labelGamePort, 2, rowIndex);
                 Label label = new Label(profile.getGametype() + ", " + profile.getMap() + ", " + profile.getDifficulty() + ", " + profile.getLength());
@@ -337,7 +353,7 @@ public class Utils {
             return "";
         }
         PropertyService propertyService = new PropertyServiceImpl();
-        String aesEncryptionKey = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_AES_ENCRIPTION_KEY);
+        String aesEncryptionKey = propertyService.getPropertyValue("properties/config.properties", "prop.config.aesEncryptionKey");
         Key aesKey = new SecretKeySpec(aesEncryptionKey.getBytes(), "AES");
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, aesKey);
@@ -350,7 +366,7 @@ public class Utils {
             return "";
         }
         PropertyService propertyService = new PropertyServiceImpl();
-        String aesEncryptionKey = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_AES_ENCRIPTION_KEY);
+        String aesEncryptionKey = propertyService.getPropertyValue("properties/config.properties", "prop.config.aesEncryptionKey");
         Key aesKey = new SecretKeySpec(aesEncryptionKey.getBytes(), "AES");
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, aesKey);

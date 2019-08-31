@@ -9,12 +9,11 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.session.Session;
-import stories.difficultiesedition.DifficultiesEditionController;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import utils.Utils;
 
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -22,6 +21,8 @@ public class MaxPlayersEditionController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(MaxPlayersEditionController.class);
     private final MaxPlayersEditionFacade facade;
+    private final PropertyService propertyService;
+    protected String languageCode;
 
     @FXML private TableView<SelectDto> maxPlayersTable;
     @FXML private TableColumn<SelectDto, String> maxPlayersCodeColumn;
@@ -29,21 +30,23 @@ public class MaxPlayersEditionController implements Initializable {
 
     public MaxPlayersEditionController() {
         super();
-        this.facade = new MaxPlayersEditionFacadeImpl();
+        facade = new MaxPlayersEditionFacadeImpl();
+        propertyService = new PropertyServiceImpl();
     }
 
     @FXML
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
+            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             maxPlayersCodeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             maxPlayersCodeColumn.setCellValueFactory(cellData -> cellData.getValue().getKeyProperty());
             maxPlayersDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             maxPlayersDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().getValueProperty());
             maxPlayersTable.setItems(facade.listAllMaxPlayers());
-        } catch (SQLException e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 
@@ -60,15 +63,16 @@ public class MaxPlayersEditionController implements Initializable {
                 maxPlayersTable.getItems().add(updatedMaxPlayersDto);
             } else {
                 maxPlayersTable.refresh();
-                String message = "The max. players can not be renamed in database: [old max. players code = " + oldMaxPlayersCode + ", new max. players code = " + newMaxPlayersCode + "]";
-                logger.warn(message);
-                Utils.warningDialog("Update operation is aborted!", message);
+                logger.warn("The max. players can not be renamed in database: [old max. players code = " + oldMaxPlayersCode + ", new max. players code = " + newMaxPlayersCode + "]");
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.maxPlayersNotRenamed");
+                Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
             maxPlayersTable.refresh();
             String message = "The max. players can not be updated!";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 
@@ -85,15 +89,16 @@ public class MaxPlayersEditionController implements Initializable {
                 maxPlayersTable.getItems().add(updatedLengthDto);
             } else {
                 maxPlayersTable.refresh();
-                String message = "The max. players can not be renamed in database: [old max. players description = " + oldMaxPlayersDescription + ", new max. players description = " + newMaxPlayersDescription + "]";
-                logger.warn(message);
-                Utils.warningDialog("Update operation is aborted!", message);
+                logger.warn("The max. players can not be renamed in database: [old max. players description = " + oldMaxPlayersDescription + ", new max. players description = " + newMaxPlayersDescription + "]");
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.maxPlayersNotRenamed");
+                Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
             maxPlayersTable.refresh();
             String message = "The max. players can not be updated!";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 
@@ -109,7 +114,7 @@ public class MaxPlayersEditionController implements Initializable {
         } catch (Exception e) {
             String message = "The max. players can not be created!";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 
@@ -122,19 +127,21 @@ public class MaxPlayersEditionController implements Initializable {
                 if (facade.deleteSelectedMaxPlayers(selectedMaxPlayers.getKey())) {
                     maxPlayersTable.getItems().remove(selectedIndex);
                 } else {
-                    String message = "The max. players can not be deleted from database";
-                    logger.warn(message);
-                    Utils.warningDialog(message, "Delete operation is aborted!");
+                    logger.warn("The max. players can not be deleted from database: " + selectedMaxPlayers.getKey());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.maxPlayersNotDeleted");
+                    Utils.warningDialog(headerText, contentText);
                 }
             } else {
-                String message = "No selected max. players to delete";
-                logger.warn(message);
-                Utils.warningDialog(message, "Delete operation is aborted!");
+                logger.warn("No selected max. players to delete");
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.maxPlayersNotSelected");
+                Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
             String message = "The max. players can not be deleted!";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 }

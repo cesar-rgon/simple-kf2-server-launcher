@@ -1,6 +1,5 @@
 package stories.installupdateserver;
 
-import constants.Constants;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -12,8 +11,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import start.MainApplication;
-import stories.gametypesedition.GameTypesEditionController;
 import utils.Utils;
 
 import java.io.File;
@@ -24,6 +24,8 @@ public class InstallUpdateServerController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(InstallUpdateServerController.class);
     private final InstallUpdateServerFacade facade;
+    private final PropertyService propertyService;
+    protected String languageCode;
 
     @FXML private TextField installationFolder;
     @FXML private CheckBox validateFiles;
@@ -33,17 +35,19 @@ public class InstallUpdateServerController implements Initializable {
     public InstallUpdateServerController() {
         super();
         facade = new InstallUpdateServerFacadeImpl();
+        propertyService = new PropertyServiceImpl();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            installationFolder.setText(facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER));
-            isBeta.setSelected(Boolean.parseBoolean(facade.findPropertyValue(Constants.CONFIG_IS_BETA)));
-            betaBrunch.setText(facade.findPropertyValue(Constants.CONFIG_BETA_BRUNCH));
+            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            installationFolder.setText(facade.findPropertyValue("prop.config.installationFolder"));
+            isBeta.setSelected(Boolean.parseBoolean(facade.findPropertyValue("prop.config.isBeta")));
+            betaBrunch.setText(facade.findPropertyValue("prop.config.betaBrunch"));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+            Utils.errorDialog(e.getMessage(), e);
         }
 
         installationFolder.focusedProperty().addListener(new ChangeListener<Boolean>() {
@@ -51,15 +55,16 @@ public class InstallUpdateServerController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
-                        if (!facade.saveOrUpdateProperty(Constants.CONFIG_INSTALLATION_FOLDER, installationFolder.getText())) {
-                            String message = "The installation folder value could not be saved!";
-                            logger.warn(message);
-                            Utils.warningDialog("Error updating the property information", message);
+                        if (!facade.saveOrUpdateProperty("prop.config.installationFolder", installationFolder.getText())) {
+                            logger.warn("The installation folder value could not be saved!:" + installationFolder.getText());
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");
+                            Utils.warningDialog(headerText, contentText);
                         }
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
-                    Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+                    Utils.errorDialog(e.getMessage(), e);
                 }
             }
         });
@@ -69,15 +74,16 @@ public class InstallUpdateServerController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
-                        if (!facade.saveOrUpdateProperty(Constants.CONFIG_BETA_BRUNCH, betaBrunch.getText())) {
-                            String message = "The beta brunch value could not be saved!";
-                            logger.warn(message);
-                            Utils.warningDialog("Error updating the property information", message);
+                        if (!facade.saveOrUpdateProperty("prop.config.betaBrunch", betaBrunch.getText())) {
+                            logger.warn("The beta brunch value could not be saved!: " + betaBrunch.getText());
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.betaBrunchNotSaved");
+                            Utils.warningDialog(headerText, contentText);
                         }
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
-                    Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+                    Utils.errorDialog(e.getMessage(), e);
                 }
             }
         });
@@ -91,14 +97,15 @@ public class InstallUpdateServerController implements Initializable {
         if (selectedDirectory != null) {
             installationFolder.setText(selectedDirectory.getAbsolutePath());
             try {
-                if (!facade.saveOrUpdateProperty(Constants.CONFIG_INSTALLATION_FOLDER, installationFolder.getText())) {
-                    String message = "The installation folder value could not be saved!";
-                    logger.warn(message);
-                    Utils.warningDialog("Error updating the property information", message);
+                if (!facade.saveOrUpdateProperty("prop.config.installationFolder", installationFolder.getText())) {
+                    logger.warn("The installation folder value could not be saved!: " + installationFolder.getText());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");
+                    Utils.warningDialog(headerText, contentText);
                 }
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
-                Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+                Utils.errorDialog(e.getMessage(), e);
             }
         }
     }
@@ -106,14 +113,15 @@ public class InstallUpdateServerController implements Initializable {
     @FXML
     private void isBetaOnAction() {
         try {
-            if (!facade.saveOrUpdateProperty(Constants.CONFIG_IS_BETA, String.valueOf(isBeta.isSelected()))) {
-                String message = "The is beta value could not be saved!";
-                logger.warn(message);
-                Utils.warningDialog("Error updating the property information", message);
+            if (!facade.saveOrUpdateProperty("prop.config.isBeta", String.valueOf(isBeta.isSelected()))) {
+                logger.warn("The is-beta value could not be saved!: " + isBeta.isSelected());
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.isBetaNotSaved");
+                Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 
@@ -121,14 +129,15 @@ public class InstallUpdateServerController implements Initializable {
     @FXML
     private void validateFilesOnAction() {
         try {
-            if (!facade.saveOrUpdateProperty(Constants.CONFIG_VALIDATE_FILES, String.valueOf(validateFiles.isSelected()))) {
-                String message = "The validate files value could not be saved!";
-                logger.warn(message);
-                Utils.warningDialog("Error updating the property information", message);
+            if (!facade.saveOrUpdateProperty("prop.config.validateFiles", String.valueOf(validateFiles.isSelected()))) {
+                logger.warn("The validate files value could not be saved!: " + validateFiles.isSelected());
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.validateFilesNotSaved");
+                Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 

@@ -1,6 +1,5 @@
 package stories.profilesedition;
 
-import constants.Constants;
 import daos.*;
 import dtos.ProfileDto;
 import dtos.factories.ProfileDtoFactory;
@@ -9,7 +8,6 @@ import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.listener.TimeListener;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 
@@ -40,10 +38,10 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
 
     @Override
     public ProfileDto createNewProfile(String profileName) throws Exception {
-        String defaultServername = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_SERVERNAME);
-        String defaultWebPort = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_WEB_PORT);
-        String defaultGamePort = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_GAME_PORT);
-        String defaultQueryPort = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_QUERY_PORT);
+        String defaultServername = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultServername");
+        String defaultWebPort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultWebPort");
+        String defaultGamePort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultGamePort");
+        String defaultQueryPort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultQueryPort");
 
         Profile newProfile = new Profile(
                 profileName,

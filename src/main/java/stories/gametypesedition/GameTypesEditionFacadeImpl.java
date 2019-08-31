@@ -1,14 +1,11 @@
 package stories.gametypesedition;
 
-import constants.Constants;
 import daos.GameTypeDao;
 import dtos.GameTypeDto;
-import dtos.SelectDto;
 import dtos.factories.GameTypeDtoFactory;
 import entities.GameType;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
-import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 
@@ -35,10 +32,7 @@ public class GameTypesEditionFacadeImpl implements GameTypesEditionFacade {
 
     @Override
     public GameTypeDto createNewGameType(String code, String description) throws Exception {
-        String languageCode = Session.getInstance().getActualProfile() != null ?
-                Session.getInstance().getActualProfile().getLanguage().getKey():
-                propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
-
+        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
         propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.gametype." + code, description);
         GameType gameType = new GameType(code);
         gameType = GameTypeDao.getInstance().insert(gameType);
@@ -49,10 +43,7 @@ public class GameTypesEditionFacadeImpl implements GameTypesEditionFacade {
     public boolean deleteSelectedGameType(String code) throws Exception {
         Optional<GameType> gameTypeOpt = GameTypeDao.getInstance().findByCode(code);
         if (gameTypeOpt.isPresent()) {
-            String languageCode = Session.getInstance().getActualProfile() != null ?
-                    Session.getInstance().getActualProfile().getLanguage().getKey():
-                    propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
-
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             propertyService.removeProperty("properties/languages/" + languageCode + ".properties", "prop.gametype." + code);
             return GameTypeDao.getInstance().remove(gameTypeOpt.get());
         }
@@ -68,10 +59,7 @@ public class GameTypesEditionFacadeImpl implements GameTypesEditionFacade {
         if (gameTypeOpt.isPresent()) {
             gameTypeOpt.get().setCode(newCode);
             if (GameTypeDao.getInstance().update(gameTypeOpt.get())) {
-                String languageCode = Session.getInstance().getActualProfile() != null ?
-                        Session.getInstance().getActualProfile().getLanguage().getKey():
-                        propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
-
+                String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
                 String value = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.gametype." + oldCode);
                 propertyService.removeProperty("properties/languages/" + languageCode + ".properties", "prop.gametype." + oldCode);
                 propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.gametype." + newCode, value);
@@ -88,10 +76,7 @@ public class GameTypesEditionFacadeImpl implements GameTypesEditionFacade {
         }
         Optional<GameType> gameTypeOpt = GameTypeDao.getInstance().findByCode(code);
         if (gameTypeOpt.isPresent()) {
-            String languageCode = Session.getInstance().getActualProfile() != null ?
-                    Session.getInstance().getActualProfile().getLanguage().getKey():
-                    propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
-
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.gametype." + code, newDescription);
             return gameTypeDtoFactory.newDto(gameTypeOpt.get());
         }

@@ -1,10 +1,8 @@
 package pojos.listener;
 
-import constants.Constants;
 import entities.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.session.Session;
 import services.DatabaseService;
 import services.DatabaseServiceImpl;
 import services.PropertyService;
@@ -35,7 +33,7 @@ public class TimeListener extends TimerTask {
             List<Map> notDownloadedMapList = databaseService.listNotDownloadedMapsAndMods();
             if (notDownloadedMapList != null && !notDownloadedMapList.isEmpty()) {
                 PropertyService propertyService = new PropertyServiceImpl();
-                String installationFolder = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_INSTALLATION_FOLDER);
+                String installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.installationFolder");
                 for (Map map : notDownloadedMapList) {
                     try {
                         List<Path> kfmFilesPath = Files.walk(Paths.get(installationFolder + "/KFGame/Cache/" + map.getIdWorkShop()))

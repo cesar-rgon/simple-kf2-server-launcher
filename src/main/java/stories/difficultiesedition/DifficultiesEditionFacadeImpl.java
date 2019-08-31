@@ -1,13 +1,11 @@
 package stories.difficultiesedition;
 
-import constants.Constants;
 import daos.DifficultyDao;
 import dtos.SelectDto;
 import dtos.factories.DifficultyDtoFactory;
 import entities.Difficulty;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
-import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 
@@ -34,10 +32,7 @@ public class DifficultiesEditionFacadeImpl implements DifficultiesEditionFacade 
 
     @Override
     public SelectDto createNewDifficulty(String code, String description) throws Exception {
-        String languageCode = Session.getInstance().getActualProfile() != null ?
-                Session.getInstance().getActualProfile().getLanguage().getKey():
-                propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
-
+        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
         propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.difficulty." + code, description);
         Difficulty difficulty = new Difficulty(code);
         difficulty = DifficultyDao.getInstance().insert(difficulty);
@@ -49,10 +44,7 @@ public class DifficultiesEditionFacadeImpl implements DifficultiesEditionFacade 
         Optional<Difficulty> difficultyOpt = DifficultyDao.getInstance().findByCode(code);
         if (difficultyOpt.isPresent()) {
             if (DifficultyDao.getInstance().remove(difficultyOpt.get())) {
-                String languageCode = Session.getInstance().getActualProfile() != null ?
-                        Session.getInstance().getActualProfile().getLanguage().getKey():
-                        propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
-
+                String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
                 propertyService.removeProperty("properties/languages/" + languageCode + ".properties", "prop.difficulty." + code);
                 return DifficultyDao.getInstance().remove(difficultyOpt.get());
             }
@@ -69,10 +61,7 @@ public class DifficultiesEditionFacadeImpl implements DifficultiesEditionFacade 
         if (difficultyOpt.isPresent()) {
             difficultyOpt.get().setCode(newCode);
             if (DifficultyDao.getInstance().update(difficultyOpt.get())) {
-                String languageCode = Session.getInstance().getActualProfile() != null ?
-                        Session.getInstance().getActualProfile().getLanguage().getKey():
-                        propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
-
+                String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
                 String value = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.difficulty." + oldCode);
                 propertyService.removeProperty("properties/languages/" + languageCode + ".properties", "prop.difficulty." + oldCode);
                 propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.difficulty." + newCode, value);
@@ -89,10 +78,7 @@ public class DifficultiesEditionFacadeImpl implements DifficultiesEditionFacade 
         }
         Optional<Difficulty> difficultyOpt = DifficultyDao.getInstance().findByCode(code);
         if (difficultyOpt.isPresent()) {
-            String languageCode = Session.getInstance().getActualProfile() != null ?
-                    Session.getInstance().getActualProfile().getLanguage().getKey():
-                    propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
-
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.difficulty." + code, newDescription);
             return difficultyDtoFactory.newDto(difficultyOpt.get());
         }

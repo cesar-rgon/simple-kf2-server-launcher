@@ -1,6 +1,5 @@
 package stories.profilesedition;
 
-import constants.Constants;
 import dtos.ProfileDto;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -8,7 +7,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,14 +15,13 @@ import org.apache.logging.log4j.Logger;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import pojos.session.Session;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import start.MainApplication;
-import stories.difficultiesedition.DifficultiesEditionController;
 import utils.Utils;
 
 import java.io.File;
 import java.net.URL;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -33,34 +30,39 @@ public class ProfilesEditionController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(ProfilesEditionController.class);
     private final ProfilesEditionFacade facade;
+    private final PropertyService propertyService;
+    protected String languageCode;
 
     @FXML private TableView<ProfileDto> profilesTable;
     @FXML private TableColumn<ProfileDto, String> profileNameColumn;
 
     public ProfilesEditionController() {
-        this.facade = new ProfilesEditionFacadeImpl();
+        facade = new ProfilesEditionFacadeImpl();
+        propertyService = new PropertyServiceImpl();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
+            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             profileNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             profileNameColumn.setCellValueFactory(cellData -> cellData.getValue().getNameProperty());
             profilesTable.setItems(facade.listAllProfiles());
-        } catch (SQLException e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 
     @FXML
     private void addProfileOnAction() {
         try {
-            String installationFolder = facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER);
+            String installationFolder = facade.findPropertyValue("prop.config.installationFolder");
             if (StringUtils.isBlank(installationFolder)) {
-                String message = "You need to define an installation folder in Install/Update section.";
-                logger.warn(message);
-                Utils.warningDialog("You can not add a new profile!",message);
+                logger.warn("Installation folder can not be empty and can not contains whitespaces. Define in Install/Update section: " + installationFolder);
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
+                Utils.warningDialog(headerText, contentText);
                 return;
             }
             Optional<String> profileNameOpt = Utils.OneTextInputDialog("Add a new profile", "Enter profile name:");
@@ -73,24 +75,27 @@ public class ProfilesEditionController implements Initializable {
         } catch (Exception e) {
             String message = "The profile can not be created!";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 
     @FXML
     private void cloneProfileOnAction() {
         try {
-            String installationFolder = facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER);
+            String installationFolder = facade.findPropertyValue("prop.config.installationFolder");
             if (StringUtils.isBlank(installationFolder)) {
-                String message = "You need to define an installation folder in Install/Update section.";
-                logger.warn(message);
-                Utils.warningDialog("You can not clone a profile!", message);
+                logger.warn("Installation folder can not be empty and can not contains whitespaces. Define in Install/Update section: " + installationFolder);
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
+                Utils.warningDialog(headerText, contentText);
                 return;
             }
             int selectedIndex = profilesTable.getSelectionModel().getSelectedIndex();
             if (selectedIndex >= 0) {
                 ProfileDto selectedProfile = profilesTable.getSelectionModel().getSelectedItem();
-                Optional<String> newProfileNameOpt = Utils.OneTextInputDialog("Clone the profile: " + selectedProfile.getName(), "Enter a new profile name:");
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.cloneProfile");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.newProfileName");
+                Optional<String> newProfileNameOpt = Utils.OneTextInputDialog(headerText + ": " + selectedProfile.getName(), contentText);
                 if (newProfileNameOpt.isPresent() && StringUtils.isNotBlank(newProfileNameOpt.get())) {
                     String newProfileName = newProfileNameOpt.get().replaceAll(" ", "_");
                     ProfileDto clonedProfile = facade.cloneSelectedProfile(selectedProfile.getName(), newProfileName);
@@ -99,31 +104,34 @@ public class ProfilesEditionController implements Initializable {
                         Kf2Common kf2Common = Kf2Factory.getInstance();
                         kf2Common.createConfigFolder(installationFolder, newProfileName);
                     } else {
-                        String message = "The profile can not be cloned in database";
-                        logger.warn(message);
-                        Utils.warningDialog(message, "Clone operation is aborted!");
+                        logger.warn("The profile can not be cloned in database. Selected profile: "+ selectedProfile.getName() + ". New profile name: " + newProfileName);
+                        headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                        contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profileNotCloned");
+                        Utils.warningDialog(headerText, contentText);
                     }
                 }
             } else {
-                String message = "No selected profile to clone";
-                logger.warn(message);
-                Utils.warningDialog(message, "Clone operation is aborted!");
+                logger.warn("No selected profile to clone");
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profileToCloneNotSelected");
+                Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
             String message = "The profile can not be cloned!";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 
     @FXML
     private void removeProfileOnAction() {
         try {
-            String installationFolder = facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER);
+            String installationFolder = facade.findPropertyValue("prop.config.installationFolder");
             if (StringUtils.isBlank(installationFolder)) {
-                String message = "You need to define an installation folder in Install/Update section.";
-                logger.warn(message);
-                Utils.warningDialog("You can not remove a profile!",message);
+                logger.warn("Installation folder can not be empty and can not contains whitespaces. Define in Install/Update section: " + installationFolder);
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
+                Utils.warningDialog(headerText, contentText);
                 return;
             }
             int selectedIndex = profilesTable.getSelectionModel().getSelectedIndex();
@@ -131,22 +139,24 @@ public class ProfilesEditionController implements Initializable {
                 ProfileDto selectedProfile = profilesTable.getSelectionModel().getSelectedItem();
                 if (facade.deleteSelectedProfile(selectedProfile.getName())) {
                     profilesTable.getItems().remove(selectedIndex);
-                    File profileConfigFolder = new File(facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER) + "/KFGame/Config/" + selectedProfile.getName());
+                    File profileConfigFolder = new File(facade.findPropertyValue("prop.config.installationFolder") + "/KFGame/Config/" + selectedProfile.getName());
                     FileUtils.deleteDirectory(profileConfigFolder);
                 } else {
-                    String message = "The profile can not be deleted from database";
-                    logger.warn(message);
-                    Utils.warningDialog(message, "Delete operation is aborted!");
+                    logger.warn("The profile can not be deleted from database: " + selectedProfile.getName());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profileNotDeleted");
+                    Utils.warningDialog(headerText, contentText);
                 }
             } else {
-                String message = "No selected profile to delete";
-                logger.warn(message);
-                Utils.warningDialog(message, "Delete operation is aborted!");
+                logger.warn("No selected profile to delete");
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profileNotSelected");
+                Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
             String message = "The profile can not be deleted!";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 
@@ -156,11 +166,12 @@ public class ProfilesEditionController implements Initializable {
         String oldProfileName = (String)event.getOldValue();
         String newProfileName = ((String)event.getNewValue()).replaceAll(" ", "_");
         try {
-            String installationFolder = facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER);
+            String installationFolder = facade.findPropertyValue("prop.config.installationFolder");
             if (StringUtils.isBlank(installationFolder)) {
-                String message = "You need to define an installation folder in Install/Update section.";
-                logger.warn(message);
-                Utils.warningDialog("You can not edit a profile!",message);
+                logger.warn("Installation folder can not be empty and can not contains whitespaces. Define in Install/Update section: " + installationFolder);
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
+                Utils.warningDialog(headerText, contentText);
                 return;
             }
             ProfileDto updatedProfileDto = facade.updateChangedProfile(oldProfileName, newProfileName);
@@ -178,34 +189,38 @@ public class ProfilesEditionController implements Initializable {
                 }
             } else {
                 profilesTable.refresh();
-                String message = "The profile can not be renamed in database: [old profile name = " + oldProfileName + ", new profile name = " + newProfileName + "]";
-                logger.warn(message);
-                Utils.warningDialog("Update operation is aborted!", message);
+                logger.warn("The profile can not be renamed in database: [old profile name = " + oldProfileName + ", new profile name = " + newProfileName + "]");
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profileNotRenamed");
+                Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
             profilesTable.refresh();
             String message = "The profile can not be updated!";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 
     @FXML
     private void importProfileOnAction() {
         try {
-            String installationFolder = facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER);
+            String installationFolder = facade.findPropertyValue("prop.config.installationFolder");
             if (StringUtils.isBlank(installationFolder)) {
-                String message = "You need to define an installation folder in Install/Update section.";
-                logger.warn(message);
-                Utils.warningDialog("You can not import profiles!", message);
+                logger.warn("Installation folder can not be empty and can not contains whitespaces. Define in Install/Update section: " + installationFolder);
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
+                Utils.warningDialog(headerText, contentText);
                 return;
             }
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("Import profiles from a file ...");
+            String message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.importProfiles");
+            fileChooser.setTitle(message + " ...");
             File selectedFile = fileChooser.showOpenDialog(MainApplication.getPrimaryStage());
             if (selectedFile != null) {
                 ObservableList<ProfileDto> profilesToBeImported = facade.getProfilesToBeImportedFromFile(selectedFile);
-                List<ProfileDto> selectedProfiles = Utils.selectProfilesDialog("Select profiles to be imported:", profilesToBeImported, profilesToBeImported);
+                message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfilesToImport");
+                List<ProfileDto> selectedProfiles = Utils.selectProfilesDialog(message + ":", profilesToBeImported, profilesToBeImported);
                 if (selectedProfiles != null && !selectedProfiles.isEmpty()) {
                     List<ProfileDto> insertedProfileList = facade.insertProfiles(selectedProfiles);
                     for (ProfileDto insertedProfile: insertedProfileList) {
@@ -215,7 +230,9 @@ public class ProfilesEditionController implements Initializable {
                     }
 
                     if (insertedProfileList.size() == selectedProfiles.size()) {
-                        Utils.infoDialog("Operation complete!", "All the profiles have been imported from file:\n" + selectedFile.getAbsolutePath());
+                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesImported");
+                        Utils.infoDialog(headerText, contentText + ":\n" + selectedFile.getAbsolutePath());
                     } else {
                         StringBuffer errorMessage = new StringBuffer();
                         for (ProfileDto selectedProfile: selectedProfiles) {
@@ -223,14 +240,15 @@ public class ProfilesEditionController implements Initializable {
                                 errorMessage.append(selectedProfile.getName() + "\n");
                             }
                         }
-
-                        Utils.warningDialog("Next profiles could not be imported:", errorMessage.toString() + "\nFor more details see file launcher.log");
+                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesNotImported");
+                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.seeLauncherLog");
+                        Utils.warningDialog(headerText + ":", errorMessage.toString() + "\n" + contentText);
                     }
                 }
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 
@@ -238,19 +256,23 @@ public class ProfilesEditionController implements Initializable {
     private void exportProfileOnAction() {
         try {
             ObservableList<ProfileDto> allProfiles = facade.listAllProfiles();
-            List<ProfileDto> selectedProfiles = Utils.selectProfilesDialog("Select profiles to be exported:", allProfiles, allProfiles);
+            String message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfilesToExport");
+            List<ProfileDto> selectedProfiles = Utils.selectProfilesDialog(message + ":", allProfiles, allProfiles);
             if (selectedProfiles != null && !selectedProfiles.isEmpty()) {
                 FileChooser fileChooser = new FileChooser();
-                fileChooser.setTitle("Export profiles to a file and save as ...");
+                message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.exportProfiles");
+                fileChooser.setTitle(message + " ...");
                 File selectedFile = fileChooser.showSaveDialog(MainApplication.getPrimaryStage());
                 if (selectedFile != null) {
                     facade.exportProfilesToFile(selectedProfiles, selectedFile);
-                    Utils.infoDialog("Operation complete!", "The profiles have been exported to file:\n" + selectedFile.getAbsolutePath());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesExported");
+                    Utils.infoDialog(headerText, contentText + ":\n" + selectedFile.getAbsolutePath());
                 }
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 }

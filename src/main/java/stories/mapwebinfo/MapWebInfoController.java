@@ -1,6 +1,5 @@
 package stories.mapwebinfo;
 
-import constants.Constants;
 import entities.Map;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -19,11 +18,10 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import pojos.kf2factory.Kf2Common;
-import pojos.kf2factory.Kf2Factory;
 import pojos.session.Session;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import start.MainApplication;
-import stories.mapsedition.MapsEditionController;
 import utils.Utils;
 
 import java.net.URL;
@@ -36,6 +34,8 @@ public class MapWebInfoController implements Initializable {
     private Long idWorkShop;
     private String mapName;
     private String strUrlMapImage;
+    private final PropertyService propertyService;
+    protected String languageCode;
 
     @FXML private WebView mapInfoWebView;
     @FXML private Label mapNameLabel;
@@ -45,6 +45,7 @@ public class MapWebInfoController implements Initializable {
     public MapWebInfoController() {
         super();
         facade = new MapWebInfoFacadeImpl();
+        propertyService = new PropertyServiceImpl();
         idWorkShop = null;
         mapName = null;
         strUrlMapImage = null;
@@ -53,17 +54,23 @@ public class MapWebInfoController implements Initializable {
     @FXML
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        WebEngine webEngine = mapInfoWebView.getEngine();
-        if (Session.getInstance().getMap() != null) {
-            mapNameLabel.setText(Session.getInstance().getMap().getKey());
-            webEngine.load(Session.getInstance().getMap().getUrlInfo());
-            if (!Session.getInstance().getMap().isOfficial()) {
+        try {
+            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            WebEngine webEngine = mapInfoWebView.getEngine();
+            if (Session.getInstance().getMap() != null) {
+                mapNameLabel.setText(Session.getInstance().getMap().getKey());
+                webEngine.load(Session.getInstance().getMap().getUrlInfo());
+                if (!Session.getInstance().getMap().isOfficial()) {
+                    pageLoadListener(webEngine);
+                }
+            } else {
+                mapNameLabel.setText("");
+                webEngine.load("https://steamcommunity.com/app/232090/workshop/");
                 pageLoadListener(webEngine);
             }
-        } else {
-            mapNameLabel.setText("");
-            webEngine.load("https://steamcommunity.com/app/232090/workshop/");
-            pageLoadListener(webEngine);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 
@@ -135,30 +142,36 @@ public class MapWebInfoController implements Initializable {
             content.load();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 
     @FXML
     private void addMapOnAction() {
         try {
-            String installationFolder = facade.findPropertyValue(Constants.CONFIG_INSTALLATION_FOLDER);
+            String installationFolder = facade.findPropertyValue("prop.config.installationFolder");
             if (!facade.isCorrectInstallationFolder(installationFolder)) {
-                Utils.warningDialog("No maps/mods can be added!", "The installation folder is not correct.\nSet it up in Install / Update section.");
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
+                Utils.warningDialog(headerText, contentText);
                 return;
             }
             Map customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, mapName, strUrlMapImage,  installationFolder);
             if (customMap != null) {
                 addMap.setVisible(false);
                 alreadyInLauncher.setVisible(true);
-                Utils.infoDialog("The map/mod was successfully added to the launcher", "Name: " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                Utils.infoDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
             } else {
-                Utils.errorDialog("Error adding map/mod to the launcher", "Name: " + mapName + "\nURL/Id WorkShop: " + idWorkShop, null);
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                Utils.warningDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
             }
         } catch (Exception e) {
             String message = "Error adding map/mod to the launcher";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 }

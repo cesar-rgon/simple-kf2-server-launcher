@@ -39,7 +39,7 @@ public class Kf2LinuxImpl extends Kf2Common {
         } catch (Exception e) {
             String message = "Error preparing SteamCmd to be able to install KF2 server";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
             return false;
         }
     }
@@ -96,7 +96,7 @@ public class Kf2LinuxImpl extends Kf2Common {
         } catch (Exception e) {
             String message = "Error installing KF2 server";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 
@@ -144,7 +144,7 @@ public class Kf2LinuxImpl extends Kf2Common {
         } catch (Exception e) {
             String message = "Error executing Killing Floor 2 server";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
             return null;
         }
     }

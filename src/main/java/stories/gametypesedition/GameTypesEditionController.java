@@ -12,14 +12,14 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
-import javafx.util.Callback;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import utils.Utils;
 
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -27,6 +27,8 @@ public class GameTypesEditionController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(GameTypesEditionController.class);
     private final GameTypesEditionFacade facade;
+    private final PropertyService propertyService;
+    protected String languageCode;
 
     @FXML private TableView<GameTypeDto> gameTypesTable;
     @FXML private TableColumn<GameTypeDto, String> gameTypeCodeColumn;
@@ -35,13 +37,15 @@ public class GameTypesEditionController implements Initializable {
     @FXML private TableColumn<GameTypeDto, Boolean> lengthsEnabledColumn;
 
     public GameTypesEditionController() {
-        this.facade = new GameTypesEditionFacadeImpl();
+        facade = new GameTypesEditionFacadeImpl();
+        propertyService = new PropertyServiceImpl();
     }
 
     @FXML
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
+            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             gameTypeCodeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             gameTypeCodeColumn.setCellValueFactory(cellData -> cellData.getValue().getKeyProperty());
             gameTypeDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -58,15 +62,16 @@ public class GameTypesEditionController implements Initializable {
                                 GameTypeDto updatedGameTypeDto = facade.updateChangedDifficultiesEnabled(code, newValue);
                                 if (updatedGameTypeDto == null) {
                                     gameTypesTable.refresh();
-                                    String message = "The game type can not be changed in database. Difficulties enabled value is restored";
-                                    logger.warn(message);
-                                    Utils.warningDialog("Update operation is aborted!", message);
+                                    logger.warn("The game type can not be changed in database: " + code + ". Difficulties enabled value is restored.");
+                                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.difficultiesEnabledNotUpdated");
+                                    Utils.warningDialog(headerText, contentText);
                                 }
-                            } catch (SQLException e) {
+                            } catch (Exception e) {
                                 gameTypesTable.refresh();
                                 String message = "The game type can not be updated!";
                                 logger.error(message, e);
-                                Utils.errorDialog(message, "See stacktrace for more details", e);
+                                Utils.errorDialog(message, e);
                             }
                         }
                     });
@@ -87,15 +92,16 @@ public class GameTypesEditionController implements Initializable {
                                 GameTypeDto updatedGameTypeDto = facade.updateChangedLengthsEnabled(code, newValue);
                                 if (updatedGameTypeDto == null) {
                                     gameTypesTable.refresh();
-                                    String message = "The game type can not be changed in database. Lengths enabled value is restored";
-                                    logger.warn(message);
-                                    Utils.warningDialog("Update operation is aborted!", message);
+                                    logger.warn("The game type can not be changed in database: " + code + ". Lengths enabled value is restored");
+                                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.lengthsEnabledNotUpdated");
+                                    Utils.warningDialog(headerText, contentText);
                                 }
-                            } catch (SQLException e) {
+                            } catch (Exception e) {
                                 gameTypesTable.refresh();
                                 String message = "The game type can not be updated!";
                                 logger.error(message, e);
-                                Utils.errorDialog(message, "See stacktrace for more details", e);
+                                Utils.errorDialog(message, e);
                             }
                         }
                     });
@@ -106,9 +112,9 @@ public class GameTypesEditionController implements Initializable {
             lengthsEnabledColumn.setCellValueFactory(cellData -> cellData.getValue().isLengthEnabledProperty());
 
             gameTypesTable.setItems(facade.listAllGameTypes());
-        } catch (SQLException e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 
@@ -124,15 +130,16 @@ public class GameTypesEditionController implements Initializable {
                 gameTypesTable.getItems().add(updatedGameTypeDto);
             } else {
                 gameTypesTable.refresh();
-                String message = "The game type can not be renamed in database: [old game type code = " + oldGameTypeCode + ", new game type code = " + newGameTypeCode + "]";
-                logger.warn(message);
-                Utils.warningDialog("Update operation is aborted!", message);
+                logger.warn("The game type can not be renamed in database: [old game type code = " + oldGameTypeCode + ", new game type code = " + newGameTypeCode + "]");
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.gameTypeNotRenamed");
+                Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
             gameTypesTable.refresh();
             String message = "The game type can not be updated!";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 
@@ -149,15 +156,16 @@ public class GameTypesEditionController implements Initializable {
                 gameTypesTable.getItems().add(updatedGameTypeDto);
             } else {
                 gameTypesTable.refresh();
-                String message = "The game type can not be renamed in database: [old game type description = " + oldGameTypeDescription + ", new game type description = " + newGameTypeDescription + "]";
-                logger.warn(message);
-                Utils.warningDialog("Update operation is aborted!", message);
+                logger.warn("The game type can not be renamed in database: [old game type description = " + oldGameTypeDescription + ", new game type description = " + newGameTypeDescription + "]");
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.gameTypeNotRenamed");
+                Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
             gameTypesTable.refresh();
             String message = "The game type can not be updated!";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 
@@ -173,7 +181,7 @@ public class GameTypesEditionController implements Initializable {
         } catch (Exception e) {
             String message = "The game type can not be created!";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 
@@ -186,19 +194,21 @@ public class GameTypesEditionController implements Initializable {
                 if (facade.deleteSelectedGameType(selectedGameType.getKey())) {
                     gameTypesTable.getItems().remove(selectedIndex);
                 } else {
-                    String message = "The game type can not be deleted from database";
-                    logger.warn(message);
-                    Utils.warningDialog(message, "Delete operation is aborted!");
+                    logger.warn("The game type can not be deleted from database: " + selectedGameType.getKey() + " - " + selectedGameType.getValue());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.gameTypeNotDeleted");
+                    Utils.warningDialog(headerText, contentText);
                 }
             } else {
-                String message = "No selected game type to delete";
-                logger.warn(message);
-                Utils.warningDialog(message, "Delete operation is aborted!");
+                logger.warn("No selected game type to delete");
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.gameTypeNotSelected");
+                Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
             String message = "The game type can not be deleted!";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 }

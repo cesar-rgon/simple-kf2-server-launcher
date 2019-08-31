@@ -1,6 +1,5 @@
 package stories.mapwebinfo;
 
-import constants.Constants;
 import daos.MapDao;
 import entities.Map;
 import org.apache.commons.lang3.StringUtils;
@@ -50,7 +49,7 @@ public class MapWebInfoFacadeImpl implements MapWebInfoFacade {
 
     @Override
     public Map createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String strUrlMapImage, String installationFolder) throws Exception {
-        String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_MAP_CUSTOM_LOCAL_FOLDER);
+        String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
         String absoluteTargetFolder = installationFolder + customMapLocalFolder;
         File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
@@ -61,7 +60,7 @@ public class MapWebInfoFacadeImpl implements MapWebInfoFacade {
         if ((StringUtils.isBlank(mapName) || idWorkShop == null)) {
             return null;
         }
-        String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_MAP_BASE_URL_WORKSHOP);
+        String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         String urlInfo = baseUrlWorkshop + idWorkShop;
         Map customMap = new Map(mapName, false, urlInfo, idWorkShop, urlPhoto, downloaded, mod);
         return MapDao.getInstance().insert(customMap);

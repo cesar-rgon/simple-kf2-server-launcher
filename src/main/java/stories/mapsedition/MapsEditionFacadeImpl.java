@@ -1,6 +1,5 @@
 package stories.mapsedition;
 
-import constants.Constants;
 import daos.MapDao;
 import dtos.MapDto;
 import dtos.factories.MapDtoFactory;
@@ -58,7 +57,7 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
         if ((StringUtils.isBlank(mapName) || idWorkShop == null)) {
             return null;
         }
-        String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_MAP_BASE_URL_WORKSHOP);
+        String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         String urlInfo = baseUrlWorkshop + idWorkShop;
         Map customMap = new Map(mapName, false, urlInfo, idWorkShop, urlPhoto, downloaded, isMod);
         return MapDao.getInstance().insert(customMap);
@@ -67,7 +66,7 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
     @Override
     public Map createNewCustomMapFromWorkshop(Long idWorkShop, String installationFolder, boolean downloaded, Boolean isMod) throws Exception {
         URL urlWorkShop = null;
-        String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_MAP_BASE_URL_WORKSHOP);
+        String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         urlWorkShop = new URL(baseUrlWorkshop + idWorkShop);
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(urlWorkShop.openStream()));
@@ -89,7 +88,7 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
             }
         }
         reader.close();
-        String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_MAP_CUSTOM_LOCAL_FOLDER);
+        String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
         String absoluteTargetFolder = installationFolder + customMapLocalFolder;
         File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
@@ -99,7 +98,7 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
 
     @Override
     public Map createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String installationFolder, boolean downloaded, Boolean isMod) throws Exception {
-        String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_MAP_BASE_URL_WORKSHOP);
+        String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         URL urlWorkShop = new URL(baseUrlWorkshop + idWorkShop);
         BufferedReader reader = new BufferedReader(new InputStreamReader(urlWorkShop.openStream()));
         String strUrlMapImage = null;
@@ -114,7 +113,7 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
             }
         }
         reader.close();
-        String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_MAP_CUSTOM_LOCAL_FOLDER);
+        String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
         String absoluteTargetFolder = installationFolder + customMapLocalFolder;
         File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();

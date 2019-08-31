@@ -1,6 +1,8 @@
 package pojos.kf2factory;
 
 import org.apache.commons.lang3.StringUtils;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import utils.Utils;
 
 public class Kf2Factory {
@@ -16,7 +18,15 @@ public class Kf2Factory {
                 }
             }
         } else {
-            Utils.errorDialog("Error when detecting the operating system", "The proccess is aborted!", null);
+            try {
+                PropertyService propertyService = new PropertyServiceImpl();
+                String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.osNotDetected");
+                Utils.warningDialog(headerText, contentText);
+            } catch (Exception e) {
+                Utils.errorDialog(e.getMessage(), e);
+            }
         }
         return null;
     }

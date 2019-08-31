@@ -1,6 +1,5 @@
 package pojos.kf2factory;
 
-import constants.Constants;
 import entities.Map;
 import entities.Profile;
 import org.apache.commons.io.FileUtils;
@@ -26,10 +25,19 @@ public abstract class Kf2Common {
 
     private static final Logger logger = LogManager.getLogger(Kf2Common.class);
     protected final DatabaseService databaseService;
+    protected final PropertyService propertyService;
+    protected String languageCode;
 
     protected Kf2Common() {
         super();
         databaseService = new DatabaseServiceImpl();
+        propertyService = new PropertyServiceImpl();
+        try {
+            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
     }
 
     public void installOrUpdateServer(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) {
@@ -40,7 +48,13 @@ public abstract class Kf2Common {
 
     private boolean isValid(String installationFolder) {
         if (StringUtils.isBlank(installationFolder) || installationFolder.contains(" ")) {
-            Utils.warningDialog("The operation can not be done", "Installation folder can not be empty\nand can not constain whitespaces.\nDefine in Install/Update section.");
+            try {
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
+                Utils.warningDialog(headerText, contentText);
+            } catch (Exception e) {
+                Utils.errorDialog(e.getMessage(), e);
+            }
             return false;
         } else {
             return true;
@@ -55,50 +69,55 @@ public abstract class Kf2Common {
             String errorMessage = validateParameters(profile);
             if (StringUtils.isEmpty(errorMessage)) {
                 PropertyService propertyService = new PropertyServiceImpl();
-                String installationFolder = propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_INSTALLATION_FOLDER);
+                String installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.installationFolder");
                 if (isValid(installationFolder)) {
                     createConfigFolder(installationFolder, profile.getName());
                     return runKf2Server(installationFolder, profile);
                 }
             } else {
-                Utils.errorDialog("Error validating parameters. The server can not be launched!", errorMessage, null);
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.errorParameters");
+                Utils.warningDialog(headerText, errorMessage);
             }
         } catch (Exception e) {
             String message = "Error executing Killing Floor 2 server";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
         return null;
     }
 
     protected String validateParameters(Profile profile) {
         StringBuffer errorMessage = new StringBuffer();
-
-        if (profile == null || StringUtils.isEmpty(profile.getName())) {
-            return "The profile name can not be empty.";
+        try {
+            if (profile == null || StringUtils.isEmpty(profile.getName())) {
+                return propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profileNotEmpty") + "\n";
+            }
+            if (profile.getLanguage() == null) {
+                errorMessage.append(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.languageNotEmpty")).append("\n");
+            }
+            if (profile.getGametype() == null) {
+                errorMessage.append(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.gameTypeNotEmpty")).append("\n");
+            }
+            if (profile.getMap() == null) {
+                errorMessage.append(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapNotEmpty")).append("\n");
+            }
+            if (profile.getGametype().isDifficultyEnabled() && profile.getDifficulty() == null) {
+                errorMessage.append(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.difficultyNotEmpty")).append("\n");
+            }
+            if (profile.getGametype().isLengthEnabled() && profile.getLength() == null) {
+                errorMessage.append(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.lengthNotEmpty")).append("\n");
+            }
+            if (profile.getMaxPlayers() == null) {
+                errorMessage.append(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.maxPlayersNotEmpty")).append("\n");
+            }
+            if (StringUtils.isEmpty(profile.getServerName())) {
+                errorMessage.append(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.serverNameNotEmpty")).append("\n");
+            }
+            return errorMessage.toString();
+        } catch (Exception e) {
+            Utils.errorDialog(e.getMessage(), e);
+            return "Error validating parameters. The server can not be started!";
         }
-        if (profile.getLanguage() == null) {
-            errorMessage.append("The language can not be empty.\n");
-        }
-        if (profile.getGametype() == null) {
-            errorMessage.append("The game type can not be empty.\n");
-        }
-        if (profile.getMap() == null) {
-            errorMessage.append("The map can not be empty.\n");
-        }
-        if (profile.getGametype().isDifficultyEnabled() && profile.getDifficulty() == null) {
-            errorMessage.append("The difficulty can not be empty.\n");
-        }
-        if (profile.getGametype().isLengthEnabled() && profile.getLength() == null) {
-            errorMessage.append("The length can not be empty.\n");
-        }
-        if (profile.getMaxPlayers() == null) {
-            errorMessage.append("The max.players can not be empty.\n");
-        }
-        if (StringUtils.isEmpty(profile.getServerName())) {
-            errorMessage.append("The server name can not be empty.\n");
-        }
-        return errorMessage.toString();
     }
 
     public void createConfigFolder(String installationFolder, String profileName) {
@@ -125,7 +144,7 @@ public abstract class Kf2Common {
         } catch (IOException e) {
             String message = "Error copying files to profiles's config folder";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 
@@ -174,7 +193,7 @@ public abstract class Kf2Common {
             tempFile.renameTo(kfEngineIni);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 
@@ -231,7 +250,7 @@ public abstract class Kf2Common {
             tempFile.renameTo(kfGameIni);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 
@@ -275,7 +294,7 @@ public abstract class Kf2Common {
             } catch (SQLException e) {
                 modifiedLine = "GameMapCycles=(Maps=())";
                 logger.error(e.getMessage(), e);
-                Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+                Utils.errorDialog(e.getMessage(), e);
             }
         }
         if (line.contains("GameDifficulty=")) {
@@ -301,7 +320,7 @@ public abstract class Kf2Common {
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+            Utils.errorDialog(e.getMessage(), e);
         }
         if (line.contains("BannerLink=")) {
             modifiedLine = "BannerLink=" + (profile.getUrlImageServer() != null ? profile.getUrlImageServer(): "");
@@ -324,8 +343,15 @@ public abstract class Kf2Common {
         if (steamExeFile != null) {
             return joinToKf2Server(steamExeFile, profile);
         } else {
-            Utils.errorDialog("Error validating Steam installation directory", "The process is aborted.", null);
-            return "";
+            try {
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.steamInstallDirInvalid");
+                Utils.warningDialog(headerText, contentText);
+            } catch (Exception e) {
+                Utils.errorDialog(e.getMessage(), e);
+            } finally {
+                return "";
+            }
         }
     }
 
@@ -354,7 +380,7 @@ public abstract class Kf2Common {
             return consoleCommand.toString();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+            Utils.errorDialog(e.getMessage(), e);
             return "";
         }
 

@@ -9,12 +9,11 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.listener.TimeListener;
-import pojos.session.Session;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import utils.Utils;
 
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -22,27 +21,31 @@ public class DifficultiesEditionController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(DifficultiesEditionController.class);
     private final DifficultiesEditionFacade facade;
+    private final PropertyService propertyService;
+    protected String languageCode;
 
     @FXML private TableView<SelectDto> difficultiesTable;
     @FXML private TableColumn<SelectDto, String> difficultyCodeColumn;
     @FXML private TableColumn<SelectDto, String> difficultyDescriptionColumn;
 
     public DifficultiesEditionController() {
-        this.facade = new DifficultiesEditionFacadeImpl();
+        facade = new DifficultiesEditionFacadeImpl();
+        propertyService = new PropertyServiceImpl();
     }
 
     @FXML
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
+            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             difficultyCodeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             difficultyCodeColumn.setCellValueFactory(cellData -> cellData.getValue().getKeyProperty());
             difficultyDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             difficultyDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().getValueProperty());
             difficultiesTable.setItems(facade.listAllDifficulties());
-        } catch (SQLException e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), "See stacktrace for more details", e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 
@@ -58,15 +61,16 @@ public class DifficultiesEditionController implements Initializable {
                 difficultiesTable.getItems().add(updatedDifficultyDto);
             } else {
                 difficultiesTable.refresh();
-                String message = "The difficulty can not be renamed in database: [old difficulty code = " + oldDifficultyCode + ", new difficulty code = " + newDifficultyCode + "]";
-                logger.warn(message);
-                Utils.warningDialog("Update operation is aborted!", message);
+                logger.warn("The difficulty can not be renamed in database: [old difficulty code = " + oldDifficultyCode + ", new difficulty code = " + newDifficultyCode + "]");
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.difficultyNotRenamed");
+                Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
             difficultiesTable.refresh();
             String message = "The difficulty can not be updated!";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 
@@ -83,15 +87,16 @@ public class DifficultiesEditionController implements Initializable {
                 difficultiesTable.getItems().add(updatedGameTypeDto);
             } else {
                 difficultiesTable.refresh();
-                String message = "The difficulty can not be renamed in database: [old difficulty description = " + oldDifficultyDescription + ", new difficulty description = " + newDifficultyDescription + "]";
-                logger.warn(message);
-                Utils.warningDialog("Update operation is aborted!", message);
+                logger.warn("The difficulty can not be renamed in database: [old difficulty description = " + oldDifficultyDescription + ", new difficulty description = " + newDifficultyDescription + "]");
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.difficultyNotRenamed");
+                Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
             difficultiesTable.refresh();
             String message = "The difficulty can not be updated!";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 
@@ -107,7 +112,7 @@ public class DifficultiesEditionController implements Initializable {
         } catch (Exception e) {
             String message = "The difficulty can not be created!";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 
@@ -120,19 +125,21 @@ public class DifficultiesEditionController implements Initializable {
                 if (facade.deleteSelectedDifficulty(selectedDifficulty.getKey())) {
                     difficultiesTable.getItems().remove(selectedIndex);
                 } else {
-                    String message = "The difficulty can not be deleted from database";
-                    logger.warn(message);
-                    Utils.warningDialog(message, "Delete operation is aborted!");
+                    logger.warn("The difficulty can not be deleted from database: " + selectedDifficulty.getKey() + " - " + selectedDifficulty.getValue());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.difficultyNotDeleted");
+                    Utils.warningDialog(headerText, contentText);
                 }
             } else {
-                String message = "No selected difficulty to delete";
-                logger.warn(message);
-                Utils.warningDialog(message, "Delete operation is aborted!");
+                logger.warn("No selected difficulty to delete");
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.difficultyNotSelected");
+                Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
             String message = "The difficulty can not be deleted!";
             logger.error(message, e);
-            Utils.errorDialog(message, "See stacktrace for more details", e);
+            Utils.errorDialog(message, e);
         }
     }
 }

@@ -1,13 +1,11 @@
 package stories.lengthedition;
 
-import constants.Constants;
 import daos.LengthDao;
 import dtos.SelectDto;
 import dtos.factories.LengthDtoFactory;
 import entities.Length;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
-import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 
@@ -33,10 +31,7 @@ public class LengthEditionFacadeImpl implements LengthEditionFacade {
 
     @Override
     public SelectDto createNewLength(String code, String description) throws Exception {
-        String languageCode = Session.getInstance().getActualProfile() != null ?
-                Session.getInstance().getActualProfile().getLanguage().getKey():
-                propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
-
+        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
         propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.length." + code, description);
         Length length = new Length(code);
         length = LengthDao.getInstance().insert(length);
@@ -48,10 +43,7 @@ public class LengthEditionFacadeImpl implements LengthEditionFacade {
         Optional<Length> lengthOpt = LengthDao.getInstance().findByCode(code);
         if (lengthOpt.isPresent()) {
             if (LengthDao.getInstance().remove(lengthOpt.get())) {
-                String languageCode = Session.getInstance().getActualProfile() != null ?
-                        Session.getInstance().getActualProfile().getLanguage().getKey():
-                        propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
-
+                String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
                 propertyService.removeProperty("properties/languages/" + languageCode + ".properties", "prop.length." + code);
                 return LengthDao.getInstance().remove(lengthOpt.get());
             }
@@ -68,10 +60,7 @@ public class LengthEditionFacadeImpl implements LengthEditionFacade {
         if (lengthOpt.isPresent()) {
             lengthOpt.get().setCode(newCode);
             if (LengthDao.getInstance().update(lengthOpt.get())) {
-                String languageCode = Session.getInstance().getActualProfile() != null ?
-                        Session.getInstance().getActualProfile().getLanguage().getKey():
-                        propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
-
+                String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
                 String value = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.length." + oldCode);
                 propertyService.removeProperty("properties/languages/" + languageCode + ".properties", "prop.length." + oldCode);
                 propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.length." + newCode, value);
@@ -88,10 +77,7 @@ public class LengthEditionFacadeImpl implements LengthEditionFacade {
         }
         Optional<Length> lengthOpt = LengthDao.getInstance().findByCode(code);
         if (lengthOpt.isPresent()) {
-            String languageCode = Session.getInstance().getActualProfile() != null ?
-                    Session.getInstance().getActualProfile().getLanguage().getKey():
-                    propertyService.getPropertyValue("properties/config.properties", Constants.CONFIG_DEFAULT_LANGUAGE_CODE);
-
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.length." + code, newDescription);
             return lengthDtoFactory.newDto(lengthOpt.get());
         }
