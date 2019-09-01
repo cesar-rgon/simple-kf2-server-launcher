@@ -334,9 +334,9 @@ public class MainContentFacadeImpl implements MainContentFacade {
         if (lastProfile.isPresent()) {
             return profileDtoFactory.newDto(lastProfile.get());
         } else {
-            Profile firstProfile = ProfileDao.getInstance().get(0);
-            if (firstProfile != null) {
-                return profileDtoFactory.newDto(firstProfile);
+            List<Profile> profileList = ProfileDao.getInstance().listAll();
+            if (profileList != null && !profileList.isEmpty()) {
+                return profileDtoFactory.newDto(profileList.get(0));
             } else {
                 return null;
             }

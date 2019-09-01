@@ -54,7 +54,7 @@ public class InstallUpdateServerController implements Initializable {
             isBeta.setSelected(Boolean.parseBoolean(facade.findPropertyValue("prop.config.isBeta")));
             betaBrunch.setText(facade.findPropertyValue("prop.config.betaBrunch"));
             String installationFolderLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.installationFolder");
-            installationFolderLabel.setText(installationFolderLabelText);
+            installationFolderLabel.setText(installationFolderLabelText + "*");
             String validateFilesLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.validateFiles");
             validateFilesLabel.setText(validateFilesLabelText);
             String updateBetaLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.updateBeta");
