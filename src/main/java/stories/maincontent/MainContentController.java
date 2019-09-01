@@ -31,6 +31,7 @@ public class MainContentController implements Initializable {
     private static final Logger logger = LogManager.getLogger(MainContentController.class);
     private final MainContentFacade facade;
     private final PropertyService propertyService;
+    private String previousSelectedLanguageCode;
 
     @FXML private ComboBox<ProfileDto> profileSelect;
     @FXML private ComboBox<SelectDto> languageSelect;
@@ -53,6 +54,25 @@ public class MainContentController implements Initializable {
     @FXML private CheckBox webPage;
     @FXML private TextArea console;
     @FXML private WebView imageWebView;
+    @FXML private Label profileLabel;
+    @FXML private Label gameTypeLabel;
+    @FXML private Label mapLabel;
+    @FXML private Label difficultyLabel;
+    @FXML private Label lengthLabel;
+    @FXML private Label maxPlayersLabel;
+    @FXML private Label serverNameLabel;
+    @FXML private Label serverPasswordLabel;
+    @FXML private Label webPageLabel;
+    @FXML private Label webPasswordLabel;
+    @FXML private Label portsLabel;
+    @FXML private Label clanLabel;
+    @FXML private Label webLinkLabel;
+    @FXML private Label urlImageLabel;
+    @FXML private Label welcomeLabel;
+    @FXML private Label customParametersLabel;
+    @FXML private Label consoleLabel;
+    @FXML private Button runServer;
+    @FXML private Button joinServer;
 
     public MainContentController() {
         super();
@@ -69,7 +89,7 @@ public class MainContentController implements Initializable {
             ObservableList<ProfileDto> profileOptions = facade.listAllProfiles();
             profileSelect.setItems(profileOptions);
             if (!profileOptions.isEmpty()) {
-                profileSelect.setValue(Session.getInstance().getActualProfile() != null? Session.getInstance().getActualProfile(): profileOptions.get(0));
+                profileSelect.setValue(Session.getInstance().getActualProfile() != null? Session.getInstance().getActualProfile(): facade.getLastSelectedProfile());
             } else {
                 profileSelect.setValue(null);
             }
@@ -81,13 +101,14 @@ public class MainContentController implements Initializable {
             lengthSelect.setItems(facade.listAllLengths());
             maxPlayersSelect.setItems(facade.listAllPlayers());
             console.setText(Session.getInstance().getConsole());
-        } catch (SQLException e) {
+
+            if (profileSelect.getValue() != null) {
+                profileOnAction();
+                loadLanguageTexts();
+            }
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
-        }
-
-        if (profileSelect.getValue() != null) {
-            profileOnAction();
         }
 
         serverName.focusedProperty().addListener(new ChangeListener<Boolean>() {
@@ -379,8 +400,72 @@ public class MainContentController implements Initializable {
         });
     }
 
+    private void loadLanguageTexts() throws Exception {
+        String profileLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.profile") + "*";
+        profileLabel.setText(profileLabelText);
+        String gameTypeLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.gameType") + "*";
+        gameTypeLabel.setText(gameTypeLabelText);
+        String mapLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.map") + "*";
+        mapLabel.setText(mapLabelText);
+        String difficultyLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.difficulty");
+        difficultyLabel.setText(difficultyLabelText);
+        String lengthLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.length") + "*";
+        lengthLabel.setText(lengthLabelText);
+        String maxPlayersLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.maxPlayers") + "*";
+        maxPlayersLabel.setText(maxPlayersLabelText);
+        String serverNameLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.serverName") + "*";
+        serverNameLabel.setText(serverNameLabelText);
+        String serverPasswordLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.serverPassword");
+        serverPasswordLabel.setText(serverPasswordLabelText);
+        String webPageLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.webPage");
+        webPageLabel.setText(webPageLabelText);
+        String webPasswordLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.webPassword");
+        webPasswordLabel.setText(webPasswordLabelText);
+        String portsLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.ports");
+        portsLabel.setText(portsLabelText);
+        String clanLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.clan");
+        clanLabel.setText(clanLabelText);
+        String webLinkLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.webLink");
+        webLinkLabel.setText(webLinkLabelText);
+        String urlImageLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.urlImage");
+        urlImageLabel.setText(urlImageLabelText);
+        String welcomeLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.welcome");
+        welcomeLabel.setText(welcomeLabelText);
+        String customParametersLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.customParameters");
+        customParametersLabel.setText(customParametersLabelText);
+        String consoleLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.console");
+        consoleLabel.setText(consoleLabelText);
+        String webPageText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.webAdmin");
+        webPage.setText(webPageText);
+        String runServerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.runServer");
+        runServer.setText(runServerText);
+        String joinServerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                "prop.label.joinServer");
+        joinServer.setText(joinServerText);
+    }
+
     private void loadActualProfile(ProfileDto profile) {
         languageSelect.setValue(profile.getLanguage());
+        previousSelectedLanguageCode = profile.getLanguage().getKey();
         gameTypeSelect.setValue(profile.getGametype());
         mapSelect.setValue(profile.getMap());
         difficultySelect.setValue(profile.getDifficulty());
@@ -425,7 +510,8 @@ public class MainContentController implements Initializable {
             ProfileDto databaseProfile = facade.findProfileByName(profileSelect.getValue().getName());
             loadActualProfile(databaseProfile);
             Session.getInstance().setActualProfile(profileSelect.getValue());
-        } catch (SQLException e) {
+            propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", profileSelect.getValue().getName());
+        } catch (Exception e) {
             String headerText = "Error loading the profile information";
             logger.error(headerText, e);
             Utils.errorDialog(headerText, e);
@@ -550,24 +636,27 @@ public class MainContentController implements Initializable {
     @FXML
     private void languageOnAction() {
         try {
-            if (profileSelect.getValue() != null) {
-                String profileName = profileSelect.getValue().getName();
-                String languageCode = languageSelect.getValue().getKey();
-                if (facade.updateProfileSetLanguage(profileName, languageCode)) {
-                    propertyService.setProperty("properties/config.properties", "prop.config.selectedLanguageCode", languageCode);
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                            "prop.message.languageChanged");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                            "prop.message.applicationMustBeRestarted");
-                    Utils.infoDialog(headerText, contentText);
-                } else {
-                    logger.warn("The language value could not be saved!: " + languageCode);
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.languageNotSaved");
-                    Utils.warningDialog(headerText, contentText);
+            if (!languageSelect.getValue().getKey().equals(previousSelectedLanguageCode)) {
+                if (profileSelect.getValue() != null) {
+                    String profileName = profileSelect.getValue().getName();
+                    String languageCode = languageSelect.getValue().getKey();
+                    if (facade.updateProfileSetLanguage(profileName, languageCode)) {
+                        propertyService.setProperty("properties/config.properties", "prop.config.selectedLanguageCode", languageCode);
+                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                                "prop.message.languageChanged");
+                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                                "prop.message.applicationMustBeRestarted");
+                        Utils.infoDialog(headerText, contentText);
+                    } else {
+                        logger.warn("The language value could not be saved!: " + languageCode);
+                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                "prop.message.profileNotUpdated");
+                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                "prop.message.languageNotSaved");
+                        Utils.warningDialog(headerText, contentText);
+                    }
                 }
+                previousSelectedLanguageCode = languageSelect.getValue().getKey();
             }
         } catch (Exception e) {
             String headerText = "The language value could not be saved!";

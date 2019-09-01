@@ -4,7 +4,9 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import org.apache.logging.log4j.LogManager;
@@ -31,6 +33,12 @@ public class InstallUpdateServerController implements Initializable {
     @FXML private CheckBox validateFiles;
     @FXML private CheckBox isBeta;
     @FXML private TextField betaBrunch;
+    @FXML private Label installationFolderLabel;
+    @FXML private Label validateFilesLabel;
+    @FXML private Label updateBetaLabel;
+    @FXML private Label betaBrunchLabel;
+    @FXML private Button exploreFolder;
+    @FXML private Button installUpdate;
 
     public InstallUpdateServerController() {
         super();
@@ -45,6 +53,23 @@ public class InstallUpdateServerController implements Initializable {
             installationFolder.setText(facade.findPropertyValue("prop.config.installationFolder"));
             isBeta.setSelected(Boolean.parseBoolean(facade.findPropertyValue("prop.config.isBeta")));
             betaBrunch.setText(facade.findPropertyValue("prop.config.betaBrunch"));
+            String installationFolderLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.installationFolder");
+            installationFolderLabel.setText(installationFolderLabelText);
+            String validateFilesLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.validateFiles");
+            validateFilesLabel.setText(validateFilesLabelText);
+            String updateBetaLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.updateBeta");
+            updateBetaLabel.setText(updateBetaLabelText);
+            String betaBrunchLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.betaBrunch");
+            betaBrunchLabel.setText(betaBrunchLabelText);
+            String exploreFolderText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.exploreFolder");
+            exploreFolder.setText(exploreFolderText);
+            String installUpdateText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.installUpdate");
+            installUpdate.setText(installUpdateText);
+            String validateFilesText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.validateFilesCheck");
+            validateFiles.setText(validateFilesText);
+            String isBetaText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.isBetaCheck");
+            isBeta.setText(isBetaText);
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -91,22 +116,23 @@ public class InstallUpdateServerController implements Initializable {
 
     @FXML
     private void exploreFolderOnAction() {
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle("Browse to KF2 server folder");
-        File selectedDirectory = directoryChooser.showDialog(MainApplication.getPrimaryStage());
-        if (selectedDirectory != null) {
-            installationFolder.setText(selectedDirectory.getAbsolutePath());
-            try {
+        try {
+            DirectoryChooser directoryChooser = new DirectoryChooser();
+            String message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.browseFolder");
+            directoryChooser.setTitle(message);
+            File selectedDirectory = directoryChooser.showDialog(MainApplication.getPrimaryStage());
+            if (selectedDirectory != null) {
+                installationFolder.setText(selectedDirectory.getAbsolutePath());
                 if (!facade.saveOrUpdateProperty("prop.config.installationFolder", installationFolder.getText())) {
                     logger.warn("The installation folder value could not be saved!: " + installationFolder.getText());
                     String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
                     String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");
                     Utils.warningDialog(headerText, contentText);
                 }
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-                Utils.errorDialog(e.getMessage(), e);
             }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 

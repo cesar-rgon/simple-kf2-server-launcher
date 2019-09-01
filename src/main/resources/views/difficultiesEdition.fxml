@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.Image?>
@@ -7,7 +11,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.Font?>
 
-<fx:root fx:id="difficultiesEdition" prefHeight="745.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" alignment="CENTER" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.difficultiesedition.DifficultiesEditionController">
+<fx:root fx:id="difficultiesEdition" alignment="CENTER" prefHeight="745.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.difficultiesedition.DifficultiesEditionController">
    <children>
       <ImageView fitHeight="700.0" fitWidth="741.0" pickOnBounds="true" preserveRatio="true" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowSpan="4" GridPane.valignment="CENTER">
          <image>
@@ -24,15 +28,15 @@
             <TableColumn fx:id="difficultyDescriptionColumn" maxWidth="450.0" onEditCommit="#difficultyDescriptionColumnOnEditCommit" prefWidth="450.0" resizable="false" text="Difficulty description" />
          </columns>
       </TableView>
-      <Button fx:id="addDifficulty" mnemonicParsing="false" onAction="#addDifficultyOnAction" text="Add new difficulty" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+      <Button fx:id="addDifficulty" mnemonicParsing="false" onAction="#addDifficultyOnAction" prefWidth="200.0" text="Add a new one" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
          <GridPane.margin>
-            <Insets right="70.0" />
+            <Insets right="50.0" />
          </GridPane.margin></Button>
-      <Button fx:id="removeDifficulty" mnemonicParsing="false" onAction="#removeDifficultyOnAction" text="Remove selected difficulty" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+      <Button fx:id="removeDifficulty" mnemonicParsing="false" onAction="#removeDifficultyOnAction" prefWidth="200.0" text="Remove selected one" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1">
          <GridPane.margin>
-            <Insets left="5.0" />
+            <Insets left="50.0" />
          </GridPane.margin></Button>
-      <Label text="One click on a difficulty to select it, double click to edit it" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" />
+      <Label fx:id="messageLabel" text="One click on an item to select it, double click to edit it" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" />
    </children>
    <columnConstraints>
       <ColumnConstraints prefWidth="1210.0" />

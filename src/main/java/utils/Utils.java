@@ -75,12 +75,13 @@ public class Utils {
         Dialog<SelectDto> dialog = new Dialog<SelectDto>();
         Label code = null;
         Label description = null;
+        String languageCode = null;
+        PropertyService propertyService = new PropertyServiceImpl();
 
         try {
-            PropertyService propertyService = new PropertyServiceImpl();
+            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
             dialog.setTitle(applicationTitle);
-            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.addItem");
             dialog.setHeaderText(headerText);
 
@@ -107,14 +108,26 @@ public class Utils {
         grid.add(description, 1, 3);
         grid.add(descriptionText, 2, 3);
         dialog.getDialogPane().setContent(grid);
-        ButtonType buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
-        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        ButtonType buttonTypeOk = null;
+        ButtonType buttonTypeCancel = null;
+        try {
+            String okText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.ok");
+            buttonTypeOk = new ButtonType(okText, ButtonBar.ButtonData.OK_DONE);
+            String cancelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.cancel");
+            buttonTypeCancel = new ButtonType(cancelText, ButtonBar.ButtonData.CANCEL_CLOSE);
+        } catch (Exception e) {
+            buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+            buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        }
+
         dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
         dialog.getDialogPane().getButtonTypes().add(buttonTypeCancel);
+        ButtonType finalButtonTypeOk = buttonTypeOk;
         dialog.setResultConverter(new Callback<ButtonType, SelectDto>() {
             @Override
             public SelectDto call(ButtonType b) {
-                if (b == buttonTypeOk) {
+                if (b == finalButtonTypeOk) {
                     return new SelectDto(codeText.getText(), descriptionText.getText());
                 }
                 return null;
@@ -182,8 +195,8 @@ public class Utils {
 
     public static List<ProfileDto> selectProfilesDialog(String headerText, ObservableList<ProfileDto> profiles, List<ProfileDto> selectedProfiles) {
         Dialog<GridPane> dialog = new Dialog<GridPane>();
+        PropertyService propertyService = new PropertyServiceImpl();
         try {
-            PropertyService propertyService = new PropertyServiceImpl();
             String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
             dialog.setTitle(applicationTitle);
         } catch (Exception ex) {
@@ -216,14 +229,27 @@ public class Utils {
         dialog.setResizable(true);
         dialog.getDialogPane().setMinWidth(400);
         dialog.getDialogPane().setMinHeight(400);
-        ButtonType buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
-        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        ButtonType buttonTypeOk = null;
+        ButtonType buttonTypeCancel = null;
+        try {
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            String okText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.ok");
+            buttonTypeOk = new ButtonType(okText, ButtonBar.ButtonData.OK_DONE);
+            String cancelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.cancel");
+            buttonTypeCancel = new ButtonType(cancelText, ButtonBar.ButtonData.CANCEL_CLOSE);
+        } catch (Exception e) {
+            buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+            buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        }
+
         dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
         dialog.getDialogPane().getButtonTypes().add(buttonTypeCancel);
+        ButtonType finalButtonTypeOk = buttonTypeOk;
         dialog.setResultConverter(new Callback<ButtonType, GridPane>() {
             @Override
             public GridPane call(ButtonType b) {
-                if (b == buttonTypeOk) {
+                if (b == finalButtonTypeOk) {
                     return gridpane;
                 }
                 return null;
@@ -300,14 +326,27 @@ public class Utils {
         dialog.setResizable(true);
         dialog.getDialogPane().setMinWidth(400);
         dialog.getDialogPane().setMinHeight(400);
-        ButtonType buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
-        ButtonType buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        ButtonType buttonTypeOk = null;
+        ButtonType buttonTypeCancel = null;
+        try {
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            String okText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.ok");
+            buttonTypeOk = new ButtonType(okText, ButtonBar.ButtonData.OK_DONE);
+            String cancelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.cancel");
+            buttonTypeCancel = new ButtonType(cancelText, ButtonBar.ButtonData.CANCEL_CLOSE);
+        } catch (Exception e) {
+            buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+            buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        }
+
         dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
         dialog.getDialogPane().getButtonTypes().add(buttonTypeCancel);
+        ButtonType finalButtonTypeOk = buttonTypeOk;
         dialog.setResultConverter(new Callback<ButtonType, GridPane>() {
             @Override
             public GridPane call(ButtonType b) {
-                if (b == buttonTypeOk) {
+                if (b == finalButtonTypeOk) {
                     return gridpane;
                 }
                 return null;

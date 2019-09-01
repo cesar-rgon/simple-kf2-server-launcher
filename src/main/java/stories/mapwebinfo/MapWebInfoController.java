@@ -41,6 +41,7 @@ public class MapWebInfoController implements Initializable {
     @FXML private Label mapNameLabel;
     @FXML private Button addMap;
     @FXML private Label alreadyInLauncher;
+    @FXML private Button backButton;
 
     public MapWebInfoController() {
         super();
@@ -68,6 +69,13 @@ public class MapWebInfoController implements Initializable {
                 webEngine.load("https://steamcommunity.com/app/232090/workshop/");
                 pageLoadListener(webEngine);
             }
+
+            String backButtonText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.backMapsPage");
+            backButton.setText(backButtonText);
+            String addMapText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addNewMap");
+            addMap.setText(addMapText);
+            String alreadyInLauncherText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.alreadyInLauncher");
+            alreadyInLauncher.setText(alreadyInLauncherText);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);

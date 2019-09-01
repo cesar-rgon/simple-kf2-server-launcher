@@ -3,6 +3,8 @@ package stories.lengthedition;
 import dtos.SelectDto;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -27,6 +29,10 @@ public class LengthEditionController implements Initializable {
     @FXML private TableView<SelectDto> lengthTable;
     @FXML private TableColumn<SelectDto, String> lengthCodeColumn;
     @FXML private TableColumn<SelectDto, String> lengthDescriptionColumn;
+    @FXML private Label titleConfigLabel;
+    @FXML private Label messageLabel;
+    @FXML private Button addLength;
+    @FXML private Button removeLength;
 
     public LengthEditionController(){
         super();
@@ -44,6 +50,19 @@ public class LengthEditionController implements Initializable {
             lengthDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             lengthDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().getValueProperty());
             lengthTable.setItems(facade.listAllLength());
+
+            String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthTitle");
+            titleConfigLabel.setText(titleConfigLabelText);
+            String messageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
+            messageLabel.setText(messageLabelText);
+            String addLengthText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
+            addLength.setText(addLengthText);
+            String removeLengthText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
+            removeLength.setText(removeLengthText);
+            String lengthCodeColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthCode");
+            lengthCodeColumn.setText(lengthCodeColumnText);
+            String lengthDescriptionColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthDescription");
+            lengthDescriptionColumn.setText(lengthDescriptionColumnText);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);

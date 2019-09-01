@@ -54,15 +54,18 @@ public class MapsEditionController implements Initializable {
 
 
     @FXML private Slider mapsSlider;
-    @FXML private ScrollPane officialMapsScrollPane;
     @FXML private FlowPane officialMapsFlowPane;
-    @FXML private ScrollPane customMapsScrollPane;
     @FXML private FlowPane customMapsFlowPane;
     @FXML private TextField searchMaps;
+    @FXML private Button addNewMaps;
+    @FXML private Button searchInWorkShop;
+    @FXML private Button removeMaps;
     @FXML private Button selectAllMaps;
+    @FXML private Button importMapsFromServer;
     @FXML private TabPane mapsModsTabPane;
     @FXML private Tab customMapsModsTab;
     @FXML private Tab officialMapsTab;
+    @FXML private Label sliderLabel;
 
     public MapsEditionController() {
         super();
@@ -88,6 +91,23 @@ public class MapsEditionController implements Initializable {
             }
             officialMapsTab.setGraphic(new Label("(" + officialMapsFlowPane.getChildren().size() + ")"));
             customMapsModsTab.setGraphic(new Label("(" + customMapsFlowPane.getChildren().size() + ")"));
+
+            String addNewMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addMaps");
+            addNewMaps.setText(addNewMapsText);
+            String searchInWorkShopText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.searchInWorkShop");
+            searchInWorkShop.setText(searchInWorkShopText);
+            String removeMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeMaps");
+            removeMaps.setText(removeMapsText);
+            String selectAllMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.selectMaps");
+            selectAllMaps.setText(selectAllMapsText);
+            String importMapsFromServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importMaps");
+            importMapsFromServer.setText(importMapsFromServerText);
+            String sliderLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.slider");
+            sliderLabel.setText(sliderLabelText);
+            String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
+            customMapsModsTab.setText(customMapsModsTabText);
+            String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
+            officialMapsTab.setText(officialMapsTabText);
 
             Double sliderColumns = Double.parseDouble(facade.findConfigPropertyValue("prop.config.mapSliderValue"));
             mapsSlider.setValue(sliderColumns);

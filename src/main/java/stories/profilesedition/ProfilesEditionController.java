@@ -4,6 +4,8 @@ import dtos.ProfileDto;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -35,6 +37,13 @@ public class ProfilesEditionController implements Initializable {
 
     @FXML private TableView<ProfileDto> profilesTable;
     @FXML private TableColumn<ProfileDto, String> profileNameColumn;
+    @FXML private Label titleConfigLabel;
+    @FXML private Label messageLabel;
+    @FXML private Button addProfile;
+    @FXML private Button cloneProfile;
+    @FXML private Button removeProfile;
+    @FXML private Button importProfile;
+    @FXML private Button exportProfile;
 
     public ProfilesEditionController() {
         facade = new ProfilesEditionFacadeImpl();
@@ -48,6 +57,24 @@ public class ProfilesEditionController implements Initializable {
             profileNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             profileNameColumn.setCellValueFactory(cellData -> cellData.getValue().getNameProperty());
             profilesTable.setItems(facade.listAllProfiles());
+
+            String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileTitle");
+            titleConfigLabel.setText(titleConfigLabelText);
+            String messageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
+            messageLabel.setText(messageLabelText);
+            String addProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
+            addProfile.setText(addProfileText);
+            String cloneProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.cloneItem");
+            cloneProfile.setText(cloneProfileText);
+            String removeProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
+            removeProfile.setText(removeProfileText);
+            String importProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importProfile");
+            importProfile.setText(importProfileText);
+            String exportProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.exportProfile");
+            exportProfile.setText(exportProfileText);
+            String profileNameColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileName");
+            profileNameColumn.setText(profileNameColumnText);
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -65,10 +92,17 @@ public class ProfilesEditionController implements Initializable {
                 Utils.warningDialog(headerText, contentText);
                 return;
             }
-            Optional<String> profileNameOpt = Utils.OneTextInputDialog("Add a new profile", "Enter profile name:");
+            String addProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addProfile");
+            String enterProfileName = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.enterProfileName");
+            Optional<String> profileNameOpt = Utils.OneTextInputDialog(addProfileText, enterProfileName + ":");
             if (profileNameOpt.isPresent() && StringUtils.isNotBlank(profileNameOpt.get())){
                 String profileName = profileNameOpt.get().replaceAll(" ", "_");
                 profilesTable.getItems().add(facade.createNewProfile(profileName));
+                if (profilesTable.getItems().size() == 1) {
+                    Session.getInstance().setActualProfile(profilesTable.getItems().get(0));
+                    propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", profilesTable.getItems().get(0).getName());
+                }
+
                 Kf2Common kf2Common = Kf2Factory.getInstance();
                 kf2Common.createConfigFolder(installationFolder, profileName);
             }
@@ -139,6 +173,15 @@ public class ProfilesEditionController implements Initializable {
                 ProfileDto selectedProfile = profilesTable.getSelectionModel().getSelectedItem();
                 if (facade.deleteSelectedProfile(selectedProfile.getName())) {
                     profilesTable.getItems().remove(selectedIndex);
+                    if (Session.getInstance().getActualProfile() != null && selectedProfile.getName().equalsIgnoreCase(Session.getInstance().getActualProfile().getName())) {
+                        if (profilesTable.getItems().size() > 0) {
+                            Session.getInstance().setActualProfile(profilesTable.getItems().get(0));
+                            propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", profilesTable.getItems().get(0).getName());
+                        } else {
+                            Session.getInstance().setActualProfile(null);
+                            propertyService.removeProperty("properties/config.properties", "prop.config.lastSelectedProfile");
+                        }
+                    }
                     File profileConfigFolder = new File(facade.findPropertyValue("prop.config.installationFolder") + "/KFGame/Config/" + selectedProfile.getName());
                     FileUtils.deleteDirectory(profileConfigFolder);
                 } else {
@@ -178,6 +221,7 @@ public class ProfilesEditionController implements Initializable {
             if (updatedProfileDto != null) {
                 if (Session.getInstance().getActualProfile() != null && oldProfileName.equalsIgnoreCase(Session.getInstance().getActualProfile().getName())) {
                     Session.getInstance().setActualProfile(updatedProfileDto);
+                    propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", newProfileName);
                 }
                 profilesTable.getItems().remove(edittedRowIndex);
                 profilesTable.getItems().add(updatedProfileDto);

@@ -145,84 +145,84 @@
         <ComboBox fx:id="difficultySelect" onAction="#difficultyOnAction" opacity="0.75" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
         <ComboBox fx:id="lengthSelect" onAction="#lengthOnAction" opacity="0.75" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
         <ComboBox fx:id="maxPlayersSelect" onAction="#maxPlayersOnAction" opacity="0.75" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-        <Label text="PROFILE*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+        <Label fx:id="profileLabel" text="PROFILE*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label text="LANGUAGE*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+        <Label fx:id="languageLabel" text="LANGUAGE*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label text="GAME TYPE*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
+        <Label fx:id="gameTypeLabel" text="GAME TYPE*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label text="MAP*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
+        <Label fx:id="mapLabel" text="MAP*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label text="DIFFICULTY*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="5">
+        <Label fx:id="difficultyLabel" text="DIFFICULTY*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="5">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label text="LENGTH*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="6">
+        <Label fx:id="lengthLabel" text="LENGTH*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="6">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label text="MAX.PLAYERS*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="7">
+        <Label fx:id="maxPlayersLabel" text="MAX.PLAYERS*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="7">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label text="SERVER NAME*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="8">
+        <Label fx:id="serverNameLabel" text="SERVER NAME*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="8">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label text="SERVER PASSWORD" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="9">
+        <Label fx:id="serverPasswordLabel" text="SERVER PASSWORD" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="9">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label text="WEB PAGE" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="10">
+        <Label fx:id="webPageLabel" text="WEB PAGE" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="10">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label text="WEB PASSWORD" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="11">
+        <Label fx:id="webPasswordLabel" text="WEB PASSWORD" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="11">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label text="WEB/GAME/QUERY PORTS" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="12">
+        <Label fx:id="portsLabel" text="WEB/GAME/QUERY PORTS" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="12">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label text="YOUR CLAN" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="13">
+        <Label fx:id="clanLabel" text="YOUR CLAN" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="13">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label text="YOUR WEB LINK" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="14">
+        <Label fx:id="webLinkLabel" text="YOUR WEB LINK" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="14">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label text="CUSTOM PARAMETERS" textFill="WHITE" GridPane.halignment="LEFT" GridPane.rowIndex="16">
+        <Label fx:id="customParametersLabel" text="CUSTOM PARAMETERS" textFill="WHITE" GridPane.halignment="LEFT" GridPane.rowIndex="16">
             <GridPane.margin>
-                <Insets left="42.0" />
+                <Insets left="15.0" />
             </GridPane.margin>
         </Label>
-        <Label text="CONSOLE" textFill="WHITE" GridPane.halignment="LEFT" GridPane.rowIndex="17" GridPane.valignment="TOP">
+        <Label fx:id="consoleLabel" text="CONSOLE" textFill="WHITE" GridPane.halignment="LEFT" GridPane.rowIndex="17" GridPane.valignment="TOP">
             <GridPane.margin>
-                <Insets left="132.0" top="9.0" />
+                <Insets left="15.0" top="12.0" />
             </GridPane.margin>
         </Label>
         <TextField fx:id="serverName" maxWidth="350.0" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="8" />
@@ -271,24 +271,24 @@
                 <Image url="@../images/label-inverted.png" />
             </image>
         </ImageView>
-        <Label text="URL IMAGE SERVER" GridPane.columnIndex="5" GridPane.halignment="LEFT" GridPane.rowIndex="10">
+        <Label fx:id="urlImageLabel" text="URL IMAGE SERVER" GridPane.columnIndex="5" GridPane.halignment="LEFT" GridPane.rowIndex="10">
             <GridPane.margin>
                 <Insets left="10.0" />
             </GridPane.margin>
         </Label>
-        <Label text="WELCOME MESSAGE" GridPane.columnIndex="5" GridPane.halignment="LEFT" GridPane.rowIndex="11">
+        <Label fx:id="welcomeLabel" text="WELCOME MESSAGE" GridPane.columnIndex="5" GridPane.halignment="LEFT" GridPane.rowIndex="11">
             <GridPane.margin>
                 <Insets left="10.0" />
             </GridPane.margin>
         </Label>
-        <Button fx:id="runServer" maxWidth="178.0" mnemonicParsing="false" onAction="#runServerOnAction" text="RUN SERVER" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="15" GridPane.valignment="CENTER">
+        <Button fx:id="runServer" maxWidth="190.0" mnemonicParsing="false" onAction="#runServerOnAction" text="RUN SERVER" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="15" GridPane.valignment="CENTER">
             <GridPane.margin>
                 <Insets right="20.0" />
             </GridPane.margin>
         </Button>
-        <Button fx:id="joinServer" maxWidth="178.0" mnemonicParsing="false" onAction="#joinServerOnAction" text="JOIN SERVER" GridPane.columnIndex="5" GridPane.halignment="LEFT" GridPane.rowIndex="15" GridPane.valignment="CENTER">
+        <Button fx:id="joinServer" maxWidth="190.0" mnemonicParsing="false" onAction="#joinServerOnAction" text="JOIN SERVER" GridPane.columnIndex="5" GridPane.halignment="LEFT" GridPane.rowIndex="15" GridPane.valignment="CENTER">
             <GridPane.margin>
-                <Insets left="20.0" />
+                <Insets left="8.0" />
             </GridPane.margin>
         </Button>
         <ImageView fitHeight="121.0" fitWidth="558.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="1">

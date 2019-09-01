@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.web.*?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.WebView?>
 
-<fx:root id="centerPane" fx:id="kf2WebAdmin" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" alignment="CENTER" prefHeight="745.0" prefWidth="1210.0" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.webadmin.WebAdminController">
+<fx:root id="centerPane" fx:id="kf2WebAdmin" alignment="CENTER" prefHeight="745.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.webadmin.WebAdminController">
    <columnConstraints>
       <ColumnConstraints minWidth="1210.0" />
    </columnConstraints>
@@ -19,7 +23,7 @@
             <Image url="@../images/radiation700.png" />
          </image>
       </ImageView>
-      <Label text="Web page must be enabled and server must be started in order to access Webadmin page" textFill="WHITE" GridPane.halignment="CENTER" />
+      <Label fx:id="message" text="Web page must be enabled and server must be started in order to access Webadmin page" textFill="WHITE" GridPane.halignment="CENTER" />
       <WebView fx:id="webAdmin" visible="false" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
    </children>
 </fx:root>

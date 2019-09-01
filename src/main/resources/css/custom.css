@@ -33,14 +33,14 @@
 }
 
 .label {
-    -fx-font-size: 14;
+    -fx-font-size: 13;
     -fx-text-fill: white;
 }
 
 .button {
     -fx-background-color: #4d0304;
     -fx-font-weight: bold;
-    -fx-font-size: 14;
+    -fx-font-size: 13;
     -fx-text-fill: white;
     -fx-cursor: hand;
 }

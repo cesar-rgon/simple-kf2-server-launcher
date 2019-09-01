@@ -27,25 +27,25 @@
             <TableColumn fx:id="profileNameColumn" maxWidth="650.0" onEditCommit="#profileNameColumnOnEditCommit" prefWidth="650.0" resizable="false" text="Profile Name" />
          </columns>
       </TableView>
-      <Button fx:id="addProfile" minWidth="180.0" mnemonicParsing="false" onAction="#addProfileOnAction" text="Add new profile" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+      <Button fx:id="addProfile" minWidth="200.0" mnemonicParsing="false" onAction="#addProfileOnAction" text="Add a new one" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets right="15.0" />
          </GridPane.margin></Button>
-      <Button fx:id="removeProfile" minWidth="180.0" mnemonicParsing="false" onAction="#removeProfileOnAction" text="Remove selected profile" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+      <Button fx:id="removeProfile" minWidth="200.0" mnemonicParsing="false" onAction="#removeProfileOnAction" text="Remove selected one" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets />
          </GridPane.margin></Button>
-      <Button fx:id="cloneProfile" minWidth="180.0" mnemonicParsing="false" onAction="#cloneProfileOnAction" text="Clone selected profile" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+      <Button fx:id="cloneProfile" minWidth="200.0" mnemonicParsing="false" onAction="#cloneProfileOnAction" text="Clone selected one" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets />
          </GridPane.margin></Button>
-      <Label text="One click on a profile name to select it, double click to edit it" GridPane.columnSpan="5" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" />
-      <Button fx:id="importProfile" minWidth="180.0" mnemonicParsing="false" onAction="#importProfileOnAction" text="Import profiles" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+      <Label fx:id="messageLabel" text="One click on an item to select it, double click to edit it" GridPane.columnSpan="5" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" />
+      <Button fx:id="importProfile" minWidth="200.0" mnemonicParsing="false" onAction="#importProfileOnAction" text="Import profiles" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets />
          </GridPane.margin>
       </Button>
-      <Button fx:id="exportProfile" minWidth="180.0" mnemonicParsing="false" onAction="#exportProfileOnAction" text="Export profiles" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+      <Button fx:id="exportProfile" minWidth="200.0" mnemonicParsing="false" onAction="#exportProfileOnAction" text="Export profiles" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets left="15.0" />
          </GridPane.margin>
@@ -53,9 +53,9 @@
    </children>
    <columnConstraints>
       <ColumnConstraints prefWidth="1210.0" />
-      <ColumnConstraints minWidth="210.0" />
-      <ColumnConstraints minWidth="210.0" />
-      <ColumnConstraints minWidth="210.0" />
+      <ColumnConstraints minWidth="230.0" />
+      <ColumnConstraints minWidth="230.0" />
+      <ColumnConstraints minWidth="230.0" />
       <ColumnConstraints minWidth="10.0" prefWidth="1210.0" />
    </columnConstraints>
    <rowConstraints>

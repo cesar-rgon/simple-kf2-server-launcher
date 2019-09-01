@@ -41,7 +41,7 @@
          <GridPane.margin>
             <Insets />
          </GridPane.margin></Button>
-      <Label text="Columns" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+      <Label fx:id="sliderLabel" text="Columns" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets right="255.0" />
          </GridPane.margin>

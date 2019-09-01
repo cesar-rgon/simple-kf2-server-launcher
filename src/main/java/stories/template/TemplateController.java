@@ -6,6 +6,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import org.apache.logging.log4j.LogManager;
@@ -29,7 +30,18 @@ public class TemplateController implements Initializable {
     @FXML private Menu mainPage;
     @FXML private Menu installUpdateServer;
     @FXML private Menu webAdmin;
-    @FXML private Menu mapsMenu;
+    @FXML private Menu maps;
+    @FXML private Menu configuration;
+    @FXML private Menu help;
+    @FXML private MenuItem profiles;
+    @FXML private MenuItem gameTypes;
+    @FXML private MenuItem difficulties;
+    @FXML private MenuItem length;
+    @FXML private MenuItem maxPlayers;
+    @FXML private MenuItem about;
+    @FXML private MenuItem documentation;
+    @FXML private MenuItem github;
+    @FXML private MenuItem donation;
 
     public TemplateController() {
         super();
@@ -51,7 +63,40 @@ public class TemplateController implements Initializable {
             webAdmin.setGraphic(getLabelWithHandler(webAdminTitle, "/views/webAdmin.fxml"));
 
             String mapsTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.maps");
-            mapsMenu.setGraphic(getLabelWithHandler(mapsTitle, "/views/mapsEdition.fxml"));
+            maps.setGraphic(getLabelWithHandler(mapsTitle, "/views/mapsEdition.fxml"));
+
+            String configurationTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.configuration");
+            configuration.setText(configurationTitle);
+
+            String profilesTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.configuration.profiles");;
+            profiles.setText(profilesTitle);
+
+            String gameTypesTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.configuration.gameTypes");;
+            gameTypes.setText(gameTypesTitle);
+
+            String difficultiesTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.configuration.difficulties");;
+            difficulties.setText(difficultiesTitle);
+
+            String lengthTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.configuration.length");;
+            length.setText(lengthTitle);
+
+            String maxPlayersTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.configuration.maxPlayers");;
+            maxPlayers.setText(maxPlayersTitle);
+
+            String helpTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help");
+            help.setText(helpTitle);
+
+            String aboutTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.about");;
+            about.setText(aboutTitle);
+
+            String documentationTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.documentation");;
+            documentation.setText(documentationTitle);
+
+            String githubTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.github");
+            github.setText(githubTitle);
+
+            String donationTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.donation");
+            donation.setText(donationTitle);
         } catch (Exception e) {
             String message = "Error setting menu titles";
             logger.error(message, e);
@@ -90,7 +135,7 @@ public class TemplateController implements Initializable {
             webAdmin.setDisable(webAdminTitle.equals(title));
 
             String mapsTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.maps");
-            mapsMenu.setDisable(mapsTitle.equals(title));
+            maps.setDisable(mapsTitle.equals(title));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -155,8 +200,11 @@ public class TemplateController implements Initializable {
     @FXML
     private void aboutMenuOnAction() {
         try {
+            String versionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.about.version");
+            String developedText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.about.developed");
+            String translatedToSpanishBy = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.about.translatedSpanish");
             String applicationVersion = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion");
-            Utils.infoDialog("Developed by cesar-rgon", "Version: " + applicationVersion);
+            Utils.infoDialog(versionText + ": " + applicationVersion, developedText + " cesar-rgon\n" + translatedToSpanishBy + " cesar-rgon");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -179,6 +227,17 @@ public class TemplateController implements Initializable {
         try {
             String githubUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.helpGithubUrl");
             Desktop.getDesktop().browse(new URI(githubUrl));
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void donationMenuOnAction() {
+        try {
+            String dotationUrl = "https://www.paypal.me/cesarrgon";
+            Desktop.getDesktop().browse(new URI(dotationUrl));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);

@@ -5,6 +5,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Label;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.apache.commons.lang3.StringUtils;
@@ -14,6 +15,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.html.HTMLFormElement;
 import pojos.session.Session;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import stories.difficultiesedition.DifficultiesEditionController;
 import utils.Utils;
 
@@ -27,6 +30,7 @@ public class WebAdminController implements Initializable {
     private final WebAdminFacade facade;
 
     @FXML private WebView webAdmin;
+    @FXML private Label message;
 
     public WebAdminController() {
         super();
@@ -36,6 +40,10 @@ public class WebAdminController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
+            PropertyService propertyService = new PropertyServiceImpl();
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            String messageText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.webAdminMessage");;
+            message.setText(messageText);
             WebEngine webEngine = webAdmin.getEngine();
             webEngine.documentProperty().addListener(new ChangeListener<Document>() {
                 @Override
@@ -71,7 +79,7 @@ public class WebAdminController implements Initializable {
                     webAdmin.setVisible(true);
                 }
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             String message = "The WebAdmin page can not be loaded!";
             logger.error(message, e);
             Utils.errorDialog(message, e);

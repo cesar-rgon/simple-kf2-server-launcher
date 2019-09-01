@@ -30,15 +30,15 @@
             <TableColumn fx:id="lengthsEnabledColumn" maxWidth="150.0" prefWidth="150.0" text="Lengths enabled" />
          </columns>
       </TableView>
-      <Button fx:id="addGameType" mnemonicParsing="false" onAction="#addGameTypeOnAction" text="Add new game type" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+      <Button fx:id="addGameType" mnemonicParsing="false" onAction="#addGameTypeOnAction" prefWidth="200.0" text="Add a new one" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
          <GridPane.margin>
-            <Insets right="70.0" />
+            <Insets />
          </GridPane.margin></Button>
-      <Button fx:id="removeGameType" mnemonicParsing="false" onAction="#removeGameTypeOnAction" text="Remove selected game type" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+      <Button fx:id="removeGameType" mnemonicParsing="false" onAction="#removeGameTypeOnAction" prefWidth="200.0" text="Remove selected one" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1">
          <GridPane.margin>
-            <Insets left="5.0" />
+            <Insets />
          </GridPane.margin></Button>
-      <Label text="One click on a game-type to select it, double click to edit it" GridPane.columnSpan="4" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" />
+      <Label fx:id="messageLabel" text="One click on an item to select it, double click to edit it" GridPane.columnSpan="4" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" />
    </children>
    <columnConstraints>
       <ColumnConstraints prefWidth="1210.0" />

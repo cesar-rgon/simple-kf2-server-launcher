@@ -3,6 +3,8 @@ package stories.maxplayersedition;
 import dtos.SelectDto;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -27,6 +29,10 @@ public class MaxPlayersEditionController implements Initializable {
     @FXML private TableView<SelectDto> maxPlayersTable;
     @FXML private TableColumn<SelectDto, String> maxPlayersCodeColumn;
     @FXML private TableColumn<SelectDto, String> maxPlayersDescriptionColumn;
+    @FXML private Label titleConfigLabel;
+    @FXML private Label messageLabel;
+    @FXML private Button addMaxPlayers;
+    @FXML private Button removeMaxPlayers;
 
     public MaxPlayersEditionController() {
         super();
@@ -44,6 +50,19 @@ public class MaxPlayersEditionController implements Initializable {
             maxPlayersDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             maxPlayersDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().getValueProperty());
             maxPlayersTable.setItems(facade.listAllMaxPlayers());
+
+            String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.maxPlayersTitle");
+            titleConfigLabel.setText(titleConfigLabelText);
+            String messageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
+            messageLabel.setText(messageLabelText);
+            String addMaxPlayersText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
+            addMaxPlayers.setText(addMaxPlayersText);
+            String removeMaxPlayersText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
+            removeMaxPlayers.setText(removeMaxPlayersText);
+            String maxPlayersCodeColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.maxPlayersCode");
+            maxPlayersCodeColumn.setText(maxPlayersCodeColumnText);
+            String maxPlayersDescriptionColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.maxPlayersDescription");
+            maxPlayersDescriptionColumn.setText(maxPlayersDescriptionColumnText);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);

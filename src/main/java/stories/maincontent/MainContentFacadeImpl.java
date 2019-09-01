@@ -10,6 +10,8 @@ import entities.*;
 import javafx.collections.ObservableList;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import utils.Utils;
 
 import java.sql.SQLException;
@@ -322,5 +324,22 @@ public class MainContentFacadeImpl implements MainContentFacade {
             Utils.warningDialog("Join operation aborted!", "The profile name can not be empty");
         }
         return "";
+    }
+
+    @Override
+    public ProfileDto getLastSelectedProfile() throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+        String lastProfileName = propertyService.getPropertyValue("properties/config.properties", "prop.config.lastSelectedProfile");
+        Optional<Profile> lastProfile = ProfileDao.getInstance().findByName(lastProfileName);
+        if (lastProfile.isPresent()) {
+            return profileDtoFactory.newDto(lastProfile.get());
+        } else {
+            Profile firstProfile = ProfileDao.getInstance().get(0);
+            if (firstProfile != null) {
+                return profileDtoFactory.newDto(firstProfile);
+            } else {
+                return null;
+            }
+        }
     }
  }

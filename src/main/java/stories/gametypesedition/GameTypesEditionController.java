@@ -8,6 +8,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.CheckBoxTableCell;
@@ -35,6 +37,10 @@ public class GameTypesEditionController implements Initializable {
     @FXML private TableColumn<GameTypeDto, String> gameTypeDescriptionColumn;
     @FXML private TableColumn<GameTypeDto, Boolean> difficultiesEnabledColumn;
     @FXML private TableColumn<GameTypeDto, Boolean> lengthsEnabledColumn;
+    @FXML private Label titleConfigLabel;
+    @FXML private Label messageLabel;
+    @FXML private Button addGameType;
+    @FXML private Button removeGameType;
 
     public GameTypesEditionController() {
         facade = new GameTypesEditionFacadeImpl();
@@ -50,6 +56,23 @@ public class GameTypesEditionController implements Initializable {
             gameTypeCodeColumn.setCellValueFactory(cellData -> cellData.getValue().getKeyProperty());
             gameTypeDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             gameTypeDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().getValueProperty());
+
+            String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.gameTypeTitle");
+            titleConfigLabel.setText(titleConfigLabelText);
+            String messageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
+            messageLabel.setText(messageLabelText);
+            String addGameTypeText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
+            addGameType.setText(addGameTypeText);
+            String removeGameTypeText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
+            removeGameType.setText(removeGameTypeText);
+            String gameTypeCodeColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.gameTypeCode");
+            gameTypeCodeColumn.setText(gameTypeCodeColumnText);
+            String gameTypeDescriptionColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.gameTypeDescription");
+            gameTypeDescriptionColumn.setText(gameTypeDescriptionColumnText);
+            String difficultiesEnabledColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultiesEnabled");
+            difficultiesEnabledColumn.setText(difficultiesEnabledColumnText);
+            String lengthsEnabledColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthsEnabled");
+            lengthsEnabledColumn.setText(lengthsEnabledColumnText);
 
             difficultiesEnabledColumn.setCellFactory(col -> {
                 CheckBoxTableCell<GameTypeDto, Boolean> cell = new CheckBoxTableCell<>(index -> {

@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<fx:root id="centerPane" fx:id="installUpdateServerContent" prefHeight="745.0" prefWidth="1210.0" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.installupdateserver.InstallUpdateServerController">
+<fx:root id="centerPane" fx:id="installUpdateServerContent" alignment="CENTER" prefHeight="745.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.installupdateserver.InstallUpdateServerController">
     <rowConstraints>
         <RowConstraints minHeight="10.0" prefHeight="730.0" />
         <RowConstraints minHeight="10.0" prefHeight="730.0" />
@@ -49,36 +50,36 @@
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <Label text="INSTALLATION FOLDER*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+        <Label fx:id="installationFolderLabel" text="INSTALLATION FOLDER*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label text="VALIDATE FILES" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+        <Label fx:id="validateFilesLabel" text="VALIDATE FILES" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label text="UPDATE TO BETA?" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
+        <Label fx:id="updateBetaLabel" text="UPDATE TO BETA?" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label text="BETA BRUNCH" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
+        <Label fx:id="betaBrunchLabel" text="BETA BRUNCH" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
         <TextField fx:id="installationFolder" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <Button maxWidth="178.0" mnemonicParsing="false" onAction="#exploreFolderOnAction" text="EXPLORE" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+        <Button fx:id="exploreFolder" maxWidth="200.0" mnemonicParsing="false" onAction="#exploreFolderOnAction" text="EXPLORE" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
             <GridPane.margin>
                 <Insets left="20.0" />
             </GridPane.margin>
         </Button>
         <CheckBox fx:id="validateFiles" lineSpacing="0.9" mnemonicParsing="false" onAction="#validateFilesOnAction" opacity="0.75" text="Enabled to check files integrity" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-        <CheckBox fx:id="isBeta" lineSpacing="0.9" mnemonicParsing="false" onAction="#isBetaOnAction" opacity="0.75" text="Disabled to update to official version. Enabled for beta." textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+        <CheckBox fx:id="isBeta" lineSpacing="0.9" mnemonicParsing="false" onAction="#isBetaOnAction" opacity="0.75" text="Enabled to update to beta version. Disabled to official version" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="3" />
         <TextField fx:id="betaBrunch" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-        <Button maxWidth="178.0" mnemonicParsing="false" onAction="#installUpdateServer" text="INSTALL / UPDATE" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="6" GridPane.valignment="TOP">
+        <Button fx:id="installUpdate" maxWidth="200.0" mnemonicParsing="false" onAction="#installUpdateServer" text="INSTALL / UPDATE" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="6" GridPane.valignment="TOP">
             <GridPane.margin>
                 <Insets left="20.0" />
             </GridPane.margin>

@@ -11,21 +11,22 @@
           <Menu fx:id="mainPage" disable="true" mnemonicParsing="false" />
           <Menu fx:id="webAdmin" mnemonicParsing="false" />
           <Menu fx:id="installUpdateServer" mnemonicParsing="false" />
-          <Menu fx:id="mapsMenu" mnemonicParsing="false" />
-          <Menu mnemonicParsing="false" text="Configuration">
+          <Menu fx:id="maps" mnemonicParsing="false" />
+          <Menu fx:id="configuration" mnemonicParsing="false" text="Configuration">
             <items>
-                <MenuItem fx:id="profilesMenu" mnemonicParsing="false" onAction="#profilesMenuOnAction" text="Profiles" />
-                <MenuItem fx:id="gameTypesMenu" mnemonicParsing="false" onAction="#gameTypesMenuOnAction" text="Game types" />
-                <MenuItem fx:id="difficultiesMenu" mnemonicParsing="false" onAction="#difficultiesMenuOnAction" text="Difficulties" />
-                <MenuItem fx:id="lengthMenu" mnemonicParsing="false" onAction="#lengthMenuOnAction" text="Lengths" />
-                <MenuItem fx:id="maxPlayersMenu" mnemonicParsing="false" onAction="#maxPlayersMenuOnAction" text="Max. players" />
+                <MenuItem fx:id="profiles" mnemonicParsing="false" onAction="#profilesMenuOnAction" text="Profiles" />
+                <MenuItem fx:id="gameTypes" mnemonicParsing="false" onAction="#gameTypesMenuOnAction" text="Game types" />
+                <MenuItem fx:id="difficulties" mnemonicParsing="false" onAction="#difficultiesMenuOnAction" text="Difficulties" />
+                <MenuItem fx:id="length" mnemonicParsing="false" onAction="#lengthMenuOnAction" text="Lengths" />
+                <MenuItem fx:id="maxPlayers" mnemonicParsing="false" onAction="#maxPlayersMenuOnAction" text="Max. players" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Help">
+          <Menu fx:id="help" mnemonicParsing="false" text="Help">
             <items>
-              <MenuItem fx:id="aboutMenu" mnemonicParsing="false" onAction="#aboutMenuOnAction" text="About" />
-                  <MenuItem fx:id="documentationMenu" mnemonicParsing="false" onAction="#documentationMenuOnAction" text="Documentation" />
-                  <MenuItem fx:id="githubMenu" mnemonicParsing="false" onAction="#githubMenuOnAction" text="GitHub Project" />
+              <MenuItem fx:id="about" mnemonicParsing="false" onAction="#aboutMenuOnAction" text="About" />
+                  <MenuItem fx:id="documentation" mnemonicParsing="false" onAction="#documentationMenuOnAction" text="Documentation" />
+                  <MenuItem fx:id="github" mnemonicParsing="false" onAction="#githubMenuOnAction" text="GitHub Project" />
+                  <MenuItem fx:id="donation" mnemonicParsing="false" onAction="#donationMenuOnAction" text="Donation" />
             </items>
           </Menu>
         </menus>
