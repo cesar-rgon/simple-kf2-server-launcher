@@ -10,7 +10,9 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.web.WebView;
+import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,6 +57,7 @@ public class MainContentController implements Initializable {
     @FXML private TextArea console;
     @FXML private WebView imageWebView;
     @FXML private Label profileLabel;
+    @FXML private Label languageLabel;
     @FXML private Label gameTypeLabel;
     @FXML private Label mapLabel;
     @FXML private Label difficultyLabel;
@@ -73,6 +76,25 @@ public class MainContentController implements Initializable {
     @FXML private Label consoleLabel;
     @FXML private Button runServer;
     @FXML private Button joinServer;
+    @FXML private ImageView profileImg;
+    @FXML private ImageView languageImg;
+    @FXML private ImageView gameTypeImg;
+    @FXML private ImageView mapImg;
+    @FXML private ImageView difficultyImg;
+    @FXML private ImageView lengthImg;
+    @FXML private ImageView maxPlayersImg;
+    @FXML private ImageView serverNameImg;
+    @FXML private ImageView serverPasswordImg;
+    @FXML private ImageView webPageImg;
+    @FXML private ImageView webPasswordImg;
+    @FXML private ImageView portsImg;
+    @FXML private ImageView clanImg;
+    @FXML private ImageView webLinkImg;
+    @FXML private ImageView customParametersImg;
+    @FXML private ImageView consoleImg;
+    @FXML private ImageView thumbnailImg;
+    @FXML private ImageView urlImageServerImg;
+    @FXML private ImageView welcomeImg;
 
     public MainContentController() {
         super();
@@ -104,8 +126,8 @@ public class MainContentController implements Initializable {
 
             if (profileSelect.getValue() != null) {
                 profileOnAction();
-                loadLanguageTexts();
             }
+            loadLanguageTexts();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -400,67 +422,127 @@ public class MainContentController implements Initializable {
         });
     }
 
+    private void loadTooltip(String propKey, ImageView img, Label label, ComboBox<?> combo) throws Exception {
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",propKey));
+        Tooltip.install(img, tooltip);
+        label.setTooltip(tooltip);
+        combo.setTooltip(tooltip);
+    }
+
+    private void loadTooltip(String propKey, ImageView img, Label label, TextField textField) throws Exception {
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",propKey));
+        Tooltip.install(img, tooltip);
+        label.setTooltip(tooltip);
+        textField.setTooltip(tooltip);
+    }
+
+    private void loadTooltip(String propKey, ImageView img, Label label, TextField[] textFieldArray) throws Exception {
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",propKey));
+        Tooltip.install(img, tooltip);
+        label.setTooltip(tooltip);
+        for (int i=0; i<textFieldArray.length; i++) {
+            textFieldArray[i].setTooltip(tooltip);
+        }
+    }
+
+    private void loadTooltip(String propKey, ImageView img, Label label, CheckBox checkBox) throws Exception {
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",propKey));
+        Tooltip.install(img, tooltip);
+        label.setTooltip(tooltip);
+        checkBox.setTooltip(tooltip);
+    }
+
+    private void loadTooltip(String propKey, ImageView img, Label label, TextArea textArea) throws Exception {
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",propKey));
+        Tooltip.install(img, tooltip);
+        label.setTooltip(tooltip);
+        textArea.setTooltip(tooltip);
+    }
+
     private void loadLanguageTexts() throws Exception {
-        String profileLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.profile") + "*";
+        String profileLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.profile") + "*";
         profileLabel.setText(profileLabelText);
-        String gameTypeLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.gameType") + "*";
+        loadTooltip("prop.tooltip.profile", profileImg, profileLabel, profileSelect);
+
+        loadTooltip("prop.tooltip.language", languageImg, languageLabel, languageSelect);
+
+        String gameTypeLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.gameType") + "*";
         gameTypeLabel.setText(gameTypeLabelText);
-        String mapLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.map") + "*";
+        loadTooltip("prop.tooltip.gameType", gameTypeImg, gameTypeLabel, gameTypeSelect);
+
+        String mapLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.map") + "*";
         mapLabel.setText(mapLabelText);
-        String difficultyLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.difficulty");
+        loadTooltip("prop.tooltip.map", mapImg, mapLabel, mapSelect);
+
+        String difficultyLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.difficulty");
         difficultyLabel.setText(difficultyLabelText);
-        String lengthLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.length") + "*";
+        loadTooltip("prop.tooltip.difficulty", difficultyImg, difficultyLabel, difficultySelect);
+
+        String lengthLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.length") + "*";
         lengthLabel.setText(lengthLabelText);
-        String maxPlayersLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.maxPlayers") + "*";
+        loadTooltip("prop.tooltip.length", lengthImg, lengthLabel, lengthSelect);
+
+        String maxPlayersLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.maxPlayers") + "*";
         maxPlayersLabel.setText(maxPlayersLabelText);
-        String serverNameLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.serverName") + "*";
+        loadTooltip("prop.tooltip.maxPlayers", maxPlayersImg, maxPlayersLabel, maxPlayersSelect);
+
+        String serverNameLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.serverName") + "*";
         serverNameLabel.setText(serverNameLabelText);
-        String serverPasswordLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.serverPassword");
+        loadTooltip("prop.tooltip.serverName", serverNameImg, serverNameLabel, serverName);
+
+        String serverPasswordLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.serverPassword");
         serverPasswordLabel.setText(serverPasswordLabelText);
-        String webPageLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.webPage");
+        loadTooltip("prop.tooltip.serverPassword", serverPasswordImg, serverPasswordLabel, serverPassword);
+
+        String webPageLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.webPage");
         webPageLabel.setText(webPageLabelText);
-        String webPasswordLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.webPassword");
-        webPasswordLabel.setText(webPasswordLabelText);
-        String portsLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.ports");
-        portsLabel.setText(portsLabelText);
-        String clanLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.clan");
-        clanLabel.setText(clanLabelText);
-        String webLinkLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.webLink");
-        webLinkLabel.setText(webLinkLabelText);
-        String urlImageLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.urlImage");
-        urlImageLabel.setText(urlImageLabelText);
-        String welcomeLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.welcome");
-        welcomeLabel.setText(welcomeLabelText);
-        String customParametersLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.customParameters");
-        customParametersLabel.setText(customParametersLabelText);
-        String consoleLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.console");
-        consoleLabel.setText(consoleLabelText);
-        String webPageText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.webAdmin");
+        String webPageText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.webAdmin");
         webPage.setText(webPageText);
-        String runServerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.runServer");
+        loadTooltip("prop.tooltip.webPage", webPageImg, webPageLabel, webPage);
+
+        String webPasswordLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.webPassword");
+        webPasswordLabel.setText(webPasswordLabelText);
+        loadTooltip("prop.tooltip.webPassword", webPasswordImg, webPasswordLabel, webPassword);
+
+        String portsLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.ports");
+        portsLabel.setText(portsLabelText);
+
+        TextField[] portsArray = {gamePort, queryPort, webPort};
+        loadTooltip("prop.tooltip.ports", portsImg, portsLabel, portsArray);
+
+        String clanLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.clan");
+        clanLabel.setText(clanLabelText);
+        loadTooltip("prop.tooltip.clan", clanImg, clanLabel, yourClan);
+
+        String webLinkLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.webLink");
+        webLinkLabel.setText(webLinkLabelText);
+        loadTooltip("prop.tooltip.weblink", webLinkImg, webLinkLabel, yourWebLink);
+
+        String urlImageLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.urlImage");
+        urlImageLabel.setText(urlImageLabelText);
+        loadTooltip("prop.tooltip.urlImage", urlImageServerImg, urlImageLabel, urlImageServer);
+
+        String welcomeLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.welcome");
+        welcomeLabel.setText(welcomeLabelText);
+        loadTooltip("prop.tooltip.welcomeMessage", welcomeImg, welcomeLabel, welcomeMessage);
+
+        String customParametersLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.customParameters");
+        customParametersLabel.setText(customParametersLabelText);
+        loadTooltip("prop.tooltip.customParameters", customParametersImg, customParametersLabel, customParameters);
+
+        String consoleLabelText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.console");
+        consoleLabel.setText(consoleLabelText);
+        loadTooltip("prop.tooltip.console", consoleImg, consoleLabel, console);
+
+        String runServerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.runServer");
         runServer.setText(runServerText);
-        String joinServerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                "prop.label.joinServer");
+        runServer.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties", "prop.tooltip.runServer")));
+
+        String joinServerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.label.joinServer");
         joinServer.setText(joinServerText);
+        joinServer.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties", "prop.tooltip.joinServer")));
+
+        Tooltip.install(thumbnailImg, new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties", "prop.tooltip.thumbnail")));
     }
 
     private void loadActualProfile(ProfileDto profile) {

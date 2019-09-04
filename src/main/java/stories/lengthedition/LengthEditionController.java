@@ -3,10 +3,7 @@ package stories.lengthedition;
 import dtos.SelectDto;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -33,6 +30,8 @@ public class LengthEditionController implements Initializable {
     @FXML private Label messageLabel;
     @FXML private Button addLength;
     @FXML private Button removeLength;
+    @FXML private Label lengthCodeLabel;
+    @FXML private Label lengthDescriptionLabel;
 
     public LengthEditionController(){
         super();
@@ -53,16 +52,26 @@ public class LengthEditionController implements Initializable {
 
             String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthTitle");
             titleConfigLabel.setText(titleConfigLabelText);
+
             String messageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
             messageLabel.setText(messageLabelText);
+
             String addLengthText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
             addLength.setText(addLengthText);
+            addLength.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addLength")));
+
             String removeLengthText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
             removeLength.setText(removeLengthText);
+            removeLength.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeLength")));
+
             String lengthCodeColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthCode");
-            lengthCodeColumn.setText(lengthCodeColumnText);
+            lengthCodeLabel.setText(lengthCodeColumnText);
+            lengthCodeLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.lengthCode")));
+
             String lengthDescriptionColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthDescription");
-            lengthDescriptionColumn.setText(lengthDescriptionColumnText);
+            lengthDescriptionLabel.setText(lengthDescriptionColumnText);
+            lengthDescriptionLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.lengthDescription")));
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);

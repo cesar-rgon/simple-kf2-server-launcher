@@ -24,8 +24,14 @@
          </font></Label>
       <TableView fx:id="lengthTable" editable="true" maxHeight="650.0" maxWidth="900.0" opacity="0.8" prefHeight="650.0" prefWidth="900.0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2">
          <columns>
-            <TableColumn fx:id="lengthCodeColumn" maxWidth="450.0" onEditCommit="#lengthCodeColumnOnEditCommit" prefWidth="450.0" resizable="false" text="Length code" />
-            <TableColumn fx:id="lengthDescriptionColumn" maxWidth="450.0" onEditCommit="#lengthDescriptionColumnOnEditCommit" prefWidth="450.0" resizable="false" text="Length description" />
+            <TableColumn fx:id="lengthCodeColumn" maxWidth="450.0" onEditCommit="#lengthCodeColumnOnEditCommit" prefWidth="450.0" resizable="false">
+               <graphic>
+                  <Label fx:id="lengthCodeLabel" text="Length code" />
+               </graphic></TableColumn>
+            <TableColumn fx:id="lengthDescriptionColumn" maxWidth="450.0" onEditCommit="#lengthDescriptionColumnOnEditCommit" prefWidth="450.0" resizable="false">
+               <graphic>
+                  <Label fx:id="lengthDescriptionLabel" text="Length description" />
+               </graphic></TableColumn>
          </columns>
       </TableView>
       <Button fx:id="addLength" mnemonicParsing="false" onAction="#addLengthOnAction" prefWidth="200.0" text="Add a new one" GridPane.halignment="RIGHT" GridPane.rowIndex="1">

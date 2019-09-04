@@ -4,10 +4,7 @@ import dtos.ProfileDto;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.FileChooser;
 import org.apache.commons.io.FileUtils;
@@ -44,6 +41,7 @@ public class ProfilesEditionController implements Initializable {
     @FXML private Button removeProfile;
     @FXML private Button importProfile;
     @FXML private Button exportProfile;
+    @FXML private Label profileNameLabel;
 
     public ProfilesEditionController() {
         facade = new ProfilesEditionFacadeImpl();
@@ -60,20 +58,33 @@ public class ProfilesEditionController implements Initializable {
 
             String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileTitle");
             titleConfigLabel.setText(titleConfigLabelText);
+
             String messageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
             messageLabel.setText(messageLabelText);
+
             String addProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
             addProfile.setText(addProfileText);
+            addProfile.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addProfile")));
+
             String cloneProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.cloneItem");
             cloneProfile.setText(cloneProfileText);
+            cloneProfile.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.cloneProfile")));
+
             String removeProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
             removeProfile.setText(removeProfileText);
+            removeProfile.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeProfile")));
+
             String importProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importProfile");
             importProfile.setText(importProfileText);
+            importProfile.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.importProfiles")));
+
             String exportProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.exportProfile");
             exportProfile.setText(exportProfileText);
+            exportProfile.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.exportProfiles")));
+
             String profileNameColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileName");
-            profileNameColumn.setText(profileNameColumnText);
+            profileNameLabel.setText(profileNameColumnText);
+            profileNameLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.profileName")));
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

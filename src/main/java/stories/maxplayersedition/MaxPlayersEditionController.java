@@ -3,10 +3,7 @@ package stories.maxplayersedition;
 import dtos.SelectDto;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -33,6 +30,8 @@ public class MaxPlayersEditionController implements Initializable {
     @FXML private Label messageLabel;
     @FXML private Button addMaxPlayers;
     @FXML private Button removeMaxPlayers;
+    @FXML private Label maxPlayersCodeLabel;
+    @FXML private Label maxPlayersDescriptionLabel;
 
     public MaxPlayersEditionController() {
         super();
@@ -53,16 +52,26 @@ public class MaxPlayersEditionController implements Initializable {
 
             String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.maxPlayersTitle");
             titleConfigLabel.setText(titleConfigLabelText);
+
             String messageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
             messageLabel.setText(messageLabelText);
+
             String addMaxPlayersText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
             addMaxPlayers.setText(addMaxPlayersText);
+            addMaxPlayers.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addMaxPlayers")));
+
             String removeMaxPlayersText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
             removeMaxPlayers.setText(removeMaxPlayersText);
+            removeMaxPlayers.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeMaxPlayers")));
+
             String maxPlayersCodeColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.maxPlayersCode");
-            maxPlayersCodeColumn.setText(maxPlayersCodeColumnText);
+            maxPlayersCodeLabel.setText(maxPlayersCodeColumnText);
+            maxPlayersCodeLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.maxPlayersCode")));
+
             String maxPlayersDescriptionColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.maxPlayersDescription");
-            maxPlayersDescriptionColumn.setText(maxPlayersDescriptionColumnText);
+            maxPlayersDescriptionLabel.setText(maxPlayersDescriptionColumnText);
+            maxPlayersDescriptionLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.maxPlayersDescription")));
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);

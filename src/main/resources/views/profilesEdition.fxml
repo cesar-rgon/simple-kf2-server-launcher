@@ -24,7 +24,10 @@
          </font></Label>
       <TableView fx:id="profilesTable" editable="true" maxHeight="650.0" maxWidth="650.0" opacity="0.8" prefHeight="650.0" prefWidth="650.0" GridPane.columnSpan="5" GridPane.halignment="CENTER" GridPane.rowIndex="2">
          <columns>
-            <TableColumn fx:id="profileNameColumn" maxWidth="650.0" onEditCommit="#profileNameColumnOnEditCommit" prefWidth="650.0" resizable="false" text="Profile Name" />
+            <TableColumn fx:id="profileNameColumn" maxWidth="650.0" onEditCommit="#profileNameColumnOnEditCommit" prefWidth="650.0" resizable="false">
+               <graphic>
+                  <Label fx:id="profileNameLabel" text="Profile Name" />
+               </graphic></TableColumn>
          </columns>
       </TableView>
       <Button fx:id="addProfile" minWidth="200.0" mnemonicParsing="false" onAction="#addProfileOnAction" text="Add a new one" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">

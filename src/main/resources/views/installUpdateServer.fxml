@@ -30,22 +30,22 @@
                 <Insets top="2.0" />
             </GridPane.margin>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+        <ImageView fx:id="installationFolderImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+        <ImageView fx:id="validateFilesImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
+        <ImageView fx:id="updateBetaImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
+        <ImageView fx:id="betaBrunchImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
             <image>
                 <Image url="@../images/label.png" />
             </image>

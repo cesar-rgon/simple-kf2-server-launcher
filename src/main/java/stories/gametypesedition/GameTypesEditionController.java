@@ -8,10 +8,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +38,10 @@ public class GameTypesEditionController implements Initializable {
     @FXML private Label messageLabel;
     @FXML private Button addGameType;
     @FXML private Button removeGameType;
+    @FXML private Label gameTypeCodeLabel;
+    @FXML private Label gameTypeDescriptionLabel;
+    @FXML private Label difficultiesEnabledLabel;
+    @FXML private Label lengthsEnabledLabel;
 
     public GameTypesEditionController() {
         facade = new GameTypesEditionFacadeImpl();
@@ -59,20 +60,33 @@ public class GameTypesEditionController implements Initializable {
 
             String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.gameTypeTitle");
             titleConfigLabel.setText(titleConfigLabelText);
+
             String messageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
             messageLabel.setText(messageLabelText);
+
             String addGameTypeText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
             addGameType.setText(addGameTypeText);
+            addGameType.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addGameType")));
+
             String removeGameTypeText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
             removeGameType.setText(removeGameTypeText);
+            removeGameType.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeGameType")));
+
             String gameTypeCodeColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.gameTypeCode");
-            gameTypeCodeColumn.setText(gameTypeCodeColumnText);
+            gameTypeCodeLabel.setText(gameTypeCodeColumnText);
+            gameTypeCodeLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.gameTypeCode")));
+
             String gameTypeDescriptionColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.gameTypeDescription");
-            gameTypeDescriptionColumn.setText(gameTypeDescriptionColumnText);
+            gameTypeDescriptionLabel.setText(gameTypeDescriptionColumnText);
+            gameTypeDescriptionLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.gameTypeDescription")));
+
             String difficultiesEnabledColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultiesEnabled");
-            difficultiesEnabledColumn.setText(difficultiesEnabledColumnText);
+            difficultiesEnabledLabel.setText(difficultiesEnabledColumnText);
+            difficultiesEnabledLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.difficultiesEnabled")));
+
             String lengthsEnabledColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthsEnabled");
-            lengthsEnabledColumn.setText(lengthsEnabledColumnText);
+            lengthsEnabledLabel.setText(lengthsEnabledColumnText);
+            lengthsEnabledLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.lengthsEnabled")));
 
             difficultiesEnabledColumn.setCellFactory(col -> {
                 CheckBoxTableCell<GameTypeDto, Boolean> cell = new CheckBoxTableCell<>(index -> {

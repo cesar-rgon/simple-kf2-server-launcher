@@ -3,10 +3,7 @@ package stories.difficultiesedition;
 import dtos.SelectDto;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -33,6 +30,8 @@ public class DifficultiesEditionController implements Initializable {
     @FXML private Label messageLabel;
     @FXML private Button addDifficulty;
     @FXML private Button removeDifficulty;
+    @FXML private Label difficultyCodeLabel;
+    @FXML private Label difficultyDescriptionLabel;
 
     public DifficultiesEditionController() {
         facade = new DifficultiesEditionFacadeImpl();
@@ -52,16 +51,25 @@ public class DifficultiesEditionController implements Initializable {
 
             String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultyTitle");
             titleConfigLabel.setText(titleConfigLabelText);
+
             String messageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
             messageLabel.setText(messageLabelText);
+
             String addDifficultyText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
             addDifficulty.setText(addDifficultyText);
+            addDifficulty.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addDifficulty")));
+
             String removeDifficultyText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
             removeDifficulty.setText(removeDifficultyText);
+            removeDifficulty.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeDifficulty")));
+
             String difficultyCodeColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultyCode");
-            difficultyCodeColumn.setText(difficultyCodeColumnText);
+            difficultyCodeLabel.setText(difficultyCodeColumnText);
+            difficultyCodeLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.difficultyCode")));
+
             String difficultyDescriptionColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultyDescription");
-            difficultyDescriptionColumn.setText(difficultyDescriptionColumnText);
+            difficultyDescriptionLabel.setText(difficultyDescriptionColumnText);
+            difficultyDescriptionLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.difficultyDescription")));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);

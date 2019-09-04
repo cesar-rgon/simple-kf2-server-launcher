@@ -4,10 +4,8 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -39,6 +37,10 @@ public class InstallUpdateServerController implements Initializable {
     @FXML private Label betaBrunchLabel;
     @FXML private Button exploreFolder;
     @FXML private Button installUpdate;
+    @FXML private ImageView installationFolderImg;
+    @FXML private ImageView validateFilesImg;
+    @FXML private ImageView updateBetaImg;
+    @FXML private ImageView betaBrunchImg;
 
     public InstallUpdateServerController() {
         super();
@@ -50,26 +52,37 @@ public class InstallUpdateServerController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         try {
             languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-            installationFolder.setText(facade.findPropertyValue("prop.config.installationFolder"));
-            isBeta.setSelected(Boolean.parseBoolean(facade.findPropertyValue("prop.config.isBeta")));
-            betaBrunch.setText(facade.findPropertyValue("prop.config.betaBrunch"));
+
             String installationFolderLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.installationFolder");
             installationFolderLabel.setText(installationFolderLabelText + "*");
+            installationFolder.setText(facade.findPropertyValue("prop.config.installationFolder"));
+            loadTooltip("prop.tooltip.installationFolder", installationFolderImg, installationFolderLabel, installationFolder);
+
             String validateFilesLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.validateFiles");
             validateFilesLabel.setText(validateFilesLabelText);
-            String updateBetaLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.updateBeta");
-            updateBetaLabel.setText(updateBetaLabelText);
-            String betaBrunchLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.betaBrunch");
-            betaBrunchLabel.setText(betaBrunchLabelText);
-            String exploreFolderText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.exploreFolder");
-            exploreFolder.setText(exploreFolderText);
-            String installUpdateText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.installUpdate");
-            installUpdate.setText(installUpdateText);
             String validateFilesText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.validateFilesCheck");
             validateFiles.setText(validateFilesText);
+            loadTooltip("prop.tooltip.validateFiles", validateFilesImg, validateFilesLabel, validateFiles);
+
+            isBeta.setSelected(Boolean.parseBoolean(facade.findPropertyValue("prop.config.isBeta")));
             String isBetaText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.isBetaCheck");
             isBeta.setText(isBetaText);
+            String updateBetaLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.updateBeta");
+            updateBetaLabel.setText(updateBetaLabelText);
+            loadTooltip("prop.tooltip.updateBeta", updateBetaImg, updateBetaLabel, isBeta);
 
+            betaBrunch.setText(facade.findPropertyValue("prop.config.betaBrunch"));
+            String betaBrunchLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.betaBrunch");
+            betaBrunchLabel.setText(betaBrunchLabelText);
+            loadTooltip("prop.tooltip.betaBrunch", betaBrunchImg, betaBrunchLabel, betaBrunch);
+
+            String exploreFolderText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.exploreFolder");
+            exploreFolder.setText(exploreFolderText);
+            exploreFolder.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.exploreFolder")));
+
+            String installUpdateText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.installUpdate");
+            installUpdate.setText(installUpdateText);
+            installUpdate.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.installUpdate")));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -112,6 +125,20 @@ public class InstallUpdateServerController implements Initializable {
                 }
             }
         });
+    }
+
+    private void loadTooltip(String propKey, javafx.scene.image.ImageView img, Label label, TextField textField) throws Exception {
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        Tooltip.install(img, tooltip);
+        label.setTooltip(tooltip);
+        textField.setTooltip(tooltip);
+    }
+
+    private void loadTooltip(String propKey, javafx.scene.image.ImageView img, Label label, CheckBox checkBox) throws Exception {
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        Tooltip.install(img, tooltip);
+        label.setTooltip(tooltip);
+        checkBox.setTooltip(tooltip);
     }
 
     @FXML

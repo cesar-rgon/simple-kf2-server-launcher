@@ -17,11 +17,9 @@ import org.w3c.dom.html.HTMLFormElement;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
-import stories.difficultiesedition.DifficultiesEditionController;
 import utils.Utils;
 
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.ResourceBundle;
 
 public class WebAdminController implements Initializable {
@@ -50,25 +48,31 @@ public class WebAdminController implements Initializable {
                 public void changed(ObservableValue<? extends Document> ov, Document oldDoc, Document doc) {
                     if (doc != null) {
                         Element usernameInput = doc.getElementById("username");
-                        usernameInput.setAttribute("value", "admin");
-                        Element passwordInput = doc.getElementById("password");
-                        try {
-                            if (Session.getInstance().getActualProfile() != null) {
-                                String decryptedPassword = Utils.decryptAES(Session.getInstance().getActualProfile().getWebPassword());
-                                if (StringUtils.isNotEmpty(decryptedPassword)) {
-                                    passwordInput.setAttribute("value", decryptedPassword);
-                                } else {
-                                    passwordInput.setAttribute("value", "admin");
+                        if (usernameInput != null) {
+                            usernameInput.setAttribute("value", "admin");
+                            Element passwordInput = doc.getElementById("password");
+                            if (passwordInput != null) {
+                                try {
+                                    if (Session.getInstance().getActualProfile() != null) {
+                                        String decryptedPassword = Utils.decryptAES(Session.getInstance().getActualProfile().getWebPassword());
+                                        if (StringUtils.isNotEmpty(decryptedPassword)) {
+                                            passwordInput.setAttribute("value", decryptedPassword);
+                                        } else {
+                                            passwordInput.setAttribute("value", "admin");
+                                        }
+                                    } else {
+                                        passwordInput.setAttribute("value", "admin");
+                                    }
+                                } catch (Exception e) {
+                                    logger.error(e.getMessage(), e);
+                                    Utils.errorDialog(e.getMessage(), e);
                                 }
-                            } else {
-                                passwordInput.setAttribute("value", "admin");
+                                HTMLFormElement form = (HTMLFormElement) doc.getElementById("loginform");
+                                if (form != null) {
+                                    form.submit();
+                                }
                             }
-                        } catch (Exception e) {
-                            logger.error(e.getMessage(), e);
-                            Utils.errorDialog(e.getMessage(), e);
                         }
-                        HTMLFormElement form = (HTMLFormElement) doc.getElementById("loginform");
-                        form.submit();
                     }
                 }
             });

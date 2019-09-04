@@ -52,77 +52,77 @@
             <Insets right="-179.0" top="103.0" />
          </GridPane.margin>
     </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+        <ImageView fx:id="profileImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+        <ImageView fx:id="languageImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
+        <ImageView fx:id="gameTypeImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="3">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
+        <ImageView fx:id="mapImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="4">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="5">
+        <ImageView fx:id="difficultyImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="5">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="6">
+        <ImageView fx:id="lengthImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="6">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="7">
+        <ImageView fx:id="maxPlayersImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="7">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="8">
+        <ImageView fx:id="serverNameImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="8">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="9">
+        <ImageView fx:id="serverPasswordImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="9">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="10">
+        <ImageView fx:id="webPageImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="10">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="11">
+        <ImageView fx:id="webPasswordImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="11">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="12">
+        <ImageView fx:id="portsImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="12">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="13">
+        <ImageView fx:id="clanImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="13">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="14">
+        <ImageView fx:id="webLinkImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="14">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="LEFT" GridPane.rowIndex="16">
+        <ImageView fx:id="customParametersImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="LEFT" GridPane.rowIndex="16">
             <image>
                 <Image url="@../images/label.png" />
             </image>
@@ -130,7 +130,7 @@
             <Insets left="7.0" />
          </GridPane.margin>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="LEFT" GridPane.rowIndex="17" GridPane.valignment="TOP">
+        <ImageView fx:id="consoleImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="LEFT" GridPane.rowIndex="17" GridPane.valignment="TOP">
             <image>
                 <Image url="@../images/labelDisabled.png" />
             </image>
@@ -247,7 +247,7 @@
          <GridPane.margin>
             <Insets left="207.0" />
          </GridPane.margin></TextField>
-        <ImageView fitHeight="261.0" fitWidth="531.0" opacity="0.9" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+        <ImageView fx:id="thumbnailImg" fitHeight="261.0" fitWidth="531.0" opacity="0.9" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/photo-borders.png" />
             </image>
@@ -261,12 +261,12 @@
          </GridPane.margin></WebView>
         <TextField fx:id="urlImageServer" maxWidth="1.7976931348623157E308" opacity="0.75" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="10" />
         <TextArea fx:id="welcomeMessage" opacity="0.75" prefHeight="56.0" prefWidth="253.0" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="11" GridPane.rowSpan="4" />
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="10">
+        <ImageView fx:id="urlImageServerImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="10">
             <image>
                 <Image url="@../images/label-inverted.png" />
             </image>
         </ImageView>
-        <ImageView fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="11">
+        <ImageView fx:id="welcomeImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="11">
             <image>
                 <Image url="@../images/label-inverted.png" />
             </image>

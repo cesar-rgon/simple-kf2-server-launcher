@@ -24,10 +24,22 @@
          </font></Label>
       <TableView fx:id="gameTypesTable" editable="true" maxHeight="650.0" maxWidth="1200.0" opacity="0.8" prefHeight="650.0" prefWidth="1200.0" GridPane.columnSpan="4" GridPane.halignment="CENTER" GridPane.rowIndex="2">
          <columns>
-            <TableColumn fx:id="gameTypeCodeColumn" maxWidth="450.0" onEditCommit="#gameTypeCodeColumnOnEditCommit" prefWidth="450.0" resizable="false" text="Game type code" />
-            <TableColumn fx:id="gameTypeDescriptionColumn" maxWidth="450.0" onEditCommit="#gameTypeDescriptionColumnOnEditCommit" prefWidth="450.0" resizable="false" text="Game type description" />
-            <TableColumn fx:id="difficultiesEnabledColumn" maxWidth="150.0" prefWidth="150.0" text="Difficulties enabled" />
-            <TableColumn fx:id="lengthsEnabledColumn" maxWidth="150.0" prefWidth="150.0" text="Lengths enabled" />
+            <TableColumn fx:id="gameTypeCodeColumn" maxWidth="450.0" onEditCommit="#gameTypeCodeColumnOnEditCommit" prefWidth="450.0" resizable="false">
+               <graphic>
+                  <Label fx:id="gameTypeCodeLabel" text="Game type code" />
+               </graphic></TableColumn>
+            <TableColumn fx:id="gameTypeDescriptionColumn" maxWidth="450.0" onEditCommit="#gameTypeDescriptionColumnOnEditCommit" prefWidth="450.0" resizable="false">
+               <graphic>
+                  <Label fx:id="gameTypeDescriptionLabel" text="Game type description" />
+               </graphic></TableColumn>
+            <TableColumn fx:id="difficultiesEnabledColumn" maxWidth="150.0" prefWidth="150.0">
+               <graphic>
+                  <Label fx:id="difficultiesEnabledLabel" text="Difficulties enabled" />
+               </graphic></TableColumn>
+            <TableColumn fx:id="lengthsEnabledColumn" maxWidth="150.0" prefWidth="150.0">
+               <graphic>
+                  <Label fx:id="lengthsEnabledLabel" text="Lengths enabled" />
+               </graphic></TableColumn>
          </columns>
       </TableView>
       <Button fx:id="addGameType" mnemonicParsing="false" onAction="#addGameTypeOnAction" prefWidth="200.0" text="Add a new one" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">

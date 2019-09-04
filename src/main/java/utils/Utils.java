@@ -11,8 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -21,6 +19,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.security.Key;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -397,7 +396,7 @@ public class Utils {
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.ENCRYPT_MODE, aesKey);
         byte[] encrypted = cipher.doFinal(password.getBytes());
-        return new BASE64Encoder().encode(encrypted);
+        return Base64.getEncoder().encodeToString(encrypted);
     }
 
     public static String decryptAES(String encryptedPassword) throws Exception {
@@ -409,7 +408,7 @@ public class Utils {
         Key aesKey = new SecretKeySpec(aesEncryptionKey.getBytes(), "AES");
         Cipher cipher = Cipher.getInstance("AES");
         cipher.init(Cipher.DECRYPT_MODE, aesKey);
-        byte[] decrypted = new BASE64Decoder().decodeBuffer(encryptedPassword);
+        byte[] decrypted = Base64.getDecoder().decode(encryptedPassword);
         byte[] decryptedValue = cipher.doFinal(decrypted);
         return new String(decryptedValue);
     }

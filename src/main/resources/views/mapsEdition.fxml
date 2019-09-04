@@ -25,7 +25,7 @@
          <GridPane.margin>
             <Insets />
          </GridPane.margin></TextField>
-      <ImageView fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+      <ImageView fx:id="searchImg" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
          <image>
             <Image url="@../images/find.png" />
          </image>

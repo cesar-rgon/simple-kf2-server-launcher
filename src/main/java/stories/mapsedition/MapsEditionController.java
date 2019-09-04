@@ -66,6 +66,7 @@ public class MapsEditionController implements Initializable {
     @FXML private Tab customMapsModsTab;
     @FXML private Tab officialMapsTab;
     @FXML private Label sliderLabel;
+    @FXML private ImageView searchImg;
 
     public MapsEditionController() {
         super();
@@ -90,27 +91,44 @@ public class MapsEditionController implements Initializable {
                 }
             }
             officialMapsTab.setGraphic(new Label("(" + officialMapsFlowPane.getChildren().size() + ")"));
-            customMapsModsTab.setGraphic(new Label("(" + customMapsFlowPane.getChildren().size() + ")"));
-
-            String addNewMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addMaps");
-            addNewMaps.setText(addNewMapsText);
-            String searchInWorkShopText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.searchInWorkShop");
-            searchInWorkShop.setText(searchInWorkShopText);
-            String removeMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeMaps");
-            removeMaps.setText(removeMapsText);
-            String selectAllMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.selectMaps");
-            selectAllMaps.setText(selectAllMapsText);
-            String importMapsFromServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importMaps");
-            importMapsFromServer.setText(importMapsFromServerText);
-            String sliderLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.slider");
-            sliderLabel.setText(sliderLabelText);
-            String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
-            customMapsModsTab.setText(customMapsModsTabText);
             String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
             officialMapsTab.setText(officialMapsTabText);
 
+            customMapsModsTab.setGraphic(new Label("(" + customMapsFlowPane.getChildren().size() + ")"));
+            String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
+            customMapsModsTab.setText(customMapsModsTabText);
+
+            Tooltip searchTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.searchMaps"));
+            searchMaps.setTooltip(searchTooltip);
+            Tooltip.install(searchImg, searchTooltip);
+
+            String addNewMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addMaps");
+            addNewMaps.setText(addNewMapsText);
+            addNewMaps.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addMaps")));
+
+            String searchInWorkShopText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.searchInWorkShop");
+            searchInWorkShop.setText(searchInWorkShopText);
+            searchInWorkShop.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.searchInWorkShop")));
+
+            String removeMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeMaps");
+            removeMaps.setText(removeMapsText);
+            removeMaps.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeMaps")));
+
+            String selectAllMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.selectMaps");
+            selectAllMaps.setText(selectAllMapsText);
+            selectAllMaps.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.selectAllMaps")));
+
+            String importMapsFromServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importMaps");
+            importMapsFromServer.setText(importMapsFromServerText);
+            importMapsFromServer.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.importMaps")));
+
+            String sliderLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.slider");
+            sliderLabel.setText(sliderLabelText);
+            Tooltip sliderTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.slide"));
+            sliderLabel.setTooltip(sliderTooltip);
             Double sliderColumns = Double.parseDouble(facade.findConfigPropertyValue("prop.config.mapSliderValue"));
             mapsSlider.setValue(sliderColumns);
+            mapsSlider.setTooltip(sliderTooltip);
             mapsSliderOnMouseClicked();
 
             MainApplication.getPrimaryStage().widthProperty().addListener(new ChangeListener<Number>() {
@@ -183,6 +201,38 @@ public class MapsEditionController implements Initializable {
             gridpane.add(warningMessage,1, rowIndex);
             GridPane.setHalignment(warningMessage, HPos.CENTER);
             rowIndex++;
+        }
+        StringBuffer tooltipText = new StringBuffer();
+        if (!map.isOfficial()) {
+            tooltipText.append("id WorkShop: ").append(map.getIdWorkShop());
+        }
+        if (StringUtils.isNotBlank(map.getUrlPhoto())) {
+            if (StringUtils.isNotBlank(tooltipText)) {
+                tooltipText.append("\n");
+            }
+            String message = "";
+            try {
+                message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.urlInfo");
+            } catch (Exception e) {
+                message = "Url info";
+            }
+            tooltipText.append(message).append(": ").append(map.getUrlInfo());
+        }
+        if (map.isDownloaded()) {
+            if (StringUtils.isNotBlank(tooltipText)) {
+                tooltipText.append("\n");
+            }
+            String message = "";
+            try {
+                message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.photoLocation");
+            } catch (Exception e) {
+                message = "Photo location";
+            }
+            tooltipText.append(message).append(": ").append(installationFolder).append(map.getUrlPhoto());
+        }
+        if (StringUtils.isNotBlank(tooltipText)) {
+            Tooltip tooltip = new Tooltip(tooltipText.toString());
+            Tooltip.install(gridpane, tooltip);
         }
         return gridpane;
     }
