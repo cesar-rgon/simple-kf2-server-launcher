@@ -27,11 +27,13 @@ public abstract class Kf2Common {
     protected final DatabaseService databaseService;
     protected final PropertyService propertyService;
     protected String languageCode;
+    protected boolean byConsole;
 
     protected Kf2Common() {
         super();
         databaseService = new DatabaseServiceImpl();
         propertyService = new PropertyServiceImpl();
+        byConsole = false;
         try {
             languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
         } catch (Exception e) {
@@ -51,9 +53,18 @@ public abstract class Kf2Common {
             try {
                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
                 String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
-                Utils.warningDialog(headerText, contentText);
+                if (!byConsole) {
+                    Utils.warningDialog(headerText, contentText);
+                } else {
+                    System.out.println(headerText + "\n" + contentText);
+                }
             } catch (Exception e) {
-                Utils.errorDialog(e.getMessage(), e);
+                if (!byConsole) {
+                    logger.error(e.getMessage(), e);
+                    Utils.errorDialog(e.getMessage(), e);
+                } else {
+                    System.out.println(e);
+                }
             }
             return false;
         } else {
@@ -76,15 +87,29 @@ public abstract class Kf2Common {
                 }
             } else {
                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.errorParameters");
-                Utils.warningDialog(headerText, errorMessage);
+                if (!byConsole) {
+                    Utils.warningDialog(headerText, errorMessage);
+                } else {
+                    System.out.println(headerText + "\n" + errorMessage);
+                }
             }
         } catch (Exception e) {
             String message = "Error executing Killing Floor 2 server";
-            logger.error(message, e);
-            Utils.errorDialog(message, e);
+            if (!byConsole) {
+                logger.error(message, e);
+                Utils.errorDialog(message, e);
+            } else {
+                System.out.println(message + "\n" + e);
+            }
         }
         return null;
     }
+
+    public String runServerByConsole(Profile profile) {
+        byConsole = true;
+        return runServer(profile);
+    }
+
 
     protected String validateParameters(Profile profile) {
         StringBuffer errorMessage = new StringBuffer();
@@ -115,7 +140,12 @@ public abstract class Kf2Common {
             }
             return errorMessage.toString();
         } catch (Exception e) {
-            Utils.errorDialog(e.getMessage(), e);
+            if (!byConsole) {
+                logger.error(e.getMessage(), e);
+                Utils.errorDialog(e.getMessage(), e);
+            } else {
+                System.out.println(e);
+            }
             return "Error validating parameters. The server can not be started!";
         }
     }
@@ -143,8 +173,12 @@ public abstract class Kf2Common {
             }
         } catch (IOException e) {
             String message = "Error copying files to profiles's config folder";
-            logger.error(message, e);
-            Utils.errorDialog(message, e);
+            if (!byConsole) {
+                logger.error(message, e);
+                Utils.errorDialog(message, e);
+            } else {
+                System.out.println(message + "\n" + e);
+            }
         }
     }
 
@@ -192,8 +226,12 @@ public abstract class Kf2Common {
             kfEngineIni.delete();
             tempFile.renameTo(kfEngineIni);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), e);
+            if (!byConsole) {
+                logger.error(e.getMessage(), e);
+                Utils.errorDialog(e.getMessage(), e);
+            } else {
+                System.out.println(e);
+            }
         }
     }
 
@@ -249,8 +287,12 @@ public abstract class Kf2Common {
             kfGameIni.delete();
             tempFile.renameTo(kfGameIni);
         } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), e);
+            if (!byConsole) {
+                logger.error(e.getMessage(), e);
+                Utils.errorDialog(e.getMessage(), e);
+            } else {
+                System.out.println(e);
+            }
         }
     }
 

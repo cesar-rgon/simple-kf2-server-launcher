@@ -7,13 +7,15 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.listener.TimeListener;
-import services.PropertyService;
-import services.PropertyServiceImpl;
+import services.*;
 import utils.Utils;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -63,7 +65,21 @@ public class MainApplication extends Application {
     }
 
     public static void main(String[] args) {
-        launch(args);
+        if (args == null || args.length == 0) {
+            launch(args);
+        } else {
+            if ("--profiles".equalsIgnoreCase(args[0])) {
+                if (args.length > 1) {
+                    ConsoleService consoleService = new ConsoleServiceImpl();
+                    consoleService.runServersByConsole(Arrays.asList(args));
+                } else {
+                    System.out.println("No profiles where found\nUse --profiles profile1[ profile2 profile3 ...]");
+                }
+            } else {
+                System.out.println("Unrecognized parameter: " + args[0] + "\nUse --profiles profile1[ profile2 profile3 ...]");
+            }
+            System.exit(0);
+        }
     }
 
     @Override

@@ -130,14 +130,19 @@ public class Kf2LinuxImpl extends Kf2Common {
             replaceInFileKfWebIni(installationFolder, profile, StandardCharsets.UTF_8);
             replaceInFileKfGameIni(installationFolder, profile, "LinuxServer-KFGame.ini");
 
-            Process proccess = Runtime.getRuntime().exec(new String[]{"xterm",
-                    "-T", "Running the server",
-                    "-fa", "DejaVu Sans Mono",
-                    "-fs", "11",
-                    "-geometry", "120x25+0-0",
-                    "-xrm", "XTerm.vt100.allowTitleOps: false",
-                    "-e", command.toString()},
-                    null, new File(installationFolder));
+            Process proccess = null;
+            if (!byConsole) {
+                proccess = Runtime.getRuntime().exec(new String[]{"xterm",
+                                "-T", "Running the server",
+                                "-fa", "DejaVu Sans Mono",
+                                "-fs", "11",
+                                "-geometry", "120x25+0-0",
+                                "-xrm", "XTerm.vt100.allowTitleOps: false",
+                                "-e", command.toString()},
+                        null, new File(installationFolder));
+            } else {
+                proccess = Runtime.getRuntime().exec(command.toString(), null, new File(installationFolder));
+            }
             Session.getInstance().getProcessList().add(proccess);
 
             return command.toString();

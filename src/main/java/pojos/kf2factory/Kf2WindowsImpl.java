@@ -103,6 +103,7 @@ public class Kf2WindowsImpl extends Kf2Common {
     protected String runKf2Server(String installationFolder, Profile profile) {
         try {
             StringBuffer command = new StringBuffer();
+            command.append("cmd /C start /wait ");
             command.append(installationFolder).append("\\Binaries\\Win64\\KFServer.exe ");
             command.append(profile.getMap().getCode());
             command.append("?Game=").append(profile.getGametype().getCode());
@@ -129,13 +130,17 @@ public class Kf2WindowsImpl extends Kf2Common {
             replaceInFileKfWebIni(installationFolder, profile, StandardCharsets.ISO_8859_1);
             replaceInFileKfGameIni(installationFolder, profile, "PCServer-KFGame.ini");
 
-            Process proccess = Runtime.getRuntime().exec("cmd /C start /wait " + command.toString(),null, new File(installationFolder));
+            Process proccess = Runtime.getRuntime().exec(command.toString(),null, new File(installationFolder));
             Session.getInstance().getProcessList().add(proccess);
             return command.toString();
         } catch (Exception e) {
             String message = "Error executing Killing Floor 2 server";
-            logger.error(message, e);
-            Utils.errorDialog(message, e);
+            if (!byConsole) {
+                logger.error(message, e);
+                Utils.errorDialog(message, e);
+            } else {
+                System.out.println(message + "\n" + e);
+            }
             return null;
         }
     }
