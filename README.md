@@ -1,5 +1,8 @@
 ![Logo](src/main/resources/images/documentation/kf2banner.png)
 
+_Documentation in spanish [here](LEEME.md) (Documentación en español)_
+
+---
 Application to easily customize and launch a Killing Floor 2 server through a visual interface instead of edditing batch files or server's config files. It has been developed with Java, so the interface is compatible on Windows and Linux OS.
 
 *Example of configuration*
@@ -13,39 +16,43 @@ Application to easily customize and launch a Killing Floor 2 server through a vi
 ### Index
 > 1. [Features](#features)
 > 2. [Pre-requisites](#pre-requisites)
-> 3. [Installing and running the launcher](#installing-and-running-the-launcher)
+> 3. [Install and run the launcher](#install-and-run-the-launcher)
 >   - [On Windows OS](#on-windows-os)
 >   - [On Linux OS](#on-linux-os)
 > 4. [Quick view](#quick-view)
 >   - [Main page](#main-page)
 >   - [WebAdmin page](#webadmin-page)
 >   - [Install or update page](#install-or-update-page)
->   - [Maps page](#maps-page)
+>   - [Maps and Mods page](#maps-and-mods-page)
 >   - [Configuration-Profiles](#configuration-profiles)
 >   - [Configuration-Game types](#configuration-game-types)
 >   - [Configuration-Difficulties](#configuration-difficulties)
->   - [Configuration-Length](#configuration-length)
->   - [Configuration-Maximun players](#configuration-maximun-players)
-> 5. [Donation](#donation)
+>   - [Configuration-Lengths](#configuration-lengths)
+>   - [Configuration-Maximum players](#configuration-maximum-players)
+> 5. [Console parameters](#console-parameters)
+> 6. [Donation](#donation)
 
 ## Features
 
 ```
-Version: 2.0 beta
+Version: 2.0 release candidate
 Supported OS: Microsoft Windows and Linux (Ubuntu/Debian)
 Author: César Rodríguez González
-Language: English (Spanish soon)
+Languages: English, Spanish
 ```
 
 - Install/Update server to the latest official or beta version.
 - Launch the server with specified parameters by the user in launcher's main page.
 - Join the running server's match.
 - Open WebAdmin page to administrate the running server.
-- Add custom maps to the server through Steam's WorkShop.
-- Remove custom maps from the server.
-- Administrate profiles, game types, difficulties, lengths and maximun numer of players that can be selected to launch the server.
-- Import official and custom maps from the server to the launcher.
-- All those features are available through the launcher's interface on Windows and Linux OS (no need to use console commands at all).
+- Add custom maps and mods to the server through Steam's WorkShop.
+- Remove custom maps and mods from the server.
+- Administrate profiles, game types, difficulties, lengths and maximum number of players that can be selected to launch the server.
+- Import official maps, custom maps and mods from the server to the launcher.
+- Import profiles from file to the launcher.
+- Export profiles from the launcher to file.
+- Launch the server through console with no need of interaction with the interface.
+- All those features are available through the launcher's interface on Windows and Linux OS.
 
 ## Pre-requisites
 - Internet connection to download, update and publish a Killing Floor 2 server.
@@ -59,12 +66,12 @@ Language: English (Spanish soon)
   | Steam Port  | 20560    | UDP       |                                                                             |
   | NTP Port    | 123      | UDP       | Weekly Outbreak Only - Internet time lookup to determine correct Outbreak   |
 
-- Install Oracle JRE (Java Runtime Environment) in order to be able to execute the launcher. JRE can be downloaded from [here](https://www.java.com/en/download/).
+- Install Oracle JRE 8 (Java Runtime Environment) in order to be able to execute the launcher. JRE can be downloaded from [here](https://www.java.com/en/download/).
 
-## Installing and running the launcher
+## Install and run the launcher
 
 - Download the latest release of the program from [here](https://github.com/cesar-rgon/simple-kf2-server-launcher/releases)
-- Extract the contents of the zip file to a local folder.
+- Extract the content of the zip file to a local folder.
 
 ##### On Windows OS
 - Execute the file "SimpleKF2ServerLauncher.jar" just by double click over the file or, as an alternative method, type next commands in a terminal.
@@ -156,7 +163,7 @@ In this section you can install or update a Killing Floor 2 server.
 
 * _Beta brunch_: This field is optional. The user specifies the name of the beta brunch (only used when last check was enabled).
 
-#### Maps/Mods page
+#### Maps and Mods page
 In this section you can manage custom maps, mods and official maps present in the server.
 
 ![Launcher screenshot](src/main/resources/images/documentation/screenshot04.png)
@@ -193,9 +200,11 @@ In this section you can manage profiles to the launcher. Each profile is used to
 **NOTE**: No profile name duplication accepted in any operation.
 
 #### Configuration-Game types
-In this section you can add, edit or remove game types to the launcher. Each game type is composed by two fields:
+In this section you can add, edit or remove game types to the launcher. Each game type is composed by four fields:
 1. _Code_: Code to identify the game type mode. It's not a free text, it has to be exactly like described in the Killing Floor 2 server documentation.
 2. _Description_: Free text to identify the game type mode.
+3. _Difficulties enabled_: If difficulties combo is active or not.
+4. _Lengths enabled_: If lengths combo is active or not.
 
 ![Launcher screenshot](src/main/resources/images/documentation/screenshot07.png)
 
@@ -214,7 +223,7 @@ In this section you can add, edit or remove difficulties to the launcher. Each d
 * _Double click on a difficulty code or description_: It allows to edit the field.
 * _Remove selected difficulty_: It allows to remove the selected difficulty code and description.
 
-#### Configuration-Length
+#### Configuration-Lengths
 In this section you can add, edit or remove length modes to the launcher. Each length is composed by two fields:
 1. _Code_: Code to identify the length mode. It's not a free text, it has to be exactly like described in the Killing Floor 2 server documentation.
 2. _Description_: Free text to identify the length mode.
@@ -225,7 +234,7 @@ In this section you can add, edit or remove length modes to the launcher. Each l
 * _Double click on a length code or description_: It allows to edit the field.
 * _Remove selected length_: It allows to remove the selected length code and description.
 
-#### Configuration-Maximun players
+#### Configuration-Maximum players
 In this section you can add, edit or remove the max.players to the launcher. Each max.players is composed by two fields:
 1. _Code_: Code to identify the max.players. It's not a free text, it has to be exactly like described in the Killing Floor 2 server documentation.
 2. _Description_: Free text to identify the max.players.
@@ -235,6 +244,19 @@ In this section you can add, edit or remove the max.players to the launcher. Eac
 * _Add new max.players_: It allows to add a new max.players with no code duplicated.
 * _Double click on a max.players code or description_: It allows to edit the field.
 * _Remove selected max.players_: It allows to remove the selected max.players code and description.
+
+## Console parameters
+The launcher allows to execute servers through terminal parameters without user interaction with the interface.
+
+Accepted parameters are: *For example*
+```
+java -jar SimpleKF2ServerLauncher.jar --profiles profileName1 [profileName2 profileName3 ... ]
+```
+*NOTE: [ ] means that these parameters are optional*
+
+- This command executes one or multiple servers, one per profileName.
+- The profile names must be separated by whitespace.
+- The profile names must exist in launcher's database.
 
 ## Donation
 If you find useful this application, you liked it and you want to contribute, you can donate the amount you desire [here](https://www.paypal.me/cesarrgon).
