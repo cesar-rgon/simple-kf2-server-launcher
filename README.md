@@ -1,6 +1,6 @@
 ![Logo](src/main/resources/images/documentation/kf2banner.png)
 
-_Documentation in spanish [here](LEEME.md) (Documentación en español)_
+_[Click here to open documentation in spanish | Pulse aquí para abrir documentación en español](LEEME.md)_
 
 ---
 Application to easily customize and launch a Killing Floor 2 server through a visual interface instead of edditing batch files or server's config files. It has been developed with Java, so the interface is compatible on Windows and Linux OS.
@@ -102,17 +102,17 @@ $ java -jar SimpleKF2ServerLauncher.jar
 
 * _Profile_: This combo is mandatory. It allows to customize filter values by profile name.
 
-* _Language_: This combo is mandatory. You can not select any language right now. Only english translation is available at this moment.
+* _Language_: This combo is mandatory. It allows to select a language for the launcher's interface. List of available languages are described in the [Features](#features) section of this document. 
 
 * _Game Type_: This combo is mandatory. It allows you to select one specific game type.
 
-* _Map_: This combo is mandatory. It allows you to select one specific official map or custom map. *NOTE: Custom maps are visible in this field only if they were already downloaded before*
+* _Map_: This combo is mandatory. It allows you to select one specific official map or custom map. *NOTE: Custom maps are visible in this field only if they were already downloaded before*.
 
 * _Difficulty_: This combo is mandatory. It allows you to select one specific difficulty level.
 
 * _Length_: This combo is mandatory. It allows you to select one specific number of waves.
 
-* _Max. players_: This field is mandatory. It allows you to select one specific maximun number of players in a match.
+* _Max. players_: This field is mandatory. It allows you to select one specific maximum number of players in a match.
 
 * _Server name_: This field is mandatory. It must contain at least one character.
 
@@ -122,19 +122,19 @@ $ java -jar SimpleKF2ServerLauncher.jar
 
 * _Web password_: This field is optional. It allows you to protect WebAdmin page with a password to login.
 
-* _Ports_: Ports are optional. You need to open ports in your router and firewall. If more than one server is launched, ports must be different between them (one profile per server configuration).
+* _Ports_: Ports are optional. You need to open ports in your router and firewall. If more than one server is launched, ports must be different between them (one configuration per profile).
 
 * _Your clan_: This field is optional.
 
-* _Your web link_: This field is optional
+* _Your web link_: This field is optional.
 
-* _URL image server_: This field is optional. This link must return an uploaded image to internet and it will be used as a preview image in your Killing Floor 2 server. Format and resolution must be PNG 512x256 pixels.
+* _URL image server_: This field is optional. This link must return an uploaded image to internet and it will be used as the welcome image in your Killing Floor 2 server. Format and resolution must be PNG 512x256 pixels.
 
 * _Welcome message_: This field is optional. It's a welcome message in starting screen of the server.
 
 * _Custom parameters_: This field is optional. It defines additional parameters. The format must be: [?]parameter1=value1?parameter2=value2?...?parameterN=valueN
 
-  [?] means: optionally, you can start parameters by "?"
+  [?] means: optionally you can start parameters by "?"
 
 * _Console_: This field is automatically filled when the server is running. It's composed by console commands to execute the server.
 
@@ -145,13 +145,13 @@ If more than one profile, you can launch multiple servers at once (one per profi
 If more than one profile, you can select wich server you want to join (one per profile).
 
 #### WebAdmin page
-In this section you can access to WebAdmin page only if the server is already started and web page is checked in Main Page of the application.
+In this section you can access to WebAdmin page only if the server is already started and web page is checked in "Main Page" section of the application.
 WebAdmin allows you to manage and control the Killing Floor 2 server.
 
 ![Launcher screenshot](src/main/resources/images/documentation/screenshot02.png)
 
 #### Install or update page
-In this section you can install or update a Killing Floor 2 server.
+In this section you can install or update the Killing Floor 2 server.
 
 ![Launcher screenshot](src/main/resources/images/documentation/screenshot03.png)
 
@@ -159,7 +159,7 @@ In this section you can install or update a Killing Floor 2 server.
 
 * _Validate files_: This field is optional. If enabled, the install/update operation checks the integrity of the server's files. Slow operation.
 
-* _Update to beta?_: This field is optional. If enabled, the install/update operation updates to a beta version of the game.
+* _Update to beta?_: This field is optional. If enabled, the operation updates to a beta version of the game (if available).
 
 * _Beta brunch_: This field is optional. The user specifies the name of the beta brunch (only used when last check was enabled).
 
@@ -170,9 +170,9 @@ In this section you can manage custom maps, mods and official maps present in th
 
 * _Search_: Filter to search maps and mods by name while you are writing the text.
 
-* _Columns_: It allows change the thumbnail size of the maps by the specific number of columns.
+* _Columns_: Slider that allows change the thumbnail size of the maps by the specific number of columns.
 
-* _Add new maps/mods_: It allows to add new custom maps and mods from Steam's WorkShop by workshop's Id or Url. If more than one element, use comma as separator.
+* _Add new maps/mods_: It allows to add new custom maps and mods from Steam's WorkShop by WorkShop's Id or URL. If more than one element, use comma as separator.
 
 * _Select all maps/mods_: It allows to select or unselect all custom maps and mods as well as official maps.
 
@@ -180,27 +180,27 @@ In this section you can manage custom maps, mods and official maps present in th
 
 * _Import maps/mods_: It allows to import all custom maps, mods and official maps from the server to the launcher. Only the elements not present already in the launcher.
 
-* _Search in workshop_: It allows to browse in Workshop looking for new maps and mods. Then you can choose wich of them add to the launcher.
+* _Search in WorkShop_: It allows to browse in Workshop's pages looking for new maps and mods. Then you can choose wich of them add to the launcher.
 
 ![Launcher screenshot](src/main/resources/images/documentation/screenshot05.png)
 
 
 #### Configuration-Profiles
-In this section you can manage profiles to the launcher. Each profile is used to customize your server parameters.
+In this section you can manage profiles from the launcher. Each profile is used to customize your server parameters.
 
 ![Launcher screenshot](src/main/resources/images/documentation/screenshot06.png)
 
 * _Double click on a profile name_: It allows to edit the profile name.
-* _Add new profile_: It allows to add a new profile.
+* _Add new profile_: It allows to add a new profile. The profile name must be unique.
 * _Clone selected profile_: It allows to duplicate the selected profile to a new profile.
 * _Remove selected profile_: It allows to remove the selected profile.
 * _Import profiles_: It allows to import profiles from a file to the launcher.
-* _Export profiles_: It allow to export profiles from the launcher to a file.
+* _Export profiles_: It allows to export profiles from the launcher to a file.
 
 **NOTE**: No profile name duplication accepted in any operation.
 
 #### Configuration-Game types
-In this section you can add, edit or remove game types to the launcher. Each game type is composed by four fields:
+In this section you can add, edit or remove game types from the launcher. Each game type is composed by four fields:
 1. _Code_: Code to identify the game type mode. It's not a free text, it has to be exactly like described in the Killing Floor 2 server documentation.
 2. _Description_: Free text to identify the game type mode.
 3. _Difficulties enabled_: If difficulties combo is active or not.
@@ -208,12 +208,12 @@ In this section you can add, edit or remove game types to the launcher. Each gam
 
 ![Launcher screenshot](src/main/resources/images/documentation/screenshot07.png)
 
-* _Add new game type_: It allows to add a new profile with no code duplicated.
+* _Add new game type_: It allows to add a new game type with no code duplicated.
 * _Double click on a game type code or description_: It allows to edit the field.
 * _Remove selected game type_: It allows to remove the selected game type code and description.
 
 #### Configuration-Difficulties
-In this section you can add, edit or remove difficulties to the launcher. Each difficulty is composed by two fields:
+In this section you can add, edit or remove difficulties from the launcher. Each difficulty is composed by two fields:
 1. _Code_: Code to identify the difficulty mode. It's not a free text, it has to be exactly like described in the Killing Floor 2 server documentation.
 2. _Description_: Free text to identify the difficulty mode.
 
@@ -224,7 +224,7 @@ In this section you can add, edit or remove difficulties to the launcher. Each d
 * _Remove selected difficulty_: It allows to remove the selected difficulty code and description.
 
 #### Configuration-Lengths
-In this section you can add, edit or remove length modes to the launcher. Each length is composed by two fields:
+In this section you can add, edit or remove length modes from the launcher. Each length is composed by two fields:
 1. _Code_: Code to identify the length mode. It's not a free text, it has to be exactly like described in the Killing Floor 2 server documentation.
 2. _Description_: Free text to identify the length mode.
 
@@ -235,7 +235,7 @@ In this section you can add, edit or remove length modes to the launcher. Each l
 * _Remove selected length_: It allows to remove the selected length code and description.
 
 #### Configuration-Maximum players
-In this section you can add, edit or remove the max.players to the launcher. Each max.players is composed by two fields:
+In this section you can add, edit or remove the max.players from the launcher. Each max.players is composed by two fields:
 1. _Code_: Code to identify the max.players. It's not a free text, it has to be exactly like described in the Killing Floor 2 server documentation.
 2. _Description_: Free text to identify the max.players.
 
