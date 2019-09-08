@@ -1,9 +1,14 @@
 package stories.mapsedition;
 
 import daos.MapDao;
+import daos.ProfileDao;
 import dtos.MapDto;
+import dtos.ProfileDto;
 import dtos.factories.MapDtoFactory;
+import dtos.factories.ProfileDtoFactory;
 import entities.Map;
+import entities.Profile;
+import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -14,6 +19,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,26 +27,13 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
 
     private final MapDtoFactory mapDtoFactory;
     private final PropertyService propertyService;
+    private final ProfileDtoFactory profileDtoFactory;
 
     public MapsEditionFacadeImpl() {
         super();
         this.mapDtoFactory = new MapDtoFactory();
         this.propertyService = new PropertyServiceImpl();
-    }
-
-    @Override
-    public List<Map> listAllMapsAndMods() throws SQLException {
-        return MapDao.getInstance().listAllMapsAndMods();
-    }
-
-    @Override
-    public List<MapDto> getDtos(List<Map> mapList) {
-        return mapDtoFactory.newDtos(mapList);
-    }
-
-    @Override
-    public MapDto getDto(Map map) {
-        return mapDtoFactory.newDto(map);
+        this.profileDtoFactory = new ProfileDtoFactory();
     }
 
     @Override
@@ -59,12 +52,12 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
         }
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         String urlInfo = baseUrlWorkshop + idWorkShop;
-        Map customMap = new Map(mapName, false, urlInfo, idWorkShop, urlPhoto, downloaded, isMod);
+        Map customMap = new Map(mapName, false, urlInfo, idWorkShop, urlPhoto, downloaded, isMod, new ArrayList<Profile>());
         return MapDao.getInstance().insert(customMap);
     }
 
     @Override
-    public Map createNewCustomMapFromWorkshop(Long idWorkShop, String installationFolder, boolean downloaded, Boolean isMod) throws Exception {
+    public MapDto createNewCustomMapFromWorkshop(Long idWorkShop, String installationFolder, boolean downloaded, Boolean isMod) throws Exception {
         URL urlWorkShop = null;
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         urlWorkShop = new URL(baseUrlWorkshop + idWorkShop);
@@ -93,11 +86,12 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
         File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
 
-        return createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, downloaded, isMod);
+        Map newMap = createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, downloaded, isMod);
+        return mapDtoFactory.newDto(newMap);
     }
 
     @Override
-    public Map createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String installationFolder, boolean downloaded, Boolean isMod) throws Exception {
+    public MapDto createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String installationFolder, boolean downloaded, Boolean isMod) throws Exception {
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         URL urlWorkShop = new URL(baseUrlWorkshop + idWorkShop);
         BufferedReader reader = new BufferedReader(new InputStreamReader(urlWorkShop.openStream()));
@@ -118,7 +112,8 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
         File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
 
-        return createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, downloaded, isMod);
+        Map newMap = createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, downloaded, isMod);
+        return mapDtoFactory.newDto(newMap);
     }
 
     @Override
@@ -146,18 +141,39 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
     }
 
     @Override
-    public Optional<Map> findMapOrModByCode(String mapName) throws SQLException {
-        return MapDao.getInstance().findByCode(mapName);
+    public MapDto insertOfficialMap(String mapName) throws SQLException {
+        Optional<Map> mapOpt = MapDao.getInstance().findByCode(mapName);
+        if (!mapOpt.isPresent()) {
+            Map newOfficialMap = new Map(mapName, true, null, null, "/KFGame/Web/images/maps/" + mapName + ".jpg", true, false, new ArrayList<Profile>());
+            Map insertedMap = MapDao.getInstance().insert(newOfficialMap);
+            if (insertedMap != null) {
+                return mapDtoFactory.newDto(insertedMap);
+            }
+        }
+        return null;
     }
 
     @Override
-    public Map insertMap(Map map) throws SQLException {
-        return MapDao.getInstance().insert(map);
+    public MapDto findMapOrModByIdWorkShop(Long idWorkShop) throws SQLException {
+        Optional<Map> mapOpt = MapDao.getInstance().findByIdWorkShop(idWorkShop);
+        if (mapOpt.isPresent()) {
+            return mapDtoFactory.newDto(mapOpt.get());
+        }
+        return null;
     }
 
     @Override
-    public Optional<Map> findMapOrModByIdWorkShop(Long idWorkShop) throws SQLException {
-        return MapDao.getInstance().findByIdWorkShop(idWorkShop);
+    public ObservableList<ProfileDto> listAllProfiles() throws SQLException {
+        List<Profile> profiles = ProfileDao.getInstance().listAll();
+        return profileDtoFactory.newDtos(profiles);
     }
 
+    @Override
+    public List<MapDto> getMapsFromProfile(String profileName) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            return mapDtoFactory.newDtos(profileOpt.get().getMapList());
+        }
+        return new ArrayList<MapDto>();
+    }
 }

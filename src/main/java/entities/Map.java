@@ -1,13 +1,15 @@
 package entities;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "MAPS")
 public class Map extends CommonEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="ID", updatable=false, nullable=false)
     private Integer id;
 
@@ -32,11 +34,15 @@ public class Map extends CommonEntity {
     @Column(name="MOD")
     private Boolean mod;
 
+    @ManyToMany(mappedBy = "mapList", fetch = FetchType.EAGER)
+    private List<Profile> profileList;
+
     public Map() {
         super();
+        this.profileList = new ArrayList<Profile>();
     }
 
-    public Map(String code, boolean official, String urlInfo, Long idWorkShop, String urlPhoto, boolean downloaded, Boolean mod) {
+    public Map(String code, boolean official, String urlInfo, Long idWorkShop, String urlPhoto, boolean downloaded, Boolean mod, List<Profile> profileList) {
         super();
         this.code = code;
         this.official = official;
@@ -45,6 +51,7 @@ public class Map extends CommonEntity {
         this.urlPhoto = urlPhoto;
         this.downloaded = downloaded;
         this.mod = mod;
+        this.profileList = profileList;
     }
 
     @Override
@@ -111,5 +118,13 @@ public class Map extends CommonEntity {
 
     public void setMod(Boolean mod) {
         this.mod = mod;
+    }
+
+    public List<Profile> getProfileList() {
+        return profileList;
+    }
+
+    public void setProfileList(List<Profile> profileList) {
+        this.profileList = profileList;
     }
 }

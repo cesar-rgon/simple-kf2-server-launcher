@@ -39,7 +39,7 @@
         <RowConstraints minHeight="10.0" prefHeight="80.0" vgrow="SOMETIMES" />
     </rowConstraints>
     <children>
-      <TextArea fx:id="console" editable="false" opacity="0.75" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="6" GridPane.halignment="LEFT" GridPane.rowIndex="17" GridPane.valignment="TOP">
+      <TextArea fx:id="console" editable="false" prefHeight="200.0" prefWidth="200.0" GridPane.columnSpan="6" GridPane.halignment="LEFT" GridPane.rowIndex="17" GridPane.valignment="TOP">
          <GridPane.margin>
             <Insets left="207.0" top="5.0" />
          </GridPane.margin>
@@ -138,13 +138,13 @@
             <Insets left="7.0" top="5.0" />
          </GridPane.margin>
         </ImageView>
-        <ComboBox fx:id="profileSelect" onAction="#profileOnAction" opacity="0.75" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <ComboBox fx:id="languageSelect" onAction="#languageOnAction" opacity="0.75" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-        <ComboBox fx:id="gameTypeSelect" onAction="#gameTypeOnAction" opacity="0.75" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-        <ComboBox fx:id="mapSelect" onAction="#mapOnAction" opacity="0.75" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-        <ComboBox fx:id="difficultySelect" onAction="#difficultyOnAction" opacity="0.75" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-        <ComboBox fx:id="lengthSelect" onAction="#lengthOnAction" opacity="0.75" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-        <ComboBox fx:id="maxPlayersSelect" onAction="#maxPlayersOnAction" opacity="0.75" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+        <ComboBox fx:id="profileSelect" onAction="#profileOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <ComboBox fx:id="languageSelect" onAction="#languageOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <ComboBox fx:id="gameTypeSelect" onAction="#gameTypeOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+        <ComboBox fx:id="mapSelect" onAction="#mapOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+        <ComboBox fx:id="difficultySelect" onAction="#difficultyOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+        <ComboBox fx:id="lengthSelect" onAction="#lengthOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+        <ComboBox fx:id="maxPlayersSelect" onAction="#maxPlayersOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="7" />
         <Label fx:id="profileLabel" text="PROFILE*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
             <GridPane.margin>
                 <Insets right="10.0" />
@@ -225,25 +225,25 @@
                 <Insets left="15.0" top="12.0" />
             </GridPane.margin>
         </Label>
-        <TextField fx:id="serverName" maxWidth="350.0" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-        <PasswordField fx:id="serverPassword" maxWidth="350.0" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+        <TextField fx:id="serverName" maxWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+        <PasswordField fx:id="serverPassword" maxWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="9" />
         <CheckBox fx:id="webPage" lineSpacing="0.9" mnemonicParsing="false" onAction="#webPageOnAction" opacity="0.75" text="Enable WebAdmin" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="10" />
-        <PasswordField fx:id="webPassword" maxWidth="350.0" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="11" />
-        <TextField fx:id="webPort" maxWidth="65.0" opacity="0.75" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="12">
+        <PasswordField fx:id="webPassword" maxWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+        <TextField fx:id="webPort" maxWidth="65.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="12">
          <GridPane.margin>
             <Insets />
          </GridPane.margin></TextField>
-        <TextField fx:id="gamePort" maxWidth="65.0" opacity="0.75" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="12">
+        <TextField fx:id="gamePort" maxWidth="65.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="12">
          <GridPane.margin>
             <Insets left="80.0" />
          </GridPane.margin></TextField>
-        <TextField fx:id="queryPort" maxWidth="65.0" opacity="0.75" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="12">
+        <TextField fx:id="queryPort" maxWidth="65.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="12">
          <GridPane.margin>
             <Insets left="160.0" />
          </GridPane.margin></TextField>
-        <TextField fx:id="yourClan" maxWidth="350.0" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="13" />
-        <TextField fx:id="yourWebLink" maxWidth="350.0" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="14" />
-        <TextField fx:id="customParameters" opacity="0.75" GridPane.columnSpan="7" GridPane.rowIndex="16">
+        <TextField fx:id="yourClan" maxWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="13" />
+        <TextField fx:id="yourWebLink" maxWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="14" />
+        <TextField fx:id="customParameters" GridPane.columnSpan="7" GridPane.rowIndex="16">
          <GridPane.margin>
             <Insets left="207.0" />
          </GridPane.margin></TextField>

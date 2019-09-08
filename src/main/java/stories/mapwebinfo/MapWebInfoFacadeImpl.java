@@ -2,6 +2,7 @@ package stories.mapwebinfo;
 
 import daos.MapDao;
 import entities.Map;
+import entities.Profile;
 import org.apache.commons.lang3.StringUtils;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -9,6 +10,7 @@ import utils.Utils;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Optional;
 
 public class MapWebInfoFacadeImpl implements MapWebInfoFacade {
@@ -62,7 +64,7 @@ public class MapWebInfoFacadeImpl implements MapWebInfoFacade {
         }
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         String urlInfo = baseUrlWorkshop + idWorkShop;
-        Map customMap = new Map(mapName, false, urlInfo, idWorkShop, urlPhoto, downloaded, mod);
+        Map customMap = new Map(mapName, false, urlInfo, idWorkShop, urlPhoto, downloaded, mod, new ArrayList<Profile>());
         return MapDao.getInstance().insert(customMap);
     }
 }

@@ -25,11 +25,6 @@ public class MapDao extends CommonDao<Map> {
         return instance;
     }
 
-    public List<Map> listAllMapsAndMods() throws SQLException {
-        String query="select m from entities.Map m order by m.official desc, m.mod desc, m.code asc";
-        return list(query, null);
-    }
-
     public List<Map> listDownloadedMaps() throws SQLException {
         String query="select m from entities.Map m where m.downloaded=true and (m.mod is null or m.mod=false) order by m.official desc, m.code asc";
         return list(query, null);
@@ -62,6 +57,11 @@ public class MapDao extends CommonDao<Map> {
 
     public List<Map> listCustomMaps() throws SQLException {
         String query="select m from entities.Map m where m.official=false and (m.mod is null or m.mod=false) order by m.code asc";
+        return list(query, null);
+    }
+
+    public List<Map> listOfficialMaps() throws SQLException {
+        String query="select m from entities.Map m where m.official=true order by m.code asc";
         return list(query, null);
     }
 }

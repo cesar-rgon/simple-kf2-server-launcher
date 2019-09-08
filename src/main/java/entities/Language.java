@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class Language extends CommonEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="ID", updatable=false, nullable=false)
     private Integer id;
 

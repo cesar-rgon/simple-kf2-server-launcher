@@ -1,10 +1,13 @@
 package stories.profilesedition;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import daos.*;
+import dtos.MapDto;
 import dtos.ProfileDto;
 import dtos.factories.ProfileDtoFactory;
 import entities.*;
 import javafx.collections.ObservableList;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 
 public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
@@ -54,17 +58,31 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                 StringUtils.isNotBlank(defaultServername) ? defaultServername: "Killing Floor 2 Server",
                 Integer.parseInt(defaultWebPort),
                 Integer.parseInt(defaultGamePort),
-                Integer.parseInt(defaultQueryPort)
+                Integer.parseInt(defaultQueryPort),
+                MapDao.getInstance().listOfficialMaps()
         );
         ProfileDao.getInstance().insert(newProfile);
         return profileDtoFactory.newDto(newProfile);
     }
 
     @Override
-    public boolean deleteSelectedProfile(String profileName) throws SQLException {
+    public boolean deleteSelectedProfile(String profileName, String installationFolder) throws Exception {
         Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
         if (profileOpt.isPresent()) {
-            return ProfileDao.getInstance().remove(profileOpt.get());
+            boolean deleted = ProfileDao.getInstance().remove(profileOpt.get());
+            if (deleted) {
+                List<Map> mapList = profileOpt.get().getMapList();
+                for (Map map: mapList) {
+                    map.getProfileList().remove(profileOpt.get());
+                    if (!map.isOfficial() && map.getProfileList().isEmpty()) {
+                        if (MapDao.getInstance().remove(map)) {
+                            File cacheFolder = new File(installationFolder + "/KFGame/Cache/" + map.getIdWorkShop());
+                            FileUtils.deleteDirectory(cacheFolder);
+                        }
+                    }
+                }
+            }
+            return deleted;
         }
         return false;
     }
@@ -92,6 +110,7 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
     @Override
     public ProfileDto cloneSelectedProfile(String profileName, String newProfileName) throws SQLException {
         Optional<Profile> profileToBeClonedOpt = ProfileDao.getInstance().findByName(profileName);
+
         if (profileToBeClonedOpt.isPresent()) {
             Profile newProfile = new Profile(
                     newProfileName,
@@ -112,7 +131,8 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                     profileToBeClonedOpt.get().getYourWebLink(),
                     profileToBeClonedOpt.get().getUrlImageServer(),
                     profileToBeClonedOpt.get().getWelcomeMessage(),
-                    profileToBeClonedOpt.get().getCustomParameters()
+                    profileToBeClonedOpt.get().getCustomParameters(),
+                    new ArrayList<Map>(profileToBeClonedOpt.get().getMapList())
             );
             ProfileDao.getInstance().insert(newProfile);
             return profileDtoFactory.newDto(newProfile);
@@ -125,28 +145,42 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
     public void exportProfilesToFile(List<ProfileDto> profiles, File file) throws Exception {
         Properties properties = new Properties();
         properties.setProperty("exported.profiles.number", String.valueOf(profiles.size()));
-        int index = 1;
+        int profileIndex = 1;
         for (ProfileDto profile: profiles) {
-            properties.setProperty("exported.profile" + index + ".name", profile.getName());
-            properties.setProperty("exported.profile" + index + ".language", profile.getLanguage().getKey());
-            properties.setProperty("exported.profile" + index + ".gameType", profile.getGametype().getKey());
-            properties.setProperty("exported.profile" + index + ".map", profile.getMap().getKey());
-            properties.setProperty("exported.profile" + index + ".difficulty", profile.getDifficulty().getKey());
-            properties.setProperty("exported.profile" + index + ".length", profile.getLength().getKey());
-            properties.setProperty("exported.profile" + index + ".maxPlayers", profile.getMaxPlayers().getKey());
-            properties.setProperty("exported.profile" + index + ".serverName", profile.getServerName());
-            properties.setProperty("exported.profile" + index + ".serverPassword", StringUtils.isNotBlank(profile.getServerPassword())? profile.getServerPassword(): "");
-            properties.setProperty("exported.profile" + index + ".webPage", profile.getWebPage()!=null? String.valueOf(profile.getWebPage()): "false");
-            properties.setProperty("exported.profile" + index + ".webPassword", StringUtils.isNotBlank(profile.getWebPassword())? profile.getWebPassword(): "");
-            properties.setProperty("exported.profile" + index + ".webPort", profile.getWebPort()!=null? String.valueOf(profile.getWebPort()): "");
-            properties.setProperty("exported.profile" + index + ".gamePort", profile.getGamePort()!=null?String.valueOf(profile.getGamePort()): "");
-            properties.setProperty("exported.profile" + index + ".queryPort", profile.getQueryPort()!=null?String.valueOf(profile.getQueryPort()): "");
-            properties.setProperty("exported.profile" + index + ".yourClan", StringUtils.isNotBlank(profile.getYourClan())? profile.getYourClan(): "");
-            properties.setProperty("exported.profile" + index + ".yourWebLink", StringUtils.isNotBlank(profile.getYourWebLink())? profile.getYourWebLink():"");
-            properties.setProperty("exported.profile" + index + ".urlImageServer", StringUtils.isNotBlank(profile.getUrlImageServer())? profile.getUrlImageServer(): "");
-            properties.setProperty("exported.profile" + index + ".welcomeMessage", StringUtils.isNotBlank(profile.getWelcomeMessage())? profile.getWelcomeMessage(): "");
-            properties.setProperty("exported.profile" + index + ".customParameters", StringUtils.isNotBlank(profile.getCustomParameters())? profile.getCustomParameters(): "");
-            index ++;
+            properties.setProperty("exported.profile" + profileIndex + ".name", profile.getName());
+            properties.setProperty("exported.profile" + profileIndex + ".language", profile.getLanguage().getKey());
+            properties.setProperty("exported.profile" + profileIndex + ".gameType", profile.getGametype().getKey());
+            properties.setProperty("exported.profile" + profileIndex + ".map", profile.getMap().getKey());
+            properties.setProperty("exported.profile" + profileIndex + ".difficulty", profile.getDifficulty().getKey());
+            properties.setProperty("exported.profile" + profileIndex + ".length", profile.getLength().getKey());
+            properties.setProperty("exported.profile" + profileIndex + ".maxPlayers", profile.getMaxPlayers().getKey());
+            properties.setProperty("exported.profile" + profileIndex + ".serverName", profile.getServerName());
+            properties.setProperty("exported.profile" + profileIndex + ".serverPassword", StringUtils.isNotBlank(profile.getServerPassword())? profile.getServerPassword(): "");
+            properties.setProperty("exported.profile" + profileIndex + ".webPage", profile.getWebPage()!=null? String.valueOf(profile.getWebPage()): "false");
+            properties.setProperty("exported.profile" + profileIndex + ".webPassword", StringUtils.isNotBlank(profile.getWebPassword())? profile.getWebPassword(): "");
+            properties.setProperty("exported.profile" + profileIndex + ".webPort", profile.getWebPort()!=null? String.valueOf(profile.getWebPort()): "");
+            properties.setProperty("exported.profile" + profileIndex + ".gamePort", profile.getGamePort()!=null?String.valueOf(profile.getGamePort()): "");
+            properties.setProperty("exported.profile" + profileIndex + ".queryPort", profile.getQueryPort()!=null?String.valueOf(profile.getQueryPort()): "");
+            properties.setProperty("exported.profile" + profileIndex + ".yourClan", StringUtils.isNotBlank(profile.getYourClan())? profile.getYourClan(): "");
+            properties.setProperty("exported.profile" + profileIndex + ".yourWebLink", StringUtils.isNotBlank(profile.getYourWebLink())? profile.getYourWebLink():"");
+            properties.setProperty("exported.profile" + profileIndex + ".urlImageServer", StringUtils.isNotBlank(profile.getUrlImageServer())? profile.getUrlImageServer(): "");
+            properties.setProperty("exported.profile" + profileIndex + ".welcomeMessage", StringUtils.isNotBlank(profile.getWelcomeMessage())? profile.getWelcomeMessage(): "");
+            properties.setProperty("exported.profile" + profileIndex + ".customParameters", StringUtils.isNotBlank(profile.getCustomParameters())? profile.getCustomParameters(): "");
+            properties.setProperty("exported.profile" + profileIndex + ".mapListSize", profile.getMapList()!=null? String.valueOf(profile.getMapList().size()): "0");
+            if (profile.getMapList() != null && !profile.getMapList().isEmpty()) {
+                int mapIndex = 1;
+                for (MapDto map: profile.getMapList()) {
+                    properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".name", map.getKey());
+                    properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".official", String.valueOf(map.isOfficial()));
+                    properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".downloaded", String.valueOf(map.isDownloaded()));
+                    properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlInfo", StringUtils.isNotBlank(map.getUrlInfo())? map.getUrlInfo(): "");
+                    properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".idWorkShop", map.getIdWorkShop()!=null? String.valueOf(map.getIdWorkShop()): "");
+                    properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlPhoto", StringUtils.isNotBlank(map.getUrlPhoto())? map.getUrlPhoto(): "");
+                    properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".mod", map.getMod()!=null? String.valueOf(map.getMod()): "");
+                    mapIndex++;
+                }
+            }
+            profileIndex ++;
         }
         propertyService.savePropertiesToFile(properties, file);
     }
@@ -157,38 +191,73 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
         int numberOfProfiles = Integer.parseInt(properties.getProperty("exported.profiles.number"));
         List<Profile> profileToBeImportedList = new ArrayList<Profile>();
 
-        for (int index = 1; index <= numberOfProfiles; index++) {
-            Optional<Language> languageOpt = LanguageDao.getInstance().findByCode(properties.getProperty("exported.profile" + index + ".language"));
-            Optional<GameType> gameTypeOpt = GameTypeDao.getInstance().findByCode(properties.getProperty("exported.profile" + index + ".gameType"));
-            Optional<Map> mapOpt = MapDao.getInstance().findByCode(properties.getProperty("exported.profile" + index + ".map"));
-            Optional<Difficulty> difficultyOpt = DifficultyDao.getInstance().findByCode(properties.getProperty("exported.profile" + index + ".difficulty"));
-            Optional<Length> lengthOpt = LengthDao.getInstance().findByCode(properties.getProperty("exported.profile" + index + ".length"));
-            Optional<MaxPlayers> maxPlayersOpt = MaxPlayersDao.getInstance().findByCode(properties.getProperty("exported.profile" + index + ".maxPlayers"));
+        for (int profileIndex = 1; profileIndex <= numberOfProfiles; profileIndex++) {
+            Optional<Language> languageOpt = LanguageDao.getInstance().findByCode(properties.getProperty("exported.profile" + profileIndex + ".language"));
+            Optional<GameType> gameTypeOpt = GameTypeDao.getInstance().findByCode(properties.getProperty("exported.profile" + profileIndex + ".gameType"));
+            Optional<Map> mapOpt = MapDao.getInstance().findByCode(properties.getProperty("exported.profile" + profileIndex + ".map"));
+            Optional<Difficulty> difficultyOpt = DifficultyDao.getInstance().findByCode(properties.getProperty("exported.profile" + profileIndex + ".difficulty"));
+            Optional<Length> lengthOpt = LengthDao.getInstance().findByCode(properties.getProperty("exported.profile" + profileIndex + ".length"));
+            Optional<MaxPlayers> maxPlayersOpt = MaxPlayersDao.getInstance().findByCode(properties.getProperty("exported.profile" + profileIndex + ".maxPlayers"));
+
+            int numberOfMaps = Integer.parseInt(properties.getProperty("exported.profile" + profileIndex + ".mapListSize"));
+            List<Map> profileMapList = new ArrayList<Map>();
+
+            for (int mapIndex = 1; mapIndex <= numberOfMaps; mapIndex++) {
+                String mapName = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".name");
+                Optional<Map> mapInDataBaseOpt = MapDao.getInstance().findByCode(mapName);
+                if (mapInDataBaseOpt.isPresent()) {
+                    profileMapList.add(mapInDataBaseOpt.get());
+                } else {
+                    boolean official = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".official"));
+                    boolean downloaded = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".downloaded"));
+                    String urlInfo = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlInfo");
+                    String urlPhoto = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlPhoto");
+                    String strIdWorkShop = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".idWorkShop");
+                    Long idWorkShop = StringUtils.isNotBlank(strIdWorkShop)? Long.parseLong(strIdWorkShop): 0;
+                    String strMod = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".mod");
+                    Boolean mod = StringUtils.isNotBlank(strMod)? Boolean.parseBoolean(strMod): null;
+                    Map mapToImport = new Map(mapName, official, urlInfo, idWorkShop, urlPhoto, downloaded, mod, null);
+                    profileMapList.add(mapToImport);
+                }
+            }
 
             Profile profileToBeImported = new Profile(
-                    properties.getProperty("exported.profile" + index + ".name"),
+                    properties.getProperty("exported.profile" + profileIndex + ".name"),
                     languageOpt.isPresent()? languageOpt.get(): null,
                     gameTypeOpt.isPresent()? gameTypeOpt.get(): null,
                     mapOpt.isPresent()? mapOpt.get(): null,
                     difficultyOpt.isPresent()? difficultyOpt.get(): null,
                     lengthOpt.isPresent()? lengthOpt.get(): null,
                     maxPlayersOpt.isPresent()? maxPlayersOpt.get(): null,
-                    properties.getProperty("exported.profile" + index + ".serverName"),
-                    properties.getProperty("exported.profile" + index + ".serverPassword"),
-                    Boolean.parseBoolean(properties.getProperty("exported.profile" + index + ".webPage")),
-                    properties.getProperty("exported.profile" + index + ".webPassword"),
-                    Integer.parseInt(properties.getProperty("exported.profile" + index + ".webPort")),
-                    Integer.parseInt(properties.getProperty("exported.profile" + index + ".gamePort")),
-                    Integer.parseInt(properties.getProperty("exported.profile" + index + ".queryPort")),
-                    properties.getProperty("exported.profile" + index + ".yourClan"),
-                    properties.getProperty("exported.profile" + index + ".yourWebLink"),
-                    properties.getProperty("exported.profile" + index + ".urlImageServer"),
-                    properties.getProperty("exported.profile" + index + ".welcomeMessage"),
-                    properties.getProperty("exported.profile" + index + ".customParameters")
+                    properties.getProperty("exported.profile" + profileIndex + ".serverName"),
+                    properties.getProperty("exported.profile" + profileIndex + ".serverPassword"),
+                    Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".webPage")),
+                    properties.getProperty("exported.profile" + profileIndex + ".webPassword"),
+                    Integer.parseInt(properties.getProperty("exported.profile" + profileIndex + ".webPort")),
+                    Integer.parseInt(properties.getProperty("exported.profile" + profileIndex + ".gamePort")),
+                    Integer.parseInt(properties.getProperty("exported.profile" + profileIndex + ".queryPort")),
+                    properties.getProperty("exported.profile" + profileIndex + ".yourClan"),
+                    properties.getProperty("exported.profile" + profileIndex + ".yourWebLink"),
+                    properties.getProperty("exported.profile" + profileIndex + ".urlImageServer"),
+                    properties.getProperty("exported.profile" + profileIndex + ".welcomeMessage"),
+                    properties.getProperty("exported.profile" + profileIndex + ".customParameters"),
+                    profileMapList
             );
             profileToBeImportedList.add(profileToBeImported);
         }
         return profileDtoFactory.newDtos(profileToBeImportedList);
+    }
+
+    private Map getMapFromDto(MapDto mapDto) {
+        try {
+            Optional<Map> mapOpt = MapDao.getInstance().findByCode(mapDto.getKey());
+            if (mapOpt.isPresent()) {
+                return mapOpt.get();
+            }
+        } catch (SQLException e) {
+            logger.error("Error getting Map by name: " + mapDto.getKey());
+        }
+        return null;
     }
 
     @Override
@@ -207,6 +276,7 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                     Optional<Difficulty> difficultyOpt = DifficultyDao.getInstance().findByCode(profileDto.getDifficulty().getKey());
                     Optional<Length> lengthOpt = LengthDao.getInstance().findByCode(profileDto.getLength().getKey());
                     Optional<MaxPlayers> maxPlayersOpt = MaxPlayersDao.getInstance().findByCode(profileDto.getMaxPlayers().getKey());
+                    List<Map> mapList = profileDto.getMapList().stream().map(this::getMapFromDto).collect(Collectors.toList());
 
                     Profile profileToImport = new Profile(
                             profileDto.getName(),
@@ -227,7 +297,8 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                             profileDto.getYourWebLink(),
                             profileDto.getUrlImageServer(),
                             profileDto.getWelcomeMessage(),
-                            profileDto.getCustomParameters()
+                            profileDto.getCustomParameters(),
+                            mapList
                     );
 
                     Profile insertedProfile = ProfileDao.getInstance().insert(profileToImport);

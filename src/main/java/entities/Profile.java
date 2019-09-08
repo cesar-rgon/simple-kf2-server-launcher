@@ -1,13 +1,15 @@
 package entities;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "PROFILES")
 public class Profile extends CommonEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="ID", updatable=false, nullable=false)
     private Integer id;
 
@@ -74,12 +76,21 @@ public class Profile extends CommonEntity {
     @Column(name="CUSTOM_PARAMETERS", length=500)
     private String customParameters;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "PROFILES_MAPS",
+            joinColumns = {@JoinColumn(name = "ID_PROFILE")},
+            inverseJoinColumns = {@JoinColumn(name = "ID_MAP")}
+    )
+    private List<Map> mapList;
+
     public Profile() {
         super();
+        this.mapList = new ArrayList<Map>();
     }
 
     public Profile(String name, Language language, GameType gametype, Map map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,
-                   String serverName, Integer webPort, Integer gamePort, Integer queryPort) {
+                   String serverName, Integer webPort, Integer gamePort, Integer queryPort, List<Map> mapList) {
         super();
         this.name = name;
         this.language = language;
@@ -92,11 +103,12 @@ public class Profile extends CommonEntity {
         this.webPort = webPort;
         this.gamePort = gamePort;
         this.queryPort = queryPort;
+        this.mapList = mapList;
     }
 
     public Profile(String name, Language language, GameType gametype, Map map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,
                    String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
-                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters) {
+                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, List<Map> mapList) {
         super();
         this.name = name;
         this.language = language;
@@ -117,6 +129,7 @@ public class Profile extends CommonEntity {
         this.urlImageServer = urlImageServer;
         this.welcomeMessage = welcomeMessage;
         this.customParameters = customParameters;
+        this.mapList = mapList;
     }
 
     @Override
@@ -279,5 +292,13 @@ public class Profile extends CommonEntity {
 
     public void setCustomParameters(String customParameters) {
         this.customParameters = customParameters;
+    }
+
+    public List<Map> getMapList() {
+        return mapList;
+    }
+
+    public void setMapList(List<Map> mapList) {
+        this.mapList = mapList;
     }
 }

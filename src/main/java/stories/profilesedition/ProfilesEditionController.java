@@ -182,7 +182,7 @@ public class ProfilesEditionController implements Initializable {
             int selectedIndex = profilesTable.getSelectionModel().getSelectedIndex();
             if (selectedIndex >= 0) {
                 ProfileDto selectedProfile = profilesTable.getSelectionModel().getSelectedItem();
-                if (facade.deleteSelectedProfile(selectedProfile.getName())) {
+                if (facade.deleteSelectedProfile(selectedProfile.getName(), installationFolder)) {
                     profilesTable.getItems().remove(selectedIndex);
                     if (Session.getInstance().getActualProfile() != null && selectedProfile.getName().equalsIgnoreCase(Session.getInstance().getActualProfile().getName())) {
                         if (profilesTable.getItems().size() > 0) {

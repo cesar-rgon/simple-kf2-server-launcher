@@ -246,7 +246,7 @@ En esta sección puedes añadir, editar o eliminar el máx.jugadores del lanzado
 ## Parametros por consola
 El lanzador permite ejecutar servidores a través de parámetros de terminal sin interacción del usuario con la interfaz.
 
-Los parámetros aceptados son: *Por ejemplo^*
+Los parámetros aceptados son: *Por ejemplo*:
 
 ```
 java -jar SimpleKF2ServerLauncher.jar --profiles nombrePerfil1 [nombrePerfil2 nombrePerfil3 ... ]

@@ -1,7 +1,9 @@
 package stories.mapsedition;
 
 import dtos.MapDto;
+import dtos.ProfileDto;
 import entities.Map;
+import entities.Profile;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -49,7 +51,7 @@ public class MapsEditionController implements Initializable {
     private final PropertyService propertyService;
     protected String languageCode;
     private String installationFolder;
-    private List<Map> mapList;
+    private List<MapDto> mapList;
     private boolean selectMaps;
 
 
@@ -67,6 +69,7 @@ public class MapsEditionController implements Initializable {
     @FXML private Tab officialMapsTab;
     @FXML private Label sliderLabel;
     @FXML private ImageView searchImg;
+    @FXML private ComboBox<ProfileDto> profileSelect;
 
     public MapsEditionController() {
         super();
@@ -77,12 +80,19 @@ public class MapsEditionController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
+            ObservableList<ProfileDto> profileOptions = facade.listAllProfiles();
+            profileSelect.setItems(profileOptions);
+            if (!profileOptions.isEmpty()) {
+                profileSelect.setValue(Session.getInstance().getActualProfile() != null? Session.getInstance().getActualProfile(): profileSelect.getItems().get(0));
+            } else {
+                profileSelect.setValue(null);
+            }
+
             languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             selectMaps = true;
             installationFolder = facade.findConfigPropertyValue("prop.config.installationFolder");
-            mapList = facade.listAllMapsAndMods();
-            List<MapDto> mapListDto = facade.getDtos(mapList);
-            for (MapDto map: mapListDto) {
+            mapList = facade.getMapsFromProfile(profileSelect.getValue().getName());
+            for (MapDto map: mapList) {
                 GridPane gridpane = createMapGridPane(map);
                 if (map.isOfficial()) {
                     officialMapsFlowPane.getChildren().add(gridpane);
@@ -294,8 +304,7 @@ public class MapsEditionController implements Initializable {
     private void searchMapsKeyReleased() {
         officialMapsFlowPane.getChildren().clear();
         customMapsFlowPane.getChildren().clear();
-        List<MapDto> mapListDto = facade.getDtos(mapList);
-        for (MapDto map: mapListDto) {
+        for (MapDto map: mapList) {
             String mapLabel = StringUtils.upperCase(map.getKey());
             if (mapLabel.contains(StringUtils.upperCase(searchMaps.getText()))) {
                 GridPane gridpane = createMapGridPane(map);
@@ -331,7 +340,6 @@ public class MapsEditionController implements Initializable {
                 StringBuffer errors = new StringBuffer();
 
                 String[] idUrlWorkShopArray = result.get().replaceAll(" ", "").split(",");
-                Map customMap = null;
                 for (int i = 0; i < idUrlWorkShopArray.length; i++) {
                     try {
                         Long idWorkShop = null;
@@ -341,15 +349,15 @@ public class MapsEditionController implements Initializable {
                         } else {
                             idWorkShop = Long.parseLong(idUrlWorkShopArray[i]);
                         }
-                        Optional<Map> mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
-                        if (!mapModInDataBase.isPresent()) {
-                            customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, installationFolder, false, null);
+                        MapDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
+                        if (mapModInDataBase == null) {
+                            MapDto customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, installationFolder, false, null);
                             if (customMap != null) {
                                 mapList.add(customMap);
-                                GridPane gridpane = createMapGridPane(facade.getDto(customMap));
+                                GridPane gridpane = createMapGridPane(customMap);
                                 customMapsFlowPane.getChildren().add(gridpane);
                                 String mapNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                                success.append(mapNameMessage + ": ").append(customMap.getCode()).append(" - id WorkShop: ").append(customMap.getIdWorkShop()).append("\n");
+                                success.append(mapNameMessage + ": ").append(customMap.getKey()).append(" - id WorkShop: ").append(customMap.getIdWorkShop()).append("\n");
                             } else {
                                 errors.append("url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
                             }
@@ -445,8 +453,8 @@ public class MapsEditionController implements Initializable {
                                         customMapsFlowPane.getChildren().remove(gridpane);
                                         File photo = new File(installationFolder + map.getUrlPhoto());
                                         photo.delete();
-                                        File cacheFoler = new File(installationFolder + "/KFGame/Cache/" + map.getIdWorkShop());
-                                        FileUtils.deleteDirectory(cacheFoler);
+                                        File cacheFolder = new File(installationFolder + "/KFGame/Cache/" + map.getIdWorkShop());
+                                        FileUtils.deleteDirectory(cacheFolder);
                                     }
                                 } else {
                                     errors.append(mapNameLabel.getText()).append("\n");
@@ -460,7 +468,7 @@ public class MapsEditionController implements Initializable {
                     if (!mapsToRemove.isEmpty()) {
                         try {
                             mapList.clear();
-                            mapList = facade.listAllMapsAndMods();
+                            mapList = facade.getMapsFromProfile(profileSelect.getValue().getName());
                             officialMapsTab.setGraphic(new Label("(" + officialMapsFlowPane.getChildren().size() + ")"));
                             customMapsModsTab.setGraphic(new Label("(" + customMapsFlowPane.getChildren().size() + ")"));
                         } catch (SQLException e) {
@@ -614,19 +622,15 @@ public class MapsEditionController implements Initializable {
                 String mapName = array[0];
 
                 try {
-                    Optional<Map> mapInDataBase = facade.findMapOrModByCode(mapName);
-                    if (!mapInDataBase.isPresent()) {
-                        Map newOfficialMap = new Map(mapName, true, null, null, "/KFGame/Web/images/maps/" + mapName + ".jpg", true, false);
-                        Map insertedMap = facade.insertMap(newOfficialMap);
-                        if (insertedMap != null) {
-                            mapList.add(insertedMap);
-                            GridPane gridpane = createMapGridPane(facade.getDto(insertedMap));
-                            officialMapsFlowPane.getChildren().add(gridpane);
-                            success.append(mapNameLabel).append(": ").append(insertedMap.getCode()).append("\n");
-                        } else {
-                            logger.error("Error importing the official map with name: " + mapName);
-                            errors.append(mapNameLabel).append(": ").append(mapName).append("\n");
-                        }
+                    MapDto insertedMap = facade.insertOfficialMap(mapName);
+                    if (insertedMap != null) {
+                        mapList.add(insertedMap);
+                        GridPane gridpane = createMapGridPane(insertedMap);
+                        officialMapsFlowPane.getChildren().add(gridpane);
+                        success.append(mapNameLabel).append(": ").append(insertedMap.getKey()).append("\n");
+                    } else {
+                        logger.error("Error importing the official map with name: " + mapName);
+                        errors.append(mapNameLabel).append(": ").append(mapName).append("\n");
                     }
                 } catch (Exception e) {
                     logger.error("Error importing the official map: " + mapName, e);
@@ -652,14 +656,14 @@ public class MapsEditionController implements Initializable {
                 String mapName = array[0];
                 Long idWorkShop = kf2Common.getIdWorkShopFromPath(customMapPath.getParent(), installationFolder);
                 try {
-                    Optional<Map> mapInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
-                    if (!mapInDataBase.isPresent()) {
-                        Map customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, mapName, installationFolder, true, false);
+                    MapDto mapInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
+                    if (mapInDataBase == null) {
+                        MapDto customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, mapName, installationFolder, true, false);
                         if (customMap != null) {
                             mapList.add(customMap);
-                            GridPane gridpane = createMapGridPane(facade.getDto(customMap));
+                            GridPane gridpane = createMapGridPane(customMap);
                             customMapsFlowPane.getChildren().add(gridpane);
-                            success.append(mapNameLabel).append(": ").append(customMap.getCode()).append(" - id WorkShop: ").append(idWorkShop).append("\n");
+                            success.append(mapNameLabel).append(": ").append(customMap.getKey()).append(" - id WorkShop: ").append(idWorkShop).append("\n");
                         } else {
                             logger.error("Error importing the custom map with idWorkShop: " + idWorkShop);
                             errors.append(mapNameLabel).append(": ").append(mapName).append(" - id WorkShop: ").append(idWorkShop).append("\n");
@@ -686,14 +690,14 @@ public class MapsEditionController implements Initializable {
             for (Path modPath: modList) {
                 Long idWorkShop = kf2Common.getIdWorkShopFromPath(modPath, installationFolder);
                 try {
-                    Optional<Map> modInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
-                    if (!modInDataBase.isPresent()) {
-                        Map mod = facade.createNewCustomMapFromWorkshop(idWorkShop, installationFolder, true, true);
+                    MapDto modInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
+                    if (modInDataBase == null) {
+                        MapDto mod = facade.createNewCustomMapFromWorkshop(idWorkShop, installationFolder, true, true);
                         if (mod != null) {
                             mapList.add(mod);
-                            GridPane gridpane = createMapGridPane(facade.getDto(mod));
+                            GridPane gridpane = createMapGridPane(mod);
                             customMapsFlowPane.getChildren().add(gridpane);
-                            success.append(modNameLabel).append(": ").append(mod.getCode()).append(" - id WorkShop: ").append(idWorkShop).append("\n");
+                            success.append(modNameLabel).append(": ").append(mod.getKey()).append(" - id WorkShop: ").append(idWorkShop).append("\n");
                         } else {
                             logger.error("Error importing the mod with idWorkShop: " + idWorkShop);
                             errors.append("id WorkShop: ").append(idWorkShop).append("\n");
@@ -736,6 +740,28 @@ public class MapsEditionController implements Initializable {
             selectMaps = !selectMaps;
             selectAllMaps.setText(labelText);
         } catch (Exception e) {
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void profileOnAction() {
+        try {
+            customMapsFlowPane.getChildren().clear();
+            officialMapsFlowPane.getChildren().clear();
+            mapList = facade.getMapsFromProfile(profileSelect.getValue().getName());
+            for (MapDto map : mapList) {
+                GridPane gridpane = createMapGridPane(map);
+                if (map.isOfficial()) {
+                    officialMapsFlowPane.getChildren().add(gridpane);
+                } else {
+                    customMapsFlowPane.getChildren().add(gridpane);
+                }
+            }
+
+            officialMapsTab.setGraphic(new Label("(" + officialMapsFlowPane.getChildren().size() + ")"));
+            customMapsModsTab.setGraphic(new Label("(" + customMapsFlowPane.getChildren().size() + ")"));
+        } catch (SQLException e) {
             Utils.errorDialog(e.getMessage(), e);
         }
     }
