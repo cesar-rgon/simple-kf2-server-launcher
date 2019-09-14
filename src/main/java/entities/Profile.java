@@ -25,7 +25,7 @@ public class Profile extends CommonEntity {
     private GameType gametype;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="ID_MAP", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name="ID_MAP", referencedColumnName="ID")
     private Map map;
 
     @ManyToOne(fetch = FetchType.EAGER)

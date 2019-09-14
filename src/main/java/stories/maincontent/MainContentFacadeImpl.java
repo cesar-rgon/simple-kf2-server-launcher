@@ -2,7 +2,6 @@ package stories.maincontent;
 
 import daos.*;
 import dtos.GameTypeDto;
-import dtos.MapDto;
 import dtos.ProfileDto;
 import dtos.SelectDto;
 import dtos.factories.*;
@@ -23,7 +22,6 @@ public class MainContentFacadeImpl implements MainContentFacade {
     private final LanguageDtoFactory languageDtoFactory;
     private final ProfileDtoFactory profileDtoFactory;
     private final GameTypeDtoFactory gameTypeDtoFactory;
-    private final MapDtoFactory mapDtoFactory;
     private final DifficultyDtoFactory difficultyDtoFactory;
     private final LengthDtoFactory lengthDtoFactory;
     private final MaxPlayersDtoFactory maxPlayersDtoFactory;
@@ -33,7 +31,6 @@ public class MainContentFacadeImpl implements MainContentFacade {
         languageDtoFactory = new LanguageDtoFactory();
         profileDtoFactory = new ProfileDtoFactory();
         gameTypeDtoFactory = new GameTypeDtoFactory();
-        mapDtoFactory = new MapDtoFactory();
         difficultyDtoFactory = new DifficultyDtoFactory();
         lengthDtoFactory = new LengthDtoFactory();
         maxPlayersDtoFactory = new MaxPlayersDtoFactory();
@@ -55,12 +52,6 @@ public class MainContentFacadeImpl implements MainContentFacade {
     public ObservableList<GameTypeDto> listAllGameTypes() throws SQLException {
         List<GameType> gameTypes = GameTypeDao.getInstance().listAll();
         return gameTypeDtoFactory.newDtos(gameTypes);
-    }
-
-    @Override
-    public ObservableList<MapDto> listDownloadedMaps() throws SQLException {
-        List<Map> maps = MapDao.getInstance().listDownloadedMaps();
-        return mapDtoFactory.newDtos(maps);
     }
 
     @Override
@@ -100,7 +91,7 @@ public class MainContentFacadeImpl implements MainContentFacade {
         Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
-            Optional<Map> mapOpt = MapDao.getInstance().findByCode(mapCode);
+            Optional<Map> mapOpt = profile.getMapList().stream().filter(m -> m.getCode().equals(mapCode)).findFirst();
             if (mapOpt.isPresent()) {
                 profile.setMap(mapOpt.get());
                 return ProfileDao.getInstance().update(profile);

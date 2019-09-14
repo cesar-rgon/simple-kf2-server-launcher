@@ -1,6 +1,6 @@
 package stories.mapwebinfo;
 
-import entities.Map;
+import dtos.MapDto;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -116,11 +116,11 @@ public class MapWebInfoController implements Initializable {
                             }
                         }
                         mapNameLabel.setText(mapName);
-                        if (idWorkShop != null && facade.isMapInDataBase(idWorkShop)) {
+                        if (idWorkShop != null && Session.getInstance().getMapsProfile() != null && facade.isMapInProfile(idWorkShop, Session.getInstance().getMapsProfile().getName())) {
                             addMap.setVisible(false);
                             alreadyInLauncher.setVisible(true);
                         } else {
-                            addMap.setVisible(StringUtils.isNotBlank(urlWorkShop) && StringUtils.isNotBlank(mapName));
+                            addMap.setVisible(StringUtils.isNotBlank(urlWorkShop) && StringUtils.isNotBlank(mapName) && Session.getInstance().getMapsProfile() != null);
                             alreadyInLauncher.setVisible(false);
                         }
                     } catch (Exception e) {
@@ -164,17 +164,33 @@ public class MapWebInfoController implements Initializable {
                 Utils.warningDialog(headerText, contentText);
                 return;
             }
-            Map customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, mapName, strUrlMapImage,  installationFolder);
-            if (customMap != null) {
-                addMap.setVisible(false);
-                alreadyInLauncher.setVisible(true);
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                Utils.infoDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+
+            MapDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
+            if (mapModInDataBase == null) {
+                MapDto customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, mapName, strUrlMapImage,  installationFolder, Session.getInstance().getMapsProfile().getName());
+                if (customMap != null) {
+                    addMap.setVisible(false);
+                    alreadyInLauncher.setVisible(true);
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                    Utils.infoDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+                } else {
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                    Utils.warningDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+                }
             } else {
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                Utils.warningDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+                if (facade.addProfileToMap(mapModInDataBase.getKey(), Session.getInstance().getMapsProfile().getName())) {
+                    addMap.setVisible(false);
+                    alreadyInLauncher.setVisible(true);
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                    Utils.infoDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+                } else {
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                    Utils.warningDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+                }
             }
         } catch (Exception e) {
             String message = "Error adding map/mod to the launcher";

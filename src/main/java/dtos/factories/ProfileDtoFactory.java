@@ -31,7 +31,7 @@ public class ProfileDtoFactory {
         return new ProfileDto(profile.getName(),
                 languageDtoFactory.newDto(profile.getLanguage()),
                 gameTypeDtoFactory.newDto(profile.getGametype()),
-                mapDtoFactory.newDto(profile.getMap()),
+                profile.getMap() != null ? mapDtoFactory.newDto(profile.getMap()): null,
                 difficultyDtoFactory.newDto(profile.getDifficulty()),
                 lengthDtoFactory.newDto(profile.getLength()),
                 maxPlayersDtoFactory.newDto(profile.getMaxPlayers()),
