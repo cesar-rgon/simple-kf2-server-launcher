@@ -14,6 +14,7 @@ public class Session {
     private String console;
     private MapDto map;
     private List<Process> processList;
+    private ProfileDto mapsProfile;
 
     /**
      * Singleton constructor
@@ -74,5 +75,13 @@ public class Session {
 
     public void setProcessList(List<Process> processList) {
         this.processList = processList;
+    }
+
+    public ProfileDto getMapsProfile() {
+        return mapsProfile;
+    }
+
+    public void setMapsProfile(ProfileDto mapsProfile) {
+        this.mapsProfile = mapsProfile;
     }
 }

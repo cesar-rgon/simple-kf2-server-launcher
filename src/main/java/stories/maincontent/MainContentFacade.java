@@ -5,15 +5,16 @@ import dtos.MapDto;
 import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.collections.ObservableList;
+import pojos.session.Session;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 public interface MainContentFacade {
     ObservableList<ProfileDto> listAllProfiles() throws SQLException;
     ObservableList<SelectDto> listAllLanguages() throws SQLException;
     ObservableList<GameTypeDto> listAllGameTypes() throws SQLException;
-    ObservableList<MapDto> listDownloadedMaps() throws SQLException;
     ObservableList<SelectDto> listAllDifficulties() throws SQLException;
     ObservableList<SelectDto> listAllLengths() throws SQLException;
     ObservableList<SelectDto> listAllPlayers() throws SQLException;
@@ -39,4 +40,5 @@ public interface MainContentFacade {
     String runServer(String profileName) throws SQLException;
     String joinServer(String profileName) throws SQLException;
     ProfileDto getLastSelectedProfile() throws Exception;
+    List<ProfileDto> selectProfiles(String message, String actualProfileName) throws SQLException;
 }

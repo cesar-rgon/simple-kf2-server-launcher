@@ -16,11 +16,6 @@ public class DatabaseServiceImpl implements DatabaseService {
     }
 
     @Override
-    public List<Map> listDownloadedMaps() throws SQLException {
-        return MapDao.getInstance().listDownloadedMaps();
-    }
-
-    @Override
     public List<Map> listNotDownloadedMapsAndMods() throws SQLException {
         return MapDao.getInstance().listNotDownloadedMapsAndMods();
     }
@@ -30,22 +25,4 @@ public class DatabaseServiceImpl implements DatabaseService {
         return MapDao.getInstance().update(map);
     }
 
-    @Override
-    public List<Map> listCustomMapsAndMods() throws SQLException {
-        return MapDao.getInstance().listCustomMapsAndMods();
-    }
-
-    @Override
-    public List<Map> listCustomMaps() throws SQLException {
-        return MapDao.getInstance().listCustomMaps();
-    }
-
-    @Override
-    public Map findMapByName(String mapName) throws SQLException {
-        Optional<Map> mapOpt = MapDao.getInstance().findByCode(mapName);
-        if (mapOpt.isPresent()) {
-            return mapOpt.get();
-        }
-        return null;
-    }
 }

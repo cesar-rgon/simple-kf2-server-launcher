@@ -6,6 +6,7 @@ import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -27,6 +28,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class MainContentController implements Initializable {
 
@@ -114,11 +116,11 @@ public class MainContentController implements Initializable {
                 profileSelect.setValue(Session.getInstance().getActualProfile() != null? Session.getInstance().getActualProfile(): facade.getLastSelectedProfile());
             } else {
                 profileSelect.setValue(null);
+                mapSelect.setItems(null);
             }
             Session.getInstance().setActualProfile(profileSelect.getValue());
             languageSelect.setItems(facade.listAllLanguages());
             gameTypeSelect.setItems(facade.listAllGameTypes());
-            mapSelect.setItems(facade.listDownloadedMaps());
             difficultySelect.setItems(facade.listAllDifficulties());
             lengthSelect.setItems(facade.listAllLengths());
             maxPlayersSelect.setItems(facade.listAllPlayers());
@@ -554,6 +556,12 @@ public class MainContentController implements Initializable {
         languageSelect.setValue(profile.getLanguage());
         previousSelectedLanguageCode = profile.getLanguage().getKey();
         gameTypeSelect.setValue(profile.getGametype());
+
+        List<MapDto> mapList = profile.getMapList().stream()
+                .filter(m -> m.isDownloaded() && m.getMod() != null && !m.getMod())
+                .collect(Collectors.toList());
+        mapSelect.setItems(FXCollections.observableArrayList(mapList));
+
         mapSelect.setValue(profile.getMap());
         difficultySelect.setValue(profile.getDifficulty());
         difficultySelect.setDisable(!gameTypeSelect.getValue().isDifficultyEnabled());
@@ -642,7 +650,7 @@ public class MainContentController implements Initializable {
     @FXML
     private void mapOnAction() {
         try {
-            if (profileSelect.getValue() != null) {
+            if (profileSelect.getValue() != null && mapSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
                 String mapCode = mapSelect.getValue().getKey();
                 if (!facade.updateProfileSetMap(profileName, mapCode)) {
@@ -796,11 +804,9 @@ public class MainContentController implements Initializable {
                     profileSelect.setValue(allProfiles.get(0));
                     break;
                 default:
-                    List<ProfileDto> preSelectedProfiles = new ArrayList<ProfileDto>();
-                    preSelectedProfiles.add(Session.getInstance().getActualProfile());
                     String message = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
                             "prop.message.runServers");
-                    selectedProfiles = Utils.selectProfilesDialog(message + ":", allProfiles, preSelectedProfiles);
+                    selectedProfiles = facade.selectProfiles(message, Session.getInstance().getActualProfile().getName());
             }
 
             StringBuffer commands = new StringBuffer(console.getText());

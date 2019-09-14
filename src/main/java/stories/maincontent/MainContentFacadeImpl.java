@@ -2,7 +2,6 @@ package stories.maincontent;
 
 import daos.*;
 import dtos.GameTypeDto;
-import dtos.MapDto;
 import dtos.ProfileDto;
 import dtos.SelectDto;
 import dtos.factories.*;
@@ -10,11 +9,13 @@ import entities.*;
 import javafx.collections.ObservableList;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
+import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import utils.Utils;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,7 +24,6 @@ public class MainContentFacadeImpl implements MainContentFacade {
     private final LanguageDtoFactory languageDtoFactory;
     private final ProfileDtoFactory profileDtoFactory;
     private final GameTypeDtoFactory gameTypeDtoFactory;
-    private final MapDtoFactory mapDtoFactory;
     private final DifficultyDtoFactory difficultyDtoFactory;
     private final LengthDtoFactory lengthDtoFactory;
     private final MaxPlayersDtoFactory maxPlayersDtoFactory;
@@ -33,7 +33,6 @@ public class MainContentFacadeImpl implements MainContentFacade {
         languageDtoFactory = new LanguageDtoFactory();
         profileDtoFactory = new ProfileDtoFactory();
         gameTypeDtoFactory = new GameTypeDtoFactory();
-        mapDtoFactory = new MapDtoFactory();
         difficultyDtoFactory = new DifficultyDtoFactory();
         lengthDtoFactory = new LengthDtoFactory();
         maxPlayersDtoFactory = new MaxPlayersDtoFactory();
@@ -55,12 +54,6 @@ public class MainContentFacadeImpl implements MainContentFacade {
     public ObservableList<GameTypeDto> listAllGameTypes() throws SQLException {
         List<GameType> gameTypes = GameTypeDao.getInstance().listAll();
         return gameTypeDtoFactory.newDtos(gameTypes);
-    }
-
-    @Override
-    public ObservableList<MapDto> listDownloadedMaps() throws SQLException {
-        List<Map> maps = MapDao.getInstance().listDownloadedMaps();
-        return mapDtoFactory.newDtos(maps);
     }
 
     @Override
@@ -100,7 +93,7 @@ public class MainContentFacadeImpl implements MainContentFacade {
         Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
-            Optional<Map> mapOpt = MapDao.getInstance().findByCode(mapCode);
+            Optional<Map> mapOpt = profile.getMapList().stream().filter(m -> m.getCode().equals(mapCode)).findFirst();
             if (mapOpt.isPresent()) {
                 profile.setMap(mapOpt.get());
                 return ProfileDao.getInstance().update(profile);
@@ -341,5 +334,19 @@ public class MainContentFacadeImpl implements MainContentFacade {
                 return null;
             }
         }
+    }
+
+    @Override
+    public List<ProfileDto> selectProfiles(String message, String actualProfileName) throws SQLException {
+
+        List<Profile> allProfiles = ProfileDao.getInstance().listAll();
+        Optional<Profile> actualProfile = ProfileDao.getInstance().findByName(actualProfileName);
+        List<Profile> preSelectedProfiles = new ArrayList<Profile>();
+        if (actualProfile.isPresent()) {
+            preSelectedProfiles.add(actualProfile.get());
+        }
+
+        List<Profile> selectedProfiles = Utils.selectProfilesDialog(message + ":", allProfiles, preSelectedProfiles);
+        return profileDtoFactory.newDtos(selectedProfiles);
     }
  }

@@ -19,6 +19,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class Kf2Common {
@@ -213,11 +215,11 @@ public abstract class Kf2Common {
                 }
             }
 
-            List<Map> customMaps = databaseService.listCustomMapsAndMods();
-            if (customMaps != null && !customMaps.isEmpty()) {
+            List<Map> customMapsMods = profile.getMapList().stream().filter(m -> !m.isOfficial()).collect(Collectors.toList());
+            if (customMapsMods != null && !customMapsMods.isEmpty()) {
                 pw.println("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]");
-                for (Map customMap: customMaps) {
-                    pw.println("ServerSubscribedWorkshopItems=" + customMap.getIdWorkShop() + " // " + customMap.getCode());
+                for (Map customMapMod: customMapsMods) {
+                    pw.println("ServerSubscribedWorkshopItems=" + customMapMod.getIdWorkShop() + " // " + customMapMod.getCode());
                 }
             }
 
@@ -247,8 +249,9 @@ public abstract class Kf2Common {
                 if (StringUtils.isNotBlank(line) && line.contains("KFMapSummary]")) {
                     String[] array = line.split(" ");
                     String mapName = array[0].replace("[", "");
-                    Map map = databaseService.findMapByName(mapName);
-                    if (map != null && map.isOfficial() || line.contains("[KF-Default KFMapSummary]")) {
+
+                    Optional<Map> map = profile.getMapList().stream().filter(m -> m.getCode().equals(mapName)).findFirst();
+                    if (map.isPresent() && map.get().isOfficial() || line.contains("[KF-Default KFMapSummary]")) {
                         pw.println(line);
                         while (!line.contains("MapName=")) {
                             line = br.readLine();
@@ -271,7 +274,7 @@ public abstract class Kf2Common {
                 }
             }
 
-            List<Map> customMaps = databaseService.listCustomMaps();
+            List<Map> customMaps = profile.getMapList().stream().filter(m -> !m.isOfficial() && m.getMod() != null && !m.getMod()).collect(Collectors.toList());
             if (customMaps != null && !customMaps.isEmpty()) {
                 for (Map customMap: customMaps) {
                     pw.println("[" + customMap.getCode() + " KFMapSummary]");
@@ -330,14 +333,7 @@ public abstract class Kf2Common {
             modifiedLine = null;
         }
         if (line.contains("GameMapCycles=(Maps=(")) {
-            try {
-                List<Map> mapList = databaseService.listDownloadedMaps();
-                modifiedLine = generateMapCycleLine(mapList);
-            } catch (SQLException e) {
-                modifiedLine = "GameMapCycles=(Maps=())";
-                logger.error(e.getMessage(), e);
-                Utils.errorDialog(e.getMessage(), e);
-            }
+            modifiedLine = generateMapCycleLine(profile.getMapList());
         }
         if (line.contains("GameDifficulty=")) {
             modifiedLine = "GameDifficulty=" + profile.getDifficulty().getCode();

@@ -273,32 +273,26 @@ public class ProfilesEditionController implements Initializable {
             fileChooser.setTitle(message + " ...");
             File selectedFile = fileChooser.showOpenDialog(MainApplication.getPrimaryStage());
             if (selectedFile != null) {
-                ObservableList<ProfileDto> profilesToBeImported = facade.getProfilesToBeImportedFromFile(selectedFile);
                 message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfilesToImport");
-                List<ProfileDto> selectedProfiles = Utils.selectProfilesDialog(message + ":", profilesToBeImported, profilesToBeImported);
-                if (selectedProfiles != null && !selectedProfiles.isEmpty()) {
-                    List<ProfileDto> insertedProfileList = facade.insertProfiles(selectedProfiles);
-                    for (ProfileDto insertedProfile: insertedProfileList) {
-                        profilesTable.getItems().add(insertedProfile);
-                        Kf2Common kf2Common = Kf2Factory.getInstance();
-                        kf2Common.createConfigFolder(installationFolder, insertedProfile.getName());
-                    }
+                StringBuffer errorMessage = new StringBuffer();
+                ObservableList<ProfileDto> importedProfiles = facade.addProfilesToBeImportedFromFile(selectedFile, message, errorMessage);
+                if (importedProfiles != null && !importedProfiles.isEmpty()) {
 
-                    if (insertedProfileList.size() == selectedProfiles.size()) {
-                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
-                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesImported");
-                        Utils.infoDialog(headerText, contentText + ":\n" + selectedFile.getAbsolutePath());
-                    } else {
-                        StringBuffer errorMessage = new StringBuffer();
-                        for (ProfileDto selectedProfile: selectedProfiles) {
-                            if (!insertedProfileList.contains(selectedProfile)) {
-                                errorMessage.append(selectedProfile.getName() + "\n");
-                            }
-                        }
-                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesNotImported");
-                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.seeLauncherLog");
-                        Utils.warningDialog(headerText + ":", errorMessage.toString() + "\n" + contentText);
+                    for (ProfileDto importedProfile: importedProfiles) {
+                        profilesTable.getItems().add(importedProfile);
+                        Kf2Common kf2Common = Kf2Factory.getInstance();
+                        kf2Common.createConfigFolder(installationFolder, importedProfile.getName());
                     }
+                }
+
+                if (StringUtils.isBlank(errorMessage)) {
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesImported");
+                    Utils.infoDialog(headerText, contentText + ":\n" + selectedFile.getAbsolutePath());
+                } else {
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesNotImported");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.seeLauncherLog");
+                    Utils.warningDialog(headerText + ":", errorMessage.toString() + "\n" + contentText);
                 }
             }
         } catch (Exception e) {
@@ -310,9 +304,9 @@ public class ProfilesEditionController implements Initializable {
     @FXML
     private void exportProfileOnAction() {
         try {
-            ObservableList<ProfileDto> allProfiles = facade.listAllProfiles();
             String message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfilesToExport");
-            List<ProfileDto> selectedProfiles = Utils.selectProfilesDialog(message + ":", allProfiles, allProfiles);
+            List<ProfileDto> selectedProfiles = facade.selectProfiles(message);
+
             if (selectedProfiles != null && !selectedProfiles.isEmpty()) {
                 FileChooser fileChooser = new FileChooser();
                 message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.exportProfiles");

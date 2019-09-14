@@ -2,6 +2,8 @@ package utils;
 
 import dtos.ProfileDto;
 import dtos.SelectDto;
+import dtos.factories.ProfileDtoFactory;
+import entities.Profile;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -192,7 +194,7 @@ public class Utils {
         alert.showAndWait();
     }
 
-    public static List<ProfileDto> selectProfilesDialog(String headerText, ObservableList<ProfileDto> profiles, List<ProfileDto> selectedProfiles) {
+    public static List<Profile> selectProfilesDialog(String headerText, List<Profile> profiles, List<Profile> selectedProfiles) {
         Dialog<GridPane> dialog = new Dialog<GridPane>();
         PropertyService propertyService = new PropertyServiceImpl();
         try {
@@ -207,7 +209,11 @@ public class Utils {
         if (profiles != null && !profiles.isEmpty()) {
             int rowIndex = 1;
             List<String> selectedProfileNameList = selectedProfiles.stream().map(p -> p.getName()).collect(Collectors.toList());
-            for (ProfileDto profile: profiles) {
+
+            ProfileDtoFactory profileDtoFactory = new ProfileDtoFactory();
+            List<ProfileDto> profileDtoList = profileDtoFactory.newDtos(profiles);
+
+            for (ProfileDto profile: profileDtoList) {
                 CheckBox checkbox = new CheckBox(profile.getName());
                 checkbox.setStyle("-fx-padding: 0 0 10px 0; -fx-font-weight: bold;");
                 if (selectedProfileNameList != null && !selectedProfileNameList.isEmpty() && selectedProfileNameList.contains(profile.getName())) {
@@ -256,13 +262,13 @@ public class Utils {
         });
 
         Optional<GridPane> result = dialog.showAndWait();
-        List<ProfileDto> selectedProfileList = new ArrayList<ProfileDto>();
+        List<Profile> selectedProfileList = new ArrayList<Profile>();
         if (result.isPresent() && result.get() != null) {
             int index = 0;
             while (index < gridpane.getChildren().size()) {
                 CheckBox checkbox = (CheckBox)result.get().getChildren().get(index);
                 if (checkbox.isSelected()) {
-                    Optional<ProfileDto> profileOpt = profiles.stream().filter(p -> p.getName().equalsIgnoreCase(checkbox.getText())).findFirst();
+                    Optional<Profile> profileOpt = profiles.stream().filter(p -> p.getName().equalsIgnoreCase(checkbox.getText())).findFirst();
                     if (profileOpt.isPresent()) {
                         selectedProfileList.add(profileOpt.get());
                     }
