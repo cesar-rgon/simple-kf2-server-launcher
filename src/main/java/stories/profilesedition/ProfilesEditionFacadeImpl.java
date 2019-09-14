@@ -1,6 +1,5 @@
 package stories.profilesedition;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import daos.*;
 import dtos.MapDto;
 import dtos.ProfileDto;
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 
 public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
