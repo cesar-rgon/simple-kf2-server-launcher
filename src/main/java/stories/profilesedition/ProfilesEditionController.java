@@ -193,6 +193,13 @@ public class ProfilesEditionController implements Initializable {
                             propertyService.removeProperty("properties/config.properties", "prop.config.lastSelectedProfile");
                         }
                     }
+                    if (Session.getInstance().getMapsProfile() != null && selectedProfile.getName().equalsIgnoreCase(Session.getInstance().getMapsProfile().getName())) {
+                        if (profilesTable.getItems().size() > 0) {
+                            Session.getInstance().setMapsProfile(profilesTable.getItems().get(0));
+                        } else {
+                            Session.getInstance().setMapsProfile(null);
+                        }
+                    }
                     File profileConfigFolder = new File(facade.findPropertyValue("prop.config.installationFolder") + "/KFGame/Config/" + selectedProfile.getName());
                     FileUtils.deleteDirectory(profileConfigFolder);
                 } else {
@@ -233,6 +240,9 @@ public class ProfilesEditionController implements Initializable {
                 if (Session.getInstance().getActualProfile() != null && oldProfileName.equalsIgnoreCase(Session.getInstance().getActualProfile().getName())) {
                     Session.getInstance().setActualProfile(updatedProfileDto);
                     propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", newProfileName);
+                }
+                if (Session.getInstance().getMapsProfile() != null && oldProfileName.equalsIgnoreCase(Session.getInstance().getMapsProfile().getName())) {
+                    Session.getInstance().setMapsProfile(updatedProfileDto);
                 }
                 profilesTable.getItems().remove(edittedRowIndex);
                 profilesTable.getItems().add(updatedProfileDto);
@@ -275,7 +285,7 @@ public class ProfilesEditionController implements Initializable {
             if (selectedFile != null) {
                 message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfilesToImport");
                 StringBuffer errorMessage = new StringBuffer();
-                ObservableList<ProfileDto> importedProfiles = facade.addProfilesToBeImportedFromFile(selectedFile, message, errorMessage);
+                ObservableList<ProfileDto> importedProfiles = facade.addProfilesToBeImportedFromFile(selectedFile, message, errorMessage, installationFolder);
                 if (importedProfiles != null && !importedProfiles.isEmpty()) {
 
                     for (ProfileDto importedProfile: importedProfiles) {
@@ -283,13 +293,15 @@ public class ProfilesEditionController implements Initializable {
                         Kf2Common kf2Common = Kf2Factory.getInstance();
                         kf2Common.createConfigFolder(installationFolder, importedProfile.getName());
                     }
+
+                    if (StringUtils.isBlank(errorMessage)) {
+                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesImported");
+                        Utils.infoDialog(headerText, contentText + ":\n" + selectedFile.getAbsolutePath());
+                    }
                 }
 
-                if (StringUtils.isBlank(errorMessage)) {
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesImported");
-                    Utils.infoDialog(headerText, contentText + ":\n" + selectedFile.getAbsolutePath());
-                } else {
+                if (StringUtils.isNotBlank(errorMessage)) {
                     String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesNotImported");
                     String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.seeLauncherLog");
                     Utils.warningDialog(headerText + ":", errorMessage.toString() + "\n" + contentText);

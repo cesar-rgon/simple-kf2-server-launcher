@@ -16,6 +16,6 @@ public interface ProfilesEditionFacade {
     String findPropertyValue(String key) throws Exception;
     ProfileDto cloneSelectedProfile(String profileName, String newProfileName) throws SQLException;
     void exportProfilesToFile(List<ProfileDto> profiles, File file) throws Exception;
-    ObservableList<ProfileDto> addProfilesToBeImportedFromFile(File file, String message, StringBuffer errorMessage) throws Exception;
+    ObservableList<ProfileDto> addProfilesToBeImportedFromFile(File file, String message, StringBuffer errorMessage, String installationFolder) throws Exception;
     List<ProfileDto> selectProfiles(String message) throws SQLException;
 }

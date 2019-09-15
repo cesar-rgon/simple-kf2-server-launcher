@@ -14,7 +14,10 @@ import services.PropertyService;
 import services.PropertyServiceImpl;
 import utils.Utils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -192,12 +195,215 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
             }
             profileIndex ++;
         }
+
+        List<Language> languageList = LanguageDao.getInstance().listAll();
+        exportGameTypesToFile(properties, languageList);
+        exportDifficultiesToFile(properties, languageList);
+        exportLengthsToFile(properties, languageList);
+        exportMaxPlayersToFile(properties, languageList);
+
         propertyService.savePropertiesToFile(properties, file);
     }
 
+    private void exportGameTypesToFile(Properties properties, List<Language> languageList) throws Exception {
+        List<GameType> gameTypeList = GameTypeDao.getInstance().listAll();
+        properties.setProperty("exported.gameTypes.number", String.valueOf(gameTypeList.size()));
+        int gameTypeIndex = 1;
+
+        for (GameType gameType: gameTypeList) {
+            properties.setProperty("exported.gameType" + gameTypeIndex + ".code", gameType.getCode());
+            properties.setProperty("exported.gameType" + gameTypeIndex + ".difficultyEnabled", String.valueOf(gameType.isDifficultyEnabled()));
+            properties.setProperty("exported.gameType" + gameTypeIndex + ".lengthEnabled", String.valueOf(gameType.isLengthEnabled()));
+            for (Language language: languageList) {
+                String description = propertyService.getPropertyValue("properties/languages/" + language.getCode() + ".properties",
+                        "prop.gametype." + gameType.getCode());
+
+                properties.setProperty("exported.gameType" + gameTypeIndex + ".description." + language.getCode(), StringUtils.isNotBlank(description)? description: "");
+            }
+            gameTypeIndex++;
+        }
+    }
+
+    private void exportDifficultiesToFile(Properties properties, List<Language> languageList) throws Exception {
+        List<Difficulty> difficultyList = DifficultyDao.getInstance().listAll();
+        properties.setProperty("exported.difficulties.number", String.valueOf(difficultyList.size()));
+        int difficultyIndex = 1;
+
+        for (Difficulty difficulty: difficultyList) {
+            properties.setProperty("exported.difficulty" + difficultyIndex + ".code", difficulty.getCode());
+            for (Language language: languageList) {
+                String description = propertyService.getPropertyValue("properties/languages/" + language.getCode() + ".properties",
+                        "prop.difficulty." + difficulty.getCode());
+
+                properties.setProperty("exported.difficulty" + difficultyIndex + ".description." + language.getCode(), StringUtils.isNotBlank(description)? description: "");
+            }
+            difficultyIndex++;
+        }
+    }
+
+    private void exportLengthsToFile(Properties properties, List<Language> languageList) throws Exception {
+        List<Length> lengthList = LengthDao.getInstance().listAll();
+        properties.setProperty("exported.lengths.number", String.valueOf(lengthList.size()));
+        int lengthIndex = 1;
+
+        for (Length length: lengthList) {
+            properties.setProperty("exported.length" + lengthIndex + ".code", length.getCode());
+            for (Language language: languageList) {
+                String description = propertyService.getPropertyValue("properties/languages/" + language.getCode() + ".properties",
+                        "prop.length." + length.getCode());
+
+                properties.setProperty("exported.length" + lengthIndex + ".description." + language.getCode(), StringUtils.isNotBlank(description)? description: "");
+            }
+            lengthIndex++;
+        }
+    }
+
+    private void exportMaxPlayersToFile(Properties properties, List<Language> languageList) throws Exception {
+        List<MaxPlayers> maxPlayersList = MaxPlayersDao.getInstance().listAll();
+        properties.setProperty("exported.maxPlayers.number", String.valueOf(maxPlayersList.size()));
+        int maxPlayersIndex = 1;
+
+        for (MaxPlayers maxPlayers: maxPlayersList) {
+            properties.setProperty("exported.maxPlayers" + maxPlayersIndex + ".code", maxPlayers.getCode());
+            for (Language language: languageList) {
+                String description = propertyService.getPropertyValue("properties/languages/" + language.getCode() + ".properties",
+                        "prop.maxplayers." + maxPlayers.getCode());
+
+                properties.setProperty("exported.maxPlayers" + maxPlayersIndex + ".description." + language.getCode(), StringUtils.isNotBlank(description)? description: "");
+            }
+            maxPlayersIndex++;
+        }
+    }
+
+    private void importGameTypesFromFile(Properties properties, List<Language> languageList) throws SQLException {
+        List<GameType> gameTypeListInDataBase = GameTypeDao.getInstance().listAll();
+        int size = Integer.valueOf(properties.getProperty("exported.gameTypes.number"));
+
+        for (int index = 1; index <= size; index++) {
+            String code = properties.getProperty("exported.gameType" + index + ".code");
+
+            try {
+                Optional<GameType> gameTypeOpt = gameTypeListInDataBase.stream().filter(gt -> gt.getCode().equals(code)).findFirst();
+                if (gameTypeOpt.isPresent()) {
+                    logger.info("The game type " + gameTypeOpt.get().getCode() + " is already in database. It can not be imported!");
+                    continue;
+                }
+
+                for (Language language: languageList) {
+                    String description = properties.getProperty("exported.gameType" + index + ".description." + language.getCode());
+                    propertyService.setProperty("properties/languages/" + language.getCode() + ".properties",
+                            "prop.gametype." + code, description);
+                }
+
+                GameType newGameType = new GameType(code);
+                newGameType.setDifficultyEnabled(Boolean.parseBoolean(properties.getProperty("exported.gameType" + index + ".difficultyEnabled")));
+                newGameType.setLengthEnabled(Boolean.parseBoolean(properties.getProperty("exported.gameType" + index + ".lengthEnabled")));
+                GameTypeDao.getInstance().insert(newGameType);
+
+            } catch (Exception e) {
+                logger.error("Error saving the Game Type " + code + " to database.");
+            }
+        }
+    }
+
+    private void importDifficultiesFromFile(Properties properties, List<Language> languageList) throws SQLException {
+        List<Difficulty> difficultyListInDataBase = DifficultyDao.getInstance().listAll();
+        int size = Integer.valueOf(properties.getProperty("exported.difficulties.number"));
+
+        for (int index = 1; index <= size; index++) {
+            String code = properties.getProperty("exported.difficulty" + index + ".code");
+
+            try {
+                Optional<Difficulty> difficultyOpt = difficultyListInDataBase.stream().filter(gt -> gt.getCode().equals(code)).findFirst();
+                if (difficultyOpt.isPresent()) {
+                    logger.info("The difficulty " + difficultyOpt.get().getCode() + " is already in database. It can not be imported!");
+                    continue;
+                }
+
+                for (Language language: languageList) {
+                    String description = properties.getProperty("exported.difficulty" + index + ".description." + language.getCode());
+                    propertyService.setProperty("properties/languages/" + language.getCode() + ".properties",
+                            "prop.difficulty." + code, description);
+                }
+
+                Difficulty newDifficulty = new Difficulty(code);
+                DifficultyDao.getInstance().insert(newDifficulty);
+
+            } catch (Exception e) {
+                logger.error("Error saving the Difficulty " + code + " to database.");
+            }
+        }
+    }
+
+
+    private void importLengthsFromFile(Properties properties, List<Language> languageList) throws SQLException {
+        List<Length> lengthListInDataBase = LengthDao.getInstance().listAll();
+        int size = Integer.valueOf(properties.getProperty("exported.lengths.number"));
+
+        for (int index = 1; index <= size; index++) {
+            String code = properties.getProperty("exported.length" + index + ".code");
+
+            try {
+                Optional<Length> lengthOpt = lengthListInDataBase.stream().filter(gt -> gt.getCode().equals(code)).findFirst();
+                if (lengthOpt.isPresent()) {
+                    logger.info("The length " + lengthOpt.get().getCode() + " is already in database. It can not be imported!");
+                    continue;
+                }
+
+                for (Language language: languageList) {
+                    String description = properties.getProperty("exported.length" + index + ".description." + language.getCode());
+                    propertyService.setProperty("properties/languages/" + language.getCode() + ".properties",
+                            "prop.length." + code, description);
+                }
+
+                Length newLength = new Length(code);
+                LengthDao.getInstance().insert(newLength);
+
+            } catch (Exception e) {
+                logger.error("Error saving the Length " + code + " to database.");
+            }
+        }
+    }
+
+    private void importMaxPlayersFromFile(Properties properties, List<Language> languageList) throws SQLException {
+        List<MaxPlayers> maxPlayersListInDataBase = MaxPlayersDao.getInstance().listAll();
+        int size = Integer.valueOf(properties.getProperty("exported.maxPlayers.number"));
+
+        for (int index = 1; index <= size; index++) {
+            String code = properties.getProperty("exported.maxPlayers" + index + ".code");
+
+            try {
+                Optional<MaxPlayers> maxPlayersOpt = maxPlayersListInDataBase.stream().filter(gt -> gt.getCode().equals(code)).findFirst();
+                if (maxPlayersOpt.isPresent()) {
+                    logger.info("The max.players with code " + maxPlayersOpt.get().getCode() + " is already in database. It can not be imported!");
+                    continue;
+                }
+
+                for (Language language: languageList) {
+                    String description = properties.getProperty("exported.maxPlayers" + index + ".description." + language.getCode());
+                    propertyService.setProperty("properties/languages/" + language.getCode() + ".properties",
+                            "prop.maxplayers." + code, description);
+                }
+
+                MaxPlayers newMaxPlayers = new MaxPlayers(code);
+                MaxPlayersDao.getInstance().insert(newMaxPlayers);
+
+            } catch (Exception e) {
+                logger.error("Error saving the Max.Players code " + code + " to database.");
+            }
+        }
+    }
+
     @Override
-    public ObservableList<ProfileDto> addProfilesToBeImportedFromFile(File file, String message, StringBuffer errorMessage) throws Exception {
+    public ObservableList<ProfileDto> addProfilesToBeImportedFromFile(File file, String message, StringBuffer errorMessage, String installationFolder) throws Exception {
         Properties properties = propertyService.loadPropertiesFromFile(file);
+        List<Language> languageList = LanguageDao.getInstance().listAll();
+
+        importGameTypesFromFile(properties, languageList);
+        importDifficultiesFromFile(properties, languageList);
+        importLengthsFromFile(properties, languageList);
+        importMaxPlayersFromFile(properties, languageList);
+
         int numberOfProfiles = Integer.parseInt(properties.getProperty("exported.profiles.number"));
         List<Profile> profileToBeImportedList = new ArrayList<Profile>();
 
@@ -235,17 +441,23 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
 
             for (int mapIndex = 1; mapIndex <= numberOfMaps; mapIndex++) {
                 String mapName = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".name");
-                Optional<Map> mapInDataBaseOpt = MapDao.getInstance().findByCode(mapName);
+                boolean official = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".official"));
+                Optional<Map> mapInDataBaseOpt;
+                Long idWorkShop = null;
+                if (official) {
+                    mapInDataBaseOpt = MapDao.getInstance().findByCode(mapName);
+                } else {
+                    String strIdWorkShop = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".idWorkShop");
+                    idWorkShop = StringUtils.isNotBlank(strIdWorkShop)? Long.parseLong(strIdWorkShop): 0;
+                    mapInDataBaseOpt = MapDao.getInstance().findByIdWorkShop(idWorkShop);
+                }
                 if (mapInDataBaseOpt.isPresent()) {
                     mapInDataBaseOpt.get().getProfileList().add(profileToBeImported);
                     profileToBeImported.getMapList().add(mapInDataBaseOpt.get());
                 } else {
-                    boolean official = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".official"));
                     boolean downloaded = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".downloaded"));
                     String urlInfo = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlInfo");
                     String urlPhoto = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlPhoto");
-                    String strIdWorkShop = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".idWorkShop");
-                    Long idWorkShop = StringUtils.isNotBlank(strIdWorkShop)? Long.parseLong(strIdWorkShop): 0;
                     String strMod = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".mod");
                     Boolean mod = StringUtils.isNotBlank(strMod)? Boolean.parseBoolean(strMod): null;
                     List<Profile> profileList = new ArrayList<Profile>();
@@ -257,14 +469,19 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
 
             String mapName = properties.getProperty("exported.profile" + profileIndex + ".map");
             Optional<Map> mapOpt = profileToBeImported.getMapList().stream()
-                    .filter(m -> m.getCode().equalsIgnoreCase(mapName)).findFirst();
-            profileToBeImported.setMap(mapOpt.isPresent()? mapOpt.get(): null);
+                    .filter(m -> m.getCode().equalsIgnoreCase(mapName) && m.isOfficial()).findFirst();
+            Optional<Map> firstOfficialMap = profileToBeImported.getMapList().stream()
+                    .filter(m -> m.isOfficial()).findFirst();
+            profileToBeImported.setMap(mapOpt.isPresent()? mapOpt.get(): firstOfficialMap.isPresent()? firstOfficialMap.get(): null);
 
             profileToBeImportedList.add(profileToBeImported);
         }
 
         List<Profile> selectedProfiles = Utils.selectProfilesDialog(message + ":", profileToBeImportedList, profileToBeImportedList);
-        List<Profile> insertedProfiles = insertProfiles(selectedProfiles);
+        List<Profile> insertedProfiles = new ArrayList<Profile>();
+        if (selectedProfiles != null & !selectedProfiles.isEmpty()) {
+            insertedProfiles = insertProfiles(selectedProfiles, installationFolder);
+        }
 
         if (insertedProfiles.size() < selectedProfiles.size()) {
             for (Profile selectedProfile: selectedProfiles) {
@@ -278,7 +495,7 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
     }
 
 
-    private List<Profile> insertProfiles(List<Profile> profileList) {
+    private List<Profile> insertProfiles(List<Profile> profileList, String installationFolder) {
 
         List<Profile> insertedProfileList = new ArrayList<Profile>();
         for (Profile profile: profileList) {
@@ -288,17 +505,23 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                     logger.error("The profile " + profile.getName() + " is already in database. It could not be imported from file");
                 } else {
                     for (Map map: profile.getMapList()) {
-                        Optional<Map> mapInDataBase;
-                        if (map.isDownloaded()) {
-                            mapInDataBase = MapDao.getInstance().findByCode(map.getCode());
-                        } else {
-                            mapInDataBase = MapDao.getInstance().findByIdWorkShop(map.getIdWorkShop());
-                        }
+                        try {
+                            Optional<Map> mapInDataBase;
+                            if (map.isOfficial()) {
+                                mapInDataBase = MapDao.getInstance().findByCode(map.getCode());
+                            } else {
+                                 mapInDataBase = MapDao.getInstance().findByIdWorkShop(map.getIdWorkShop());
+                            }
 
-                        if (mapInDataBase.isPresent()) {
-                            MapDao.getInstance().update(map);
-                        } else {
-                            MapDao.getInstance().insert(map);
+                            if (mapInDataBase.isPresent()) {
+                                MapDao.getInstance().update(map);
+                            } else {
+                                if (!createNewCustomMapFromWorkshop(map, installationFolder)) {
+                                    logger.error("Error importing the map " + map.getCode() + " to database");
+                                }
+                            }
+                        } catch (Exception e) {
+                            logger.error("Error importing the map " + map.getCode() + " to database", e);
                         }
                     }
 
@@ -314,6 +537,29 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
             }
         }
         return insertedProfileList;
+    }
+
+    private boolean createNewCustomMapFromWorkshop(Map map, String installationFolder) throws Exception {
+
+        URL urlWorkShop = new URL(map.getUrlInfo());
+        BufferedReader reader = new BufferedReader(new InputStreamReader(urlWorkShop.openStream()));
+        String strUrlMapImage = null;
+        String line;
+        while ((line = reader.readLine()) != null) {
+            if (line.contains("image_src")) {
+                String[] array = line.split("\"");
+                strUrlMapImage = array[3];
+                break;
+            }
+        }
+        reader.close();
+        String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
+        String absoluteTargetFolder = installationFolder + customMapLocalFolder;
+        Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, map.getCode());
+        map.setMod(null);
+        map.setDownloaded(false);
+        Map insertedMap = MapDao.getInstance().insert(map);
+        return (insertedMap != null);
     }
 
     @Override
