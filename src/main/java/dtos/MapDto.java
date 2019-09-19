@@ -1,7 +1,5 @@
 package dtos;
 
-import java.util.List;
-
 public class MapDto {
 
     private final String key;

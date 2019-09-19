@@ -1,9 +1,13 @@
 package stories.maxplayersedition;
 
 import daos.MaxPlayersDao;
+import daos.ProfileDao;
+import dtos.ProfileDto;
 import dtos.SelectDto;
 import dtos.factories.MaxPlayersDtoFactory;
+import dtos.factories.ProfileDtoFactory;
 import entities.MaxPlayers;
+import entities.Profile;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import services.PropertyService;
@@ -17,11 +21,13 @@ public class MaxPlayersEditionFacadeImpl implements MaxPlayersEditionFacade {
 
     private final MaxPlayersDtoFactory maxPlayersDtoFactory;
     private final PropertyService propertyService;
+    private final ProfileDtoFactory profileDtoFactory;
 
     public MaxPlayersEditionFacadeImpl() {
         super();
         this.maxPlayersDtoFactory = new MaxPlayersDtoFactory();
         propertyService = new PropertyServiceImpl();
+        profileDtoFactory = new ProfileDtoFactory();
     }
 
     public ObservableList<SelectDto> listAllMaxPlayers() throws SQLException {
@@ -80,6 +86,17 @@ public class MaxPlayersEditionFacadeImpl implements MaxPlayersEditionFacade {
             String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.maxplayers." + code, newDescription);
             return maxPlayersDtoFactory.newDto(maxPlayersOpt.get());
+        }
+        return null;
+    }
+
+    @Override
+    public ProfileDto unselectMaxPlayersInProfile(String profileName) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            profileOpt.get().setMaxPlayers(null);
+            ProfileDao.getInstance().update(profileOpt.get());
+            return profileDtoFactory.newDto(profileOpt.get());
         }
         return null;
     }

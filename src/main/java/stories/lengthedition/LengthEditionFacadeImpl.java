@@ -1,9 +1,13 @@
 package stories.lengthedition;
 
 import daos.LengthDao;
+import daos.ProfileDao;
+import dtos.ProfileDto;
 import dtos.SelectDto;
 import dtos.factories.LengthDtoFactory;
+import dtos.factories.ProfileDtoFactory;
 import entities.Length;
+import entities.Profile;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import services.PropertyService;
@@ -17,11 +21,13 @@ public class LengthEditionFacadeImpl implements LengthEditionFacade {
 
     private final LengthDtoFactory lengthDtoFactory;
     private final PropertyService propertyService;
+    private final ProfileDtoFactory profileDtoFactory;
 
     public LengthEditionFacadeImpl() {
         super();
         this.lengthDtoFactory = new LengthDtoFactory();
         propertyService = new PropertyServiceImpl();
+        profileDtoFactory = new ProfileDtoFactory();
     }
 
     public ObservableList<SelectDto> listAllLength() throws SQLException {
@@ -80,6 +86,17 @@ public class LengthEditionFacadeImpl implements LengthEditionFacade {
             String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.length." + code, newDescription);
             return lengthDtoFactory.newDto(lengthOpt.get());
+        }
+        return null;
+    }
+
+    @Override
+    public ProfileDto unselectLengthInProfile(String profileName) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            profileOpt.get().setLength(null);
+            ProfileDao.getInstance().update(profileOpt.get());
+            return profileDtoFactory.newDto(profileOpt.get());
         }
         return null;
     }

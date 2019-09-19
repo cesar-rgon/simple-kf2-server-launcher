@@ -21,7 +21,7 @@ public class Profile extends CommonEntity {
     private Language language;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="ID_GAMETYPE", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name="ID_GAMETYPE", referencedColumnName="ID")
     private GameType gametype;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -29,15 +29,15 @@ public class Profile extends CommonEntity {
     private Map map;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="ID_DIFFICULTY", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name="ID_DIFFICULTY", referencedColumnName="ID")
     private Difficulty difficulty;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="ID_LENGTH", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name="ID_LENGTH", referencedColumnName="ID")
     private Length length;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name="ID_MAXPLAYERS", referencedColumnName="ID", nullable=false)
+    @JoinColumn(name="ID_MAXPLAYERS", referencedColumnName="ID")
     private MaxPlayers maxPlayers;
 
     @Column(name="SERVER_NAME", length=100, nullable=false)

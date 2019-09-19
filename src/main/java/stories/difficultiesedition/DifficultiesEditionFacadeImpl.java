@@ -1,9 +1,13 @@
 package stories.difficultiesedition;
 
 import daos.DifficultyDao;
+import daos.ProfileDao;
+import dtos.ProfileDto;
 import dtos.SelectDto;
 import dtos.factories.DifficultyDtoFactory;
+import dtos.factories.ProfileDtoFactory;
 import entities.Difficulty;
+import entities.Profile;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import services.PropertyService;
@@ -17,11 +21,13 @@ public class DifficultiesEditionFacadeImpl implements DifficultiesEditionFacade 
 
     private final DifficultyDtoFactory difficultyDtoFactory;
     private final PropertyService propertyService;
+    private final ProfileDtoFactory profileDtoFactory;
 
     public DifficultiesEditionFacadeImpl() {
         super();
         this.difficultyDtoFactory = new DifficultyDtoFactory();
         propertyService = new PropertyServiceImpl();
+        profileDtoFactory = new ProfileDtoFactory();
     }
 
     @Override
@@ -81,6 +87,17 @@ public class DifficultiesEditionFacadeImpl implements DifficultiesEditionFacade 
             String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.difficulty." + code, newDescription);
             return difficultyDtoFactory.newDto(difficultyOpt.get());
+        }
+        return null;
+    }
+
+    @Override
+    public ProfileDto unselectDifficultyInProfile(String profileName) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            profileOpt.get().setDifficulty(null);
+            ProfileDao.getInstance().update(profileOpt.get());
+            return profileDtoFactory.newDto(profileOpt.get());
         }
         return null;
     }

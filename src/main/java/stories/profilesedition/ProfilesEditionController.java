@@ -1,6 +1,7 @@
 package stories.profilesedition;
 
 import dtos.ProfileDto;
+import dtos.ProfileToDisplayDto;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -285,7 +286,7 @@ public class ProfilesEditionController implements Initializable {
             if (selectedFile != null) {
                 message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfilesToImport");
                 StringBuffer errorMessage = new StringBuffer();
-                ObservableList<ProfileDto> importedProfiles = facade.addProfilesToBeImportedFromFile(selectedFile, message, errorMessage, installationFolder);
+                ObservableList<ProfileDto> importedProfiles = facade.importProfilesFromFile(selectedFile, message, errorMessage);
                 if (importedProfiles != null && !importedProfiles.isEmpty()) {
 
                     for (ProfileDto importedProfile: importedProfiles) {
@@ -317,7 +318,7 @@ public class ProfilesEditionController implements Initializable {
     private void exportProfileOnAction() {
         try {
             String message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfilesToExport");
-            List<ProfileDto> selectedProfiles = facade.selectProfiles(message);
+            List<ProfileToDisplayDto> selectedProfiles = facade.selectProfilesToBeExported(message);
 
             if (selectedProfiles != null && !selectedProfiles.isEmpty()) {
                 FileChooser fileChooser = new FileChooser();

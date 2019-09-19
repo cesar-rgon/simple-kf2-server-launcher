@@ -564,9 +564,9 @@ public class MainContentController implements Initializable {
 
         mapSelect.setValue(profile.getMap());
         difficultySelect.setValue(profile.getDifficulty());
-        difficultySelect.setDisable(!gameTypeSelect.getValue().isDifficultyEnabled());
+        difficultySelect.setDisable(gameTypeSelect.getValue() != null ? !gameTypeSelect.getValue().isDifficultyEnabled(): false);
         lengthSelect.setValue(profile.getLength());
-        lengthSelect.setDisable(!gameTypeSelect.getValue().isLengthEnabled());
+        lengthSelect.setDisable(gameTypeSelect.getValue() != null ? !gameTypeSelect.getValue().isLengthEnabled(): false);
         maxPlayersSelect.setValue(profile.getMaxPlayers());
 
         serverName.setText(profile.getServerName());
@@ -794,24 +794,24 @@ public class MainContentController implements Initializable {
     private void runServerOnAction() {
         try {
             ObservableList<ProfileDto> allProfiles = facade.listAllProfiles();
-            List<ProfileDto> selectedProfiles = new ArrayList<ProfileDto>();
+            List<String> selectedProfileNameList = new ArrayList<String>();
             switch (allProfiles.size()) {
                 case 0:
                     facade.runServer(null);
                     return;
                 case 1:
-                    selectedProfiles.add(allProfiles.get(0));
+                    selectedProfileNameList.add(allProfiles.get(0).getName());
                     profileSelect.setValue(allProfiles.get(0));
                     break;
                 default:
                     String message = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
                             "prop.message.runServers");
-                    selectedProfiles = facade.selectProfiles(message, Session.getInstance().getActualProfile().getName());
+                    selectedProfileNameList = facade.selectProfiles(message, Session.getInstance().getActualProfile().getName());
             }
 
             StringBuffer commands = new StringBuffer(console.getText());
-            for (ProfileDto profile: selectedProfiles) {
-                commands.append(facade.runServer(profile.getName())).append("\n");
+            for (String profileName: selectedProfileNameList) {
+                commands.append(facade.runServer(profileName)).append("\n");
             }
             console.setText(commands.toString());
             Session.getInstance().setConsole(console.getText());

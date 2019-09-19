@@ -1,9 +1,13 @@
 package stories.gametypesedition;
 
 import daos.GameTypeDao;
+import daos.ProfileDao;
 import dtos.GameTypeDto;
+import dtos.ProfileDto;
 import dtos.factories.GameTypeDtoFactory;
+import dtos.factories.ProfileDtoFactory;
 import entities.GameType;
+import entities.Profile;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import services.PropertyService;
@@ -17,11 +21,13 @@ public class GameTypesEditionFacadeImpl implements GameTypesEditionFacade {
 
     private final GameTypeDtoFactory gameTypeDtoFactory;
     private final PropertyService propertyService;
+    private final ProfileDtoFactory profileDtoFactory;
 
     public GameTypesEditionFacadeImpl() {
         super();
         gameTypeDtoFactory = new GameTypeDtoFactory();
         propertyService = new PropertyServiceImpl();
+        profileDtoFactory = new ProfileDtoFactory();
     }
 
     @Override
@@ -103,6 +109,17 @@ public class GameTypesEditionFacadeImpl implements GameTypesEditionFacade {
             if (GameTypeDao.getInstance().update(gameTypeOpt.get())) {
                 return gameTypeDtoFactory.newDto(gameTypeOpt.get());
             }
+        }
+        return null;
+    }
+
+    @Override
+    public ProfileDto unselectGametypeInProfile(String profileName) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            profileOpt.get().setGametype(null);
+            ProfileDao.getInstance().update(profileOpt.get());
+            return profileDtoFactory.newDto(profileOpt.get());
         }
         return null;
     }

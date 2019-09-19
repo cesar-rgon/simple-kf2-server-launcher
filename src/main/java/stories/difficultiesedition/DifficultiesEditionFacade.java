@@ -1,5 +1,6 @@
 package stories.difficultiesedition;
 
+import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.collections.ObservableList;
 
@@ -11,4 +12,5 @@ public interface DifficultiesEditionFacade {
     boolean deleteSelectedDifficulty(String code) throws Exception;
     SelectDto updateChangedDifficultyCode(String oldCode, String newCode) throws Exception;
     SelectDto updateChangedDifficultyDescription(String code, String oldDescription, String newDescription) throws Exception;
+    ProfileDto unselectDifficultyInProfile(String profileName) throws SQLException;
 }

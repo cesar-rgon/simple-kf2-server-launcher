@@ -40,5 +40,5 @@ public interface MainContentFacade {
     String runServer(String profileName) throws SQLException;
     String joinServer(String profileName) throws SQLException;
     ProfileDto getLastSelectedProfile() throws Exception;
-    List<ProfileDto> selectProfiles(String message, String actualProfileName) throws SQLException;
+    List<String> selectProfiles(String message, String actualProfileName) throws SQLException;
 }

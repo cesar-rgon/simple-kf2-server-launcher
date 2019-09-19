@@ -1,6 +1,7 @@
 package stories.profilesedition;
 
 import dtos.ProfileDto;
+import dtos.ProfileToDisplayDto;
 import entities.Profile;
 import javafx.collections.ObservableList;
 
@@ -15,7 +16,7 @@ public interface ProfilesEditionFacade {
     ProfileDto updateChangedProfile(String oldProfileName, String newProfileName) throws SQLException;
     String findPropertyValue(String key) throws Exception;
     ProfileDto cloneSelectedProfile(String profileName, String newProfileName) throws SQLException;
-    void exportProfilesToFile(List<ProfileDto> profiles, File file) throws Exception;
-    ObservableList<ProfileDto> addProfilesToBeImportedFromFile(File file, String message, StringBuffer errorMessage, String installationFolder) throws Exception;
-    List<ProfileDto> selectProfiles(String message) throws SQLException;
+    void exportProfilesToFile(List<ProfileToDisplayDto> profilesToExportDto, File file) throws Exception;
+    ObservableList<ProfileDto> importProfilesFromFile(File file, String message, StringBuffer errorMessage) throws Exception;
+    List<ProfileToDisplayDto> selectProfilesToBeExported(String message) throws SQLException;
 }

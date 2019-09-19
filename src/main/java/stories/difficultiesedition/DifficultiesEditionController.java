@@ -8,6 +8,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import utils.Utils;
@@ -149,6 +150,13 @@ public class DifficultiesEditionController implements Initializable {
             int selectedIndex = difficultiesTable.getSelectionModel().getSelectedIndex();
             if (selectedIndex >= 0) {
                 SelectDto selectedDifficulty = difficultiesTable.getSelectionModel().getSelectedItem();
+                if (Session.getInstance().getActualProfile() != null &&
+                        Session.getInstance().getActualProfile().getDifficulty() != null &&
+                        selectedDifficulty.getKey().equals(Session.getInstance().getActualProfile().getDifficulty().getKey())) {
+
+                    Session.getInstance().setActualProfile(facade.unselectDifficultyInProfile(Session.getInstance().getActualProfile().getName()));
+                }
+
                 if (facade.deleteSelectedDifficulty(selectedDifficulty.getKey())) {
                     difficultiesTable.getItems().remove(selectedIndex);
                 } else {

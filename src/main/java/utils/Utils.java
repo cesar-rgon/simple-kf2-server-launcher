@@ -1,9 +1,8 @@
 package utils;
 
 import dtos.ProfileDto;
+import dtos.ProfileToDisplayDto;
 import dtos.SelectDto;
-import dtos.factories.ProfileDtoFactory;
-import entities.Profile;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -194,7 +193,7 @@ public class Utils {
         alert.showAndWait();
     }
 
-    public static List<Profile> selectProfilesDialog(String headerText, List<Profile> profiles, List<Profile> selectedProfiles) {
+    public static List<ProfileToDisplayDto> selectProfilesDialog(String headerText, List<ProfileToDisplayDto> profileList, List<ProfileToDisplayDto> initialSelectedProfileList) {
         Dialog<GridPane> dialog = new Dialog<GridPane>();
         PropertyService propertyService = new PropertyServiceImpl();
         try {
@@ -206,21 +205,18 @@ public class Utils {
         dialog.setHeaderText(headerText);
 
         GridPane gridpane = new GridPane();
-        if (profiles != null && !profiles.isEmpty()) {
+        if (profileList != null && !profileList.isEmpty()) {
             int rowIndex = 1;
-            List<String> selectedProfileNameList = selectedProfiles.stream().map(p -> p.getName()).collect(Collectors.toList());
+            List<String> selectedProfileNameList = initialSelectedProfileList.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
 
-            ProfileDtoFactory profileDtoFactory = new ProfileDtoFactory();
-            List<ProfileDto> profileDtoList = profileDtoFactory.newDtos(profiles);
-
-            for (ProfileDto profile: profileDtoList) {
-                CheckBox checkbox = new CheckBox(profile.getName());
+            for (ProfileToDisplayDto profileToDisplayDto: profileList) {
+                CheckBox checkbox = new CheckBox(profileToDisplayDto.getProfileName());
                 checkbox.setStyle("-fx-padding: 0 0 10px 0; -fx-font-weight: bold;");
-                if (selectedProfileNameList != null && !selectedProfileNameList.isEmpty() && selectedProfileNameList.contains(profile.getName())) {
+                if (selectedProfileNameList != null && !selectedProfileNameList.isEmpty() && selectedProfileNameList.contains(profileToDisplayDto.getProfileName())) {
                     checkbox.setSelected(true);
                 }
                 gridpane.add(checkbox, 1, rowIndex);
-                Label label = new Label(profile.getGametype() + ", " + profile.getMap() + ", " + profile.getDifficulty() + ", " + profile.getLength());
+                Label label = new Label(profileToDisplayDto.toString());
                 label.setStyle("-fx-padding: -10px 0 0 10px; -fx-font-weight: bold; -fx-text-fill: grey;");
                 gridpane.add(label, 2, rowIndex);
                 rowIndex++;
@@ -262,13 +258,13 @@ public class Utils {
         });
 
         Optional<GridPane> result = dialog.showAndWait();
-        List<Profile> selectedProfileList = new ArrayList<Profile>();
+        List<ProfileToDisplayDto> selectedProfileList = new ArrayList<ProfileToDisplayDto>();
         if (result.isPresent() && result.get() != null) {
             int index = 0;
             while (index < gridpane.getChildren().size()) {
                 CheckBox checkbox = (CheckBox)result.get().getChildren().get(index);
                 if (checkbox.isSelected()) {
-                    Optional<Profile> profileOpt = profiles.stream().filter(p -> p.getName().equalsIgnoreCase(checkbox.getText())).findFirst();
+                    Optional<ProfileToDisplayDto> profileOpt = profileList.stream().filter(p -> p.getProfileName().equalsIgnoreCase(checkbox.getText())).findFirst();
                     if (profileOpt.isPresent()) {
                         selectedProfileList.add(profileOpt.get());
                     }

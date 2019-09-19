@@ -3,7 +3,9 @@ package stories.profilesedition;
 import daos.*;
 import dtos.MapDto;
 import dtos.ProfileDto;
+import dtos.ProfileToDisplayDto;
 import dtos.factories.ProfileDtoFactory;
+import dtos.factories.ProfileToDisplayDtoFactory;
 import entities.*;
 import javafx.collections.ObservableList;
 import org.apache.commons.io.FileUtils;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 
 public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
@@ -30,10 +33,12 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
     private static final Logger logger = LogManager.getLogger(ProfilesEditionFacadeImpl.class);
     private final ProfileDtoFactory profileDtoFactory;
     private final PropertyService propertyService;
+    private final ProfileToDisplayDtoFactory profileToDisplayDtoFactory;
 
     public ProfilesEditionFacadeImpl() {
         profileDtoFactory = new ProfileDtoFactory();
         propertyService = new PropertyServiceImpl();
+        profileToDisplayDtoFactory = new ProfileToDisplayDtoFactory();
     }
 
     @Override
@@ -155,18 +160,31 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
     }
 
     @Override
-    public void exportProfilesToFile(List<ProfileDto> profiles, File file) throws Exception {
+    public void exportProfilesToFile(List<ProfileToDisplayDto> profilesToExportDto, File file) throws Exception {
+
+        List<Profile> profilesToExport = profilesToExportDto.stream().map(dto -> {
+            try {
+                Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(dto.getProfileName());
+                if (profileOpt.isPresent()) {
+                    return profileOpt.get();
+                }
+            } catch (SQLException e) {
+                logger.error("Error in operation of export profiles to file", e);
+            }
+            return null;
+        }).collect(Collectors.toList());
+
         Properties properties = new Properties();
-        properties.setProperty("exported.profiles.number", String.valueOf(profiles.size()));
+        properties.setProperty("exported.profiles.number", String.valueOf(profilesToExport.size()));
         int profileIndex = 1;
-        for (ProfileDto profile: profiles) {
+        for (Profile profile: profilesToExport) {
             properties.setProperty("exported.profile" + profileIndex + ".name", profile.getName());
-            properties.setProperty("exported.profile" + profileIndex + ".language", profile.getLanguage().getKey());
-            properties.setProperty("exported.profile" + profileIndex + ".gameType", profile.getGametype().getKey());
-            properties.setProperty("exported.profile" + profileIndex + ".map", profile.getMap().getKey());
-            properties.setProperty("exported.profile" + profileIndex + ".difficulty", profile.getDifficulty().getKey());
-            properties.setProperty("exported.profile" + profileIndex + ".length", profile.getLength().getKey());
-            properties.setProperty("exported.profile" + profileIndex + ".maxPlayers", profile.getMaxPlayers().getKey());
+            properties.setProperty("exported.profile" + profileIndex + ".language", profile.getLanguage().getCode());
+            properties.setProperty("exported.profile" + profileIndex + ".gameType", profile.getGametype().getCode());
+            properties.setProperty("exported.profile" + profileIndex + ".map", profile.getMap().getCode());
+            properties.setProperty("exported.profile" + profileIndex + ".difficulty", profile.getDifficulty().getCode());
+            properties.setProperty("exported.profile" + profileIndex + ".length", profile.getLength().getCode());
+            properties.setProperty("exported.profile" + profileIndex + ".maxPlayers", profile.getMaxPlayers().getCode());
             properties.setProperty("exported.profile" + profileIndex + ".serverName", profile.getServerName());
             properties.setProperty("exported.profile" + profileIndex + ".serverPassword", StringUtils.isNotBlank(profile.getServerPassword())? profile.getServerPassword(): "");
             properties.setProperty("exported.profile" + profileIndex + ".webPage", profile.getWebPage()!=null? String.valueOf(profile.getWebPage()): "false");
@@ -182,8 +200,8 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
             properties.setProperty("exported.profile" + profileIndex + ".mapListSize", profile.getMapList()!=null? String.valueOf(profile.getMapList().size()): "0");
             if (profile.getMapList() != null && !profile.getMapList().isEmpty()) {
                 int mapIndex = 1;
-                for (MapDto map: profile.getMapList()) {
-                    properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".name", map.getKey());
+                for (Map map: profile.getMapList()) {
+                    properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".name", map.getCode());
                     properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".official", String.valueOf(map.isOfficial()));
                     properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".downloaded", String.valueOf(map.isDownloaded()));
                     properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlInfo", StringUtils.isNotBlank(map.getUrlInfo())? map.getUrlInfo(): "");
@@ -277,7 +295,8 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
 
     private void importGameTypesFromFile(Properties properties, List<Language> languageList) throws SQLException {
         List<GameType> gameTypeListInDataBase = GameTypeDao.getInstance().listAll();
-        int size = Integer.valueOf(properties.getProperty("exported.gameTypes.number"));
+        String strSize = properties.getProperty("exported.gameTypes.number");
+        int size = StringUtils.isNotBlank(strSize) ? Integer.valueOf(strSize): 0;
 
         for (int index = 1; index <= size; index++) {
             String code = properties.getProperty("exported.gameType" + index + ".code");
@@ -308,7 +327,8 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
 
     private void importDifficultiesFromFile(Properties properties, List<Language> languageList) throws SQLException {
         List<Difficulty> difficultyListInDataBase = DifficultyDao.getInstance().listAll();
-        int size = Integer.valueOf(properties.getProperty("exported.difficulties.number"));
+        String strSize = properties.getProperty("exported.difficulties.number");
+        int size = StringUtils.isNotBlank(strSize) ? Integer.valueOf(strSize): 0;
 
         for (int index = 1; index <= size; index++) {
             String code = properties.getProperty("exported.difficulty" + index + ".code");
@@ -338,7 +358,8 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
 
     private void importLengthsFromFile(Properties properties, List<Language> languageList) throws SQLException {
         List<Length> lengthListInDataBase = LengthDao.getInstance().listAll();
-        int size = Integer.valueOf(properties.getProperty("exported.lengths.number"));
+        String strSize = properties.getProperty("exported.lengths.number");
+        int size = StringUtils.isNotBlank(strSize) ? Integer.valueOf(strSize): 0;
 
         for (int index = 1; index <= size; index++) {
             String code = properties.getProperty("exported.length" + index + ".code");
@@ -367,7 +388,8 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
 
     private void importMaxPlayersFromFile(Properties properties, List<Language> languageList) throws SQLException {
         List<MaxPlayers> maxPlayersListInDataBase = MaxPlayersDao.getInstance().listAll();
-        int size = Integer.valueOf(properties.getProperty("exported.maxPlayers.number"));
+        String strSize = properties.getProperty("exported.maxPlayers.number");
+        int size = StringUtils.isNotBlank(strSize) ? Integer.valueOf(strSize): 0;
 
         for (int index = 1; index <= size; index++) {
             String code = properties.getProperty("exported.maxPlayers" + index + ".code");
@@ -394,8 +416,9 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
         }
     }
 
+
     @Override
-    public ObservableList<ProfileDto> addProfilesToBeImportedFromFile(File file, String message, StringBuffer errorMessage, String installationFolder) throws Exception {
+    public ObservableList<ProfileDto> importProfilesFromFile(File file, String message, StringBuffer errorMessage) throws Exception {
         Properties properties = propertyService.loadPropertiesFromFile(file);
         List<Language> languageList = LanguageDao.getInstance().listAll();
 
@@ -404,24 +427,44 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
         importLengthsFromFile(properties, languageList);
         importMaxPlayersFromFile(properties, languageList);
 
-        int numberOfProfiles = Integer.parseInt(properties.getProperty("exported.profiles.number"));
-        List<Profile> profileToBeImportedList = new ArrayList<Profile>();
+        List<ProfileToDisplayDto> selectedProfileList = selectProfilesToBeImported(properties, message);
 
-        for (int profileIndex = 1; profileIndex <= numberOfProfiles; profileIndex++) {
+        List<Profile> savedProfileList = new ArrayList<Profile>();
+        if (selectedProfileList != null & !selectedProfileList.isEmpty()) {
+            savedProfileList = saveProfilesToDatabase(selectedProfileList, properties);
+
+            if (savedProfileList.size() < selectedProfileList.size()) {
+                List<String> selectedProfileNameList = selectedProfileList.stream().map(dto -> dto.getProfileName()).collect(Collectors.toList());
+                List<String> savedProfileNameList = savedProfileList.stream().map(profile -> profile.getName()).collect(Collectors.toList());;
+
+                for (String selectedProfileName: selectedProfileNameList) {
+                    if (!savedProfileNameList.contains(selectedProfileName)) {
+                        errorMessage.append(selectedProfileName + "\n");
+                    }
+                }
+            }
+        }
+        return profileDtoFactory.newDtos(savedProfileList);
+    }
+
+
+    private Profile getProfileFromFile(int profileIndex, Properties properties) {
+        String profileName = properties.getProperty("exported.profile" + profileIndex + ".name");
+        try {
             Optional<Language> languageOpt = LanguageDao.getInstance().findByCode(properties.getProperty("exported.profile" + profileIndex + ".language"));
             Optional<GameType> gameTypeOpt = GameTypeDao.getInstance().findByCode(properties.getProperty("exported.profile" + profileIndex + ".gameType"));
             Optional<Difficulty> difficultyOpt = DifficultyDao.getInstance().findByCode(properties.getProperty("exported.profile" + profileIndex + ".difficulty"));
             Optional<Length> lengthOpt = LengthDao.getInstance().findByCode(properties.getProperty("exported.profile" + profileIndex + ".length"));
             Optional<MaxPlayers> maxPlayersOpt = MaxPlayersDao.getInstance().findByCode(properties.getProperty("exported.profile" + profileIndex + ".maxPlayers"));
 
-            Profile profileToBeImported = new Profile(
-                    properties.getProperty("exported.profile" + profileIndex + ".name"),
-                    languageOpt.isPresent()? languageOpt.get(): null,
-                    gameTypeOpt.isPresent()? gameTypeOpt.get(): null,
+            return new Profile(
+                    profileName,
+                    languageOpt.isPresent() ? languageOpt.get() : null,
+                    gameTypeOpt.isPresent() ? gameTypeOpt.get() : null,
                     null,
-                    difficultyOpt.isPresent()? difficultyOpt.get(): null,
-                    lengthOpt.isPresent()? lengthOpt.get(): null,
-                    maxPlayersOpt.isPresent()? maxPlayersOpt.get(): null,
+                    difficultyOpt.isPresent() ? difficultyOpt.get() : null,
+                    lengthOpt.isPresent() ? lengthOpt.get() : null,
+                    maxPlayersOpt.isPresent() ? maxPlayersOpt.get() : null,
                     properties.getProperty("exported.profile" + profileIndex + ".serverName"),
                     properties.getProperty("exported.profile" + profileIndex + ".serverPassword"),
                     Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".webPage")),
@@ -436,11 +479,73 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                     properties.getProperty("exported.profile" + profileIndex + ".customParameters"),
                     new ArrayList<Map>()
             );
+        } catch (SQLException e) {
+            logger.error("Error getting the profile " + profileName + " from file", e);
+            return null;
+        }
+    }
 
-            int numberOfMaps = Integer.parseInt(properties.getProperty("exported.profile" + profileIndex + ".mapListSize"));
+    private List<ProfileToDisplayDto> selectProfilesToBeImported(Properties properties, String message) throws Exception {
+        int numberOfProfiles = Integer.parseInt(properties.getProperty("exported.profiles.number"));
+        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+        List<ProfileToDisplayDto> profileToDisplayDtoList = new ArrayList<ProfileToDisplayDto>();
 
-            for (int mapIndex = 1; mapIndex <= numberOfMaps; mapIndex++) {
-                String mapName = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".name");
+        for (int profileIndex = 1; profileIndex <= numberOfProfiles; profileIndex++) {
+            String profileName = properties.getProperty("exported.profile" + profileIndex + ".name");
+            try {
+                String gameTypeCode = properties.getProperty("exported.profile" + profileIndex + ".gameType");
+                String gameTypeDescription = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.gametype." + gameTypeCode);
+                String difficultyCode = properties.getProperty("exported.profile" + profileIndex + ".difficulty");
+                String difficultyDescription = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.difficulty." + difficultyCode);
+                String lengthCode = properties.getProperty("exported.profile" + profileIndex + ".length");
+                String lengthDescription = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.length." + lengthCode);
+                String mapName = properties.getProperty("exported.profile" + profileIndex + ".map");
+
+                ProfileToDisplayDto profileToDisplayDto = new ProfileToDisplayDto(profileIndex, profileName, gameTypeDescription, mapName, difficultyDescription, lengthDescription);
+                profileToDisplayDtoList.add(profileToDisplayDto);
+            } catch (Exception e) {
+                logger.error("Error reading the profile " + profileName + " from exported file", e);
+            }
+        }
+        return Utils.selectProfilesDialog(message + ":", profileToDisplayDtoList, profileToDisplayDtoList);
+    }
+
+
+    private List<Profile> saveProfilesToDatabase(List<ProfileToDisplayDto> selectedProfileDtoList, Properties properties) {
+
+        List<Profile> selectedProfileList = selectedProfileDtoList.stream().map(dto -> getProfileFromFile(dto.getProfileFileIndex(), properties)).collect(Collectors.toList());
+        List<Profile> savedProfileList = new ArrayList<Profile>();
+
+        for (Profile profile: selectedProfileList) {
+            try {
+                Profile savedProfile = ProfileDao.getInstance().insert(profile);
+
+                Optional<ProfileToDisplayDto> profileToDisplayDto = selectedProfileDtoList.stream().filter(dto -> dto.getProfileName().equalsIgnoreCase(profile.getName())).findFirst();
+                if (profileToDisplayDto.isPresent()) {
+                    List<Map> mapList = importProfileMapsFromFile(profileToDisplayDto.get().getProfileFileIndex(), savedProfile, properties);
+                    savedProfile.getMapList().addAll(mapList);
+
+                    String mapName = properties.getProperty("exported.profile" + profileToDisplayDto.get().getProfileFileIndex() + ".map");
+                    Optional<Map> mapOpt = mapList.stream().filter(m -> m.getCode().equalsIgnoreCase(mapName)).findFirst();
+                    savedProfile.setMap(mapOpt.isPresent()? mapOpt.get(): null);
+
+                    ProfileDao.getInstance().update(savedProfile);
+                }
+                savedProfileList.add(savedProfile);
+            } catch (Exception e) {
+                logger.error("Error saving the profile " + profile.getName() + " to database", e);
+            }
+        }
+        return savedProfileList;
+    }
+
+    private List<Map> importProfileMapsFromFile(int profileIndex, Profile profile, Properties properties) throws Exception {
+        List<Map> mapList = new ArrayList<Map>();
+        int numberOfMaps = Integer.parseInt(properties.getProperty("exported.profile" + profileIndex + ".mapListSize"));
+
+        for (int mapIndex = 1; mapIndex <= numberOfMaps; mapIndex++) {
+            String mapName = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".name");
+            try {
                 boolean official = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".official"));
                 Optional<Map> mapInDataBaseOpt;
                 Long idWorkShop = null;
@@ -448,12 +553,15 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                     mapInDataBaseOpt = MapDao.getInstance().findByCode(mapName);
                 } else {
                     String strIdWorkShop = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".idWorkShop");
-                    idWorkShop = StringUtils.isNotBlank(strIdWorkShop)? Long.parseLong(strIdWorkShop): 0;
+                    idWorkShop = StringUtils.isNotBlank(strIdWorkShop) ? Long.parseLong(strIdWorkShop) : 0;
                     mapInDataBaseOpt = MapDao.getInstance().findByIdWorkShop(idWorkShop);
                 }
+
                 if (mapInDataBaseOpt.isPresent()) {
-                    mapInDataBaseOpt.get().getProfileList().add(profileToBeImported);
-                    profileToBeImported.getMapList().add(mapInDataBaseOpt.get());
+                    mapInDataBaseOpt.get().getProfileList().add(profile);
+                    if (MapDao.getInstance().update(mapInDataBaseOpt.get())) {
+                        mapList.add(mapInDataBaseOpt.get());
+                    }
                 } else {
                     boolean downloaded = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".downloaded"));
                     String urlInfo = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlInfo");
@@ -461,86 +569,28 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                     String strMod = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".mod");
                     Boolean mod = StringUtils.isNotBlank(strMod)? Boolean.parseBoolean(strMod): null;
                     List<Profile> profileList = new ArrayList<Profile>();
-                    profileList.add(profileToBeImported);
-                    Map mapToImport = new Map(mapName, official, urlInfo, idWorkShop, urlPhoto, downloaded, mod, profileList);
-                    profileToBeImported.getMapList().add(mapToImport);
-                }
-            }
-
-            String mapName = properties.getProperty("exported.profile" + profileIndex + ".map");
-            Optional<Map> mapOpt = profileToBeImported.getMapList().stream()
-                    .filter(m -> m.getCode().equalsIgnoreCase(mapName) && m.isOfficial()).findFirst();
-            Optional<Map> firstOfficialMap = profileToBeImported.getMapList().stream()
-                    .filter(m -> m.isOfficial()).findFirst();
-            profileToBeImported.setMap(mapOpt.isPresent()? mapOpt.get(): firstOfficialMap.isPresent()? firstOfficialMap.get(): null);
-
-            profileToBeImportedList.add(profileToBeImported);
-        }
-
-        List<Profile> selectedProfiles = Utils.selectProfilesDialog(message + ":", profileToBeImportedList, profileToBeImportedList);
-        List<Profile> insertedProfiles = new ArrayList<Profile>();
-        if (selectedProfiles != null & !selectedProfiles.isEmpty()) {
-            insertedProfiles = insertProfiles(selectedProfiles, installationFolder);
-        }
-
-        if (insertedProfiles.size() < selectedProfiles.size()) {
-            for (Profile selectedProfile: selectedProfiles) {
-                if (!insertedProfiles.contains(selectedProfile)) {
-                    errorMessage.append(selectedProfile.getName() + "\n");
-                }
-            }
-        }
-
-        return profileDtoFactory.newDtos(insertedProfiles);
-    }
-
-
-    private List<Profile> insertProfiles(List<Profile> profileList, String installationFolder) {
-
-        List<Profile> insertedProfileList = new ArrayList<Profile>();
-        for (Profile profile: profileList) {
-            try {
-                Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profile.getName());
-                if (profileOpt.isPresent()) {
-                    logger.error("The profile " + profile.getName() + " is already in database. It could not be imported from file");
-                } else {
-                    for (Map map: profile.getMapList()) {
-                        try {
-                            Optional<Map> mapInDataBase;
-                            if (map.isOfficial()) {
-                                mapInDataBase = MapDao.getInstance().findByCode(map.getCode());
-                            } else {
-                                 mapInDataBase = MapDao.getInstance().findByIdWorkShop(map.getIdWorkShop());
-                            }
-
-                            if (mapInDataBase.isPresent()) {
-                                MapDao.getInstance().update(map);
-                            } else {
-                                if (!createNewCustomMapFromWorkshop(map, installationFolder)) {
-                                    logger.error("Error importing the map " + map.getCode() + " to database");
-                                }
-                            }
-                        } catch (Exception e) {
-                            logger.error("Error importing the map " + map.getCode() + " to database", e);
+                    profileList.add(profile);
+                    Map map = new Map(mapName, official, urlInfo, idWorkShop, urlPhoto, downloaded, mod, profileList);
+                    if (map.isOfficial()) {
+                        if (MapDao.getInstance().insert(map) != null) {
+                            mapList.add(map);
+                        }
+                    } else {
+                        if (createNewCustomMapFromWorkshop(map)) {
+                            mapList.add(map);
                         }
                     }
-
-                    Profile insertedProfile = ProfileDao.getInstance().insert(profile);
-                    if (insertedProfile != null) {
-                        insertedProfileList.add(profile);
-                    } else {
-                        logger.error("The profile " + profile.getName() + " could not be imported from file");
-                    }
                 }
-            } catch (SQLException e) {
-                logger.error("The profile " + profile.getName() + " could not be imported from file", e);
+            } catch (Exception e) {
+                logger.error("Error importing the map " + mapName + " of profile index " + profileIndex + " from file", e);
             }
         }
-        return insertedProfileList;
+        return mapList;
     }
 
-    private boolean createNewCustomMapFromWorkshop(Map map, String installationFolder) throws Exception {
+    private boolean createNewCustomMapFromWorkshop(Map map) throws Exception {
 
+        String installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.installationFolder");
         URL urlWorkShop = new URL(map.getUrlInfo());
         BufferedReader reader = new BufferedReader(new InputStreamReader(urlWorkShop.openStream()));
         String strUrlMapImage = null;
@@ -563,9 +613,9 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
     }
 
     @Override
-    public List<ProfileDto> selectProfiles(String message) throws SQLException {
+    public List<ProfileToDisplayDto> selectProfilesToBeExported(String message) throws SQLException {
         List<Profile> allProfiles = ProfileDao.getInstance().listAll();
-        List<Profile> selectedProfiles = Utils.selectProfilesDialog(message + ":", allProfiles, allProfiles);
-        return profileDtoFactory.newDtos(selectedProfiles);
+        List<ProfileToDisplayDto> allProfilesToDisplayDto = profileToDisplayDtoFactory.newDtos(allProfiles);
+        return Utils.selectProfilesDialog(message + ":", allProfilesToDisplayDto, allProfilesToDisplayDto);
     }
 }

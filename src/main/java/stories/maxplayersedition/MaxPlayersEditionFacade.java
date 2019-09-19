@@ -1,5 +1,6 @@
 package stories.maxplayersedition;
 
+import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.collections.ObservableList;
 
@@ -11,4 +12,5 @@ public interface MaxPlayersEditionFacade {
     boolean deleteSelectedMaxPlayers(String code) throws Exception;
     SelectDto updateChangedMaxPlayersCode(String oldCode, String newCode) throws Exception;
     SelectDto updateChangedMaxPlayersDescription(String code, String oldDescription, String newDescription) throws Exception;
+    ProfileDto unselectMaxPlayersInProfile(String profileName) throws SQLException;
 }

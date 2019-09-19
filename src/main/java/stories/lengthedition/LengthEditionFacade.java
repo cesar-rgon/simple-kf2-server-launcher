@@ -1,5 +1,6 @@
 package stories.lengthedition;
 
+import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.collections.ObservableList;
 
@@ -11,4 +12,5 @@ public interface LengthEditionFacade {
     boolean deleteSelectedLength(String code) throws Exception;
     SelectDto updateChangedLengthCode(String oldCode, String newCode) throws Exception;
     SelectDto updateChangedLengthDescription(String code, String oldDescription, String newDescription) throws Exception;
+    ProfileDto unselectLengthInProfile(String profileName) throws SQLException;
 }

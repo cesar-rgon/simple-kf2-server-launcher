@@ -14,6 +14,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import utils.Utils;
@@ -228,6 +229,13 @@ public class GameTypesEditionController implements Initializable {
             int selectedIndex = gameTypesTable.getSelectionModel().getSelectedIndex();
             if (selectedIndex >= 0) {
                 SelectDto selectedGameType = gameTypesTable.getSelectionModel().getSelectedItem();
+                if (Session.getInstance().getActualProfile() != null &&
+                        Session.getInstance().getActualProfile().getGametype() != null &&
+                        selectedGameType.getKey().equals(Session.getInstance().getActualProfile().getGametype().getKey())) {
+
+                    Session.getInstance().setActualProfile(facade.unselectGametypeInProfile(Session.getInstance().getActualProfile().getName()));
+                }
+
                 if (facade.deleteSelectedGameType(selectedGameType.getKey())) {
                     gameTypesTable.getItems().remove(selectedIndex);
                 } else {

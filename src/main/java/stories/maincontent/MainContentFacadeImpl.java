@@ -3,13 +3,13 @@ package stories.maincontent;
 import daos.*;
 import dtos.GameTypeDto;
 import dtos.ProfileDto;
+import dtos.ProfileToDisplayDto;
 import dtos.SelectDto;
 import dtos.factories.*;
 import entities.*;
 import javafx.collections.ObservableList;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
-import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import utils.Utils;
@@ -18,6 +18,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MainContentFacadeImpl implements MainContentFacade {
 
@@ -337,16 +338,18 @@ public class MainContentFacadeImpl implements MainContentFacade {
     }
 
     @Override
-    public List<ProfileDto> selectProfiles(String message, String actualProfileName) throws SQLException {
-
+    public List<String> selectProfiles(String message, String actualProfileName) throws SQLException {
+        ProfileToDisplayDtoFactory profileToDisplayDtoFactory = new ProfileToDisplayDtoFactory();
         List<Profile> allProfiles = ProfileDao.getInstance().listAll();
-        Optional<Profile> actualProfile = ProfileDao.getInstance().findByName(actualProfileName);
-        List<Profile> preSelectedProfiles = new ArrayList<Profile>();
+        List<ProfileToDisplayDto> allProfilesToDisplayDto = profileToDisplayDtoFactory.newDtos(allProfiles);
+
+        Optional<ProfileToDisplayDto> actualProfile = allProfilesToDisplayDto.stream().filter(dto -> dto.getProfileName().equalsIgnoreCase(actualProfileName)).findFirst();
+        List<ProfileToDisplayDto> preSelectedProfiles = new ArrayList<ProfileToDisplayDto>();
         if (actualProfile.isPresent()) {
             preSelectedProfiles.add(actualProfile.get());
         }
 
-        List<Profile> selectedProfiles = Utils.selectProfilesDialog(message + ":", allProfiles, preSelectedProfiles);
-        return profileDtoFactory.newDtos(selectedProfiles);
+        List<ProfileToDisplayDto> selectedProfiles = Utils.selectProfilesDialog(message + ":", allProfilesToDisplayDto, preSelectedProfiles);
+        return selectedProfiles.stream().map(dto -> dto.getProfileName()).collect(Collectors.toList());
     }
  }

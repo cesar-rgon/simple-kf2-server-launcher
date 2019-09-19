@@ -8,6 +8,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import utils.Utils;
@@ -151,6 +152,13 @@ public class LengthEditionController implements Initializable {
             int selectedIndex = lengthTable.getSelectionModel().getSelectedIndex();
             if (selectedIndex >= 0) {
                 SelectDto selectedLength = lengthTable.getSelectionModel().getSelectedItem();
+                if (Session.getInstance().getActualProfile() != null &&
+                        Session.getInstance().getActualProfile().getLength() != null &&
+                        selectedLength.getKey().equals(Session.getInstance().getActualProfile().getLength().getKey())) {
+
+                    Session.getInstance().setActualProfile(facade.unselectLengthInProfile(Session.getInstance().getActualProfile().getName()));
+                }
+
                 if (facade.deleteSelectedLength(selectedLength.getKey())) {
                     lengthTable.getItems().remove(selectedIndex);
                 } else {
