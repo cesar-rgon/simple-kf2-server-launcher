@@ -124,7 +124,7 @@ public class MainContentController implements Initializable {
             difficultySelect.setItems(facade.listAllDifficulties());
             lengthSelect.setItems(facade.listAllLengths());
             maxPlayersSelect.setItems(facade.listAllPlayers());
-            console.setText(Session.getInstance().getConsole());
+            console.setText(StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole(): "");
 
             if (profileSelect.getValue() != null) {
                 profileOnAction();
@@ -813,7 +813,7 @@ public class MainContentController implements Initializable {
             for (String profileName: selectedProfileNameList) {
                 commands.append(facade.runServer(profileName)).append("\n");
             }
-            console.setText(commands.toString());
+            console.setText(StringUtils.isNotBlank(commands.toString())? commands.toString(): "");
             Session.getInstance().setConsole(console.getText());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -842,7 +842,7 @@ public class MainContentController implements Initializable {
                 if (StringUtils.isNotBlank(commands)) {
                     commands.append("\n");
                 }
-                console.setText(console.getText() + commands.toString());
+                console.setText(StringUtils.isNotBlank(console.getText() + commands.toString())? console.getText() + commands.toString(): "");
             }
         } catch (SQLException e) {
             logger.error(e.getMessage(), e);

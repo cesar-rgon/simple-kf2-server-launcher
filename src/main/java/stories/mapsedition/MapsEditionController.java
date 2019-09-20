@@ -66,6 +66,7 @@ public class MapsEditionController implements Initializable {
     @FXML private Label sliderLabel;
     @FXML private ImageView searchImg;
     @FXML private ComboBox<ProfileDto> profileSelect;
+    @FXML private Label profileLabel;
 
     public MapsEditionController() {
         super();
@@ -79,6 +80,9 @@ public class MapsEditionController implements Initializable {
             languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             selectMaps = true;
             installationFolder = facade.findConfigPropertyValue("prop.config.installationFolder");
+
+            String profileLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileLowercase");
+            profileLabel.setText(profileLabelText);
 
             ObservableList<ProfileDto> profileOptions = facade.listAllProfiles();
             profileSelect.setItems(profileOptions);

@@ -84,6 +84,7 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
         if (profileOpt.isPresent()) {
 
             List<Map> mapList = new ArrayList<Map>(profileOpt.get().getMapList());
+            profileOpt.get().setMap(null);
             profileOpt.get().getMapList().clear();
             ProfileDao.getInstance().update(profileOpt.get());
             profileOpt = ProfileDao.getInstance().findByName(profileName);
@@ -589,7 +590,6 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
     }
 
     private boolean createNewCustomMapFromWorkshop(Map map) throws Exception {
-
         String installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.installationFolder");
         URL urlWorkShop = new URL(map.getUrlInfo());
         BufferedReader reader = new BufferedReader(new InputStreamReader(urlWorkShop.openStream()));
@@ -603,9 +603,7 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
             }
         }
         reader.close();
-        String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
-        String absoluteTargetFolder = installationFolder + customMapLocalFolder;
-        Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, map.getCode());
+        Utils.downloadImageFromUrlToFile(strUrlMapImage, installationFolder + map.getUrlPhoto());
         map.setMod(null);
         map.setDownloaded(false);
         Map insertedMap = MapDao.getInstance().insert(map);

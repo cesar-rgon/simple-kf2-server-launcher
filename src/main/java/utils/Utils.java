@@ -426,4 +426,11 @@ public class Utils {
         FileUtils.copyURLToFile(urlImage,file);
         return file;
     }
+
+    public static File downloadImageFromUrlToFile(String strUrlImage, String pathToFile) throws IOException {
+        URL urlImage = new URL(strUrlImage);
+        File file = new File(pathToFile);
+        FileUtils.copyURLToFile(urlImage,file);
+        return file;
+    }
 }

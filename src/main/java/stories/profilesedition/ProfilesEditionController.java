@@ -184,23 +184,15 @@ public class ProfilesEditionController implements Initializable {
             if (selectedIndex >= 0) {
                 ProfileDto selectedProfile = profilesTable.getSelectionModel().getSelectedItem();
                 if (facade.deleteSelectedProfile(selectedProfile.getName(), installationFolder)) {
-                    profilesTable.getItems().remove(selectedIndex);
                     if (Session.getInstance().getActualProfile() != null && selectedProfile.getName().equalsIgnoreCase(Session.getInstance().getActualProfile().getName())) {
-                        if (profilesTable.getItems().size() > 0) {
-                            Session.getInstance().setActualProfile(profilesTable.getItems().get(0));
-                            propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", profilesTable.getItems().get(0).getName());
-                        } else {
-                            Session.getInstance().setActualProfile(null);
-                            propertyService.removeProperty("properties/config.properties", "prop.config.lastSelectedProfile");
-                        }
+                        Session.getInstance().setActualProfile(null);
+                        propertyService.removeProperty("properties/config.properties", "prop.config.lastSelectedProfile");
                     }
                     if (Session.getInstance().getMapsProfile() != null && selectedProfile.getName().equalsIgnoreCase(Session.getInstance().getMapsProfile().getName())) {
-                        if (profilesTable.getItems().size() > 0) {
-                            Session.getInstance().setMapsProfile(profilesTable.getItems().get(0));
-                        } else {
-                            Session.getInstance().setMapsProfile(null);
-                        }
+                        Session.getInstance().setMapsProfile(null);
                     }
+
+                    profilesTable.getItems().remove(selectedIndex);
                     File profileConfigFolder = new File(facade.findPropertyValue("prop.config.installationFolder") + "/KFGame/Config/" + selectedProfile.getName());
                     FileUtils.deleteDirectory(profileConfigFolder);
                 } else {
