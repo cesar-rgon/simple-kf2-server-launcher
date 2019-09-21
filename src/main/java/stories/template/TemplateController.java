@@ -203,8 +203,9 @@ public class TemplateController implements Initializable {
             String versionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.about.version");
             String developedText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.about.developed");
             String translatedToSpanishBy = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.about.translatedSpanish");
+            String translatedToFrenchBy = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.about.translatedFrench");
             String applicationVersion = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion");
-            Utils.infoDialog(versionText + ": " + applicationVersion, developedText + " cesar-rgon\n" + translatedToSpanishBy + " cesar-rgon");
+            Utils.infoDialog(versionText + ": " + applicationVersion, developedText + " cesar-rgon\n" + translatedToSpanishBy + " cesar-rgon\n" + translatedToFrenchBy + " -foG.Nox");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);

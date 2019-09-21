@@ -3,6 +3,7 @@
 -----------------------------------
 INSERT INTO KF2DATABASE.LANGUAGES VALUES(1, 'en', 'English');
 INSERT INTO KF2DATABASE.LANGUAGES VALUES(2, 'es', 'Español');
+INSERT INTO KF2DATABASE.LANGUAGES VALUES(3, 'fr', 'Français');
 
 -----------------------------------
 -- DIFFICULTIES
