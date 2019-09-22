@@ -17,7 +17,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -333,7 +332,19 @@ public abstract class Kf2Common {
             modifiedLine = null;
         }
         if (line.contains("GameMapCycles=(Maps=(")) {
-            modifiedLine = generateMapCycleLine(profile.getMapList());
+            List<Map> officialMaps = profile.getMapList().stream()
+                    .filter(m -> m.isOfficial())
+                    .sorted((o1, o2) -> o1.getCode().compareTo(o2.getCode()))
+                    .collect(Collectors.toList());
+
+            List<Map> downloadedCustomMaps = profile.getMapList().stream()
+                    .filter(m -> m.isDownloaded())
+                    .filter(m -> !m.isOfficial())
+                    .filter(m -> m.getMod() != null && !m.getMod())
+                    .sorted((o1, o2) -> o1.getCode().compareTo(o2.getCode()))
+                    .collect(Collectors.toList());
+
+            modifiedLine = generateMapCycleLine(officialMaps, downloadedCustomMaps);
         }
         if (line.contains("GameDifficulty=")) {
             modifiedLine = "GameDifficulty=" + profile.getDifficulty().getCode();
@@ -424,18 +435,27 @@ public abstract class Kf2Common {
 
     }
 
-    private String generateMapCycleLine(List<Map> mapList) {
+    private String generateMapCycleLine(List<Map> officialMaps, List<Map> downloadedCustomMaps) {
         StringBuffer sb = new StringBuffer("GameMapCycles=(Maps=(");
-        boolean showSeparator = true;
-        if (!mapList.isEmpty()) {
+
+        if (!officialMaps.isEmpty()) {
             sb.append("\"----- OFFICIAL MAPS -----\",");
-            for (Map map: mapList) {
-                if (showSeparator && !map.isOfficial()) {
-                    sb.append("\"----- CUSTOM MAPS -----\",");
-                    showSeparator = false;
-                }
+            for (Map map: officialMaps) {
                 sb.append("\"").append(map.getCode()).append("\"");
-                if (mapList.indexOf(map) < (mapList.size() - 1)) {
+                if (officialMaps.indexOf(map) < (officialMaps.size() - 1)) {
+                    sb.append(",");
+                }
+            }
+        }
+
+        if (!downloadedCustomMaps.isEmpty()) {
+            if (!officialMaps.isEmpty()) {
+                sb.append(",");
+            }
+            sb.append("\"----- CUSTOM MAPS -----\",");
+            for (Map map: downloadedCustomMaps) {
+                sb.append("\"").append(map.getCode()).append("\"");
+                if (downloadedCustomMaps.indexOf(map) < (downloadedCustomMaps.size() - 1)) {
                     sb.append(",");
                 }
             }

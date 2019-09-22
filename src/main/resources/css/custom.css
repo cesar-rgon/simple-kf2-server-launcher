@@ -13,8 +13,8 @@
 }
 
 .menu .label {
+    -fx-font-family: "Ubuntu Bold";
     -fx-text-fill: white;
-    -fx-font-weight: bold;
     -fx-font-size: 16;
 }
 
@@ -23,8 +23,8 @@
 }
 
 .menu-item .label {
+    -fx-font-family: "Ubuntu Bold";
     -fx-text-fill: white;
-    -fx-font-weight: bold;
     -fx-font-size: 14;
 }
 
@@ -33,19 +33,21 @@
 }
 
 .label {
+    -fx-font-family: "Ubuntu";
     -fx-font-size: 13;
     -fx-text-fill: white;
 }
 
 .button {
+    -fx-font-family: "Ubuntu Bold";
     -fx-background-color: #4d0304;
-    -fx-font-weight: bold;
     -fx-font-size: 13;
     -fx-text-fill: white;
     -fx-cursor: hand;
 }
 
 .combo-box {
+    -fx-font-family: "Ubuntu";
     -fx-font-size: 14;
     -fx-cursor: hand;
 }
@@ -70,6 +72,7 @@
 }
 
 .text-field, .text-area {
+    -fx-font-family: "Ubuntu";
     -fx-text-box-border: transparent;
     -fx-font-size: 14;
     -fx-text-fill: white;
@@ -77,10 +80,12 @@
 }
 
 #console {
+    -fx-font-family: "Ubuntu";
     -fx-font-weight: normal;
 }
 
 .check-box {
+    -fx-font-family: "Ubuntu";
     -fx-font-size: 14;
     -fx-text-fill: white;
     -fx-font-weight: bold;
@@ -100,6 +105,7 @@
 }
 
 .table-view .table-cell {
+    -fx-font-family: "Ubuntu";
     -fx-font-size: 16;
     -fx-text-fill: white;
 }
@@ -154,6 +160,7 @@
 }
 
 .tab {
+    -fx-font-family: "Ubuntu";
     -fx-text-base-color: white;
     -fx-background-color: #191513;
     -fx-cursor: hand;

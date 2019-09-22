@@ -4,6 +4,7 @@ import dtos.GameTypeDto;
 import dtos.MapDto;
 import dtos.ProfileDto;
 import dtos.SelectDto;
+import entities.Map;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -481,7 +482,7 @@ public class MainContentController implements Initializable {
         mapLabel.setText(mapLabelText);
         loadTooltip(languageCode, "prop.tooltip.map", mapImg, mapLabel, mapSelect);
 
-        String difficultyLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.difficulty");
+        String difficultyLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.difficulty") + "*";
         difficultyLabel.setText(difficultyLabelText);
         loadTooltip(languageCode, "prop.tooltip.difficulty", difficultyImg, difficultyLabel, difficultySelect);
 
@@ -557,9 +558,20 @@ public class MainContentController implements Initializable {
         previousSelectedLanguageCode = profile.getLanguage().getKey();
         gameTypeSelect.setValue(profile.getGametype());
 
-        List<MapDto> mapList = profile.getMapList().stream()
-                .filter(m -> m.isDownloaded() && m.getMod() != null && !m.getMod())
+        List<MapDto> officialMaps = profile.getMapList().stream()
+                .filter(m -> m.isOfficial())
+                .sorted((o1, o2) -> o1.getKey().compareTo(o2.getKey()))
                 .collect(Collectors.toList());
+
+        List<MapDto> downloadedCustomMaps = profile.getMapList().stream()
+                .filter(m -> m.isDownloaded())
+                .filter(m -> !m.isOfficial())
+                .filter(m -> m.getMod() != null && !m.getMod())
+                .sorted((o1, o2) -> o1.getKey().compareTo(o2.getKey()))
+                .collect(Collectors.toList());
+
+        List<MapDto> mapList = new ArrayList<MapDto>(officialMaps);
+        mapList.addAll(downloadedCustomMaps);
         mapSelect.setItems(FXCollections.observableArrayList(mapList));
 
         mapSelect.setValue(profile.getMap());

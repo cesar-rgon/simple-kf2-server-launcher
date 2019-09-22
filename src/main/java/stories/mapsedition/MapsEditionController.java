@@ -272,7 +272,7 @@ public class MapsEditionController implements Initializable {
     }
 
     private Double getWidthGridPaneByNumberOfColums() {
-        return (MainApplication.getPrimaryStage().getWidth() - (50 * mapsSlider.getValue()) - 75) / mapsSlider.getValue();
+        return (MainApplication.getPrimaryStage().getWidth() - (50 * mapsSlider.getValue()) - 90) / mapsSlider.getValue();
     }
 
     private void resizeGridPane(GridPane gridPane) {
