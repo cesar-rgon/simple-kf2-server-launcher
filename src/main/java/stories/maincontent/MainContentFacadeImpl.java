@@ -71,8 +71,8 @@ public class MainContentFacadeImpl implements MainContentFacade {
 
     @Override
     public ObservableList<SelectDto> listAllPlayers() throws SQLException {
-        List<MaxPlayers> players = MaxPlayersDao.getInstance().listAll();
-        return maxPlayersDtoFactory.newDtos(players);
+        List<MaxPlayers> playerList = MaxPlayersDao.getInstance().listAll();
+        return maxPlayersDtoFactory.newDtos(playerList);
     }
 
     @Override

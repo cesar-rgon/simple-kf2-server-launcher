@@ -8,6 +8,7 @@ import dtos.factories.ProfileDtoFactory;
 import dtos.factories.ProfileToDisplayDtoFactory;
 import entities.*;
 import javafx.collections.ObservableList;
+import javafx.scene.control.ButtonType;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -60,6 +61,7 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
             firstOfficialMap = officialMaps.get(0);
         }
 
+        Optional<MaxPlayers> defaultMaxPlayers = MaxPlayersDao.getInstance().findByCode("6");
         Profile newProfile = new Profile(
                 profileName,
                 LanguageDao.getInstance().listAll().get(0),
@@ -67,7 +69,7 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                 firstOfficialMap,
                 DifficultyDao.getInstance().listAll().get(0),
                 LengthDao.getInstance().listAll().get(0),
-                MaxPlayersDao.getInstance().listAll().get(0),
+                defaultMaxPlayers.isPresent()? defaultMaxPlayers.get(): null,
                 StringUtils.isNotBlank(defaultServername) ? defaultServername: "Killing Floor 2 Server",
                 Integer.parseInt(defaultWebPort),
                 Integer.parseInt(defaultGamePort),
@@ -423,6 +425,26 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
         Properties properties = propertyService.loadPropertiesFromFile(file);
         List<Language> languageList = LanguageDao.getInstance().listAll();
 
+        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                "prop.message.proceed");
+        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                "prop.message.importItems");
+
+        String gameTypesText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                "prop.menu.configuration.gameTypes");
+        String difficultiesText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                "prop.menu.configuration.difficulties");
+        String lengthText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                "prop.menu.configuration.length");
+        String maxPlayersText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                "prop.menu.configuration.maxPlayers");
+
+        Optional<ButtonType> result = Utils.questionDialog(headerText, contentText + ":\n\n" + gameTypesText + "\n" + difficultiesText + "\n" + lengthText + "\n" + maxPlayersText);
+        if (result.isPresent() && result.get().equals(ButtonType.CANCEL)) {
+            return null;
+        }
+
         importGameTypesFromFile(properties, languageList);
         importDifficultiesFromFile(properties, languageList);
         importLengthsFromFile(properties, languageList);
@@ -436,9 +458,10 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
 
             if (savedProfileList.size() < selectedProfileList.size()) {
                 List<String> selectedProfileNameList = selectedProfileList.stream().map(dto -> dto.getProfileName()).collect(Collectors.toList());
-                List<String> savedProfileNameList = savedProfileList.stream().map(profile -> profile.getName()).collect(Collectors.toList());;
+                List<String> savedProfileNameList = savedProfileList.stream().map(profile -> profile.getName()).collect(Collectors.toList());
+                ;
 
-                for (String selectedProfileName: selectedProfileNameList) {
+                for (String selectedProfileName : selectedProfileNameList) {
                     if (!savedProfileNameList.contains(selectedProfileName)) {
                         errorMessage.append(selectedProfileName + "\n");
                     }
