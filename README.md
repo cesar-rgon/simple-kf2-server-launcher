@@ -35,7 +35,7 @@ Application to easily customize and launch a Killing Floor 2 server through a vi
 ## Features
 
 ```
-Version: 2.0 final
+Version: 2.0.1 final
 Supported OS: Microsoft Windows and Linux (Ubuntu/Debian)
 Author: César Rodríguez González
 Languages: English, Spanish, French
