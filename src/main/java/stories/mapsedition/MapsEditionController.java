@@ -22,6 +22,7 @@ import javafx.scene.layout.GridPane;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.AddMapsToProfile;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import pojos.session.Session;
@@ -348,58 +349,68 @@ public class MapsEditionController implements Initializable {
                 selectionModel.select(customMapsModsTab);
             }
             String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.addCustomMaps");
-            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.urlsIdsWorkshop");
-            Optional<String> result = Utils.OneTextInputDialog(headerText, contentText);
+            List<AddMapsToProfile> addMapsToProfileList = Utils.defineCustomMapsToAddPerProfile(headerText, profileSelect.getItems());
 
-            if (result.isPresent() && StringUtils.isNotBlank(result.get())) {
+            if (addMapsToProfileList != null && !addMapsToProfileList.isEmpty()) {
                 StringBuffer success = new StringBuffer();
                 StringBuffer errors = new StringBuffer();
 
-                String[] idUrlWorkShopArray = result.get().replaceAll(" ", "").split(",");
-                for (int i = 0; i < idUrlWorkShopArray.length; i++) {
-                    try {
-                        Long idWorkShop = null;
-                        if (idUrlWorkShopArray[i].contains("http")) {
-                            String[] array = idUrlWorkShopArray[i].split("=");
-                            idWorkShop = Long.parseLong(array[1]);
-                        } else {
-                            idWorkShop = Long.parseLong(idUrlWorkShopArray[i]);
-                        }
-                        MapDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
-                        if (mapModInDataBase == null) {
-                            // The map is not in dabatabase, create a new map for actual profile
-                            MapDto customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, installationFolder, false, null, profileSelect.getValue().getName());
-                            if (customMap != null) {
-                                mapList.add(customMap);
-                                GridPane gridpane = createMapGridPane(customMap);
-                                customMapsFlowPane.getChildren().add(gridpane);
-                                String mapNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                                success.append(mapNameMessage + ": ").append(customMap.getKey()).append(" - id WorkShop: ").append(customMap.getIdWorkShop()).append("\n");
-                            } else {
-                                errors.append("url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
+                for (AddMapsToProfile addMapsToProfile: addMapsToProfileList) {
+                    if (StringUtils.isNotBlank(addMapsToProfile.getMapList())) {
+                        String[] idUrlWorkShopArray = addMapsToProfile.getMapList().replaceAll(" ", "").split(",");
+
+                        for (int i = 0; i < idUrlWorkShopArray.length; i++) {
+                            String profileNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileName");
+                            try {
+                                Long idWorkShop = null;
+                                if (idUrlWorkShopArray[i].contains("http")) {
+                                    String[] array = idUrlWorkShopArray[i].split("=");
+                                    idWorkShop = Long.parseLong(array[1]);
+                                } else {
+                                    idWorkShop = Long.parseLong(idUrlWorkShopArray[i]);
+                                }
+                                MapDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
+                                if (mapModInDataBase == null) {
+                                    // The map is not in dabatabase, create a new map for actual profile
+                                    MapDto customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, installationFolder, false, null, addMapsToProfile.getProfileName());
+                                    if (customMap != null) {
+                                        if (addMapsToProfile.getProfileName().equalsIgnoreCase(profileSelect.getValue().getName())) {
+                                            mapList.add(customMap);
+                                            GridPane gridpane = createMapGridPane(customMap);
+                                            customMapsFlowPane.getChildren().add(gridpane);
+                                        }
+                                        String mapNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                                        success.append(profileNameMessage + ": ").append(addMapsToProfile.getProfileName()).append(" - " + mapNameMessage + ": ").append(customMap.getKey()).append(" - id WorkShop: ").append(customMap.getIdWorkShop()).append("\n");
+                                    } else {
+                                        errors.append(profileNameMessage + ": ").append(addMapsToProfile.getProfileName()).append(" - url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
+                                    }
+                                } else {
+                                    if (facade.addProfileToMap(mapModInDataBase.getKey(), addMapsToProfile.getProfileName())) {
+                                        if (addMapsToProfile.getProfileName().equalsIgnoreCase(profileSelect.getValue().getName())) {
+                                            mapList.add(mapModInDataBase);
+                                            GridPane gridpane = createMapGridPane(mapModInDataBase);
+                                            customMapsFlowPane.getChildren().add(gridpane);
+                                        }
+                                        String mapNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                                        success.append(profileNameMessage + ": ").append(addMapsToProfile.getProfileName()).append(" - " + mapNameMessage + ": ").append(mapModInDataBase.getKey()).append(" - id WorkShop: ").append(mapModInDataBase.getIdWorkShop()).append("\n");
+                                    } else {
+                                        errors.append(profileNameMessage + ": ").append(addMapsToProfile.getProfileName()).append(" - url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
+                                    }
+                                }
+                            } catch (Exception e) {
+                                errors.append(profileNameMessage + ": ").append(addMapsToProfile.getProfileName()).append(" - url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
                             }
-                        } else {
-                            if (facade.addProfileToMap(mapModInDataBase.getKey(), profileSelect.getValue().getName())) {
-                                mapList.add(mapModInDataBase);
-                                GridPane gridpane = createMapGridPane(mapModInDataBase);
-                                customMapsFlowPane.getChildren().add(gridpane);
-                                String mapNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                                success.append(mapNameMessage + ": ").append(mapModInDataBase.getKey()).append(" - id WorkShop: ").append(mapModInDataBase.getIdWorkShop()).append("\n");
-                            } else {
-                                errors.append("url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
-                            }
                         }
-                    } catch (Exception e) {
-                        errors.append("url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
                     }
                 }
+
                 if (StringUtils.isNotBlank(success)) {
                     customMapsModsTab.setGraphic(new Label("(" + customMapsFlowPane.getChildren().size() + ")"));
                     String message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapsAdded");
                     Utils.infoDialog(message + ":", success.toString());
                 } else {
                     headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapsNotAdded");
-                    contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.checkUrlIdWorkshop");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.checkUrlIdWorkshop");
                     Utils.infoDialog(headerText, contentText);
                 }
                 if (StringUtils.isNotBlank(errors)) {

@@ -130,8 +130,8 @@ public class Kf2WindowsImpl extends Kf2Common {
             replaceInFileKfWebIni(installationFolder, profile, StandardCharsets.ISO_8859_1);
             replaceInFileKfGameIni(installationFolder, profile, "PCServer-KFGame.ini");
 
-            Process proccess = Runtime.getRuntime().exec(command.toString(),null, new File(installationFolder));
-            Session.getInstance().getProcessList().add(proccess);
+            Process process = Runtime.getRuntime().exec(command.toString(),null, new File(installationFolder));
+            Session.getInstance().getProcessList().add(process);
             return command.toString();
         } catch (Exception e) {
             String message = "Error executing Killing Floor 2 server";

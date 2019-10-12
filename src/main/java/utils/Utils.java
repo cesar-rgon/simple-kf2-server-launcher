@@ -1,14 +1,22 @@
 package utils;
 
+import dtos.GameTypeDto;
 import dtos.ProfileDto;
 import dtos.ProfileToDisplayDto;
 import dtos.SelectDto;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import pojos.AddMapsToProfile;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -193,8 +201,9 @@ public class Utils {
         alert.showAndWait();
     }
 
-    public static List<ProfileToDisplayDto> selectProfilesDialog(String headerText, List<ProfileToDisplayDto> profileList, List<ProfileToDisplayDto> initialSelectedProfileList) {
-        Dialog<GridPane> dialog = new Dialog<GridPane>();
+
+    public static List<AddMapsToProfile> defineCustomMapsToAddPerProfile(String headerText, ObservableList<ProfileDto> profileList) {
+        Dialog<TableView<AddMapsToProfile>> dialog = new Dialog<TableView<AddMapsToProfile>>();
         PropertyService propertyService = new PropertyServiceImpl();
         try {
             String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
@@ -204,7 +213,192 @@ public class Utils {
         }
         dialog.setHeaderText(headerText);
 
-        GridPane gridpane = new GridPane();
+        TableView<AddMapsToProfile> tableView = new TableView<AddMapsToProfile>();
+        // First Column
+        TableColumn<AddMapsToProfile, String> profileNameColumn = new TableColumn<AddMapsToProfile, String>();
+        profileNameColumn.setText("Profile name");
+        profileNameColumn.setCellValueFactory(cellData -> cellData.getValue().profileNameProperty());
+        profileNameColumn.setSortable(false);
+        profileNameColumn.setEditable(false);
+        profileNameColumn.setMinWidth(150);
+
+        // Second Column
+        TableColumn<AddMapsToProfile, String> customMapsColumn = new TableColumn<AddMapsToProfile, String>();
+        customMapsColumn.setText("Custom URL/Id from WorkShop for maps/mods separated by comma");
+        customMapsColumn.setMinWidth(500);
+        customMapsColumn.setSortable(false);
+        customMapsColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        customMapsColumn.setCellValueFactory(cellData -> cellData.getValue().mapListProperty());
+        customMapsColumn.setEditable(true);
+
+        tableView.getColumns().add(profileNameColumn);
+        tableView.getColumns().add(customMapsColumn);
+
+        if (profileList != null && !profileList.isEmpty()) {
+            for (ProfileDto profile: profileList) {
+                tableView.getItems().add(new AddMapsToProfile(profile.getName()));
+            }
+        }
+        tableView.setEditable(true);
+
+        dialog.getDialogPane().setContent(tableView);
+        dialog.setResizable(true);
+        dialog.getDialogPane().setMinWidth(650);
+        dialog.getDialogPane().setMinHeight(400);
+
+        ButtonType buttonTypeOk = null;
+        ButtonType buttonTypeCancel = null;
+        try {
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            String okText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.ok");
+            buttonTypeOk = new ButtonType(okText, ButtonBar.ButtonData.OK_DONE);
+            String cancelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.cancel");
+            buttonTypeCancel = new ButtonType(cancelText, ButtonBar.ButtonData.CANCEL_CLOSE);
+        } catch (Exception e) {
+            buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+            buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        }
+
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeCancel);
+        ButtonType finalButtonTypeOk = buttonTypeOk;
+        dialog.setResultConverter(new Callback<ButtonType, TableView<AddMapsToProfile>>() {
+            @Override
+            public TableView call(ButtonType b) {
+                if (b == finalButtonTypeOk) {
+                    return tableView;
+                }
+                return null;
+            }
+        });
+
+        Optional<TableView<AddMapsToProfile>> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() != null && result.get().getItems() != null && !result.get().getItems().isEmpty()) {
+            return result.get().getItems();
+        }
+        return new ArrayList<AddMapsToProfile>();
+    }
+
+    public static List<ProfileToDisplayDto> selectProfilesDialog(String headerText, List<ProfileToDisplayDto> profileList, List<ProfileToDisplayDto> initialSelectedProfileList) {
+        Dialog<TableView<ProfileToDisplayDto>> dialog = new Dialog<TableView<ProfileToDisplayDto>>();
+        PropertyService propertyService = new PropertyServiceImpl();
+        try {
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
+            dialog.setTitle(applicationTitle);
+        } catch (Exception ex) {
+            dialog.setTitle("");
+        }
+        dialog.setHeaderText(headerText);
+
+        TableView<ProfileToDisplayDto> tableView = new TableView<ProfileToDisplayDto>();
+
+        // First Column
+        TableColumn<ProfileToDisplayDto, Boolean> selectColumn = new TableColumn<ProfileToDisplayDto, Boolean>();
+        selectColumn.setText("Select");
+        selectColumn.setCellFactory(col -> new CheckBoxTableCell<>());
+        List<String> selectedProfileNameList = initialSelectedProfileList.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
+        if (selectedProfileNameList != null && !selectedProfileNameList.isEmpty()) {
+            selectColumn.setCellValueFactory(cellData -> new SimpleBooleanProperty(selectedProfileNameList.contains(cellData.getValue().getProfileName())));
+        }
+        selectColumn.setSortable(false);
+        selectColumn.setEditable(true);
+        selectColumn.setMinWidth(50);
+
+        // Second Column
+        TableColumn<ProfileToDisplayDto, String> profileNameColumn = new TableColumn<ProfileToDisplayDto, String>();
+        profileNameColumn.setText("Profile name");
+        profileNameColumn.setCellValueFactory(cellData -> cellData.getValue().profileNameProperty());
+        profileNameColumn.setSortable(false);
+        profileNameColumn.setEditable(false);
+        profileNameColumn.setMinWidth(150);
+
+        // Third Column
+        TableColumn<ProfileToDisplayDto, String> gameTypeColumn = new TableColumn<ProfileToDisplayDto, String>();
+        gameTypeColumn.setText("Game type");
+        gameTypeColumn.setCellValueFactory(cellData -> cellData.getValue().gameTypeDescriptionProperty());
+        gameTypeColumn.setSortable(false);
+        gameTypeColumn.setEditable(false);
+        gameTypeColumn.setMinWidth(150);
+
+        // Fourth Column
+        TableColumn<ProfileToDisplayDto, String> mapNameColumn = new TableColumn<ProfileToDisplayDto, String>();
+        mapNameColumn.setText("Map name");
+        mapNameColumn.setCellValueFactory(cellData -> cellData.getValue().mapNameProperty());
+        mapNameColumn.setSortable(false);
+        mapNameColumn.setEditable(false);
+        mapNameColumn.setMinWidth(150);
+
+        // Fifth Column
+        TableColumn<ProfileToDisplayDto, String> difficultyColumn = new TableColumn<ProfileToDisplayDto, String>();
+        difficultyColumn.setText("Difficuty");
+        difficultyColumn.setCellValueFactory(cellData -> cellData.getValue().difficultyDescriptionProperty());
+        difficultyColumn.setSortable(false);
+        difficultyColumn.setEditable(false);
+        difficultyColumn.setMinWidth(150);
+
+        // Sixth Column
+        TableColumn<ProfileToDisplayDto, String> lengthColumn = new TableColumn<ProfileToDisplayDto, String>();
+        lengthColumn.setText("Length");
+        lengthColumn.setCellValueFactory(cellData -> cellData.getValue().lengthDescriptionProperty());
+        lengthColumn.setSortable(false);
+        lengthColumn.setEditable(false);
+        lengthColumn.setMinWidth(150);
+
+        tableView.getColumns().add(selectColumn);
+        tableView.getColumns().add(profileNameColumn);
+        tableView.getColumns().add(gameTypeColumn);
+        tableView.getColumns().add(mapNameColumn);
+        tableView.getColumns().add(difficultyColumn);
+        tableView.getColumns().add(lengthColumn);
+        tableView.setItems(FXCollections.observableArrayList(profileList));
+        tableView.setEditable(true);
+
+        dialog.getDialogPane().setContent(tableView);
+        dialog.setResizable(true);
+        dialog.getDialogPane().setMinWidth(800);
+        dialog.getDialogPane().setMinHeight(400);
+
+        ButtonType buttonTypeOk = null;
+        ButtonType buttonTypeCancel = null;
+        try {
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            String okText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.ok");
+            buttonTypeOk = new ButtonType(okText, ButtonBar.ButtonData.OK_DONE);
+            String cancelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.cancel");
+            buttonTypeCancel = new ButtonType(cancelText, ButtonBar.ButtonData.CANCEL_CLOSE);
+        } catch (Exception e) {
+            buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+            buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        }
+
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeCancel);
+        ButtonType finalButtonTypeOk = buttonTypeOk;
+        dialog.setResultConverter(new Callback<ButtonType, TableView<ProfileToDisplayDto>>() {
+            @Override
+            public TableView call(ButtonType b) {
+                if (b == finalButtonTypeOk) {
+                    return tableView;
+                }
+                return null;
+            }
+        });
+
+        Optional<TableView<ProfileToDisplayDto>> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() != null && result.get().getItems() != null && !result.get().getItems().isEmpty()) {
+            List<ProfileToDisplayDto> selectedProfiles = new ArrayList<ProfileToDisplayDto>();
+            for (ProfileToDisplayDto profileToDisplayDto: profileList) {
+                Boolean isSelected = selectColumn.getCellData(profileToDisplayDto);
+                if (isSelected != null && isSelected) {
+                    selectedProfiles.add(profileToDisplayDto);
+                }
+            }
+            return selectedProfiles;
+        }
+        return new ArrayList<ProfileToDisplayDto>();
+
+
+        /*
         if (profileList != null && !profileList.isEmpty()) {
             int rowIndex = 1;
             List<String> selectedProfileNameList = initialSelectedProfileList.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
@@ -273,6 +467,7 @@ public class Utils {
             }
         }
         return selectedProfileList;
+        */
     }
 
     public static ProfileDto selectProfileDialog(ObservableList<ProfileDto> profiles) {
