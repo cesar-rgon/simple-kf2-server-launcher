@@ -1,7 +1,7 @@
 package stories.profilesedition;
 
 import dtos.ProfileDto;
-import dtos.ProfileToDisplayDto;
+import pojos.ProfileToDisplay;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -310,7 +310,7 @@ public class ProfilesEditionController implements Initializable {
     private void exportProfileOnAction() {
         try {
             String message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfilesToExport");
-            List<ProfileToDisplayDto> selectedProfiles = facade.selectProfilesToBeExported(message);
+            List<ProfileToDisplay> selectedProfiles = facade.selectProfilesToBeExported(message);
 
             if (selectedProfiles != null && !selectedProfiles.isEmpty()) {
                 FileChooser fileChooser = new FileChooser();

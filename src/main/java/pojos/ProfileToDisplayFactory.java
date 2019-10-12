@@ -1,26 +1,29 @@
-package dtos.factories;
+package pojos;
 
-import dtos.ProfileToDisplayDto;
+import dtos.factories.DifficultyDtoFactory;
+import dtos.factories.GameTypeDtoFactory;
+import dtos.factories.LengthDtoFactory;
+import pojos.ProfileToDisplay;
 import entities.Profile;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ProfileToDisplayDtoFactory {
+public class ProfileToDisplayFactory {
 
     private final GameTypeDtoFactory gameTypeDtoFactory;
     private final DifficultyDtoFactory difficultyDtoFactory;
     private final LengthDtoFactory lengthDtoFactory;
 
-    public ProfileToDisplayDtoFactory() {
+    public ProfileToDisplayFactory() {
         super();
         this.gameTypeDtoFactory = new GameTypeDtoFactory();
         this.difficultyDtoFactory = new DifficultyDtoFactory();
         this.lengthDtoFactory = new LengthDtoFactory();
     }
 
-    public ProfileToDisplayDto newDto(Profile profile) {
-        return new ProfileToDisplayDto(
+    public ProfileToDisplay newOne(Profile profile) {
+        return new ProfileToDisplay(
                 profile.getId(),
                 profile.getName(),
                 profile.getGametype() != null ? gameTypeDtoFactory.newDto(profile.getGametype()).getValue(): "",
@@ -30,7 +33,7 @@ public class ProfileToDisplayDtoFactory {
         );
     }
 
-    public List<ProfileToDisplayDto> newDtos(List<Profile> profiles) {
-        return profiles.stream().map(this::newDto).collect(Collectors.toList());
+    public List<ProfileToDisplay> newOnes(List<Profile> profiles) {
+        return profiles.stream().map(this::newOne).collect(Collectors.toList());
     }
 }

@@ -818,7 +818,7 @@ public class MainContentController implements Initializable {
                 default:
                     String message = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
                             "prop.message.runServers");
-                    selectedProfileNameList = facade.selectProfiles(message, Session.getInstance().getActualProfile().getName());
+                    selectedProfileNameList = facade.selectProfiles(message, profileSelect.getValue().getName());
             }
 
             StringBuffer commands = new StringBuffer(console.getText());
@@ -837,26 +837,28 @@ public class MainContentController implements Initializable {
     private void joinServerOnAction() {
         try {
             ObservableList<ProfileDto> allProfiles = facade.listAllProfiles();
-            ProfileDto selectedProfile = null;
+            String selectedProfileName = null;
             switch (allProfiles.size()) {
                 case 0:
                     facade.joinServer(null);
                     return;
                 case 1:
-                    selectedProfile = allProfiles.get(0);
+                    selectedProfileName = allProfiles.get(0).getName();
                     profileSelect.setValue(allProfiles.get(0));
                     break;
                 default:
-                    selectedProfile = Utils.selectProfileDialog(allProfiles);
+                    String message = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.joinServer");
+                    selectedProfileName = facade.selectProfile(message, profileSelect.getValue().getName());
             }
-            if (selectedProfile != null) {
-                StringBuffer commands = new StringBuffer(facade.joinServer(selectedProfile.getName()));
+            if (StringUtils.isNotBlank(selectedProfileName)) {
+                StringBuffer commands = new StringBuffer(facade.joinServer(selectedProfileName));
                 if (StringUtils.isNotBlank(commands)) {
                     commands.append("\n");
                 }
                 console.setText(StringUtils.isNotBlank(console.getText() + commands.toString())? console.getText() + commands.toString(): "");
             }
-        } catch (SQLException e) {
+        } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
         }

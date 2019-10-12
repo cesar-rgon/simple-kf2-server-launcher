@@ -3,11 +3,12 @@ package stories.maincontent;
 import daos.*;
 import dtos.GameTypeDto;
 import dtos.ProfileDto;
-import dtos.ProfileToDisplayDto;
+import pojos.ProfileToDisplay;
 import dtos.SelectDto;
 import dtos.factories.*;
 import entities.*;
 import javafx.collections.ObservableList;
+import pojos.ProfileToDisplayFactory;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import services.PropertyService;
@@ -339,17 +340,32 @@ public class MainContentFacadeImpl implements MainContentFacade {
 
     @Override
     public List<String> selectProfiles(String message, String actualProfileName) throws SQLException {
-        ProfileToDisplayDtoFactory profileToDisplayDtoFactory = new ProfileToDisplayDtoFactory();
+        ProfileToDisplayFactory profileToDisplayFactory = new ProfileToDisplayFactory();
         List<Profile> allProfiles = ProfileDao.getInstance().listAll();
-        List<ProfileToDisplayDto> allProfilesToDisplayDto = profileToDisplayDtoFactory.newDtos(allProfiles);
+        List<ProfileToDisplay> allProfilesToDisplay = profileToDisplayFactory.newOnes(allProfiles);
 
-        Optional<ProfileToDisplayDto> actualProfile = allProfilesToDisplayDto.stream().filter(dto -> dto.getProfileName().equalsIgnoreCase(actualProfileName)).findFirst();
-        List<ProfileToDisplayDto> preSelectedProfiles = new ArrayList<ProfileToDisplayDto>();
+        Optional<ProfileToDisplay> actualProfile = allProfilesToDisplay.stream().filter(p -> p.getProfileName().equalsIgnoreCase(actualProfileName)).findFirst();
         if (actualProfile.isPresent()) {
-            preSelectedProfiles.add(actualProfile.get());
+            actualProfile.get().setSelected(true);
         }
 
-        List<ProfileToDisplayDto> selectedProfiles = Utils.selectProfilesDialog(message + ":", allProfilesToDisplayDto, preSelectedProfiles);
+        List<ProfileToDisplay> selectedProfiles = Utils.selectProfilesDialog(message + ":", allProfilesToDisplay);
         return selectedProfiles.stream().map(dto -> dto.getProfileName()).collect(Collectors.toList());
+    }
+
+
+    @Override
+    public String selectProfile(String message, String actualProfileName) throws SQLException {
+        ProfileToDisplayFactory profileToDisplayFactory = new ProfileToDisplayFactory();
+        List<Profile> allProfiles = ProfileDao.getInstance().listAll();
+        List<ProfileToDisplay> allProfilesToDisplay = profileToDisplayFactory.newOnes(allProfiles);
+
+        Optional<ProfileToDisplay> actualProfile = allProfilesToDisplay.stream().filter(p -> p.getProfileName().equalsIgnoreCase(actualProfileName)).findFirst();
+        if (actualProfile.isPresent()) {
+            actualProfile.get().setSelected(true);
+        }
+
+        ProfileToDisplay selectedProfile = Utils.selectProfileDialog(message + ":", allProfilesToDisplay);
+        return selectedProfile.getProfileName();
     }
  }

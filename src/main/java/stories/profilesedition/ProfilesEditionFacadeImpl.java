@@ -1,11 +1,10 @@
 package stories.profilesedition;
 
 import daos.*;
-import dtos.MapDto;
 import dtos.ProfileDto;
-import dtos.ProfileToDisplayDto;
+import pojos.ProfileToDisplay;
 import dtos.factories.ProfileDtoFactory;
-import dtos.factories.ProfileToDisplayDtoFactory;
+import pojos.ProfileToDisplayFactory;
 import entities.*;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ButtonType;
@@ -34,12 +33,12 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
     private static final Logger logger = LogManager.getLogger(ProfilesEditionFacadeImpl.class);
     private final ProfileDtoFactory profileDtoFactory;
     private final PropertyService propertyService;
-    private final ProfileToDisplayDtoFactory profileToDisplayDtoFactory;
+    private final ProfileToDisplayFactory profileToDisplayFactory;
 
     public ProfilesEditionFacadeImpl() {
         profileDtoFactory = new ProfileDtoFactory();
         propertyService = new PropertyServiceImpl();
-        profileToDisplayDtoFactory = new ProfileToDisplayDtoFactory();
+        profileToDisplayFactory = new ProfileToDisplayFactory();
     }
 
     @Override
@@ -163,7 +162,7 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
     }
 
     @Override
-    public void exportProfilesToFile(List<ProfileToDisplayDto> profilesToExportDto, File file) throws Exception {
+    public void exportProfilesToFile(List<ProfileToDisplay> profilesToExportDto, File file) throws Exception {
 
         List<Profile> profilesToExport = profilesToExportDto.stream().map(dto -> {
             try {
@@ -450,7 +449,7 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
         importLengthsFromFile(properties, languageList);
         importMaxPlayersFromFile(properties, languageList);
 
-        List<ProfileToDisplayDto> selectedProfileList = selectProfilesToBeImported(properties, message);
+        List<ProfileToDisplay> selectedProfileList = selectProfilesToBeImported(properties, message);
 
         List<Profile> savedProfileList = new ArrayList<Profile>();
         if (selectedProfileList != null & !selectedProfileList.isEmpty()) {
@@ -509,10 +508,10 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
         }
     }
 
-    private List<ProfileToDisplayDto> selectProfilesToBeImported(Properties properties, String message) throws Exception {
+    private List<ProfileToDisplay> selectProfilesToBeImported(Properties properties, String message) throws Exception {
         int numberOfProfiles = Integer.parseInt(properties.getProperty("exported.profiles.number"));
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-        List<ProfileToDisplayDto> profileToDisplayDtoList = new ArrayList<ProfileToDisplayDto>();
+        List<ProfileToDisplay> profileToDisplayList = new ArrayList<ProfileToDisplay>();
 
         for (int profileIndex = 1; profileIndex <= numberOfProfiles; profileIndex++) {
             String profileName = properties.getProperty("exported.profile" + profileIndex + ".name");
@@ -525,17 +524,18 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                 String lengthDescription = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.length." + lengthCode);
                 String mapName = properties.getProperty("exported.profile" + profileIndex + ".map");
 
-                ProfileToDisplayDto profileToDisplayDto = new ProfileToDisplayDto(profileIndex, profileName, gameTypeDescription, mapName, difficultyDescription, lengthDescription);
-                profileToDisplayDtoList.add(profileToDisplayDto);
+                ProfileToDisplay profileToDisplay = new ProfileToDisplay(profileIndex, profileName, gameTypeDescription, mapName, difficultyDescription, lengthDescription);
+                profileToDisplay.setSelected(true);
+                profileToDisplayList.add(profileToDisplay);
             } catch (Exception e) {
                 logger.error("Error reading the profile " + profileName + " from exported file", e);
             }
         }
-        return Utils.selectProfilesDialog(message + ":", profileToDisplayDtoList, profileToDisplayDtoList);
+        return Utils.selectProfilesDialog(message + ":", profileToDisplayList);
     }
 
 
-    private List<Profile> saveProfilesToDatabase(List<ProfileToDisplayDto> selectedProfileDtoList, Properties properties) {
+    private List<Profile> saveProfilesToDatabase(List<ProfileToDisplay> selectedProfileDtoList, Properties properties) {
 
         List<Profile> selectedProfileList = selectedProfileDtoList.stream().map(dto -> getProfileFromFile(dto.getProfileFileIndex(), properties)).collect(Collectors.toList());
         List<Profile> savedProfileList = new ArrayList<Profile>();
@@ -544,7 +544,7 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
             try {
                 Profile savedProfile = ProfileDao.getInstance().insert(profile);
 
-                Optional<ProfileToDisplayDto> profileToDisplayDto = selectedProfileDtoList.stream().filter(dto -> dto.getProfileName().equalsIgnoreCase(profile.getName())).findFirst();
+                Optional<ProfileToDisplay> profileToDisplayDto = selectedProfileDtoList.stream().filter(dto -> dto.getProfileName().equalsIgnoreCase(profile.getName())).findFirst();
                 if (profileToDisplayDto.isPresent()) {
                     List<Map> mapList = importProfileMapsFromFile(profileToDisplayDto.get().getProfileFileIndex(), savedProfile, properties);
                     savedProfile.getMapList().addAll(mapList);
@@ -634,9 +634,10 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
     }
 
     @Override
-    public List<ProfileToDisplayDto> selectProfilesToBeExported(String message) throws SQLException {
+    public List<ProfileToDisplay> selectProfilesToBeExported(String message) throws SQLException {
         List<Profile> allProfiles = ProfileDao.getInstance().listAll();
-        List<ProfileToDisplayDto> allProfilesToDisplayDto = profileToDisplayDtoFactory.newDtos(allProfiles);
-        return Utils.selectProfilesDialog(message + ":", allProfilesToDisplayDto, allProfilesToDisplayDto);
+        List<ProfileToDisplay> allProfilesToDisplay = profileToDisplayFactory.newOnes(allProfiles);
+        allProfilesToDisplay.stream().forEach(p -> p.setSelected(true));
+        return Utils.selectProfilesDialog(message + ":", allProfilesToDisplay);
     }
 }
