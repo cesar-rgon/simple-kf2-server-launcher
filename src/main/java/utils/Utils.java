@@ -1,19 +1,7 @@
 package utils;
 
-import dtos.GameTypeDto;
 import dtos.ProfileDto;
-import javafx.beans.InvalidationListener;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.event.Event;
-import javafx.geometry.Pos;
-import javafx.scene.control.cell.ChoiceBoxTableCell;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.ScrollEvent;
-import pojos.ProfileToDisplay;
 import dtos.SelectDto;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
@@ -24,8 +12,8 @@ import javafx.util.Callback;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import pojos.AddMapsToProfile;
+import pojos.ProfileToDisplay;
 import pojos.RadioButtonTableCell;
-import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 
@@ -39,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class Utils {
 
@@ -286,6 +273,7 @@ public class Utils {
         }
         return new ArrayList<AddMapsToProfile>();
     }
+
 
     public static List<ProfileToDisplay> selectProfilesDialog(String headerText, List<ProfileToDisplay> profileList) {
         Dialog<TableView<ProfileToDisplay>> dialog = new Dialog<TableView<ProfileToDisplay>>();
