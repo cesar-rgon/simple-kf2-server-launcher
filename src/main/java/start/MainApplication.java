@@ -30,16 +30,15 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
         Font.loadFont(getClass().getClassLoader().getResource("fonts/Ubuntu-R.ttf").toExternalForm(), 13);
         Font.loadFont(getClass().getClassLoader().getResource("fonts/Ubuntu-B.ttf").toExternalForm(), 13);
-
         template = new FXMLLoader(getClass().getResource("/views/template.fxml"));
         Scene scene = new Scene(template.load());
         FXMLLoader mainContent = new FXMLLoader(getClass().getResource("/views/mainContent.fxml"));
         mainContent.setRoot(template.getNamespace().get("content"));
         mainContent.load();
         primaryStage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("images/kf2ico.png")));
-        PropertyService propertyService = new PropertyServiceImpl();
         String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
         primaryStage.setTitle(applicationTitle);
         primaryStage.setScene(scene);
@@ -69,20 +68,28 @@ public class MainApplication extends Application {
     }
 
     public static void main(String[] args) {
-        if (args == null || args.length == 0) {
-            launch(args);
-        } else {
-            if ("--profiles".equalsIgnoreCase(args[0])) {
-                if (args.length > 1) {
-                    ConsoleService consoleService = new ConsoleServiceImpl();
-                    consoleService.runServersByConsole(Arrays.asList(args));
-                } else {
-                    System.out.println("No profiles where found\nUse --profiles profile1[ profile2 profile3 ...]");
-                }
+        try {
+            if (args == null || args.length == 0) {
+                PropertyService propertyService = new PropertyServiceImpl();
+                String applicationVersion = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion");
+                logger.info("----- Starting application Simple Killing Floor 2 Server Launcher v" + applicationVersion + " -----");
+                launch(args);
+                logger.info("----- Ending application Simple Killing Floor 2 Server Launcher v" + applicationVersion + " -----");
             } else {
-                System.out.println("Unrecognized parameter: " + args[0] + "\nUse --profiles profile1[ profile2 profile3 ...]");
+                if ("--profiles".equalsIgnoreCase(args[0])) {
+                    if (args.length > 1) {
+                        ConsoleService consoleService = new ConsoleServiceImpl();
+                        consoleService.runServersByConsole(Arrays.asList(args));
+                    } else {
+                        System.out.println("No profiles where found\nUse --profiles profile1[ profile2 profile3 ...]");
+                    }
+                } else {
+                    System.out.println("Unrecognized parameter: " + args[0] + "\nUse --profiles profile1[ profile2 profile3 ...]");
+                }
+                System.exit(0);
             }
-            System.exit(0);
+        } catch (Exception e) {
+            logger.error(e);
         }
     }
 

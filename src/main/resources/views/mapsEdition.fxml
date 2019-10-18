@@ -10,31 +10,31 @@
 
 <fx:root id="centerPane" fx:id="mapsEditionGridPane" prefHeight="745.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapsedition.MapsEditionController">
    <children>
-      <Label fx:id="profileLabel" text="Profile" GridPane.halignment="LEFT">
+      <Label fx:id="profileLabel" text="Profile" GridPane.halignment="LEFT" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets left="15.0" />
          </GridPane.margin>
       </Label>
-      <ComboBox fx:id="profileSelect" onAction="#profileOnAction" prefWidth="350.0" GridPane.columnSpan="2" GridPane.halignment="LEFT">
+      <ComboBox fx:id="profileSelect" onAction="#profileOnAction" prefWidth="350.0" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets left="62.0" />
          </GridPane.margin></ComboBox>
-      <Button fx:id="importMapsFromServer" mnemonicParsing="false" onAction="#importMapsFromServerOnAction" prefWidth="200.0" text="Import  maps/mods" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-      <Button fx:id="searchInWorkShop" mnemonicParsing="false" onAction="#searchInWorkShopOnAction" prefWidth="200.0" text="Search in WorkShop" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+      <Button fx:id="importMapsFromServer" mnemonicParsing="false" onAction="#importMapsFromServerOnAction" prefWidth="200.0" text="Import  maps/mods" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+      <Button fx:id="searchInWorkShop" mnemonicParsing="false" onAction="#searchInWorkShopOnAction" prefWidth="200.0" text="Search in WorkShop" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets />
          </GridPane.margin>
       </Button>
-      <Button fx:id="selectAllMaps" mnemonicParsing="false" onAction="#selectAllMapsOnAction" prefWidth="200.0" text="Select all maps/mods" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+      <Button fx:id="selectAllMaps" mnemonicParsing="false" onAction="#selectAllMapsOnAction" prefWidth="200.0" text="Select all maps/mods" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets />
          </GridPane.margin>
       </Button>
-      <TextField fx:id="searchMaps" maxWidth="280.0" onKeyReleased="#searchMapsKeyReleased" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+      <TextField fx:id="searchMaps" maxWidth="280.0" onKeyReleased="#searchMapsKeyReleased" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets left="35.0" />
          </GridPane.margin></TextField>
-      <ImageView fx:id="searchImg" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+      <ImageView fx:id="searchImg" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
          <image>
             <Image url="@../images/find.png" />
          </image>
@@ -42,20 +42,20 @@
             <Insets />
          </GridPane.margin>
       </ImageView>
-      <Button fx:id="addNewMaps" mnemonicParsing="false" onAction="#addNewMapsOnAction" prefWidth="200.0" text="Add new maps/mods" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+      <Button fx:id="addNewMaps" mnemonicParsing="false" onAction="#addNewMapsOnAction" prefWidth="200.0" text="Add new maps/mods" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets />
          </GridPane.margin></Button>
-      <Button fx:id="removeMaps" alignment="CENTER" mnemonicParsing="false" onAction="#removeMapsOnAction" prefWidth="200.0" text="Delete maps/mods" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+      <Button fx:id="removeMaps" alignment="CENTER" mnemonicParsing="false" onAction="#removeMapsOnAction" prefWidth="200.0" text="Delete maps/mods" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets />
          </GridPane.margin></Button>
-      <Label fx:id="sliderLabel" text="Columns" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+      <Label fx:id="sliderLabel" text="Columns" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets right="282.0" />
          </GridPane.margin>
       </Label>
-      <Slider fx:id="mapsSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" maxWidth="280.0" min="2.0" minorTickCount="0" onMouseClicked="#mapsSliderOnMouseClicked" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5.0" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER" GridPane.valignment="CENTER">
+      <Slider fx:id="mapsSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" maxWidth="280.0" min="2.0" minorTickCount="0" onMouseClicked="#mapsSliderOnMouseClicked" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5.0" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
          <padding>
             <Insets right="10.0" />
          </padding>

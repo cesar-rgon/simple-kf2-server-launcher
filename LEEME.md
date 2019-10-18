@@ -35,10 +35,11 @@ Aplicación para personalizar y lanzar fácilmente un servidor de Killing Floor 
 ## Caracteristicas
 
 ```
-Versión: 2.0.1 final
+Versión: 2.0.2 final
 S.O. soportados: Microsoft Windows y Linux (Ubuntu/Debian)
 Autor: César Rodríguez González
 Idiomas: Inglés, Español, Francés
+Traducción a francés por: -foG.Nox
 ```
 
 - Instalar/actualizar el servidor a la última versión oficial o beta. 

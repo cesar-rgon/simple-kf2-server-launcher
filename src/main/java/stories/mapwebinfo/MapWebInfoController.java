@@ -18,6 +18,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import pojos.ProfileToDisplay;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -25,7 +26,9 @@ import start.MainApplication;
 import utils.Utils;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class MapWebInfoController implements Initializable {
 
@@ -116,11 +119,12 @@ public class MapWebInfoController implements Initializable {
                             }
                         }
                         mapNameLabel.setText(mapName);
-                        if (idWorkShop != null && Session.getInstance().getMapsProfile() != null && facade.isMapInProfile(idWorkShop, Session.getInstance().getMapsProfile().getName())) {
+                        List<ProfileToDisplay> profilesWithoutMap = facade.getProfilesWithoutMap(idWorkShop);
+                        if (idWorkShop != null && (profilesWithoutMap == null || profilesWithoutMap.isEmpty())) {
                             addMap.setVisible(false);
                             alreadyInLauncher.setVisible(true);
                         } else {
-                            addMap.setVisible(StringUtils.isNotBlank(urlWorkShop) && StringUtils.isNotBlank(mapName) && Session.getInstance().getMapsProfile() != null);
+                            addMap.setVisible(StringUtils.isNotBlank(urlWorkShop) && StringUtils.isNotBlank(mapName) && profilesWithoutMap != null && !profilesWithoutMap.isEmpty());
                             alreadyInLauncher.setVisible(false);
                         }
                     } catch (Exception e) {
@@ -165,31 +169,42 @@ public class MapWebInfoController implements Initializable {
                 return;
             }
 
-            MapDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
-            if (mapModInDataBase == null) {
-                MapDto customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, mapName, strUrlMapImage,  installationFolder, Session.getInstance().getMapsProfile().getName());
-                if (customMap != null) {
-                    addMap.setVisible(false);
-                    alreadyInLauncher.setVisible(true);
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                    Utils.infoDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+            List<ProfileToDisplay> profilesWithoutMap = facade.getProfilesWithoutMap(idWorkShop);
+            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfiles");
+            List<ProfileToDisplay> selectedProfiles = Utils.selectProfilesDialog(headerText + ":", profilesWithoutMap);
+            if (selectedProfiles != null && !selectedProfiles.isEmpty()) {
+                List<String> selectedProfileNameList = selectedProfiles.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
+                MapDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
+
+                if (mapModInDataBase == null) {
+                    MapDto customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, mapName, strUrlMapImage,  installationFolder, selectedProfileNameList);
+                    if (customMap != null) {
+                        if (profilesWithoutMap.size() - selectedProfiles.size() == 0) {
+                            addMap.setVisible(false);
+                            alreadyInLauncher.setVisible(true);
+                        }
+                        headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                        Utils.infoDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+                    } else {
+                        headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                        Utils.warningDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+                    }
                 } else {
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                    Utils.warningDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
-                }
-            } else {
-                if (facade.addProfileToMap(mapModInDataBase.getKey(), Session.getInstance().getMapsProfile().getName())) {
-                    addMap.setVisible(false);
-                    alreadyInLauncher.setVisible(true);
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                    Utils.infoDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
-                } else {
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                    Utils.warningDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+                    if (facade.addProfilesToMap(mapModInDataBase.getKey(), selectedProfileNameList)) {
+                        if (profilesWithoutMap.size() - selectedProfiles.size() == 0) {
+                            addMap.setVisible(false);
+                            alreadyInLauncher.setVisible(true);
+                        }
+                        headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                        Utils.infoDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+                    } else {
+                        headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                        Utils.warningDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+                    }
                 }
             }
         } catch (Exception e) {

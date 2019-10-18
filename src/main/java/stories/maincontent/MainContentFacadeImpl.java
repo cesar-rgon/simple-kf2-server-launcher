@@ -365,7 +365,10 @@ public class MainContentFacadeImpl implements MainContentFacade {
             actualProfile.get().setSelected(true);
         }
 
-        ProfileToDisplay selectedProfile = Utils.selectProfileDialog(message + ":", allProfilesToDisplay);
-        return selectedProfile.getProfileName();
+        Optional<ProfileToDisplay> selectedProfile = Utils.selectProfileDialog(message + ":", allProfilesToDisplay);
+        if (selectedProfile.isPresent()) {
+            return selectedProfile.get().getProfileName();
+        }
+        return null;
     }
  }
