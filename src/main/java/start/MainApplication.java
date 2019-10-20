@@ -38,7 +38,7 @@ public class MainApplication extends Application {
         FXMLLoader mainContent = new FXMLLoader(getClass().getResource("/views/mainContent.fxml"));
         mainContent.setRoot(template.getNamespace().get("content"));
         mainContent.load();
-        primaryStage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("images/kf2ico.png")));
+        primaryStage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("images/logo.png")));
         String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
         primaryStage.setTitle(applicationTitle);
         primaryStage.setScene(scene);

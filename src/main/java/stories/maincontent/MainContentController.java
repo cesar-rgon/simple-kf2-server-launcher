@@ -69,7 +69,6 @@ public class MainContentController implements Initializable {
     @FXML private Label serverNameLabel;
     @FXML private Label serverPasswordLabel;
     @FXML private Label webPageLabel;
-    @FXML private Label webPasswordLabel;
     @FXML private Label portsLabel;
     @FXML private Label clanLabel;
     @FXML private Label webLinkLabel;
@@ -89,7 +88,9 @@ public class MainContentController implements Initializable {
     @FXML private ImageView serverNameImg;
     @FXML private ImageView serverPasswordImg;
     @FXML private ImageView webPageImg;
-    @FXML private ImageView webPasswordImg;
+    @FXML private ImageView takeoverImg;
+    @FXML private Label takeoverLabel;
+    @FXML private CheckBox takeover;
     @FXML private ImageView portsImg;
     @FXML private ImageView clanImg;
     @FXML private ImageView webLinkImg;
@@ -453,6 +454,14 @@ public class MainContentController implements Initializable {
         }
     }
 
+    private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, CheckBox checkBox, TextField textField) throws Exception {
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        Tooltip.install(img, tooltip);
+        label.setTooltip(tooltip);
+        checkBox.setTooltip(tooltip);
+        textField.setTooltip(tooltip);
+    }
+
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, CheckBox checkBox) throws Exception {
         Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
         Tooltip.install(img, tooltip);
@@ -504,13 +513,11 @@ public class MainContentController implements Initializable {
 
         String webPageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.webPage");
         webPageLabel.setText(webPageLabelText);
-        String webPageText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.webAdmin");
-        webPage.setText(webPageText);
-        loadTooltip(languageCode, "prop.tooltip.webPage", webPageImg, webPageLabel, webPage);
+        loadTooltip(languageCode, "prop.tooltip.webPage", webPageImg, webPageLabel, webPage, webPassword);
 
-        String webPasswordLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.webPassword");
-        webPasswordLabel.setText(webPasswordLabelText);
-        loadTooltip(languageCode, "prop.tooltip.webPassword", webPasswordImg, webPasswordLabel, webPassword);
+        String takeoverLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.takeover");
+        takeoverLabel.setText(takeoverLabelText);
+        loadTooltip(languageCode, "prop.tooltip.takeover", takeoverImg, takeoverLabel, takeover);
 
         String portsLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.ports");
         portsLabel.setText(portsLabelText);

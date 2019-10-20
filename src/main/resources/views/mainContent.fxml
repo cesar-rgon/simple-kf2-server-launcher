@@ -102,7 +102,7 @@
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ImageView fx:id="webPasswordImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="11">
+        <ImageView fx:id="takeoverImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="11">
             <image>
                 <Image url="@../images/label.png" />
             </image>
@@ -190,12 +190,12 @@
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label fx:id="webPageLabel" text="WEB PAGE" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="10">
+        <Label fx:id="webPageLabel" text="WEB ( Enable / Password )" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="10">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label fx:id="webPasswordLabel" text="WEB PASSWORD" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="11">
+        <Label fx:id="takeoverLabel" text="TAKEOVER" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="11">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
@@ -227,8 +227,9 @@
         </Label>
         <TextField fx:id="serverName" maxWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="8" />
         <PasswordField fx:id="serverPassword" maxWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="9" />
-        <CheckBox fx:id="webPage" lineSpacing="0.9" mnemonicParsing="false" onAction="#webPageOnAction" opacity="0.75" text="Enable WebAdmin" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="10" />
-        <PasswordField fx:id="webPassword" maxWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+        <CheckBox fx:id="webPage" lineSpacing="0.9" mnemonicParsing="false" onAction="#webPageOnAction" opacity="0.75" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="10" />
+      <CheckBox fx:id="takeover" mnemonicParsing="false" opacity="0.75" text="Enable takeover" GridPane.columnIndex="1" GridPane.rowIndex="11" />
+        <PasswordField fx:id="webPassword" maxWidth="320.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="10" />
         <TextField fx:id="webPort" maxWidth="65.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="12">
          <GridPane.margin>
             <Insets />
