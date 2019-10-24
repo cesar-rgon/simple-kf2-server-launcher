@@ -3,6 +3,7 @@ package stories.maincontent;
 import daos.*;
 import dtos.GameTypeDto;
 import dtos.ProfileDto;
+import org.apache.commons.lang3.StringUtils;
 import pojos.ProfileToDisplay;
 import dtos.SelectDto;
 import dtos.factories.*;
@@ -15,6 +16,7 @@ import services.PropertyService;
 import services.PropertyServiceImpl;
 import utils.Utils;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -370,5 +372,28 @@ public class MainContentFacadeImpl implements MainContentFacade {
             return selectedProfile.get().getProfileName();
         }
         return null;
+    }
+
+    @Override
+    public boolean isCorrectInstallationFolder(String installationFolder) {
+        if (StringUtils.isNotBlank(installationFolder)) {
+            File windowsExecutable = new File(installationFolder + "/Binaries/Win64/KFServer.exe");
+            File linuxExecutable = new File(installationFolder + "/Binaries/Win64/KFGameSteamServer.bin.x86_64");
+            if (windowsExecutable.exists() && linuxExecutable.exists()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetTakeover(String profileName, boolean isSelected) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setTakeover(isSelected);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
     }
  }

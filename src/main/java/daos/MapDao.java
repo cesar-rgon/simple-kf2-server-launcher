@@ -25,8 +25,8 @@ public class MapDao extends CommonDao<Map> {
         return instance;
     }
 
-    public List<Map> listNotDownloadedMapsAndMods() throws SQLException {
-        String query="select m from entities.Map m where m.downloaded=false";
+    public List<Map> listAllMaps() throws SQLException {
+        String query="select m from entities.Map m";
         return list(query, null);
     }
 

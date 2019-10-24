@@ -66,7 +66,7 @@
     -fx-text-fill: white;
 }
 
-.combo-box:hover, .combo-box-popup .list-view .list-cell:hover, .text-field:hover, .text-area .content:hover, .button:hover, .check-box:hover {
+.combo-box:hover, .combo-box-popup .list-view .list-cell:hover, .text-field:hover, .button:hover, .check-box:hover, #customParameters .content:hover, #welcomeMessage .content:hover {
     -fx-background-color: #c15d11;
     -fx-text-fill: white;
 }

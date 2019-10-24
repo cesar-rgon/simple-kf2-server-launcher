@@ -28,9 +28,10 @@ public class TemplateController implements Initializable {
     private String languageCode;
 
     @FXML private Menu mainPage;
-    @FXML private Menu installUpdateServer;
     @FXML private Menu webAdmin;
     @FXML private Menu maps;
+    @FXML private Menu console;
+    @FXML private Menu installUpdateServer;
     @FXML private Menu configuration;
     @FXML private Menu help;
     @FXML private MenuItem profiles;
@@ -56,14 +57,17 @@ public class TemplateController implements Initializable {
             String mainPageTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.mainPage");
             mainPage.setGraphic(getLabelWithHandler(mainPageTitle, "/views/mainContent.fxml"));
 
-            String installUpdateTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.installUpdateServer");
-            installUpdateServer.setGraphic(getLabelWithHandler(installUpdateTitle, "/views/installUpdateServer.fxml"));
-
             String webAdminTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.webAdmin");
             webAdmin.setGraphic(getLabelWithHandler(webAdminTitle, "/views/webAdmin.fxml"));
 
             String mapsTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.maps");
             maps.setGraphic(getLabelWithHandler(mapsTitle, "/views/mapsEdition.fxml"));
+
+            String consoleTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.console");
+            console.setGraphic(getLabelWithHandler(consoleTitle, "/views/console.fxml"));
+
+            String installUpdateTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.installUpdateServer");
+            installUpdateServer.setGraphic(getLabelWithHandler(installUpdateTitle, "/views/installUpdateServer.fxml"));
 
             String configurationTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.configuration");
             configuration.setText(configurationTitle);
@@ -128,11 +132,14 @@ public class TemplateController implements Initializable {
             String mainPageTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.mainPage");
             mainPage.setDisable(mainPageTitle.equals(title));
 
-            String installUpdateTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.installUpdateServer");
-            installUpdateServer.setDisable(installUpdateTitle.equals(title));
-
             String webAdminTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.webAdmin");
             webAdmin.setDisable(webAdminTitle.equals(title));
+
+            String consoleTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.console");
+            console.setDisable(consoleTitle.equals(title));
+
+            String installUpdateTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.installUpdateServer");
+            installUpdateServer.setDisable(installUpdateTitle.equals(title));
 
             String mapsTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.maps");
             maps.setDisable(mapsTitle.equals(title));

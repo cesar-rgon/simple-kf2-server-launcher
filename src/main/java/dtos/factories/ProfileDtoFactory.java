@@ -47,7 +47,8 @@ public class ProfileDtoFactory {
                 profile.getUrlImageServer(),
                 profile.getWelcomeMessage(),
                 profile.getCustomParameters(),
-                mapDtoFactory.newDtos(profile.getMapList()));
+                mapDtoFactory.newDtos(profile.getMapList()),
+                profile.getTakeover());
     }
 
     public ObservableList<ProfileDto> newDtos(List<Profile> profiles) {

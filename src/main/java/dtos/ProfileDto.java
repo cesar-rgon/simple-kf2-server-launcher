@@ -28,10 +28,11 @@ public class ProfileDto {
     private final String welcomeMessage;
     private final String customParameters;
     private final ObservableList<MapDto> mapList;
+    private final Boolean takeover;
 
     public ProfileDto(String name, SelectDto language, GameTypeDto gametype, MapDto map, SelectDto difficulty, SelectDto length, SelectDto maxPlayers,
                    String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
-                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, ObservableList<MapDto> mapList) {
+                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, ObservableList<MapDto> mapList, Boolean takeover) {
         super();
         this.name = new SimpleStringProperty(name);
         this.language = language;
@@ -53,6 +54,7 @@ public class ProfileDto {
         this.welcomeMessage = welcomeMessage;
         this.customParameters = customParameters;
         this.mapList = mapList;
+        this.takeover = takeover;
     }
 
     public StringProperty getNameProperty() {
@@ -137,6 +139,10 @@ public class ProfileDto {
 
     public ObservableList<MapDto> getMapList() {
         return mapList;
+    }
+
+    public Boolean getTakeover() {
+        return takeover;
     }
 
     @Override

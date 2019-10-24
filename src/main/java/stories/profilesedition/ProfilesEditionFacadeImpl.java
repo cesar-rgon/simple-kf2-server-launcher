@@ -73,7 +73,8 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                 Integer.parseInt(defaultWebPort),
                 Integer.parseInt(defaultGamePort),
                 Integer.parseInt(defaultQueryPort),
-                officialMaps
+                officialMaps,
+                true
         );
         ProfileDao.getInstance().insert(newProfile);
         return profileDtoFactory.newDto(newProfile);
@@ -152,7 +153,8 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                     profileToBeClonedOpt.get().getUrlImageServer(),
                     profileToBeClonedOpt.get().getWelcomeMessage(),
                     profileToBeClonedOpt.get().getCustomParameters(),
-                    new ArrayList<Map>(profileToBeClonedOpt.get().getMapList())
+                    new ArrayList<Map>(profileToBeClonedOpt.get().getMapList()),
+                    profileToBeClonedOpt.get().getTakeover()
             );
             ProfileDao.getInstance().insert(newProfile);
             return profileDtoFactory.newDto(newProfile);
@@ -200,6 +202,8 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
             properties.setProperty("exported.profile" + profileIndex + ".welcomeMessage", StringUtils.isNotBlank(profile.getWelcomeMessage())? profile.getWelcomeMessage(): "");
             properties.setProperty("exported.profile" + profileIndex + ".customParameters", StringUtils.isNotBlank(profile.getCustomParameters())? profile.getCustomParameters(): "");
             properties.setProperty("exported.profile" + profileIndex + ".mapListSize", profile.getMapList()!=null? String.valueOf(profile.getMapList().size()): "0");
+            properties.setProperty("exported.profile" + profileIndex + ".takeover", profile.getTakeover()!=null? String.valueOf(profile.getTakeover()): "false");
+
             if (profile.getMapList() != null && !profile.getMapList().isEmpty()) {
                 int mapIndex = 1;
                 for (Map map: profile.getMapList()) {
@@ -500,7 +504,8 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                     properties.getProperty("exported.profile" + profileIndex + ".urlImageServer"),
                     properties.getProperty("exported.profile" + profileIndex + ".welcomeMessage"),
                     properties.getProperty("exported.profile" + profileIndex + ".customParameters"),
-                    new ArrayList<Map>()
+                    new ArrayList<Map>(),
+                    Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".takeover"))
             );
         } catch (SQLException e) {
             logger.error("Error getting the profile " + profileName + " from file", e);

@@ -52,6 +52,9 @@ public class Profile extends CommonEntity {
     @Column(name="WEB_PASSWORD", length=100)
     private String webPassword;
 
+    @Column(name="TAKEOVER")
+    private Boolean takeover;
+
     @Column(name="WEB_PORT")
     private Integer webPort;
 
@@ -90,7 +93,7 @@ public class Profile extends CommonEntity {
     }
 
     public Profile(String name, Language language, GameType gametype, Map map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,
-                   String serverName, Integer webPort, Integer gamePort, Integer queryPort, List<Map> mapList) {
+                   String serverName, Integer webPort, Integer gamePort, Integer queryPort, List<Map> mapList, Boolean webPage) {
         super();
         this.name = name;
         this.language = language;
@@ -104,11 +107,12 @@ public class Profile extends CommonEntity {
         this.gamePort = gamePort;
         this.queryPort = queryPort;
         this.mapList = mapList;
+        this.webPage = webPage;
     }
 
     public Profile(String name, Language language, GameType gametype, Map map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,
                    String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
-                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, List<Map> mapList) {
+                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, List<Map> mapList, Boolean takeover) {
         super();
         this.name = name;
         this.language = language;
@@ -130,6 +134,7 @@ public class Profile extends CommonEntity {
         this.welcomeMessage = welcomeMessage;
         this.customParameters = customParameters;
         this.mapList = mapList;
+        this.takeover = takeover;
     }
 
     @Override
@@ -300,5 +305,13 @@ public class Profile extends CommonEntity {
 
     public void setMapList(List<Map> mapList) {
         this.mapList = mapList;
+    }
+
+    public Boolean getTakeover() {
+        return takeover;
+    }
+
+    public void setTakeover(Boolean takeover) {
+        this.takeover = takeover;
     }
 }

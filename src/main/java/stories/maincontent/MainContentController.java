@@ -9,26 +9,36 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.HPos;
+import javafx.geometry.Pos;
+import javafx.geometry.VPos;
+import javafx.scene.Cursor;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebView;
+import javafx.util.Callback;
 import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.kf2factory.Kf2Common;
+import pojos.kf2factory.Kf2Factory;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import stories.template.TemplateController;
 import utils.Utils;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MainContentController implements Initializable {
@@ -37,6 +47,7 @@ public class MainContentController implements Initializable {
     private final MainContentFacade facade;
     private final PropertyService propertyService;
     private String previousSelectedLanguageCode;
+    private String installationFolder;
 
     @FXML private ComboBox<ProfileDto> profileSelect;
     @FXML private ComboBox<SelectDto> languageSelect;
@@ -55,9 +66,8 @@ public class MainContentController implements Initializable {
     @FXML private TextField yourWebLink;
     @FXML private TextField urlImageServer;
     @FXML private TextArea welcomeMessage;
-    @FXML private TextField customParameters;
+    @FXML private TextArea customParameters;
     @FXML private CheckBox webPage;
-    @FXML private TextArea console;
     @FXML private WebView imageWebView;
     @FXML private Label profileLabel;
     @FXML private Label languageLabel;
@@ -75,7 +85,6 @@ public class MainContentController implements Initializable {
     @FXML private Label urlImageLabel;
     @FXML private Label welcomeLabel;
     @FXML private Label customParametersLabel;
-    @FXML private Label consoleLabel;
     @FXML private Button runServer;
     @FXML private Button joinServer;
     @FXML private ImageView profileImg;
@@ -95,7 +104,6 @@ public class MainContentController implements Initializable {
     @FXML private ImageView clanImg;
     @FXML private ImageView webLinkImg;
     @FXML private ImageView customParametersImg;
-    @FXML private ImageView consoleImg;
     @FXML private ImageView thumbnailImg;
     @FXML private ImageView urlImageServerImg;
     @FXML private ImageView welcomeImg;
@@ -112,6 +120,7 @@ public class MainContentController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         try {
+            installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.installationFolder");
             ObservableList<ProfileDto> profileOptions = facade.listAllProfiles();
             profileSelect.setItems(profileOptions);
             if (!profileOptions.isEmpty()) {
@@ -126,7 +135,6 @@ public class MainContentController implements Initializable {
             difficultySelect.setItems(facade.listAllDifficulties());
             lengthSelect.setItems(facade.listAllLengths());
             maxPlayersSelect.setItems(facade.listAllPlayers());
-            console.setText(StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole(): "");
 
             if (profileSelect.getValue() != null) {
                 profileOnAction();
@@ -141,6 +149,120 @@ public class MainContentController implements Initializable {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
         }
+
+        mapSelect.setCellFactory(new Callback<ListView<MapDto>, ListCell<MapDto>>() {
+            @Override
+            public ListCell<MapDto> call(ListView<MapDto> p) {
+                ListCell<MapDto> listCell = new ListCell<MapDto>() {
+
+                    private GridPane createMapGridPane(MapDto map) {
+                        Label mapNameLabel = new Label(map.getKey());
+                        mapNameLabel.setStyle("-fx-padding: 5;");
+                        Label mapType;
+                        String languageCode = languageSelect.getValue().getKey();
+                        String officialText;
+                        String customText;
+                        try {
+                            officialText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.official");
+                            customText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.custom");
+                        } catch (Exception e) {
+                            officialText = "OFFICIAL";
+                            customText = "CUSTOM";
+                        }
+                        if (map.isOfficial()) {
+                            mapType = new Label(officialText);
+                            mapType.setStyle("-fx-text-fill: plum; -fx-padding: 5;");
+                        } else {
+                            mapType = new Label(customText);
+                            mapType.setStyle("-fx-text-fill: gold; -fx-padding: 5;");
+                        }
+                        Image image;
+                        if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(map.getUrlPhoto())) {
+                            image = new Image("file:" + installationFolder + "/" + map.getUrlPhoto());
+                        } else {
+                            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("images/no-photo.png");
+                            image = new Image(inputStream);
+                        }
+                        ImageView mapPreview = new ImageView(image);
+                        mapPreview.setPreserveRatio(false);
+                        mapPreview.setFitWidth(128);
+                        mapPreview.setFitHeight(64);
+                        GridPane gridpane = new GridPane();
+                        gridpane.add(mapPreview, 1, 1);
+                        gridpane.add(new Label(), 2, 1);
+                        gridpane.add(mapNameLabel, 2, 2);
+                        gridpane.add(mapType, 2, 3);
+                        GridPane.setRowSpan(mapPreview, 3);
+                        return gridpane;
+                    }
+
+                    @Override
+                    protected void updateItem(MapDto map, boolean empty) {
+                        super.updateItem(map, empty);
+                        if (map != null) {
+                            setGraphic(createMapGridPane(map));
+                            setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                        }
+                    }
+                };
+                return listCell;
+            }
+        });
+
+        mapSelect.setButtonCell(new ListCell<MapDto>() {
+            private GridPane createMapGridPane(MapDto map) {
+                Label mapNameLabel = new Label(map.getKey());
+                mapNameLabel.setStyle("-fx-font-weight: bold;");
+                Image image;
+                if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(map.getUrlPhoto())) {
+                    image = new Image("file:" + installationFolder + "/" + map.getUrlPhoto());
+                } else {
+                    InputStream inputStream = getClass().getClassLoader().getResourceAsStream("images/no-photo.png");
+                    image = new Image(inputStream);
+                }
+                ImageView mapPreview = new ImageView(image);
+                mapPreview.setPreserveRatio(false);
+                mapPreview.setFitWidth(256);
+                mapPreview.setFitHeight(128);
+                Label mapType;
+                String languageCode = languageSelect.getValue().getKey();
+                String officialText;
+                String customText;
+                try {
+                    officialText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.official");
+                    customText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.custom");
+                } catch (Exception e) {
+                    officialText = "OFFICIAL";
+                    customText = "CUSTOM";
+                }
+                if (map.isOfficial()) {
+                    mapType = new Label(officialText);
+                    mapType.setStyle("-fx-text-fill: plum; -fx-padding: 3; -fx-border-color: plum; -fx-border-radius: 5;");
+                } else {
+                    mapType = new Label(customText);
+                    mapType.setStyle("-fx-text-fill: gold; -fx-padding: 3; -fx-border-color: gold; -fx-border-radius: 5;");
+                }
+                GridPane gridpane = new GridPane();
+                gridpane.add(mapPreview, 1, 1);
+                gridpane.add(mapType, 1, 2);
+                gridpane.add(mapNameLabel, 2, 2);
+                GridPane.setColumnSpan(mapPreview, 2);
+                GridPane.setHalignment(mapNameLabel, HPos.RIGHT);
+                gridpane.setAlignment(Pos.CENTER);
+                gridpane.setHgap(15);
+                gridpane.setVgap(5);
+                return gridpane;
+            }
+
+            @Override
+            protected void updateItem(MapDto map, boolean empty) {
+                super.updateItem(map, empty);
+                if (map != null) {
+                    setGraphic(createMapGridPane(map));
+                    setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                }
+            }
+        });
 
         serverName.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
@@ -545,10 +667,6 @@ public class MainContentController implements Initializable {
         customParametersLabel.setText(customParametersLabelText);
         loadTooltip(languageCode, "prop.tooltip.customParameters", customParametersImg, customParametersLabel, customParameters);
 
-        String consoleLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.console");
-        consoleLabel.setText(consoleLabelText);
-        loadTooltip(languageCode, "prop.tooltip.console", consoleImg, consoleLabel, console);
-
         String runServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.runServer");
         runServer.setText(runServerText);
         runServer.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.runServer")));
@@ -580,8 +698,11 @@ public class MainContentController implements Initializable {
         List<MapDto> mapList = new ArrayList<MapDto>(officialMaps);
         mapList.addAll(downloadedCustomMaps);
         mapSelect.setItems(FXCollections.observableArrayList(mapList));
+        Optional<MapDto> selectedMapOpt = mapList.stream().filter(m -> m.getKey().equalsIgnoreCase(profile.getMap().getKey())).findFirst();
+        if (selectedMapOpt.isPresent()) {
+            mapSelect.getSelectionModel().select(mapList.indexOf(selectedMapOpt.get()));
+        }
 
-        mapSelect.setValue(profile.getMap());
         difficultySelect.setValue(profile.getDifficulty());
         difficultySelect.setDisable(gameTypeSelect.getValue() != null ? !gameTypeSelect.getValue().isDifficultyEnabled(): false);
         lengthSelect.setValue(profile.getLength());
@@ -601,6 +722,7 @@ public class MainContentController implements Initializable {
         welcomeMessage.setText(profile.getWelcomeMessage());
         customParameters.setText(profile.getCustomParameters());
         webPage.setSelected(profile.getWebPage() != null ? profile.getWebPage(): false);
+        takeover.setSelected(profile.getTakeover() != null ? profile.getTakeover(): false);
         try {
             if (StringUtils.isNotEmpty(urlImageServer.getText())) {
                 imageWebView.getEngine().load(urlImageServer.getText());
@@ -810,6 +932,27 @@ public class MainContentController implements Initializable {
     }
 
     @FXML
+    private void takeoverOnAction() {
+        try {
+            if (profileSelect.getValue() != null) {
+                String profileName = profileSelect.getValue().getName();
+                if (!facade.updateProfileSetTakeover(profileName, takeover.isSelected())) {
+                    logger.warn("The takeover value could not be saved!: " + takeover.isSelected());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.profileNotUpdated");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.takeoverNotSaved");
+                    Utils.warningDialog(headerText, contentText);
+                }
+            }
+        } catch (Exception e) {
+            String headerText = "The takeover value could not be saved!";
+            logger.error(headerText, e);
+            Utils.errorDialog(headerText, e);
+        }
+    }
+
+    @FXML
     private void runServerOnAction() {
         try {
             ObservableList<ProfileDto> allProfiles = facade.listAllProfiles();
@@ -828,12 +971,10 @@ public class MainContentController implements Initializable {
                     selectedProfileNameList = facade.selectProfiles(message, profileSelect.getValue().getName());
             }
 
-            StringBuffer commands = new StringBuffer(console.getText());
             for (String profileName: selectedProfileNameList) {
-                commands.append(facade.runServer(profileName)).append("\n");
+                Session.getInstance().setConsole((StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
+                        "< " + new Date() + " - Run Server >\n" + facade.runServer(profileName));
             }
-            console.setText(StringUtils.isNotBlank(commands.toString())? commands.toString(): "");
-            Session.getInstance().setConsole(console.getText());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -859,11 +1000,8 @@ public class MainContentController implements Initializable {
                     selectedProfileName = facade.selectProfile(message, profileSelect.getValue().getName());
             }
             if (StringUtils.isNotBlank(selectedProfileName)) {
-                StringBuffer commands = new StringBuffer(facade.joinServer(selectedProfileName));
-                if (StringUtils.isNotBlank(commands)) {
-                    commands.append("\n");
-                }
-                console.setText(StringUtils.isNotBlank(console.getText() + commands.toString())? console.getText() + commands.toString(): "");
+                Session.getInstance().setConsole((StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n": "") +
+                        "< " + new Date() + " - Join Server >\n" + facade.joinServer(selectedProfileName));
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

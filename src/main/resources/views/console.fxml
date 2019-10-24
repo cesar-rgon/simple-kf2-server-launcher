@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+
+<fx:root id="centerPane" fx:id="consoleContent" alignment="CENTER" prefHeight="745.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.console.ConsoleController">
+    <rowConstraints>
+      <RowConstraints minHeight="10.0" prefHeight="20.0" />
+        <RowConstraints minHeight="10.0" prefHeight="730.0" />
+    </rowConstraints>
+    <columnConstraints>
+        <ColumnConstraints minWidth="1.0" prefWidth="1210.0" />
+    </columnConstraints>
+    <children>
+        <ImageView fitHeight="700.0" fitWidth="741.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowSpan="2" GridPane.valignment="CENTER">
+            <image>
+                <Image url="@../images/radiation700.png" />
+            </image>
+            <GridPane.margin>
+                <Insets />
+            </GridPane.margin>
+        </ImageView>
+      <TextArea fx:id="console" editable="false" opacity="0.75" wrapText="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+         <font>
+            <Font name="Consolas" size="20.0" />
+         </font>
+      </TextArea>
+    </children>
+</fx:root>

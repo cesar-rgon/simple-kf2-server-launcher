@@ -194,8 +194,9 @@ public class MapsEditionController implements Initializable {
         GridPane.setColumnSpan(mapPreview, 2);
         gridpane.add(new CheckBox(), 1, 2);
         gridpane.add(mapNameLabel, 2, 2);
+        mapNameLabel.setMinHeight(20);
         mapNameLabel.setMaxWidth(mapPreview.getFitWidth() - 25);
-        mapNameLabel.setAlignment(Pos.CENTER);
+        mapNameLabel.setAlignment(Pos.BOTTOM_CENTER);
 
         int rowIndex = 3;
         if (!map.isDownloaded()) {

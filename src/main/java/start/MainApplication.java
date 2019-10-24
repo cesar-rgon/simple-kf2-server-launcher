@@ -40,7 +40,8 @@ public class MainApplication extends Application {
         mainContent.load();
         primaryStage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("images/logo.png")));
         String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
-        primaryStage.setTitle(applicationTitle);
+        String applicationVersion = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion");
+        primaryStage.setTitle(applicationTitle + " " + applicationVersion);
         primaryStage.setScene(scene);
         primaryStage.setMinWidth(1280);
         primaryStage.setMinHeight(800);

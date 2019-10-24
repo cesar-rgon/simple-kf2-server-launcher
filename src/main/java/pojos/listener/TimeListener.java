@@ -30,11 +30,11 @@ public class TimeListener extends TimerTask {
     public void run() {
         logger.info("Starting the process of checking downloaded custom maps and mods.");
         try {
-            List<Map> notDownloadedMapList = databaseService.listNotDownloadedMapsAndMods();
-            if (notDownloadedMapList != null && !notDownloadedMapList.isEmpty()) {
+            List<Map> mapList = databaseService.listAllMaps();
+            if (mapList != null && !mapList.isEmpty()) {
                 PropertyService propertyService = new PropertyServiceImpl();
                 String installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.installationFolder");
-                for (Map map : notDownloadedMapList) {
+                for (Map map : mapList) {
                     try {
                         List<Path> kfmFilesPath = Files.walk(Paths.get(installationFolder + "/KFGame/Cache/" + map.getIdWorkShop()))
                                 .filter(Files::isRegularFile)

@@ -202,14 +202,22 @@ public abstract class Kf2Common {
                             pw.println("DownloadManagers=OnlineSubsystemSteamworks.SteamWorkshopDownload");
                         }
                     }
-                    if (StringUtils.isBlank(line) || (!line.contains("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]") &&
-                            !line.contains("ServerSubscribedWorkshopItems="))) {
-                        pw.println(line);
+                    if (StringUtils.isNotBlank(line) && line.contains("bUsedForTakeover=")) {
+                        pw.println("bUsedForTakeover=" + (profile.getTakeover()!=null?profile.getTakeover():"FALSE"));
+                    } else {
+                        if (StringUtils.isBlank(line) || (!line.contains("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]") &&
+                                !line.contains("ServerSubscribedWorkshopItems="))) {
+                            pw.println(line);
+                        }
                     }
                 } else {
-                    if (StringUtils.isBlank(line) || (!line.contains("DownloadManagers=OnlineSubsystemSteamworks.SteamWorkshopDownload") &&
-                            !line.contains("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]") && !line.contains("ServerSubscribedWorkshopItems="))) {
-                        pw.println(line);
+                    if (StringUtils.isNotBlank(line) && line.contains("bUsedForTakeover=")) {
+                        pw.println("bUsedForTakeover=" + (profile.getTakeover()!=null?profile.getTakeover():"FALSE"));
+                    } else {
+                        if (StringUtils.isBlank(line) || (!line.contains("DownloadManagers=OnlineSubsystemSteamworks.SteamWorkshopDownload") &&
+                                !line.contains("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]") && !line.contains("ServerSubscribedWorkshopItems="))) {
+                            pw.println(line);
+                        }
                     }
                 }
             }

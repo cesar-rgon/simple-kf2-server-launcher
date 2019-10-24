@@ -1,13 +1,10 @@
 package services;
 
 import daos.MapDao;
-import daos.ProfileDao;
 import entities.Map;
-import entities.Profile;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 public class DatabaseServiceImpl implements DatabaseService {
 
@@ -16,8 +13,8 @@ public class DatabaseServiceImpl implements DatabaseService {
     }
 
     @Override
-    public List<Map> listNotDownloadedMapsAndMods() throws SQLException {
-        return MapDao.getInstance().listNotDownloadedMapsAndMods();
+    public List<Map> listAllMaps() throws SQLException {
+        return MapDao.getInstance().listAllMaps();
     }
 
     @Override
