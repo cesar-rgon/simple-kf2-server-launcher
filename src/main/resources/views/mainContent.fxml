@@ -172,7 +172,7 @@
         </Label>
         <Label fx:id="mapLabel" text="MAP*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="TOP">
             <GridPane.margin>
-                <Insets right="10.0" top="8.0" />
+                <Insets right="10.0" top="11.0" />
             </GridPane.margin>
         </Label>
         <Label fx:id="difficultyLabel" text="DIFFICULTY*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="TOP">
@@ -227,7 +227,7 @@
         </Label>
         <Label fx:id="customParametersLabel" text="CUSTOM PARAMETERS" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="13" GridPane.valignment="TOP">
             <GridPane.margin>
-                <Insets right="10.0" top="8.0" />
+                <Insets right="10.0" top="11.0" />
             </GridPane.margin>
         </Label>
         <TextField fx:id="serverName" maxWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="8" GridPane.valignment="TOP">
@@ -270,7 +270,7 @@
          <GridPane.margin>
             <Insets top="2.0" />
          </GridPane.margin></TextField>
-        <TextArea fx:id="customParameters" prefHeight="100.0" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="13" GridPane.rowSpan="3" GridPane.valignment="TOP">
+        <TextArea fx:id="customParameters" prefHeight="100.0" prefWidth="350.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="13" GridPane.rowSpan="3" GridPane.valignment="TOP">
             <GridPane.margin>
                 <Insets top="2.0" />
             </GridPane.margin></TextArea>
@@ -290,7 +290,7 @@
          <GridPane.margin>
             <Insets top="2.0" />
          </GridPane.margin></TextField>
-        <TextArea fx:id="welcomeMessage" opacity="0.75" prefHeight="120.0" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="11" GridPane.rowSpan="5" GridPane.valignment="TOP">
+        <TextArea fx:id="welcomeMessage" opacity="0.75" prefHeight="120.0" wrapText="true" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="11" GridPane.rowSpan="5" GridPane.valignment="TOP">
          <GridPane.margin>
             <Insets top="2.0" />
          </GridPane.margin></TextArea>

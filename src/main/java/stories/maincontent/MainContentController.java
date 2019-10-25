@@ -639,6 +639,9 @@ public class MainContentController implements Initializable {
 
         String takeoverLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.takeover");
         takeoverLabel.setText(takeoverLabelText);
+
+        String takeoverText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.takeoverEnable");
+        takeover.setText(takeoverText);
         loadTooltip(languageCode, "prop.tooltip.takeover", takeoverImg, takeoverLabel, takeover);
 
         String portsLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.ports");

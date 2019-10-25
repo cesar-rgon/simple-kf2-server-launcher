@@ -22,8 +22,9 @@ Aplicación para personalizar y lanzar fácilmente un servidor de Killing Floor 
 > 4. [Vista rapida](#vista-rapida)
 >   - [Pagina principal](#pagina-principal)
 >   - [Pagina WebAdmin](#pagina-webadmin)
->   - [Pagina instalar o actualizar](#pagina-instalar-o-actualizar)
 >   - [Pagina mapas y mods](#pagina-mapas-y-mods)
+>   - [Pagina de la consola](#pagina-de-la-consola)
+>   - [Pagina instalar o actualizar](#pagina-instalar-o-actualizar)
 >   - [Configuracion-Perfiles](#configuracion-perfiles)
 >   - [Configuracion-Tipos de juegos](#configuracion-tipos-de-juegos)
 >   - [Configuracion-Dificultades](#configuracion-dificultades)
@@ -35,7 +36,7 @@ Aplicación para personalizar y lanzar fácilmente un servidor de Killing Floor 
 ## Caracteristicas
 
 ```
-Versión: 2.0.2 final
+Versión: 2.0.3 final
 S.O. soportados: Microsoft Windows y Linux (Ubuntu/Debian)
 Autor: César Rodríguez González
 Idiomas: Inglés, Español, Francés
@@ -122,21 +123,21 @@ $ java -jar SimpleKF2ServerLauncher.jar
 
 * _Contraseña web_: Este campo es opcional. Permite proteger la página de WebAdmin con una contraseña para autenticarse.
 
+* _Toma de control_: Si este check está habilitado, otras personas pueden tomar control del servidor, esto es, cambiar la contraseña y otras configuraciones, etc.
+
 * _Puertos_: Los puertos son opcionales. Necesitas abrir los puertos en tu router y firewall. Si se lanza más de un servidor, los puertos deben ser diferentes entre ellos (una configuración por perfil).
-
-* _Tu clan_: Este campo es opcional.
-
-* _Tu página web_: Este campo es opcional.
-
-* _URL imágen servidor_: Este campo es opcional. Este enlace debe corresponder a una imagen subida a internet que será usada como imágen de bienvenida en el servidor de Killing Floor 2. El formato y resolución debe ser PNG 512x256 píxeles.
-
-* _Mensaje de bienvenida_: Este campo es opcional. Es un mensaje de bienvenida en la pantalla iniciar del servidor.
 
 * _Parámetros personalizados_: Este campo es opcional. Define parámetros adicionales. El formato debe ser: [?]parametro1=valor1?parametror2=valor2?...?parametroN=valorN
 
   [?] significa: opcionalmente puedes comenzar los parámetros por "?"
 
-* _Consola_: Este campo es rellenado automáticamente cuando se ejecuta el servidor. Está compuesto por comandos de consola necesarios para ejecutar el servidor.
+* _URL imágen servidor_: Este campo es opcional. Este enlace debe corresponder a una imagen subida a internet que será usada como imágen de bienvenida en el servidor de Killing Floor 2. El formato y resolución debe ser PNG 512x256 píxeles.
+  
+* _Tu clan_: Este campo es opcional.
+
+* _Tu página web_: Este campo es opcional.
+
+* _Mensaje de bienvenida_: Este campo es opcional. Es un mensaje de bienvenida en la pantalla iniciar del servidor.
 
 * _Ejecutar servidor_: Ejecuta un servidor Killing Floor 2 con los filtros especificados. Todos los filtros obligatorios deben ser especificados. Los ficheros de configuración del servidor están ubicados en la carpeta: KFGame/Config/NOMBREPERFIL. De esta manera, los ficheros de configuración originales localizados en la carpeta: KFGame/Config nunca son modificados.
 Si hay más de un perfil definido, puedes lanzar múltiples servidores a la vez (uno por perfil). 
@@ -149,19 +150,6 @@ En esta sección puedes acceder a la página WebAdmin sólamente si el servidor 
 WebAdmin te permite gestionar y controlar el servidor de Killing Floor 2.
 
 ![Launcher screenshot](src/main/resources/images/documentation/screenshot02.png)
-
-#### Pagina instalar o actualizar
-En esta sección puedes instalar o actualizar el servidor de Killing Floor 2.
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot03.png)
-
-* _Carpeta de instalación_: Este campo es obligatorio. Necesario para encontrar la carpeta local donde el servidor debe ser instalado.
-
-* _Validar ficheros_: Este campo es opcional. Si está activado, la operación de instalar/actualizar revisa la integridad de los ficheros del servidor. Es una operación lenta.
-
-* _¿Actualizar a beta?_: Este campo es opcional. Si está activado, la operación actualiza a una versión beta del juego (si estuviera disponible).
-
-* _Rama beta_: Este campo es opcional. El usuario especifica el nombre de la rama beta (sólamente usado cuando el check anterior ha sido activado).
 
 #### Pagina Mapas y Mods
 En esta sección puedes gestionar mapas personalizados, mods y mapas oficiales presentes en el servidor.
@@ -183,6 +171,24 @@ En esta sección puedes gestionar mapas personalizados, mods y mapas oficiales p
 * _Buscar en WorkShop_: Permite navegar en las páginas de WorkShop buscando nuevos mapas y mods. Luego puedes seleccionar cuál de ellos añadir al lanzador.
 
 ![Launcher screenshot](src/main/resources/images/documentation/screenshot05.png)
+
+#### Pagina de la consola
+En esta sección puedes ver los comandos generados por el lanzador cuando ejecutas o te unes a un servidor.
+
+![Launcher screenshot](src/main/resources/images/documentation/screenshot11.png)
+
+#### Pagina instalar o actualizar
+En esta sección puedes instalar o actualizar el servidor de Killing Floor 2.
+
+![Launcher screenshot](src/main/resources/images/documentation/screenshot03.png)
+
+* _Carpeta de instalación_: Este campo es obligatorio. Necesario para encontrar la carpeta local donde el servidor debe ser instalado.
+
+* _Validar ficheros_: Este campo es opcional. Si está activado, la operación de instalar/actualizar revisa la integridad de los ficheros del servidor. Es una operación lenta.
+
+* _¿Actualizar a beta?_: Este campo es opcional. Si está activado, la operación actualiza a una versión beta del juego (si estuviera disponible).
+
+* _Rama beta_: Este campo es opcional. El usuario especifica el nombre de la rama beta (sólamente usado cuando el check anterior ha sido activado).
 
 #### Configuracion-Perfiles
 En esta sección puedes gestionar perfiles desde el lanzador. Cada perfil es usado para personalizar tus parámetros del servidor.
