@@ -19,19 +19,20 @@ Aplicación para personalizar y lanzar fácilmente un servidor de Killing Floor 
 > 3. [Instalar y ejecutar el lanzador](#instalar-y-ejecutar-el-lanzador)
 >   - [En Windows](#en-windows)
 >   - [En Linux](#en-linux)
-> 4. [Vista rapida](#vista-rapida)
+> 4. [Instalar el servidor](#instalar-el-servidor)
+> 5. [Configuracion basica](#configuracion-basica)
 >   - [Pagina principal](#pagina-principal)
 >   - [Pagina WebAdmin](#pagina-webadmin)
->   - [Pagina mapas y mods](#pagina-mapas-y-mods)
 >   - [Pagina de la consola](#pagina-de-la-consola)
->   - [Pagina instalar o actualizar](#pagina-instalar-o-actualizar)
->   - [Configuracion-Perfiles](#configuracion-perfiles)
->   - [Configuracion-Tipos de juegos](#configuracion-tipos-de-juegos)
->   - [Configuracion-Dificultades](#configuracion-dificultades)
->   - [Configuracion-Longitudes](#configuracion-longitudes)
->   - [Configuracion-Maximo jugadores](#configuracion-maximo-jugadores)
-> 5. [Parametros por consola](#parametros-por-consola)
-> 6. [Donacion](#donacion)
+> 6. [Mapas personalizados y mods](#mapas-personalizados-y-mods)
+> 7. [Configuracion avanzada](#configuracion-avanzada)
+>   - [Lista de perfiles](#lista-de-perfiles)
+>   - [Lista de tipos de juegos](#lista-de-tipos-de-juegos)
+>   - [Lista de Dificultades](#lista-de-dificultades)
+>   - [Lista de Longitudes](#lista-de-longitudes)
+>   - [Lista de maximo jugadores](#lista-de-maximo-jugadores)
+> 8. [Parametros por consola](#parametros-por-consola)
+> 9. [Donacion](#donacion)
 
 ## Caracteristicas
 
@@ -71,6 +72,9 @@ Traducción a francés por: -foG.Nox
 - Instalar Oracle JRE 8 (Java Runtime Environment) para poder ejecutar el lanzador. JRE puede ser descargado de [aquí](https://www.java.com/es/download/).
 
 ## Instalar y ejecutar el lanzador
+
+[![YouTube video](src/main/resources/images/documentation/video01.png)](https://www.youtube.com/watch?v=8k_-Q_7bxjI)
+
 - Descargar la última versión del programa desde [aquí](https://github.com/cesar-rgon/simple-kf2-server-launcher/releases)
 - Extraer el contenido del fichero zip a una carpeta local.
 
@@ -96,7 +100,25 @@ $ java -jar SimpleKF2ServerLauncher.jar
 
 *NOTA: JRE debe ser la versión de Oracle (no OpenJDK disponible en los repositorios).*
 
-## Vista rapida
+## Instalar el servidor
+
+[![YouTube video](src/main/resources/images/documentation/video02.png)](https://www.youtube.com/watch?v=5voaloIeQDs)
+
+En la página de Instalar/Actualizar puedes instalar o actualizar el servidor de Killing Floor 2.
+
+![Launcher screenshot](src/main/resources/images/documentation/screenshot03.png)
+
+* _Carpeta de instalación_: Este campo es obligatorio. Necesario para encontrar la carpeta local donde el servidor debe ser instalado.
+
+* _Validar ficheros_: Este campo es opcional. Si está activado, la operación de instalar/actualizar revisa la integridad de los ficheros del servidor. Es una operación lenta.
+
+* _¿Actualizar a beta?_: Este campo es opcional. Si está activado, la operación actualiza a una versión beta del juego (si estuviera disponible).
+
+* _Rama beta_: Este campo es opcional. El usuario especifica el nombre de la rama beta (sólamente usado cuando el check anterior ha sido activado).
+
+## Configuracion basica
+
+[![YouTube video](src/main/resources/images/documentation/video03.png)](https://www.youtube.com/watch?v=TyOpbeKMaM0)
 
 #### Pagina principal
 ![Launcher screenshot](src/main/resources/images/documentation/screenshot01.png)
@@ -151,8 +173,16 @@ WebAdmin te permite gestionar y controlar el servidor de Killing Floor 2.
 
 ![Launcher screenshot](src/main/resources/images/documentation/screenshot02.png)
 
-#### Pagina Mapas y Mods
-En esta sección puedes gestionar mapas personalizados, mods y mapas oficiales presentes en el servidor.
+#### Pagina de la consola
+En esta sección puedes ver los comandos generados por el lanzador cuando ejecutas o te unes a un servidor.
+
+![Launcher screenshot](src/main/resources/images/documentation/screenshot11.png)
+
+## Mapas personalizados y mods
+
+[![YouTube video](src/main/resources/images/documentation/video04.png)](https://www.youtube.com/watch?v=1WzDAc8bdgY)
+
+En la página Mapas/Mods puedes gestionar mapas personalizados, mods y mapas oficiales presentes en el servidor.
 
 ![Launcher screenshot](src/main/resources/images/documentation/screenshot04.png)
 
@@ -172,25 +202,11 @@ En esta sección puedes gestionar mapas personalizados, mods y mapas oficiales p
 
 ![Launcher screenshot](src/main/resources/images/documentation/screenshot05.png)
 
-#### Pagina de la consola
-En esta sección puedes ver los comandos generados por el lanzador cuando ejecutas o te unes a un servidor.
+## Configuracion avanzada
 
-![Launcher screenshot](src/main/resources/images/documentation/screenshot11.png)
+[![YouTube video](src/main/resources/images/documentation/video05.png)](https://www.youtube.com/watch?v=d3ZwFLU7izw)
 
-#### Pagina instalar o actualizar
-En esta sección puedes instalar o actualizar el servidor de Killing Floor 2.
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot03.png)
-
-* _Carpeta de instalación_: Este campo es obligatorio. Necesario para encontrar la carpeta local donde el servidor debe ser instalado.
-
-* _Validar ficheros_: Este campo es opcional. Si está activado, la operación de instalar/actualizar revisa la integridad de los ficheros del servidor. Es una operación lenta.
-
-* _¿Actualizar a beta?_: Este campo es opcional. Si está activado, la operación actualiza a una versión beta del juego (si estuviera disponible).
-
-* _Rama beta_: Este campo es opcional. El usuario especifica el nombre de la rama beta (sólamente usado cuando el check anterior ha sido activado).
-
-#### Configuracion-Perfiles
+#### Lista de perfiles
 En esta sección puedes gestionar perfiles desde el lanzador. Cada perfil es usado para personalizar tus parámetros del servidor.
 
 ![Launcher screenshot](src/main/resources/images/documentation/screenshot06.png)
@@ -204,7 +220,7 @@ En esta sección puedes gestionar perfiles desde el lanzador. Cada perfil es usa
 
 **NOTA**: No se permite duplicación de nombre de perfil en ninguna de las operaciones.
 
-#### Configuracion-Tipos de juegos
+#### Lista de tipos de juegos
 En esta sección puedes añadir, editar o eliminar tipos de juegos del lanzador. Cada tipo de juego está compuesto por cuatro campos:
 1. _Código_: Código para identificar el tipo de juego. No es un texto libre, debe ser exactamente como es descrito en la documentación del servidor de Killing Floor 2. 
 2. _Descripción_: Texto libre para identificar el tipo de juego.
@@ -217,7 +233,7 @@ En esta sección puedes añadir, editar o eliminar tipos de juegos del lanzador.
 * _Doble click en un código o descripción de tipo de juego_: Permite editar el campo.
 * _Eliminar el tipo de juego seleccionado_: Permite eliminar el código y descripción del tipo de juego seleccionado.
 
-#### Configuracion-Dificultades
+#### Lista de Dificultades
 En esta sección puedes añadir, editar o eliminar dificultades del lanzador. Cada dificultad está compuesta por dos campos:
 1. _Código_: Código para identificar el tipo de dificultad. No es un texto libre, debe ser exactamente como es descrito en la documentación del servidor de Killing Floor 2. 
 2. _Descripción_: Texto libre para identificar el tipo de dificultad. 
@@ -228,7 +244,7 @@ En esta sección puedes añadir, editar o eliminar dificultades del lanzador. Ca
 * _Doble click en un código o descripción de dificultad_: Permite editar el campo.
 * _Eliminar la dificultad seleccionada_: Permite eliminar el código y descripción de la dificultad seleccionada.
 
-#### Configuracion-Longitudes
+#### Lista de Longitudes
 En esta sección puedes añadir, editar o eliminar longitudes del lanzador. Cada longitud está compuesta por dos campos:
 1. _Código_: Código para identificar el tipo de longitud. No es un texto libre, debe ser exactamente como es descrito en la documentación del servidor de Killing Floor 2. 
 2. _Descripción_: Texto libre para identificar el tipo de longitud. 
@@ -239,7 +255,7 @@ En esta sección puedes añadir, editar o eliminar longitudes del lanzador. Cada
 * _Doble click en un código o descripción de longitud_: Permite editar el campo.
 * _Eliminar la longitud seleccionada_: Permite eliminar el código y descripción de la longitud seleccionada.
 
-#### Configuracion-Maximo jugadores
+#### Lista de maximo jugadores
 En esta sección puedes añadir, editar o eliminar el máx.jugadores del lanzador. Cada número máx. jugadores está compuesto por dos campos:
 1. _Código_: Código para identificar el máx.jugadores. No es un texto libre, debe ser exactamente como es descrito en la documentación del servidor de Killing Floor 2. 
 2. _Descripción_: Texto libre para identificar el máx.jugadores.
