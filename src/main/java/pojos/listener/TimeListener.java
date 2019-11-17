@@ -30,7 +30,7 @@ public class TimeListener extends TimerTask {
     public void run() {
         logger.info("Starting the process of checking downloaded custom maps and mods.");
         try {
-            List<Map> mapList = databaseService.listAllMaps();
+            List<Map> mapList = databaseService.listNotOfficialMaps();
             if (mapList != null && !mapList.isEmpty()) {
                 PropertyService propertyService = new PropertyServiceImpl();
                 String installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.installationFolder");

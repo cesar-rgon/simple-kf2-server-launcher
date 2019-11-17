@@ -10,327 +10,359 @@
 
 <fx:root id="centerPane" fx:id="mainContent" alignment="CENTER" prefHeight="745.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maincontent.MainContentController">
     <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="80.0" />
-        <ColumnConstraints hgrow="ALWAYS" maxWidth="350.0" minWidth="10.0" prefWidth="140.0" />
-        <ColumnConstraints hgrow="SOMETIMES" maxWidth="105.0" minWidth="10.0" prefWidth="10.0" />
-        <ColumnConstraints hgrow="ALWAYS" maxWidth="135.0" minWidth="10.0" prefWidth="10.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="80.0" />
+      <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="10.0" />
+        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="210.0" />
+        <ColumnConstraints hgrow="ALWAYS" maxWidth="350.0" minWidth="10.0" prefWidth="350.0" />
+        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="80.0" />
+        <ColumnConstraints hgrow="ALWAYS" maxWidth="350.0" minWidth="10.0" prefWidth="350.0" />
+        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="200.0" />
+      <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="10.0" />
       <ColumnConstraints />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="174.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="90.0" vgrow="ALWAYS" />
+        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="615.0" vgrow="ALWAYS" />
+        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
+      <RowConstraints />
+      <RowConstraints />
     </rowConstraints>
     <children>
-        <ImageView fitHeight="665.0" fitWidth="550.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+
+      <ImageView fitHeight="566.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
         <image>
             <Image url="@../images/radiation700.png" />
         </image>
          <GridPane.margin>
-            <Insets right="-189.0" top="103.0" />
+            <Insets left="140.0" top="-25.0" />
          </GridPane.margin>
-    </ImageView>
-        <ImageView fx:id="profileImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+      </ImageView>
+
+        <ImageView fx:id="profileImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ImageView fx:id="languageImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
-            <image>
-                <Image url="@../images/label.png" />
-            </image>
-        </ImageView>
-        <ImageView fx:id="gameTypeImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="TOP">
-            <image>
-                <Image url="@../images/label.png" />
-            </image>
-        </ImageView>
-        <ImageView fx:id="mapImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="TOP">
-            <image>
-                <Image url="@../images/label.png" />
-            </image>
+        <ComboBox fx:id="profileSelect" onAction="#profileOnAction" prefWidth="350.0" GridPane.columnIndex="2" GridPane.valignment="CENTER">
          <GridPane.margin>
-            <Insets top="4.0" />
-         </GridPane.margin>
-        </ImageView>
-        <ImageView fx:id="difficultyImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="TOP">
-            <image>
-                <Image url="@../images/label.png" />
-            </image>
-        </ImageView>
-        <ImageView fx:id="lengthImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="TOP">
-            <image>
-                <Image url="@../images/label.png" />
-            </image>
-        </ImageView>
-        <ImageView fx:id="maxPlayersImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="7" GridPane.valignment="TOP">
-            <image>
-                <Image url="@../images/label.png" />
-            </image>
-        </ImageView>
-        <ImageView fx:id="serverNameImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="8" GridPane.valignment="TOP">
-            <image>
-                <Image url="@../images/label.png" />
-            </image>
-        </ImageView>
-        <ImageView fx:id="serverPasswordImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="9" GridPane.valignment="TOP">
-            <image>
-                <Image url="@../images/label.png" />
-            </image>
-        </ImageView>
-        <ImageView fx:id="webPageImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="TOP">
-            <image>
-                <Image url="@../images/label.png" />
-            </image>
-        </ImageView>
-        <ImageView fx:id="takeoverImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="11" GridPane.valignment="TOP">
-            <image>
-                <Image url="@../images/label.png" />
-            </image>
-        </ImageView>
-        <ImageView fx:id="portsImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="12" GridPane.valignment="TOP">
-            <image>
-                <Image url="@../images/label.png" />
-            </image>
-        </ImageView>
-        <ImageView fx:id="clanImg" fitHeight="30.0" fitWidth="200.0" opacity="0.75" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="9" GridPane.valignment="TOP">
-            <image>
-                <Image url="@../images/label-inverted.png" />
-            </image>
-        </ImageView>
-        <ImageView fx:id="webLinkImg" fitHeight="30.0" fitWidth="200.0" opacity="0.75" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="10" GridPane.valignment="TOP">
-            <image>
-                <Image url="@../images/label-inverted.png" />
-            </image>
-        </ImageView>
-        <ImageView fx:id="customParametersImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="13" GridPane.valignment="TOP">
-            <image>
-                <Image url="@../images/label.png" />
-            </image>
-         <GridPane.margin>
-            <Insets top="3.0" />
-         </GridPane.margin>
-        </ImageView>
-        <ComboBox fx:id="profileSelect" onAction="#profileOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets top="2.0" />
+            <Insets />
          </GridPane.margin></ComboBox>
-        <ComboBox fx:id="languageSelect" onAction="#languageOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets top="2.0" />
-         </GridPane.margin></ComboBox>
-        <ComboBox fx:id="gameTypeSelect" onAction="#gameTypeOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets top="2.0" />
-         </GridPane.margin></ComboBox>
-        <ComboBox fx:id="mapSelect" onAction="#mapOnAction" prefHeight="165.0" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets top="2.0" />
-         </GridPane.margin></ComboBox>
-        <ComboBox fx:id="difficultySelect" onAction="#difficultyOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="5" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets top="2.0" />
-         </GridPane.margin></ComboBox>
-        <ComboBox fx:id="lengthSelect" onAction="#lengthOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets top="2.0" />
-         </GridPane.margin></ComboBox>
-        <ComboBox fx:id="maxPlayersSelect" onAction="#maxPlayersOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="7" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets top="2.0" />
-         </GridPane.margin></ComboBox>
-        <Label fx:id="profileLabel" text="PROFILE*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+        <Label fx:id="profileLabel" text="PROFILE*" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
             <GridPane.margin>
-                <Insets right="10.0" top="8.0" />
+                <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Label fx:id="languageLabel" text="LANGUAGE*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="TOP">
+        <Button fx:id="runServer" maxWidth="190.0" mnemonicParsing="false" onAction="#runServerOnAction" text="RUN SERVER" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
             <GridPane.margin>
-                <Insets right="10.0" top="8.0" />
-            </GridPane.margin>
-        </Label>
-        <Label fx:id="gameTypeLabel" text="GAME TYPE*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="TOP">
-            <GridPane.margin>
-                <Insets right="10.0" top="8.0" />
-            </GridPane.margin>
-        </Label>
-        <Label fx:id="mapLabel" text="MAP*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="TOP">
-            <GridPane.margin>
-                <Insets right="10.0" top="11.0" />
-            </GridPane.margin>
-        </Label>
-        <Label fx:id="difficultyLabel" text="DIFFICULTY*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="TOP">
-            <GridPane.margin>
-                <Insets right="10.0" top="8.0" />
-            </GridPane.margin>
-        </Label>
-        <Label fx:id="lengthLabel" text="LENGTH*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="TOP">
-            <GridPane.margin>
-                <Insets right="10.0" top="8.0" />
-            </GridPane.margin>
-        </Label>
-        <Label fx:id="maxPlayersLabel" text="MAX.PLAYERS*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="7" GridPane.valignment="TOP">
-            <GridPane.margin>
-                <Insets right="10.0" top="8.0" />
-            </GridPane.margin>
-        </Label>
-        <Label fx:id="serverNameLabel" text="SERVER NAME*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="8" GridPane.valignment="TOP">
-            <GridPane.margin>
-                <Insets right="10.0" top="8.0" />
-            </GridPane.margin>
-        </Label>
-        <Label fx:id="serverPasswordLabel" text="SERVER PASSWORD" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="9" GridPane.valignment="TOP">
-            <GridPane.margin>
-                <Insets right="10.0" top="8.0" />
-            </GridPane.margin>
-        </Label>
-        <Label fx:id="webPageLabel" text="WEB ( Enable / Password )" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="TOP">
-            <GridPane.margin>
-                <Insets right="10.0" top="8.0" />
-            </GridPane.margin>
-        </Label>
-        <Label fx:id="takeoverLabel" text="TAKEOVER" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="11" GridPane.valignment="TOP">
-            <GridPane.margin>
-                <Insets right="10.0" top="8.0" />
-            </GridPane.margin>
-        </Label>
-        <Label fx:id="portsLabel" text="WEB/GAME/QUERY PORTS" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="12" GridPane.valignment="TOP">
-            <GridPane.margin>
-                <Insets right="10.0" top="8.0" />
-            </GridPane.margin>
-        </Label>
-        <Label fx:id="clanLabel" text="YOUR CLAN" textFill="WHITE" GridPane.columnIndex="5" GridPane.halignment="LEFT" GridPane.rowIndex="9" GridPane.valignment="TOP">
-            <GridPane.margin>
-                <Insets left="10.0" top="7.0" />
-            </GridPane.margin>
-        </Label>
-        <Label fx:id="webLinkLabel" text="YOUR WEB LINK" textFill="WHITE" GridPane.columnIndex="5" GridPane.halignment="LEFT" GridPane.rowIndex="10" GridPane.valignment="TOP">
-            <GridPane.margin>
-                <Insets left="10.0" top="7.0" />
-            </GridPane.margin>
-        </Label>
-        <Label fx:id="customParametersLabel" text="CUSTOM PARAMETERS" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="13" GridPane.valignment="TOP">
-            <GridPane.margin>
-                <Insets right="10.0" top="11.0" />
-            </GridPane.margin>
-        </Label>
-        <TextField fx:id="serverName" maxWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="8" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets top="2.0" />
-         </GridPane.margin></TextField>
-        <PasswordField fx:id="serverPassword" maxWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="9" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets top="2.0" />
-         </GridPane.margin></PasswordField>
-        <CheckBox fx:id="webPage" lineSpacing="0.9" mnemonicParsing="false" onAction="#webPageOnAction" opacity="0.75" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="10" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets left="4.0" top="4.0" />
-         </GridPane.margin></CheckBox>
-      <CheckBox fx:id="takeover" mnemonicParsing="false" onAction="#takeoverOnAction" opacity="0.75" text="Enable takeover" GridPane.columnIndex="1" GridPane.rowIndex="11" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets left="4.0" top="4.0" />
-         </GridPane.margin></CheckBox>
-        <PasswordField fx:id="webPassword" maxWidth="320.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets top="2.0" />
-         </GridPane.margin></PasswordField>
-        <TextField fx:id="webPort" maxWidth="100.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="12" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets top="2.0" />
-         </GridPane.margin></TextField>
-        <TextField fx:id="gamePort" maxWidth="100.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="12" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets top="2.0" />
-         </GridPane.margin></TextField>
-        <TextField fx:id="queryPort" maxWidth="100.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="12" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets top="2.0" />
-         </GridPane.margin></TextField>
-        <TextField fx:id="yourClan" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="9" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets top="2.0" />
-         </GridPane.margin></TextField>
-        <TextField fx:id="yourWebLink" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="10" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets top="2.0" />
-         </GridPane.margin></TextField>
-        <TextArea fx:id="customParameters" prefHeight="100.0" prefWidth="350.0" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="13" GridPane.rowSpan="3" GridPane.valignment="TOP">
-            <GridPane.margin>
-                <Insets top="2.0" />
-            </GridPane.margin></TextArea>
-        <ImageView fx:id="thumbnailImg" fitHeight="261.0" fitWidth="531.0" opacity="0.9" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="TOP">
-            <image>
-                <Image url="@../images/photo-borders.png" />
-            </image>
-            <GridPane.margin>
-                <Insets right="-179.0" />
-            </GridPane.margin>
-        </ImageView>
-        <WebView fx:id="imageWebView" maxHeight="256.0" maxWidth="512.0" prefHeight="-1.0" prefWidth="-1.0" visible="false" GridPane.columnIndex="2" GridPane.columnSpan="3" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.rowSpan="4" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets right="-170.0" top="1.0" />
-         </GridPane.margin></WebView>
-        <TextField fx:id="urlImageServer" opacity="0.75" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="8" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets top="2.0" />
-         </GridPane.margin></TextField>
-        <TextArea fx:id="welcomeMessage" opacity="0.75" prefHeight="120.0" wrapText="true" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="11" GridPane.rowSpan="5" GridPane.valignment="TOP">
-         <GridPane.margin>
-            <Insets top="2.0" />
-         </GridPane.margin></TextArea>
-        <ImageView fx:id="urlImageServerImg" fitHeight="30.0" fitWidth="200.0" opacity="0.75" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="8" GridPane.valignment="TOP">
-            <image>
-                <Image url="@../images/label-inverted.png" />
-            </image>
-        </ImageView>
-        <ImageView fx:id="welcomeImg" fitHeight="30.0" fitWidth="200.0" opacity="0.75" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.rowIndex="11" GridPane.valignment="TOP">
-            <image>
-                <Image url="@../images/label-inverted.png" />
-            </image>
-        </ImageView>
-        <Label fx:id="urlImageLabel" text="URL IMAGE SERVER" GridPane.columnIndex="5" GridPane.halignment="LEFT" GridPane.rowIndex="8" GridPane.valignment="TOP">
-            <GridPane.margin>
-                <Insets left="10.0" top="7.0" />
-            </GridPane.margin>
-        </Label>
-        <Label fx:id="welcomeLabel" text="WELCOME MESSAGE" GridPane.columnIndex="5" GridPane.halignment="LEFT" GridPane.rowIndex="11" GridPane.valignment="TOP">
-            <GridPane.margin>
-                <Insets left="10.0" top="7.0" />
-            </GridPane.margin>
-        </Label>
-        <Button fx:id="runServer" maxWidth="190.0" mnemonicParsing="false" onAction="#runServerOnAction" text="RUN SERVER" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="16" GridPane.valignment="BOTTOM">
-            <GridPane.margin>
-                <Insets bottom="5.0" right="20.0" />
+                <Insets bottom="5.0" right="50.0" />
             </GridPane.margin>
         </Button>
-        <Button fx:id="joinServer" maxWidth="190.0" mnemonicParsing="false" onAction="#joinServerOnAction" text="JOIN SERVER" GridPane.columnIndex="5" GridPane.halignment="LEFT" GridPane.rowIndex="16" GridPane.valignment="BOTTOM">
+        <Button fx:id="joinServer" maxWidth="190.0" mnemonicParsing="false" onAction="#joinServerOnAction" text="JOIN SERVER" GridPane.columnIndex="5" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
             <GridPane.margin>
-                <Insets bottom="5.0" left="8.0" />
+                <Insets bottom="5.0" />
             </GridPane.margin>
         </Button>
-        <ImageView fitHeight="121.0" fitWidth="558.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+        <ImageView fitHeight="121.0" fitWidth="558.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT">
             <image>
                 <Image url="@../images/kf2logo.png" />
             </image>
          <GridPane.margin>
-            <Insets right="-200.0" top="30.0" />
+            <Insets right="-200.0" top="40.0" />
          </GridPane.margin>
         </ImageView>
+      <TabPane prefHeight="200.0" prefWidth="1210.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="1" GridPane.columnSpan="5" GridPane.rowIndex="1">
+        <tabs>
+          <Tab id="titleConfigLabel" fx:id="basicParameters" text="Basic Parameters">
+               <content>
+                  <GridPane prefHeight="600.0" prefWidth="1210.0">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="210.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="350.0" minWidth="10.0" prefWidth="350.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="90.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="350.0" minWidth="10.0" prefWidth="350.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="210.0" />
+                        <ColumnConstraints />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
+                      <RowConstraints minHeight="10.0" prefHeight="170.0" vgrow="ALWAYS" />
+                      <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="10.0" vgrow="ALWAYS" />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                    </rowConstraints>
+                     <children>
+
+                        <ImageView fx:id="languageImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+                            <image>
+                                <Image url="@../images/label.png" />
+                            </image>
+                        </ImageView>
+                        <Label fx:id="languageLabel" text="LANGUAGE*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+                            <GridPane.margin>
+                                <Insets right="10.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <ComboBox fx:id="languageSelect" onAction="#languageOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.valignment="CENTER" />
+
+                        <ImageView fx:id="mapImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                          <image>
+                              <Image url="@../images/label.png" />
+                          </image>
+                           <GridPane.margin>
+                              <Insets top="4.0" />
+                           </GridPane.margin>
+                        </ImageView>
+                        <Label fx:id="mapLabel" text="MAP*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                            <GridPane.margin>
+                                <Insets right="10.0" top="12.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <ComboBox fx:id="mapSelect" onAction="#mapOnAction" prefHeight="165.0" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                           <GridPane.margin>
+                              <Insets top="4.0" />
+                           </GridPane.margin></ComboBox>
+
+                        <ImageView fx:id="gameTypeImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                            <image>
+                                <Image url="@../images/label.png" />
+                            </image>
+                        </ImageView>
+                        <Label fx:id="gameTypeLabel" text="GAME TYPE*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                            <GridPane.margin>
+                                <Insets right="10.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <ComboBox fx:id="gameTypeSelect" onAction="#gameTypeOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+
+                        <ImageView fx:id="difficultyImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                            <image>
+                                <Image url="@../images/label.png" />
+                            </image>
+                        </ImageView>
+                        <Label fx:id="difficultyLabel" text="DIFFICULTY*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                            <GridPane.margin>
+                                <Insets right="10.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <ComboBox fx:id="difficultySelect" onAction="#difficultyOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+
+                        <ImageView fx:id="lengthImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+                            <image>
+                                <Image url="@../images/label.png" />
+                            </image>
+                        </ImageView>
+                        <Label fx:id="lengthLabel" text="LENGTH*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+                            <GridPane.margin>
+                                <Insets right="10.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <ComboBox fx:id="lengthSelect" onAction="#lengthOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+
+                        <ImageView fx:id="maxPlayersImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+                            <image>
+                                <Image url="@../images/label.png" />
+                            </image>
+                        </ImageView>
+                        <Label fx:id="maxPlayersLabel" text="MAX.PLAYERS*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+                            <GridPane.margin>
+                                <Insets right="10.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <ComboBox fx:id="maxPlayersSelect" onAction="#maxPlayersOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
+
+                        <ImageView fx:id="serverNameImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+                            <image>
+                                <Image url="@../images/label.png" />
+                            </image>
+                        </ImageView>
+                        <Label fx:id="serverNameLabel" text="SERVER NAME*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+                            <GridPane.margin>
+                                <Insets right="10.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <TextField fx:id="serverName" maxWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.valignment="CENTER" />
+
+                        <ImageView fx:id="serverPasswordImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="7" GridPane.valignment="CENTER">
+                            <image>
+                                <Image url="@../images/label.png" />
+                            </image>
+                        </ImageView>
+                        <Label fx:id="serverPasswordLabel" text="SERVER PASSWORD" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="7" GridPane.valignment="CENTER">
+                            <GridPane.margin>
+                                <Insets right="10.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <PasswordField fx:id="serverPassword" maxWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="7" GridPane.valignment="CENTER" />
+
+                        <ImageView fx:id="webPageImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="8" GridPane.valignment="CENTER">
+                            <image>
+                                <Image url="@../images/label.png" />
+                            </image>
+                        </ImageView>
+                        <Label fx:id="webPageLabel" text="WEB ( Enable / Password )" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="8" GridPane.valignment="CENTER">
+                            <GridPane.margin>
+                                <Insets right="10.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <CheckBox fx:id="webPage" lineSpacing="0.9" mnemonicParsing="false" onAction="#webPageOnAction" opacity="0.75" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="8" GridPane.valignment="CENTER" />
+                        <PasswordField fx:id="webPassword" maxWidth="320.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="8" GridPane.valignment="CENTER" />
+
+                        <ImageView fx:id="takeoverImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
+                            <image>
+                                <Image url="@../images/label.png" />
+                            </image>
+                        </ImageView>
+                        <Label fx:id="takeoverLabel" text="TAKEOVER" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
+                            <GridPane.margin>
+                                <Insets right="10.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <CheckBox fx:id="takeover" mnemonicParsing="false" onAction="#takeoverOnAction" opacity="0.75" text="Enable takeover" GridPane.columnIndex="1" GridPane.rowIndex="9" GridPane.valignment="CENTER" />
+
+                        <ImageView fx:id="thumbnailImg" fitHeight="261.0" fitWidth="531.0" opacity="0.9" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="TOP">
+                            <image>
+                                <Image url="@../images/photo-borders.png" />
+                            </image>
+                            <GridPane.margin>
+                                <Insets top="8.0" />
+                            </GridPane.margin>
+                        </ImageView>
+
+                        <WebView fx:id="imageWebView" maxHeight="256.0" maxWidth="512.0" prefHeight="-1.0" prefWidth="-1.0" visible="false" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowSpan="4" GridPane.valignment="TOP">
+                           <GridPane.margin>
+                              <Insets left="10.0" top="9.0" />
+                           </GridPane.margin></WebView>
+
+                        <ImageView fx:id="urlImageServerImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                            <image>
+                                <Image url="@../images/label-inverted.png" />
+                            </image>
+                        </ImageView>
+                        <Label fx:id="urlImageLabel" text="URL IMAGE SERVER" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                            <GridPane.margin>
+                                <Insets left="10.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <TextField fx:id="urlImageServer" opacity="0.75" GridPane.columnIndex="3" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+
+                        <ImageView fx:id="clanImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+                            <image>
+                                <Image url="@../images/label-inverted.png" />
+                            </image>
+                        </ImageView>
+                        <Label fx:id="clanLabel" text="YOUR CLAN" textFill="WHITE" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+                            <GridPane.margin>
+                                <Insets left="10.0" />
+                            </GridPane.margin>
+                        </Label>                        
+                        <TextField fx:id="yourClan" opacity="0.75" GridPane.columnIndex="3" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+
+                        <ImageView fx:id="webLinkImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+                            <image>
+                                <Image url="@../images/label-inverted.png" />
+                            </image>
+                        </ImageView>
+                        <Label fx:id="webLinkLabel" text="YOUR WEB LINK" textFill="WHITE" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+                            <GridPane.margin>
+                                <Insets left="10.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <TextField fx:id="yourWebLink" opacity="0.75" GridPane.columnIndex="3" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
+
+                        <ImageView fx:id="welcomeImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+                            <image>
+                                <Image url="@../images/label-inverted.png" />
+                            </image>
+                        </ImageView>
+                        <Label fx:id="welcomeLabel" text="WELCOME MESSAGE" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+                            <GridPane.margin>
+                                <Insets left="10.0" />
+                            </GridPane.margin>
+                        </Label>
+                        <TextArea fx:id="welcomeMessage" opacity="0.75" prefHeight="120.0" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="6" GridPane.rowSpan="4" GridPane.valignment="CENTER" />
+
+                     </children>
+                  </GridPane>
+               </content>
+          </Tab>
+          <Tab id="titleConfigLabel" fx:id="advancedParameters" text="Advanced Parameters">
+               <content>
+                  <GridPane>
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="210.0" />
+                        <ColumnConstraints hgrow="ALWAYS" maxWidth="350.0" minWidth="10.0" prefWidth="350.0" />
+                      <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="90.0" />
+                        <ColumnConstraints hgrow="ALWAYS" maxWidth="350.0" minWidth="10.0" prefWidth="350.0" />
+                        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="210.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="10.0" />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                        <RowConstraints />
+                    </rowConstraints>
+
+                    <children>
+
+                      <ImageView fx:id="portsImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+                          <image>
+                              <Image url="@../images/label.png" />
+                          </image>
+                      </ImageView>
+                      <Label fx:id="portsLabel" text="WEB/GAME/QUERY PORTS" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+                          <GridPane.margin>
+                              <Insets right="10.0" />
+                          </GridPane.margin>
+                      </Label>
+                      <TextField fx:id="webPort" maxWidth="100.0" opacity="0.75" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
+                      <TextField fx:id="gamePort" maxWidth="100.0" opacity="0.75" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                      <TextField fx:id="queryPort" maxWidth="100.0" opacity="0.75" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="CENTER" />
+                      
+                      <ImageView fx:id="customParametersImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                          <image>
+                              <Image url="@../images/label.png" />
+                          </image>
+                       <GridPane.margin>
+                          <Insets top="3.0" />
+                       </GridPane.margin>
+                      </ImageView>
+                      <Label fx:id="customParametersLabel" text="CUSTOM PARAMETERS" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                          <GridPane.margin>
+                              <Insets right="10.0" top="11.0" />
+                          </GridPane.margin>
+                      </Label>
+                      <TextArea fx:id="customParameters" opacity="0.75" prefHeight="100.0" prefWidth="350.0" wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1" GridPane.rowSpan="2" GridPane.valignment="TOP" />
+                      
+                    </children>
+
+                  </GridPane>
+               </content>
+          </Tab>
+        </tabs>
+      </TabPane>
     </children>
 </fx:root>

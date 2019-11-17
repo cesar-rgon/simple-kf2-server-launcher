@@ -137,7 +137,7 @@
 #titleConfigLabel {
     -fx-font-family: "Ubuntu Bold";
     -fx-text-fill: #fba140;
-    -fx-font-size: 25;
+    -fx-font-size: 20;
 }
 
 #alreadyInLauncher {
@@ -175,5 +175,11 @@
 }
 
 .tab-pane .tab-header-area .tab-header-background {
-    -fx-background-color:#191513;
+    -fx-background-color:none;
+}
+
+.tab-pane .tab-content-area {
+    -fx-border-color: #191513;
+    -fx-border-width:3px;
+    -fx-border-radius: 10px;
 }

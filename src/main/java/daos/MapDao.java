@@ -25,8 +25,8 @@ public class MapDao extends CommonDao<Map> {
         return instance;
     }
 
-    public List<Map> listAllMaps() throws SQLException {
-        String query="select m from entities.Map m";
+    public List<Map> listNotOfficialMaps() throws SQLException {
+        String query="select m from entities.Map m where m.official=false";
         return list(query, null);
     }
 

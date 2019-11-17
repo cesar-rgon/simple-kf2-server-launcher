@@ -13,8 +13,8 @@ public class DatabaseServiceImpl implements DatabaseService {
     }
 
     @Override
-    public List<Map> listAllMaps() throws SQLException {
-        return MapDao.getInstance().listAllMaps();
+    public List<Map> listNotOfficialMaps() throws SQLException {
+        return MapDao.getInstance().listNotOfficialMaps();
     }
 
     @Override

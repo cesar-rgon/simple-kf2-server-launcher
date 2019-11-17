@@ -107,6 +107,8 @@ public class MainContentController implements Initializable {
     @FXML private ImageView thumbnailImg;
     @FXML private ImageView urlImageServerImg;
     @FXML private ImageView welcomeImg;
+    @FXML private Tab basicParameters;
+    @FXML private Tab advancedParameters;
 
     public MainContentController() {
         super();
@@ -602,6 +604,12 @@ public class MainContentController implements Initializable {
         String profileLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.profile") + "*";
         profileLabel.setText(profileLabelText);
         loadTooltip(languageCode, "prop.tooltip.profile", profileImg, profileLabel, profileSelect);
+
+        String basicParametersText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.basicParameters");
+        basicParameters.setText(basicParametersText);
+
+        String advancedParametersText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.advancedParameters");
+        advancedParameters.setText(advancedParametersText);
 
         loadTooltip(languageCode, "prop.tooltip.language", languageImg, languageLabel, languageSelect);
 
