@@ -44,4 +44,16 @@ public interface MainContentFacade {
     String selectProfile(String message, String actualProfileName) throws SQLException;
     boolean isCorrectInstallationFolder(String installationFolder);
     boolean updateProfileSetTakeover(String profileName, boolean isSelected) throws SQLException;
+    boolean updateProfileSetMapVoting(String profileName, boolean isSelected) throws SQLException;
+    boolean updateProfileSetKickVoting(String profileName, boolean isSelected) throws SQLException;
+    boolean updateProfileSetPublicTextChat(String profileName, boolean isSelected) throws SQLException;
+    boolean updateProfileSetSpectatorsChat(String profileName, boolean isSelected) throws SQLException;
+    boolean updateProfileSetVoip(String profileName, boolean isSelected) throws SQLException;
+    boolean updateProfileSetCheatProtection(String profileName, boolean isSelected) throws SQLException;
+    boolean updateProfileSetTeamCollision(String profileName, boolean isSelected) throws SQLException;
+    boolean updateProfileSetAdminCanPause(String profileName, boolean isSelected) throws SQLException;
+    boolean updateProfileSetAnnounceAdminLogin(String profileName, boolean isSelected) throws SQLException;
+    boolean updateProfileSetChatLogging(String profileName, boolean isSelected) throws SQLException;
+    boolean updateProfileSetMapVotingTime(String profileName, Integer mapVotingTime) throws SQLException;
+    boolean updateProfileSetKickPercentage(String profileName, Integer kickPercentage) throws SQLException;
 }

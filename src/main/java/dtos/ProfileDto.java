@@ -29,10 +29,28 @@ public class ProfileDto {
     private final String customParameters;
     private final ObservableList<MapDto> mapList;
     private final Boolean takeover;
+    private final Boolean cheatProtection;
+    private final Boolean teamCollision;
+    private final Boolean adminCanPause;
+    private final Boolean announceAdminLogin;
+    private final Boolean mapVoting;
+    private final Integer mapVotingTime;
+    private final Boolean kickVoting;
+    private final Integer kickPercentage;
+    private final Boolean publicTextChat;
+    private final Boolean spectatorsOnlyChatToOtherSpectators;
+    private final Boolean voip;
+    private final Boolean chatLogging;
+    private final String chatLoggingFile;
+
 
     public ProfileDto(String name, SelectDto language, GameTypeDto gametype, MapDto map, SelectDto difficulty, SelectDto length, SelectDto maxPlayers,
-                   String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
-                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, ObservableList<MapDto> mapList, Boolean takeover) {
+                      String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
+                      String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, ObservableList<MapDto> mapList,
+                      Boolean takeover, Boolean cheatProtection, Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting,
+                      Integer mapVotingTime, Boolean kickVoting, Integer kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators,
+                      Boolean voip, Boolean chatLogging, String chatLoggingFile) {
+
         super();
         this.name = new SimpleStringProperty(name);
         this.language = language;
@@ -55,6 +73,19 @@ public class ProfileDto {
         this.customParameters = customParameters;
         this.mapList = mapList;
         this.takeover = takeover;
+        this.cheatProtection = cheatProtection;
+        this.teamCollision = teamCollision;
+        this.adminCanPause = adminCanPause;
+        this.announceAdminLogin = announceAdminLogin;
+        this.mapVoting = mapVoting;
+        this.mapVotingTime = mapVotingTime;
+        this.kickVoting = kickVoting;
+        this.kickPercentage = kickPercentage;
+        this.publicTextChat = publicTextChat;
+        this.spectatorsOnlyChatToOtherSpectators = spectatorsOnlyChatToOtherSpectators;
+        this.voip = voip;
+        this.chatLogging = chatLogging;
+        this.chatLoggingFile = chatLoggingFile;
     }
 
     public StringProperty getNameProperty() {
@@ -143,6 +174,58 @@ public class ProfileDto {
 
     public Boolean getTakeover() {
         return takeover;
+    }
+
+    public Boolean getCheatProtection() {
+        return cheatProtection;
+    }
+
+    public Boolean getTeamCollision() {
+        return teamCollision;
+    }
+
+    public Boolean getAdminCanPause() {
+        return adminCanPause;
+    }
+
+    public Boolean getAnnounceAdminLogin() {
+        return announceAdminLogin;
+    }
+
+    public Boolean getMapVoting() {
+        return mapVoting;
+    }
+
+    public Integer getMapVotingTime() {
+        return mapVotingTime;
+    }
+
+    public Boolean getKickVoting() {
+        return kickVoting;
+    }
+
+    public Integer getKickPercentage() {
+        return kickPercentage;
+    }
+
+    public Boolean getPublicTextChat() {
+        return publicTextChat;
+    }
+
+    public Boolean getSpectatorsOnlyChatToOtherSpectators() {
+        return spectatorsOnlyChatToOtherSpectators;
+    }
+
+    public Boolean getVoip() {
+        return voip;
+    }
+
+    public Boolean getChatLogging() {
+        return chatLogging;
+    }
+
+    public String getChatLoggingFile() {
+        return chatLoggingFile;
     }
 
     @Override

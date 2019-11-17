@@ -396,4 +396,137 @@ public class MainContentFacadeImpl implements MainContentFacade {
         }
         return false;
     }
- }
+
+    @Override
+    public boolean updateProfileSetMapVoting(String profileName, boolean isSelected) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setMapVoting(isSelected);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetKickVoting(String profileName, boolean isSelected) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setKickVoting(isSelected);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetPublicTextChat(String profileName, boolean isSelected) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setPublicTextChat(isSelected);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetSpectatorsChat(String profileName, boolean isSelected) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setSpectatorsOnlyChatToOtherSpectators(isSelected);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetVoip(String profileName, boolean isSelected) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setVoip(isSelected);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetCheatProtection(String profileName, boolean isSelected) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setCheatProtection(isSelected);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetTeamCollision(String profileName, boolean isSelected) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setTeamCollision(isSelected);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetAdminCanPause(String profileName, boolean isSelected) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setAdminCanPause(isSelected);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetAnnounceAdminLogin(String profileName, boolean isSelected) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setAnnounceAdminLogin(isSelected);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetChatLogging(String profileName, boolean isSelected) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setChatLogging(isSelected);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetMapVotingTime(String profileName, Integer mapVotingTime) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setMapVotingTime(mapVotingTime);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetKickPercentage(String profileName, Integer kickPercentage) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setKickPercentage(kickPercentage);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+}

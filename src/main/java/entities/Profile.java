@@ -87,32 +87,58 @@ public class Profile extends CommonEntity {
     )
     private List<Map> mapList;
 
+    @Column(name="CHEAT_PROTECTION")
+    private Boolean cheatProtection;
+
+    @Column(name="TEAM_COLLISION")
+    private Boolean teamCollision;
+
+    @Column(name="ADMIN_CAN_PAUSE")
+    private Boolean adminCanPause;
+
+    @Column(name="ANNOUNCE_ADMIN_LOGIN")
+    private Boolean announceAdminLogin;
+
+    @Column(name="MAP_VOTING")
+    private Boolean mapVoting;
+
+    @Column(name="MAP_VOTING_TIME")
+    private Integer mapVotingTime;
+
+    @Column(name="KICK_VOTING")
+    private Boolean kickVoting;
+
+    @Column(name="KICK_PERCENTAGE")
+    private Integer kickPercentage;
+
+    @Column(name="PUBLIC_CHAT")
+    private Boolean publicTextChat;
+
+    @Column(name="SPECTATORS_ONLY_CHAT_OTHER_SPECTATORS")
+    private Boolean spectatorsOnlyChatToOtherSpectators;
+
+    @Column(name="VOIP")
+    private Boolean voip;
+
+    @Column(name="CHAT_LOGGING")
+    private Boolean chatLogging;
+
+    @Column(name="CHAT_LOGGING_FILE", length = 255)
+    private String chatLoggingFile;
+
+
     public Profile() {
         super();
         this.mapList = new ArrayList<Map>();
     }
 
     public Profile(String name, Language language, GameType gametype, Map map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,
-                   String serverName, Integer webPort, Integer gamePort, Integer queryPort, List<Map> mapList, Boolean webPage) {
-        super();
-        this.name = name;
-        this.language = language;
-        this.gametype = gametype;
-        this.map = map;
-        this.difficulty = difficulty;
-        this.length = length;
-        this.maxPlayers = maxPlayers;
-        this.serverName = serverName;
-        this.webPort = webPort;
-        this.gamePort = gamePort;
-        this.queryPort = queryPort;
-        this.mapList = mapList;
-        this.webPage = webPage;
-    }
-
-    public Profile(String name, Language language, GameType gametype, Map map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,
                    String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
-                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, List<Map> mapList, Boolean takeover) {
+                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, List<Map> mapList, Boolean takeover,
+                   Boolean cheatProtection, Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting, Integer mapVotingTime,
+                   Boolean kickVoting, Integer kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators, Boolean voip,
+                   Boolean chatLogging, String chatLoggingFile) {
+
         super();
         this.name = name;
         this.language = language;
@@ -135,6 +161,19 @@ public class Profile extends CommonEntity {
         this.customParameters = customParameters;
         this.mapList = mapList;
         this.takeover = takeover;
+        this.cheatProtection = cheatProtection;
+        this.teamCollision = teamCollision;
+        this.adminCanPause = adminCanPause;
+        this.announceAdminLogin = announceAdminLogin;
+        this.mapVoting = mapVoting;
+        this.mapVotingTime = mapVotingTime;
+        this.kickVoting = kickVoting;
+        this.kickPercentage = kickPercentage;
+        this.publicTextChat = publicTextChat;
+        this.spectatorsOnlyChatToOtherSpectators = spectatorsOnlyChatToOtherSpectators;
+        this.voip = voip;
+        this.chatLogging = chatLogging;
+        this.chatLoggingFile = chatLoggingFile;
     }
 
     @Override
@@ -313,5 +352,109 @@ public class Profile extends CommonEntity {
 
     public void setTakeover(Boolean takeover) {
         this.takeover = takeover;
+    }
+
+    public Boolean getCheatProtection() {
+        return cheatProtection;
+    }
+
+    public void setCheatProtection(Boolean cheatProtection) {
+        this.cheatProtection = cheatProtection;
+    }
+
+    public Boolean getTeamCollision() {
+        return teamCollision;
+    }
+
+    public void setTeamCollision(Boolean teamCollision) {
+        this.teamCollision = teamCollision;
+    }
+
+    public Boolean getAdminCanPause() {
+        return adminCanPause;
+    }
+
+    public void setAdminCanPause(Boolean adminCanPause) {
+        this.adminCanPause = adminCanPause;
+    }
+
+    public Boolean getAnnounceAdminLogin() {
+        return announceAdminLogin;
+    }
+
+    public void setAnnounceAdminLogin(Boolean announceAdminLogin) {
+        this.announceAdminLogin = announceAdminLogin;
+    }
+
+    public Boolean getMapVoting() {
+        return mapVoting;
+    }
+
+    public void setMapVoting(Boolean mapVoting) {
+        this.mapVoting = mapVoting;
+    }
+
+    public Integer getMapVotingTime() {
+        return mapVotingTime;
+    }
+
+    public void setMapVotingTime(Integer mapVotingTime) {
+        this.mapVotingTime = mapVotingTime;
+    }
+
+    public Boolean getKickVoting() {
+        return kickVoting;
+    }
+
+    public void setKickVoting(Boolean kickVoting) {
+        this.kickVoting = kickVoting;
+    }
+
+    public Integer getKickPercentage() {
+        return kickPercentage;
+    }
+
+    public void setKickPercentage(Integer kickPercentage) {
+        this.kickPercentage = kickPercentage;
+    }
+
+    public Boolean getPublicTextChat() {
+        return publicTextChat;
+    }
+
+    public void setPublicTextChat(Boolean publicTextChat) {
+        this.publicTextChat = publicTextChat;
+    }
+
+    public Boolean getSpectatorsOnlyChatToOtherSpectators() {
+        return spectatorsOnlyChatToOtherSpectators;
+    }
+
+    public void setSpectatorsOnlyChatToOtherSpectators(Boolean spectatorsOnlyChatToOtherSpectators) {
+        this.spectatorsOnlyChatToOtherSpectators = spectatorsOnlyChatToOtherSpectators;
+    }
+
+    public Boolean getVoip() {
+        return voip;
+    }
+
+    public void setVoip(Boolean voip) {
+        this.voip = voip;
+    }
+
+    public Boolean getChatLogging() {
+        return chatLogging;
+    }
+
+    public void setChatLogging(Boolean chatLogging) {
+        this.chatLogging = chatLogging;
+    }
+
+    public String getChatLoggingFile() {
+        return chatLoggingFile;
+    }
+
+    public void setChatLoggingFile(String chatLoggingFile) {
+        this.chatLoggingFile = chatLoggingFile;
     }
 }

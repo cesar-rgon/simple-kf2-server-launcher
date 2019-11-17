@@ -4,40 +4,30 @@ import dtos.GameTypeDto;
 import dtos.MapDto;
 import dtos.ProfileDto;
 import dtos.SelectDto;
-import entities.Map;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
-import javafx.geometry.VPos;
-import javafx.scene.Cursor;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
-import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.kf2factory.Kf2Common;
-import pojos.kf2factory.Kf2Factory;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
-import stories.template.TemplateController;
 import utils.Utils;
 
 import java.io.InputStream;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -110,6 +100,60 @@ public class MainContentController implements Initializable {
     @FXML private Tab basicParameters;
     @FXML private Tab advancedParameters;
 
+    @FXML private ImageView cheatProtectionImg;
+    @FXML private Label cheatProtectionLabel;
+    @FXML private CheckBox cheatProtection;
+
+    @FXML private ImageView teamCollisionImg;
+    @FXML private Label teamCollisionLabel;
+    @FXML private CheckBox teamCollision;
+
+    @FXML private ImageView adminPauseImg;
+    @FXML private Label adminPauseLabel;
+    @FXML private CheckBox adminPause;
+
+    @FXML private ImageView adminLoginImg;
+    @FXML private Label adminLoginLabel;
+    @FXML private CheckBox adminLogin;
+
+    @FXML private ImageView mapVotingImg;
+    @FXML private Label mapVotingLabel;
+    @FXML private CheckBox mapVoting;
+
+    @FXML private ImageView mapVotingTimeImg;
+    @FXML private Label mapVotingTimeLabel;
+    @FXML private TextField mapVotingTime;
+
+    @FXML private ImageView kickVotingImg;
+    @FXML private Label kickVotingLabel;
+    @FXML private CheckBox kickVoting;
+
+    @FXML private ImageView kickPercentageImg;
+    @FXML private Label kickPercentageLabel;
+    @FXML private TextField kickPercentage;
+
+    @FXML private ImageView publicTextChatImg;
+    @FXML private Label publicTextChatLabel;
+    @FXML private CheckBox publicTextChat;
+
+    @FXML private ImageView spectatorsChatImg;
+    @FXML private Label spectatorsChatLabel;
+    @FXML private CheckBox spectatorsChat;
+
+    @FXML private ImageView voipImg;
+    @FXML private Label voipLabel;
+    @FXML private CheckBox voip;
+
+    @FXML private ImageView chatLoggingImg;
+    @FXML private Label chatLoggingLabel;
+    @FXML private CheckBox chatLogging;
+
+    @FXML private ImageView chatLoggingFileImg;
+    @FXML private Label chatLoggingFileLabel;
+    @FXML private Button exploreLoggingFile;
+    @FXML private TextField chatLoggingFile;
+
+
     public MainContentController() {
         super();
         facade = new MainContentFacadeImpl();
@@ -141,11 +185,8 @@ public class MainContentController implements Initializable {
             if (profileSelect.getValue() != null) {
                 profileOnAction();
             }
-            if (languageSelect.getValue() != null) {
-                loadLanguageTexts(languageSelect.getValue().getKey());
-            } else {
-                loadLanguageTexts("en");
-            }
+
+            loadLanguageTexts(languageSelect.getValue() != null? languageSelect.getValue().getKey(): "en");
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -338,24 +379,14 @@ public class MainContentController implements Initializable {
                 try {
                     if (!newPropertyValue) {
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (StringUtils.isNotEmpty(webPort.getText())) {
-                            if (!facade.updateProfileSetWebPort(profileName, Integer.parseInt(webPort.getText()))) {
-                                logger.warn("The web port value could not be saved!: " + webPort.getText());
-                                String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                        "prop.message.profileNotUpdated");
-                                String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                        "prop.message.webPortNotSaved");
-                                Utils.warningDialog(headerText, contentText);
-                            }
-                        } else {
-                            if (!facade.updateProfileSetWebPort(profileName, null)) {
-                                logger.warn("The web port value could not be saved!");
-                                String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                        "prop.message.profileNotUpdated");
-                                String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                        "prop.message.webPortNotSaved");
-                                Utils.warningDialog(headerText, contentText);
-                            }
+                        if (!facade.updateProfileSetWebPort(profileName, StringUtils.isNotEmpty(webPort.getText()) ? Integer.parseInt(webPort.getText()): null)) {
+                            String webPortValue = StringUtils.isNotEmpty(webPort.getText())? webPort.getText(): "";
+                            logger.warn("The web port value could not be saved! " + webPortValue);
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.profileNotUpdated");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.webPortNotSaved");
+                            Utils.warningDialog(headerText, contentText);
                         }
                     }
                 } catch (Exception e) {
@@ -373,24 +404,14 @@ public class MainContentController implements Initializable {
                 try {
                     if (!newPropertyValue) {
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (StringUtils.isNotEmpty(gamePort.getText())) {
-                            if (!facade.updateProfileSetGamePort(profileName, Integer.parseInt(gamePort.getText()))) {
-                                logger.warn("The game port value could not be saved!: " + gamePort.getText());
-                                String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                        "prop.message.profileNotUpdated");
-                                String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                        "prop.message.gamePortNotSaved");
-                                Utils.warningDialog(headerText, contentText);
-                            }
-                        } else {
-                            logger.warn("The game port value could not be saved!");
-                            if (!facade.updateProfileSetGamePort(profileName, null)) {
-                                String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                        "prop.message.profileNotUpdated");
-                                String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                        "prop.message.gamePortNotSaved");
-                                Utils.warningDialog(headerText, contentText);
-                            }
+                        if (!facade.updateProfileSetGamePort(profileName, StringUtils.isNotEmpty(gamePort.getText()) ? Integer.parseInt(gamePort.getText()): null)) {
+                            String gamePortValue = StringUtils.isNotEmpty(gamePort.getText())? gamePort.getText(): "";
+                            logger.warn("The game port value could not be saved! " + gamePortValue);
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.profileNotUpdated");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.gamePortNotSaved");
+                            Utils.warningDialog(headerText, contentText);
                         }
                     }
                 } catch (Exception e) {
@@ -408,24 +429,14 @@ public class MainContentController implements Initializable {
                 try {
                     if (!newPropertyValue) {
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (StringUtils.isNotEmpty(queryPort.getText())) {
-                            if (!facade.updateProfileSetQueryPort(profileName, Integer.parseInt(queryPort.getText()))) {
-                                logger.warn("The query port value could not be saved!: " + queryPort.getText());
-                                String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                        "prop.message.profileNotUpdated");
-                                String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                        "prop.message.queryPortNotSaved");
-                                Utils.warningDialog(headerText, contentText);
-                            }
-                        } else {
-                            if (!facade.updateProfileSetQueryPort(profileName, null)) {
-                                logger.warn("The query port value could not be saved!");
-                                String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                        "prop.message.profileNotUpdated");
-                                String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                        "prop.message.queryPortNotSaved");
-                                Utils.warningDialog(headerText, contentText);
-                            }
+                        if (!facade.updateProfileSetQueryPort(profileName, StringUtils.isNotEmpty(queryPort.getText()) ? Integer.parseInt(queryPort.getText()): null)) {
+                            String queryPortValue = StringUtils.isNotEmpty(queryPort.getText())? queryPort.getText(): "";
+                            logger.warn("The query port value could not be saved! " + queryPortValue);
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.profileNotUpdated");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.queryPortNotSaved");
+                            Utils.warningDialog(headerText, contentText);
                         }
                     }
                 } catch (Exception e) {
@@ -553,6 +564,57 @@ public class MainContentController implements Initializable {
                 }
             }
         });
+
+        mapVotingTime.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                try {
+                    if (!newPropertyValue) {
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
+                        if (!facade.updateProfileSetMapVotingTime(profileName, StringUtils.isNotEmpty(mapVotingTime.getText()) ? Integer.parseInt(mapVotingTime.getText()): null)) {
+                            String mapVotingTimeValue = StringUtils.isNotEmpty(mapVotingTime.getText())? mapVotingTime.getText(): "";
+                            logger.warn("The map voting time value could not be saved! " + mapVotingTimeValue);
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.profileNotUpdated");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.mapVotingTimeNotSaved");
+                            Utils.warningDialog(headerText, contentText);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    Utils.errorDialog(e.getMessage(), e);
+                    Integer mapVotingTimeValue = profileSelect.getValue().getMapVotingTime();
+                    mapVotingTime.setText(mapVotingTimeValue != null? String.valueOf(mapVotingTimeValue): "");
+                }
+            }
+        });
+
+        kickPercentage.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                try {
+                    if (!newPropertyValue) {
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
+                        if (!facade.updateProfileSetKickPercentage(profileName, StringUtils.isNotEmpty(kickPercentage.getText()) ? Integer.parseInt(kickPercentage.getText()): null)) {
+                            String kickPercentageValue = StringUtils.isNotEmpty(kickPercentage.getText())? kickPercentage.getText(): "";
+                            logger.warn("The map voting time value could not be saved! " + kickPercentageValue);
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.profileNotUpdated");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.kickPercentageNotSaved");
+                            Utils.warningDialog(headerText, contentText);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    Utils.errorDialog(e.getMessage(), e);
+                    Integer kickPercentageValue = profileSelect.getValue().getKickPercentage();
+                    kickPercentage.setText(kickPercentageValue != null? String.valueOf(kickPercentageValue): "");
+                }
+            }
+        });
+
     }
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, ComboBox<?> combo) throws Exception {
@@ -598,6 +660,14 @@ public class MainContentController implements Initializable {
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
         textArea.setTooltip(tooltip);
+    }
+
+    private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, TextField textField, Button button) throws Exception {
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        Tooltip.install(img, tooltip);
+        label.setTooltip(tooltip);
+        textField.setTooltip(tooltip);
+        button.setTooltip(tooltip);
     }
 
     private void loadLanguageTexts(String languageCode) throws Exception {
@@ -647,16 +717,9 @@ public class MainContentController implements Initializable {
 
         String takeoverLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.takeover");
         takeoverLabel.setText(takeoverLabelText);
-
         String takeoverText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.takeoverEnable");
         takeover.setText(takeoverText);
         loadTooltip(languageCode, "prop.tooltip.takeover", takeoverImg, takeoverLabel, takeover);
-
-        String portsLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.ports");
-        portsLabel.setText(portsLabelText);
-
-        TextField[] portsArray = {gamePort, queryPort, webPort};
-        loadTooltip(languageCode, "prop.tooltip.ports", portsImg, portsLabel, portsArray);
 
         String clanLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.clan");
         clanLabel.setText(clanLabelText);
@@ -674,10 +737,6 @@ public class MainContentController implements Initializable {
         welcomeLabel.setText(welcomeLabelText);
         loadTooltip(languageCode, "prop.tooltip.welcomeMessage", welcomeImg, welcomeLabel, welcomeMessage);
 
-        String customParametersLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.customParameters");
-        customParametersLabel.setText(customParametersLabelText);
-        loadTooltip(languageCode, "prop.tooltip.customParameters", customParametersImg, customParametersLabel, customParameters);
-
         String runServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.runServer");
         runServer.setText(runServerText);
         runServer.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.runServer")));
@@ -687,6 +746,90 @@ public class MainContentController implements Initializable {
         joinServer.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.joinServer")));
 
         Tooltip.install(thumbnailImg, new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.thumbnail")));
+
+        // Advanced Parameters
+        String portsLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.ports");
+        portsLabel.setText(portsLabelText);
+        TextField[] portsArray = {gamePort, queryPort, webPort};
+        loadTooltip(languageCode, "prop.tooltip.ports", portsImg, portsLabel, portsArray);
+
+        String customParametersLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.customParameters");
+        customParametersLabel.setText(customParametersLabelText);
+        loadTooltip(languageCode, "prop.tooltip.customParameters", customParametersImg, customParametersLabel, customParameters);
+
+        String cheatProtectionLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.cheatProtection");
+        String cheatProtectionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.cheatProtectionEnable");
+        cheatProtectionLabel.setText(cheatProtectionLabelText);
+        cheatProtection.setText(cheatProtectionText);
+        loadTooltip(languageCode, "prop.tooltip.cheatProtection", cheatProtectionImg, cheatProtectionLabel, cheatProtection);
+
+        String teamCollisionLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.teamCollision");
+        String teamCollisionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.teamCollisionEnable");
+        teamCollisionLabel.setText(teamCollisionLabelText);
+        teamCollision.setText(teamCollisionText);
+        loadTooltip(languageCode, "prop.tooltip.teamCollision", teamCollisionImg, teamCollisionLabel, teamCollision);
+
+        String adminPauseLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.adminPause");
+        String adminPauseText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.adminPauseEnable");
+        adminPauseLabel.setText(adminPauseLabelText);
+        adminPause.setText(adminPauseText);
+        loadTooltip(languageCode, "prop.tooltip.adminPause", adminPauseImg, adminPauseLabel, adminPause);
+
+        String adminLoginLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.adminLogin");
+        String adminLoginText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.adminLoginEnable");
+        adminLoginLabel.setText(adminLoginLabelText);
+        adminLogin.setText(adminLoginText);
+        loadTooltip(languageCode, "prop.tooltip.adminLogin", adminLoginImg, adminLoginLabel, adminLogin);
+
+        String mapVotingLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.mapVoting");
+        String mapVotingText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.mapVotingEnable");
+        mapVotingLabel.setText(mapVotingLabelText);
+        mapVoting.setText(mapVotingText);
+        loadTooltip(languageCode, "prop.tooltip.mapVoting", mapVotingImg, mapVotingLabel, mapVoting);
+
+        String kickVotingLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.kickVoting");
+        String kickVotingText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.kickVotingEnable");
+        kickVotingLabel.setText(kickVotingLabelText);
+        kickVoting.setText(kickVotingText);
+        loadTooltip(languageCode, "prop.tooltip.kickVoting", kickVotingImg, kickVotingLabel, kickVoting);
+
+        String publicTextChatLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.publicTextChat");
+        String publicTextChatText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.publicTextChatEnable");
+        publicTextChatLabel.setText(publicTextChatLabelText);
+        publicTextChat.setText(publicTextChatText);
+        loadTooltip(languageCode, "prop.tooltip.publicTextChat", publicTextChatImg, publicTextChatLabel, publicTextChat);
+
+        String voipLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.voip");
+        String voipText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.voipEnable");
+        voipLabel.setText(voipLabelText);
+        voip.setText(voipText);
+        loadTooltip(languageCode, "prop.tooltip.voip", voipImg, voipLabel, voip);
+
+        String chatLoggingLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.chatLogging");
+        String chatLoggingText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.chatLoggingEnable");
+        chatLoggingLabel.setText(chatLoggingLabelText);
+        chatLogging.setText(chatLoggingText);
+        loadTooltip(languageCode, "prop.tooltip.chatLogging", chatLoggingImg, chatLoggingLabel, chatLogging);
+
+        String mapVotingTimeLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.mapVotingTime");
+        mapVotingTimeLabel.setText(mapVotingTimeLabelText);
+        loadTooltip(languageCode, "prop.tooltip.mapVotingTime", mapVotingTimeImg, mapVotingTimeLabel, mapVotingTime);
+
+        String kickPercentageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.kickPercentage");
+        kickPercentageLabel.setText(kickPercentageLabelText);
+        loadTooltip(languageCode, "prop.tooltip.kickPercentage", kickPercentageImg, kickPercentageLabel, kickPercentage);
+
+        String spectatorsChatLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.spectatorsChat");
+        String spectatorsChatText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.spectatorsChatEnable");
+        spectatorsChatLabel.setText(spectatorsChatLabelText);
+        spectatorsChat.setText(spectatorsChatText);
+        loadTooltip(languageCode, "prop.tooltip.spectatorsChat", spectatorsChatImg, spectatorsChatLabel, spectatorsChat);
+
+        String chatLoggingFileLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.chatLoggingFile");
+        String exploreLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.exploreFolder");
+        chatLoggingFileLabel.setText(chatLoggingFileLabelText);
+        exploreLoggingFile.setText(exploreLabelText);
+        loadTooltip(languageCode, "prop.tooltip.chatLoggingFile", chatLoggingFileImg, chatLoggingFileLabel, chatLoggingFile, exploreLoggingFile);
     }
 
     private void loadActualProfile(ProfileDto profile) {
@@ -748,6 +891,19 @@ public class MainContentController implements Initializable {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
         }
+        cheatProtection.setSelected(profile.getCheatProtection() != null ? profile.getCheatProtection(): false);
+        teamCollision.setSelected(profile.getTeamCollision() != null ? profile.getTeamCollision(): false);
+        adminPause.setSelected(profile.getAdminCanPause() != null ? profile.getAdminCanPause(): false);
+        adminLogin.setSelected(profile.getAnnounceAdminLogin() != null ? profile.getAnnounceAdminLogin(): false);
+        mapVoting.setSelected(profile.getMapVoting() != null ? profile.getMapVoting(): false);
+        kickVoting.setSelected(profile.getKickVoting() != null ? profile.getKickVoting(): false);
+        publicTextChat.setSelected(profile.getPublicTextChat() != null ? profile.getPublicTextChat(): false);
+        spectatorsChat.setSelected(profile.getSpectatorsOnlyChatToOtherSpectators() != null ? profile.getSpectatorsOnlyChatToOtherSpectators(): false);
+        voip.setSelected(profile.getVoip() != null ? profile.getVoip(): false);
+        chatLogging.setSelected(profile.getChatLogging() != null ? profile.getChatLogging(): false);
+        mapVotingTime.setText(profile.getMapVotingTime() != null? String.valueOf(profile.getMapVotingTime()): "");
+        kickPercentage.setText(profile.getKickPercentage() != null? String.valueOf(profile.getKickPercentage()): "");
+        chatLoggingFile.setText(profile.getChatLoggingFile());
     }
 
 
@@ -1019,4 +1175,215 @@ public class MainContentController implements Initializable {
             Utils.errorDialog(e.getMessage(), e);
         }
     }
+
+    @FXML
+    private void mapVotingOnAction() {
+        try {
+            if (profileSelect.getValue() != null) {
+                String profileName = profileSelect.getValue().getName();
+                if (!facade.updateProfileSetMapVoting(profileName, mapVoting.isSelected())) {
+                    logger.warn("The map voting value could not be saved!: " + mapVoting.isSelected());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.profileNotUpdated");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.mapVotingNotSaved");
+                    Utils.warningDialog(headerText, contentText);
+                }
+            }
+        } catch (Exception e) {
+            String headerText = "The map voting value could not be saved!";
+            logger.error(headerText, e);
+            Utils.errorDialog(headerText, e);
+        }
+    }
+
+    @FXML
+    private void kickVotingOnAction() {
+        try {
+            if (profileSelect.getValue() != null) {
+                String profileName = profileSelect.getValue().getName();
+                if (!facade.updateProfileSetKickVoting(profileName, kickVoting.isSelected())) {
+                    logger.warn("The kick voting value could not be saved!: " + kickVoting.isSelected());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.profileNotUpdated");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.kickVotingNotSaved");
+                    Utils.warningDialog(headerText, contentText);
+                }
+            }
+        } catch (Exception e) {
+            String headerText = "The kick voting value could not be saved!";
+            logger.error(headerText, e);
+            Utils.errorDialog(headerText, e);
+        }
+    }
+
+    @FXML
+    private void publicTextChatOnAction() {
+        try {
+            if (profileSelect.getValue() != null) {
+                String profileName = profileSelect.getValue().getName();
+                if (!facade.updateProfileSetPublicTextChat(profileName, publicTextChat.isSelected())) {
+                    logger.warn("The public text chat value could not be saved!: " + publicTextChat.isSelected());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.profileNotUpdated");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.publicTextChatNotSaved");
+                    Utils.warningDialog(headerText, contentText);
+                }
+            }
+        } catch (Exception e) {
+            String headerText = "The public text chat value could not be saved!";
+            logger.error(headerText, e);
+            Utils.errorDialog(headerText, e);
+        }
+    }
+
+    @FXML
+    private void spectatorsChatOnAction() {
+        try {
+            if (profileSelect.getValue() != null) {
+                String profileName = profileSelect.getValue().getName();
+                if (!facade.updateProfileSetSpectatorsChat(profileName, spectatorsChat.isSelected())) {
+                    logger.warn("The spectators chat value could not be saved!: " + spectatorsChat.isSelected());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.profileNotUpdated");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.spectatorsChatNotSaved");
+                    Utils.warningDialog(headerText, contentText);
+                }
+            }
+        } catch (Exception e) {
+            String headerText = "The spectators chat value could not be saved!";
+            logger.error(headerText, e);
+            Utils.errorDialog(headerText, e);
+        }
+    }
+
+    @FXML
+    private void voipOnAction() {
+        try {
+            if (profileSelect.getValue() != null) {
+                String profileName = profileSelect.getValue().getName();
+                if (!facade.updateProfileSetVoip(profileName, voip.isSelected())) {
+                    logger.warn("The VoIP value could not be saved!: " + voip.isSelected());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.profileNotUpdated");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.voipNotSaved");
+                    Utils.warningDialog(headerText, contentText);
+                }
+            }
+        } catch (Exception e) {
+            String headerText = "The VoIP value could not be saved!";
+            logger.error(headerText, e);
+            Utils.errorDialog(headerText, e);
+        }
+    }
+
+    @FXML
+    private void cheatProtectionOnAction() {
+        try {
+            if (profileSelect.getValue() != null) {
+                String profileName = profileSelect.getValue().getName();
+                if (!facade.updateProfileSetCheatProtection(profileName, cheatProtection.isSelected())) {
+                    logger.warn("The cheat protection value could not be saved!: " + cheatProtection.isSelected());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.profileNotUpdated");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.cheatProtectionNotSaved");
+                    Utils.warningDialog(headerText, contentText);
+                }
+            }
+        } catch (Exception e) {
+            String headerText = "The cheat protection value could not be saved!";
+            logger.error(headerText, e);
+            Utils.errorDialog(headerText, e);
+        }
+    }
+
+    @FXML
+    private void teamCollisionOnAction() {
+        try {
+            if (profileSelect.getValue() != null) {
+                String profileName = profileSelect.getValue().getName();
+                if (!facade.updateProfileSetTeamCollision(profileName, teamCollision.isSelected())) {
+                    logger.warn("The team collision value could not be saved!: " + teamCollision.isSelected());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.profileNotUpdated");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.teamCollisionNotSaved");
+                    Utils.warningDialog(headerText, contentText);
+                }
+            }
+        } catch (Exception e) {
+            String headerText = "The team collision value could not be saved!";
+            logger.error(headerText, e);
+            Utils.errorDialog(headerText, e);
+        }
+    }
+
+    @FXML
+    private void adminPauseOnAction() {
+        try {
+            if (profileSelect.getValue() != null) {
+                String profileName = profileSelect.getValue().getName();
+                if (!facade.updateProfileSetAdminCanPause(profileName, adminPause.isSelected())) {
+                    logger.warn("The admin can pause value could not be saved!: " + adminPause.isSelected());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.profileNotUpdated");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.adminCanPauseNotSaved");
+                    Utils.warningDialog(headerText, contentText);
+                }
+            }
+        } catch (Exception e) {
+            String headerText = "The admin can pause value could not be saved!";
+            logger.error(headerText, e);
+            Utils.errorDialog(headerText, e);
+        }
+    }
+
+    @FXML
+    private void adminLoginOnAction() {
+        try {
+            if (profileSelect.getValue() != null) {
+                String profileName = profileSelect.getValue().getName();
+                if (!facade.updateProfileSetAnnounceAdminLogin(profileName, adminLogin.isSelected())) {
+                    logger.warn("The announce admin login value could not be saved!: " + adminLogin.isSelected());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.profileNotUpdated");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.adminLoginNotSaved");
+                    Utils.warningDialog(headerText, contentText);
+                }
+            }
+        } catch (Exception e) {
+            String headerText = "The announce admin login value could not be saved!";
+            logger.error(headerText, e);
+            Utils.errorDialog(headerText, e);
+        }
+    }
+
+    @FXML
+    private void chatLoggingOnAction() {
+        try {
+            if (profileSelect.getValue() != null) {
+                String profileName = profileSelect.getValue().getName();
+                if (!facade.updateProfileSetChatLogging(profileName, chatLogging.isSelected())) {
+                    logger.warn("The chat logging value could not be saved!: " + chatLogging.isSelected());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.profileNotUpdated");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.chatLoggingNotSaved");
+                    Utils.warningDialog(headerText, contentText);
+                }
+            }
+        } catch (Exception e) {
+            String headerText = "The chat logging value could not be saved!";
+            logger.error(headerText, e);
+            Utils.errorDialog(headerText, e);
+        }
+    }
+
 }

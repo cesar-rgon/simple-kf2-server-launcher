@@ -70,12 +70,34 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                 LengthDao.getInstance().listAll().get(0),
                 defaultMaxPlayers.isPresent()? defaultMaxPlayers.get(): null,
                 StringUtils.isNotBlank(defaultServername) ? defaultServername: "Killing Floor 2 Server",
+                null,
+                true,
+                null,
                 Integer.parseInt(defaultWebPort),
                 Integer.parseInt(defaultGamePort),
                 Integer.parseInt(defaultQueryPort),
+                null,
+                null,
+                null,
+                null,
+                null,
                 officialMaps,
-                true
+                false,
+                true,
+                true,
+                false,
+                true,
+                true,
+                null,
+                true,
+                null,
+                true,
+                false,
+                true,
+                false,
+                null
         );
+
         ProfileDao.getInstance().insert(newProfile);
         return profileDtoFactory.newDto(newProfile);
     }
@@ -154,7 +176,20 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                     profileToBeClonedOpt.get().getWelcomeMessage(),
                     profileToBeClonedOpt.get().getCustomParameters(),
                     new ArrayList<Map>(profileToBeClonedOpt.get().getMapList()),
-                    profileToBeClonedOpt.get().getTakeover()
+                    profileToBeClonedOpt.get().getTakeover(),
+                    profileToBeClonedOpt.get().getCheatProtection(),
+                    profileToBeClonedOpt.get().getTeamCollision(),
+                    profileToBeClonedOpt.get().getAdminCanPause(),
+                    profileToBeClonedOpt.get().getAnnounceAdminLogin(),
+                    profileToBeClonedOpt.get().getMapVoting(),
+                    profileToBeClonedOpt.get().getMapVotingTime(),
+                    profileToBeClonedOpt.get().getKickVoting(),
+                    profileToBeClonedOpt.get().getKickPercentage(),
+                    profileToBeClonedOpt.get().getPublicTextChat(),
+                    profileToBeClonedOpt.get().getSpectatorsOnlyChatToOtherSpectators(),
+                    profileToBeClonedOpt.get().getVoip(),
+                    profileToBeClonedOpt.get().getChatLogging(),
+                    profileToBeClonedOpt.get().getChatLoggingFile()
             );
             ProfileDao.getInstance().insert(newProfile);
             return profileDtoFactory.newDto(newProfile);
@@ -505,7 +540,20 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                     properties.getProperty("exported.profile" + profileIndex + ".welcomeMessage"),
                     properties.getProperty("exported.profile" + profileIndex + ".customParameters"),
                     new ArrayList<Map>(),
-                    Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".takeover"))
+                    Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".takeover")),
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null
             );
         } catch (SQLException e) {
             logger.error("Error getting the profile " + profileName + " from file", e);

@@ -48,7 +48,21 @@ public class ProfileDtoFactory {
                 profile.getWelcomeMessage(),
                 profile.getCustomParameters(),
                 mapDtoFactory.newDtos(profile.getMapList()),
-                profile.getTakeover());
+                profile.getTakeover(),
+                profile.getCheatProtection(),
+                profile.getTeamCollision(),
+                profile.getAdminCanPause(),
+                profile.getAnnounceAdminLogin(),
+                profile.getMapVoting(),
+                profile.getMapVotingTime(),
+                profile.getKickVoting(),
+                profile.getKickPercentage(),
+                profile.getPublicTextChat(),
+                profile.getSpectatorsOnlyChatToOtherSpectators(),
+                profile.getVoip(),
+                profile.getChatLogging(),
+                profile.getChatLoggingFile()
+        );
     }
 
     public ObservableList<ProfileDto> newDtos(List<Profile> profiles) {

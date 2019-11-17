@@ -51,14 +51,14 @@
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Button fx:id="runServer" maxWidth="190.0" mnemonicParsing="false" onAction="#runServerOnAction" text="RUN SERVER" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+        <Button fx:id="runServer" maxWidth="190.0" mnemonicParsing="false" onAction="#runServerOnAction" text="RUN SERVER" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
             <GridPane.margin>
-                <Insets bottom="5.0" right="50.0" />
+                <Insets right="50.0" />
             </GridPane.margin>
         </Button>
-        <Button fx:id="joinServer" maxWidth="190.0" mnemonicParsing="false" onAction="#joinServerOnAction" text="JOIN SERVER" GridPane.columnIndex="5" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+        <Button fx:id="joinServer" maxWidth="190.0" mnemonicParsing="false" onAction="#joinServerOnAction" text="JOIN SERVER" GridPane.columnIndex="5" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
             <GridPane.margin>
-                <Insets bottom="5.0" />
+                <Insets />
             </GridPane.margin>
         </Button>
         <ImageView fitHeight="121.0" fitWidth="558.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT">
@@ -230,12 +230,12 @@
                         </Label>
                         <CheckBox fx:id="takeover" mnemonicParsing="false" onAction="#takeoverOnAction" opacity="0.75" text="Enable takeover" GridPane.columnIndex="1" GridPane.rowIndex="9" GridPane.valignment="CENTER" />
 
-                        <ImageView fx:id="thumbnailImg" fitHeight="261.0" fitWidth="531.0" opacity="0.9" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="TOP">
+                        <ImageView fx:id="thumbnailImg" fitHeight="261.0" fitWidth="531.0" opacity="0.9" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
                             <image>
                                 <Image url="@../images/photo-borders.png" />
                             </image>
                             <GridPane.margin>
-                                <Insets top="8.0" />
+                                <Insets bottom="-5.0" />
                             </GridPane.margin>
                         </ImageView>
 
@@ -307,9 +307,14 @@
                         <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="210.0" />
                     </columnConstraints>
                     <rowConstraints>
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="ALWAYS" />
+                      <RowConstraints minHeight="10.0" prefHeight="68.0" vgrow="ALWAYS" />
+                      <RowConstraints minHeight="10.0" prefHeight="68.0" vgrow="ALWAYS" />
+                      <RowConstraints minHeight="10.0" prefHeight="68.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="68.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="68.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="68.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="68.0" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="10.0" prefHeight="68.0" vgrow="ALWAYS" />
                         <RowConstraints minHeight="10.0" prefHeight="10.0" />
                         <RowConstraints />
                         <RowConstraints />
@@ -338,24 +343,182 @@
                               <Insets right="10.0" />
                           </GridPane.margin>
                       </Label>
-                      <TextField fx:id="webPort" maxWidth="100.0" opacity="0.75" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
-                      <TextField fx:id="gamePort" maxWidth="100.0" opacity="0.75" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-                      <TextField fx:id="queryPort" maxWidth="100.0" opacity="0.75" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="CENTER" />
+                      <TextField fx:id="webPort" maxWidth="100.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
+                      <TextField fx:id="gamePort" maxWidth="100.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
+                      <TextField fx:id="queryPort" maxWidth="100.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="CENTER" />
                       
-                      <ImageView fx:id="customParametersImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                      <ImageView fx:id="cheatProtectionImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+                           <image>
+                              <Image url="@../images/label-inverted.png" />
+                           </image>
+                      </ImageView>
+                      <Label fx:id="cheatProtectionLabel" text="CHEAT PROTECTION" textFill="WHITE" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+                          <GridPane.margin>
+                              <Insets left="10.0" />
+                          </GridPane.margin>
+                      </Label>
+                      <CheckBox fx:id="cheatProtection" lineSpacing="0.9" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#cheatProtectionOnAction" text="Enable cheat protection" textFill="WHITE" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="CENTER" />
+
+                      <ImageView fx:id="teamCollisionImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                           <image>
+                              <Image url="@../images/label-inverted.png" />
+                           </image>
+                      </ImageView>
+                      <Label fx:id="teamCollisionLabel" text="TEAM COLLISION" textFill="WHITE" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                          <GridPane.margin>
+                              <Insets left="10.0" />
+                          </GridPane.margin>
+                      </Label>
+                      <CheckBox fx:id="teamCollision" lineSpacing="0.9" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#teamCollisionOnAction" text="Enable team collision" textFill="WHITE" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+
+                      <ImageView fx:id="adminPauseImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                           <image>
+                              <Image url="@../images/label-inverted.png" />
+                           </image>
+                      </ImageView>
+                      <Label fx:id="adminPauseLabel" text="ADMIN CAN PAUSE" textFill="WHITE" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                          <GridPane.margin>
+                              <Insets left="10.0" />
+                          </GridPane.margin>
+                      </Label>
+                      <CheckBox fx:id="adminPause" lineSpacing="0.9" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#adminPauseOnAction" text="Enable if admin can pause" textFill="WHITE" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+
+                      <ImageView fx:id="adminLoginImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                           <image>
+                              <Image url="@../images/label-inverted.png" />
+                           </image>
+                      </ImageView>
+                      <Label fx:id="adminLoginLabel" text="ANNOUNCE ADMIN LOGIN" textFill="WHITE" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                          <GridPane.margin>
+                              <Insets left="10.0" />
+                          </GridPane.margin>
+                      </Label>
+                      <CheckBox fx:id="adminLogin" lineSpacing="0.9" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#adminLoginOnAction" text="Enable to announce admin login" textFill="WHITE" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+
+                      <ImageView fx:id="mapVotingImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                           <image>
                               <Image url="@../images/label.png" />
+                          </image>
+                      </ImageView>
+                      <Label fx:id="mapVotingLabel" text="MAP VOTING" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                          <GridPane.margin>
+                              <Insets right="10.0" />
+                          </GridPane.margin>
+                      </Label>
+                      <CheckBox fx:id="mapVoting" lineSpacing="0.9" mnemonicParsing="false" onAction="#mapVotingOnAction" text="Enable to allow map voting" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="CENTER" />                      
+
+                      <ImageView fx:id="mapVotingTimeImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                          <image>
+                              <Image url="@../images/label.png" />
+                          </image>
+                      </ImageView>
+                      <Label fx:id="mapVotingTimeLabel" text="MAP VOTING TIME" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                          <GridPane.margin>
+                              <Insets right="10.0" />
+                          </GridPane.margin>
+                      </Label>
+                      <TextField fx:id="mapVotingTime" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+
+                      <ImageView fx:id="kickVotingImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                          <image>
+                              <Image url="@../images/label.png" />
+                          </image>
+                      </ImageView>
+                      <Label fx:id="kickVotingLabel" text="KICK VOTING" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                          <GridPane.margin>
+                              <Insets right="10.0" />
+                          </GridPane.margin>
+                      </Label>
+                      <CheckBox fx:id="kickVoting" lineSpacing="0.9" mnemonicParsing="false" onAction="#kickVotingOnAction" text="Enable kick voting" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+
+                      <ImageView fx:id="kickPercentageImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+                          <image>
+                              <Image url="@../images/label.png" />
+                          </image>
+                      </ImageView>
+                      <Label fx:id="kickPercentageLabel" text="KICK PERCENTAGE" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+                          <GridPane.margin>
+                              <Insets right="10.0" />
+                          </GridPane.margin>
+                      </Label>
+                      <TextField fx:id="kickPercentage" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+
+                      <ImageView fx:id="publicTextChatImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+                          <image>
+                              <Image url="@../images/label.png" />
+                          </image>
+                      </ImageView>
+                      <Label fx:id="publicTextChatLabel" text="PUBLIC TEXT CHAT" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+                          <GridPane.margin>
+                              <Insets right="10.0" />
+                          </GridPane.margin>
+                      </Label>
+                      <CheckBox fx:id="publicTextChat" lineSpacing="0.9" mnemonicParsing="false" onAction="#publicTextChatOnAction" text="Enable text chat" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="5" GridPane.valignment="CENTER" />                      
+
+                      <ImageView fx:id="spectatorsChatImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+                          <image>
+                              <Image url="@../images/label.png" />
+                          </image>
+                      </ImageView>
+                      <Label fx:id="spectatorsChatLabel" text="SPECTATORS CHAT" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+                          <GridPane.margin>
+                              <Insets right="10.0" />
+                          </GridPane.margin>
+                      </Label>
+                      <CheckBox fx:id="spectatorsChat" lineSpacing="0.9" mnemonicParsing="false" onAction="#spectatorsChatOnAction" text="Enable to only talk to other spectators" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="6" GridPane.valignment="CENTER" />
+
+                      <ImageView fx:id="voipImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="7" GridPane.valignment="CENTER">
+                          <image>
+                              <Image url="@../images/label.png" />
+                          </image>
+                      </ImageView>
+                      <Label fx:id="voipLabel" text="VOIP" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="7" GridPane.valignment="CENTER">
+                          <GridPane.margin>
+                              <Insets right="10.0" />
+                          </GridPane.margin>
+                      </Label>
+                      <CheckBox fx:id="voip" lineSpacing="0.9" mnemonicParsing="false" onAction="#voipOnAction" text="Enable VoIP" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="7" GridPane.valignment="CENTER" />                      
+
+                      <ImageView fx:id="chatLoggingImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+                           <image>
+                              <Image url="@../images/label-inverted.png" />
+                           </image>
+                      </ImageView>
+                      <Label fx:id="chatLoggingLabel" text="CHAT LOGGING" textFill="WHITE" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+                          <GridPane.margin>
+                              <Insets left="10.0" />
+                          </GridPane.margin>
+                      </Label>
+                      <CheckBox fx:id="chatLogging" lineSpacing="0.9" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#chatLoggingOnAction" text="Enable chat logging" textFill="WHITE" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
+
+                      <ImageView fx:id="chatLoggingFileImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+                           <image>
+                              <Image url="@../images/label-inverted.png" />
+                           </image>
+                      </ImageView>
+                      <Label fx:id="chatLoggingFileLabel" text="CHAT LOGGING FILE" textFill="WHITE" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+                          <GridPane.margin>
+                              <Insets left="10.0" />
+                          </GridPane.margin>
+                      </Label>
+                      <Button fx:id="exploreLoggingFile" maxWidth="100.0" mnemonicParsing="false" text="EXPLORE" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
+                      <TextField fx:id="chatLoggingFile" maxWidth="240.0" nodeOrientation="RIGHT_TO_LEFT" opacity="0.75" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
+
+                      <ImageView fx:id="customParametersImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="6" GridPane.valignment="TOP">
+                          <image>
+                              <Image url="@../images/label-inverted.png" />
                           </image>
                        <GridPane.margin>
                           <Insets top="3.0" />
                        </GridPane.margin>
                       </ImageView>
-                      <Label fx:id="customParametersLabel" text="CUSTOM PARAMETERS" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                      <Label fx:id="customParametersLabel" text="CUSTOM PARAMETERS" textFill="WHITE" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="6" GridPane.valignment="TOP">
                           <GridPane.margin>
-                              <Insets right="10.0" top="11.0" />
+                              <Insets left="10.0" top="10.0" />
                           </GridPane.margin>
                       </Label>
-                      <TextArea fx:id="customParameters" opacity="0.75" prefHeight="100.0" prefWidth="350.0" wrapText="true" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1" GridPane.rowSpan="2" GridPane.valignment="TOP" />
+                      <TextArea fx:id="customParameters" opacity="0.75" prefHeight="100.0" prefWidth="350.0" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="6" GridPane.rowSpan="2" GridPane.valignment="TOP">
+                      </TextArea>
                       
                     </children>
 
