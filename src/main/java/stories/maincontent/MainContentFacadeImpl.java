@@ -508,7 +508,7 @@ public class MainContentFacadeImpl implements MainContentFacade {
     }
 
     @Override
-    public boolean updateProfileSetMapVotingTime(String profileName, Integer mapVotingTime) throws SQLException {
+    public boolean updateProfileSetMapVotingTime(String profileName, Double mapVotingTime) throws SQLException {
         Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -519,7 +519,11 @@ public class MainContentFacadeImpl implements MainContentFacade {
     }
 
     @Override
-    public boolean updateProfileSetKickPercentage(String profileName, Integer kickPercentage) throws SQLException {
+    public boolean updateProfileSetKickPercentage(String profileName, Double kickPercentage) throws Exception {
+        if ((kickPercentage < 0) || (kickPercentage > 1)) {
+            throw new Exception("Error: Invalid value. Minimun: 0, maximum: 1.");
+        }
+
         Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -529,4 +533,14 @@ public class MainContentFacadeImpl implements MainContentFacade {
         return false;
     }
 
+    @Override
+    public boolean updateProfileSetChatLoggingFile(String profileName, String chatLoggingFile) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setChatLoggingFile(chatLoggingFile);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
 }

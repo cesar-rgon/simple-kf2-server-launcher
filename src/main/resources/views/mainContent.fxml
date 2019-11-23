@@ -501,8 +501,8 @@
                               <Insets left="10.0" />
                           </GridPane.margin>
                       </Label>
-                      <Button fx:id="exploreLoggingFile" maxWidth="100.0" mnemonicParsing="false" text="EXPLORE" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
-                      <TextField fx:id="chatLoggingFile" maxWidth="240.0" nodeOrientation="RIGHT_TO_LEFT" opacity="0.75" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
+                      <Button fx:id="exploreLoggingFile" maxWidth="100.0" mnemonicParsing="false" onAction="#exploreLoggingFileOnAction" text="EXPLORE" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
+                      <TextField fx:id="chatLoggingFile" maxWidth="240.0" opacity="0.75" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
 
                       <ImageView fx:id="customParametersImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="6" GridPane.valignment="TOP">
                           <image>
@@ -517,9 +517,8 @@
                               <Insets left="10.0" top="10.0" />
                           </GridPane.margin>
                       </Label>
-                      <TextArea fx:id="customParameters" opacity="0.75" prefHeight="100.0" prefWidth="350.0" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="6" GridPane.rowSpan="2" GridPane.valignment="TOP">
-                      </TextArea>
-                      
+                      <TextArea fx:id="customParameters" opacity="0.75" prefHeight="100.0" prefWidth="350.0" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="6" GridPane.rowSpan="2" GridPane.valignment="TOP" />
+
                     </children>
 
                   </GridPane>

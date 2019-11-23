@@ -34,9 +34,9 @@ public class ProfileDto {
     private final Boolean adminCanPause;
     private final Boolean announceAdminLogin;
     private final Boolean mapVoting;
-    private final Integer mapVotingTime;
+    private final Double mapVotingTime;
     private final Boolean kickVoting;
-    private final Integer kickPercentage;
+    private final Double kickPercentage;
     private final Boolean publicTextChat;
     private final Boolean spectatorsOnlyChatToOtherSpectators;
     private final Boolean voip;
@@ -48,7 +48,7 @@ public class ProfileDto {
                       String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
                       String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, ObservableList<MapDto> mapList,
                       Boolean takeover, Boolean cheatProtection, Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting,
-                      Integer mapVotingTime, Boolean kickVoting, Integer kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators,
+                      Double mapVotingTime, Boolean kickVoting, Double kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators,
                       Boolean voip, Boolean chatLogging, String chatLoggingFile) {
 
         super();
@@ -196,16 +196,8 @@ public class ProfileDto {
         return mapVoting;
     }
 
-    public Integer getMapVotingTime() {
-        return mapVotingTime;
-    }
-
     public Boolean getKickVoting() {
         return kickVoting;
-    }
-
-    public Integer getKickPercentage() {
-        return kickPercentage;
     }
 
     public Boolean getPublicTextChat() {
@@ -226,6 +218,14 @@ public class ProfileDto {
 
     public String getChatLoggingFile() {
         return chatLoggingFile;
+    }
+
+    public Double getMapVotingTime() {
+        return mapVotingTime;
+    }
+
+    public Double getKickPercentage() {
+        return kickPercentage;
     }
 
     @Override

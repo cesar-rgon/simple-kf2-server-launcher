@@ -103,13 +103,13 @@ public class Profile extends CommonEntity {
     private Boolean mapVoting;
 
     @Column(name="MAP_VOTING_TIME")
-    private Integer mapVotingTime;
+    private Double mapVotingTime;
 
     @Column(name="KICK_VOTING")
     private Boolean kickVoting;
 
     @Column(name="KICK_PERCENTAGE")
-    private Integer kickPercentage;
+    private Double kickPercentage;
 
     @Column(name="PUBLIC_CHAT")
     private Boolean publicTextChat;
@@ -135,8 +135,8 @@ public class Profile extends CommonEntity {
     public Profile(String name, Language language, GameType gametype, Map map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,
                    String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
                    String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, List<Map> mapList, Boolean takeover,
-                   Boolean cheatProtection, Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting, Integer mapVotingTime,
-                   Boolean kickVoting, Integer kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators, Boolean voip,
+                   Boolean cheatProtection, Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting, Double mapVotingTime,
+                   Boolean kickVoting, Double kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators, Boolean voip,
                    Boolean chatLogging, String chatLoggingFile) {
 
         super();
@@ -394,28 +394,12 @@ public class Profile extends CommonEntity {
         this.mapVoting = mapVoting;
     }
 
-    public Integer getMapVotingTime() {
-        return mapVotingTime;
-    }
-
-    public void setMapVotingTime(Integer mapVotingTime) {
-        this.mapVotingTime = mapVotingTime;
-    }
-
     public Boolean getKickVoting() {
         return kickVoting;
     }
 
     public void setKickVoting(Boolean kickVoting) {
         this.kickVoting = kickVoting;
-    }
-
-    public Integer getKickPercentage() {
-        return kickPercentage;
-    }
-
-    public void setKickPercentage(Integer kickPercentage) {
-        this.kickPercentage = kickPercentage;
     }
 
     public Boolean getPublicTextChat() {
@@ -456,5 +440,21 @@ public class Profile extends CommonEntity {
 
     public void setChatLoggingFile(String chatLoggingFile) {
         this.chatLoggingFile = chatLoggingFile;
+    }
+
+    public Double getMapVotingTime() {
+        return mapVotingTime;
+    }
+
+    public void setMapVotingTime(Double mapVotingTime) {
+        this.mapVotingTime = mapVotingTime;
+    }
+
+    public Double getKickPercentage() {
+        return kickPercentage;
+    }
+
+    public void setKickPercentage(Double kickPercentage) {
+        this.kickPercentage = kickPercentage;
     }
 }

@@ -17,6 +17,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebView;
+import javafx.stage.FileChooser;
 import javafx.util.Callback;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -24,8 +25,10 @@ import org.apache.logging.log4j.Logger;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
+import start.MainApplication;
 import utils.Utils;
 
+import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
@@ -376,8 +379,10 @@ public class MainContentController implements Initializable {
         webPort.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                Integer oldValue = null;
                 try {
                     if (!newPropertyValue) {
+                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getWebPort();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetWebPort(profileName, StringUtils.isNotEmpty(webPort.getText()) ? Integer.parseInt(webPort.getText()): null)) {
                             String webPortValue = StringUtils.isNotEmpty(webPort.getText())? webPort.getText(): "";
@@ -392,8 +397,7 @@ public class MainContentController implements Initializable {
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), e);
-                    Integer webPortValue = profileSelect.getValue().getWebPort();
-                    webPort.setText(webPortValue != null? String.valueOf(webPortValue): "");
+                    webPort.setText(oldValue != null? String.valueOf(oldValue): "");
                 }
             }
         });
@@ -401,8 +405,10 @@ public class MainContentController implements Initializable {
         gamePort.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                Integer oldValue = null;
                 try {
                     if (!newPropertyValue) {
+                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getGamePort();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetGamePort(profileName, StringUtils.isNotEmpty(gamePort.getText()) ? Integer.parseInt(gamePort.getText()): null)) {
                             String gamePortValue = StringUtils.isNotEmpty(gamePort.getText())? gamePort.getText(): "";
@@ -417,8 +423,7 @@ public class MainContentController implements Initializable {
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), e);
-                    Integer gamePortValue = profileSelect.getValue().getGamePort();
-                    gamePort.setText(gamePortValue != null? String.valueOf(gamePortValue): "");
+                    gamePort.setText(oldValue != null? String.valueOf(oldValue): "");
                 }
             }
         });
@@ -426,8 +431,10 @@ public class MainContentController implements Initializable {
         queryPort.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                Integer oldValue = null;
                 try {
                     if (!newPropertyValue) {
+                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getQueryPort();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetQueryPort(profileName, StringUtils.isNotEmpty(queryPort.getText()) ? Integer.parseInt(queryPort.getText()): null)) {
                             String queryPortValue = StringUtils.isNotEmpty(queryPort.getText())? queryPort.getText(): "";
@@ -442,8 +449,7 @@ public class MainContentController implements Initializable {
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), e);
-                    Integer queryPortValue = profileSelect.getValue().getQueryPort();
-                    queryPort.setText(queryPortValue != null? String.valueOf(queryPortValue): "");
+                    queryPort.setText(oldValue != null? String.valueOf(oldValue): "");
                 }
             }
         });
@@ -568,10 +574,12 @@ public class MainContentController implements Initializable {
         mapVotingTime.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                Double oldValue = null;
                 try {
                     if (!newPropertyValue) {
+                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getMapVotingTime();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (!facade.updateProfileSetMapVotingTime(profileName, StringUtils.isNotEmpty(mapVotingTime.getText()) ? Integer.parseInt(mapVotingTime.getText()): null)) {
+                        if (!facade.updateProfileSetMapVotingTime(profileName, StringUtils.isNotEmpty(mapVotingTime.getText()) ? Double.parseDouble(mapVotingTime.getText()): null)) {
                             String mapVotingTimeValue = StringUtils.isNotEmpty(mapVotingTime.getText())? mapVotingTime.getText(): "";
                             logger.warn("The map voting time value could not be saved! " + mapVotingTimeValue);
                             String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
@@ -584,8 +592,7 @@ public class MainContentController implements Initializable {
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), e);
-                    Integer mapVotingTimeValue = profileSelect.getValue().getMapVotingTime();
-                    mapVotingTime.setText(mapVotingTimeValue != null? String.valueOf(mapVotingTimeValue): "");
+                    mapVotingTime.setText(oldValue != null? String.valueOf(oldValue): "");
                 }
             }
         });
@@ -593,12 +600,14 @@ public class MainContentController implements Initializable {
         kickPercentage.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                Double oldValue = null;
                 try {
                     if (!newPropertyValue) {
+                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getKickPercentage();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (!facade.updateProfileSetKickPercentage(profileName, StringUtils.isNotEmpty(kickPercentage.getText()) ? Integer.parseInt(kickPercentage.getText()): null)) {
+                        if (!facade.updateProfileSetKickPercentage(profileName, StringUtils.isNotEmpty(kickPercentage.getText()) ? Double.parseDouble(kickPercentage.getText()): null)) {
                             String kickPercentageValue = StringUtils.isNotEmpty(kickPercentage.getText())? kickPercentage.getText(): "";
-                            logger.warn("The map voting time value could not be saved! " + kickPercentageValue);
+                            logger.warn("The kick percentage value could not be saved! " + kickPercentageValue);
                             String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
                                     "prop.message.profileNotUpdated");
                             String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
@@ -609,12 +618,33 @@ public class MainContentController implements Initializable {
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), e);
-                    Integer kickPercentageValue = profileSelect.getValue().getKickPercentage();
-                    kickPercentage.setText(kickPercentageValue != null? String.valueOf(kickPercentageValue): "");
+                    kickPercentage.setText(oldValue != null? String.valueOf(oldValue): "");
                 }
             }
         });
 
+
+        chatLoggingFile.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                try {
+                    if (!newPropertyValue) {
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
+                        if (!facade.updateProfileSetChatLoggingFile(profileName, chatLoggingFile.getText())) {
+                            logger.warn("The chat logging file value could not be saved!: " + chatLoggingFile.getText());
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.profileNotUpdated");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.chatLoggingFileNotSaved");
+                            Utils.warningDialog(headerText, contentText);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    Utils.errorDialog(e.getMessage(), e);
+                }
+            }
+        });
     }
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, ComboBox<?> combo) throws Exception {
@@ -1386,4 +1416,19 @@ public class MainContentController implements Initializable {
         }
     }
 
+    @FXML
+    private void exploreLoggingFileOnAction() {
+        try {
+            FileChooser fileChooser = new FileChooser();
+            String message = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties", "prop.message.chatLoggingFile");
+            fileChooser.setTitle(message + " ...");
+            File selectedFile = fileChooser.showSaveDialog(MainApplication.getPrimaryStage());
+            if (selectedFile != null) {
+                chatLoggingFile.setText(selectedFile.getAbsolutePath());
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
 }

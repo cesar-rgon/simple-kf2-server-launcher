@@ -54,6 +54,9 @@ public interface MainContentFacade {
     boolean updateProfileSetAdminCanPause(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetAnnounceAdminLogin(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetChatLogging(String profileName, boolean isSelected) throws SQLException;
-    boolean updateProfileSetMapVotingTime(String profileName, Integer mapVotingTime) throws SQLException;
-    boolean updateProfileSetKickPercentage(String profileName, Integer kickPercentage) throws SQLException;
+    boolean updateProfileSetMapVotingTime(String profileName, Double mapVotingTime) throws SQLException;
+    boolean updateProfileSetKickPercentage(String profileName, Double kickPercentage) throws Exception;
+    boolean updateProfileSetChatLoggingFile(String profileName, String chatLoggingFile) throws SQLException;
+
+
 }
