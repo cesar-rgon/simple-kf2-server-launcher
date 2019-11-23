@@ -517,9 +517,8 @@
                               <Insets left="10.0" top="10.0" />
                           </GridPane.margin>
                       </Label>
-                      <TextArea fx:id="customParameters" opacity="0.75" prefHeight="100.0" prefWidth="350.0" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="6" GridPane.rowSpan="2" GridPane.valignment="TOP">
-                      </TextArea>
-                      
+                      <TextArea fx:id="customParameters" opacity="0.75" prefHeight="100.0" prefWidth="350.0" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="6" GridPane.rowSpan="2" GridPane.valignment="TOP"/>
+
                     </children>
 
                   </GridPane>
