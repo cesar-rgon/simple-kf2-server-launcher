@@ -87,9 +87,6 @@ public class Profile extends CommonEntity {
     )
     private List<Map> mapList;
 
-    @Column(name="CHEAT_PROTECTION")
-    private Boolean cheatProtection;
-
     @Column(name="TEAM_COLLISION")
     private Boolean teamCollision;
 
@@ -135,7 +132,7 @@ public class Profile extends CommonEntity {
     public Profile(String name, Language language, GameType gametype, Map map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,
                    String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
                    String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, List<Map> mapList, Boolean takeover,
-                   Boolean cheatProtection, Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting, Double mapVotingTime,
+                   Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting, Double mapVotingTime,
                    Boolean kickVoting, Double kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators, Boolean voip,
                    Boolean chatLogging, String chatLoggingFile) {
 
@@ -161,7 +158,6 @@ public class Profile extends CommonEntity {
         this.customParameters = customParameters;
         this.mapList = mapList;
         this.takeover = takeover;
-        this.cheatProtection = cheatProtection;
         this.teamCollision = teamCollision;
         this.adminCanPause = adminCanPause;
         this.announceAdminLogin = announceAdminLogin;
@@ -352,14 +348,6 @@ public class Profile extends CommonEntity {
 
     public void setTakeover(Boolean takeover) {
         this.takeover = takeover;
-    }
-
-    public Boolean getCheatProtection() {
-        return cheatProtection;
-    }
-
-    public void setCheatProtection(Boolean cheatProtection) {
-        this.cheatProtection = cheatProtection;
     }
 
     public Boolean getTeamCollision() {

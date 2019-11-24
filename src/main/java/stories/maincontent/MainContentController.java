@@ -103,10 +103,6 @@ public class MainContentController implements Initializable {
     @FXML private Tab basicParameters;
     @FXML private Tab advancedParameters;
 
-    @FXML private ImageView cheatProtectionImg;
-    @FXML private Label cheatProtectionLabel;
-    @FXML private CheckBox cheatProtection;
-
     @FXML private ImageView teamCollisionImg;
     @FXML private Label teamCollisionLabel;
     @FXML private CheckBox teamCollision;
@@ -153,7 +149,6 @@ public class MainContentController implements Initializable {
 
     @FXML private ImageView chatLoggingFileImg;
     @FXML private Label chatLoggingFileLabel;
-    @FXML private Button exploreLoggingFile;
     @FXML private TextField chatLoggingFile;
 
 
@@ -692,14 +687,6 @@ public class MainContentController implements Initializable {
         textArea.setTooltip(tooltip);
     }
 
-    private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, TextField textField, Button button) throws Exception {
-        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
-        Tooltip.install(img, tooltip);
-        label.setTooltip(tooltip);
-        textField.setTooltip(tooltip);
-        button.setTooltip(tooltip);
-    }
-
     private void loadLanguageTexts(String languageCode) throws Exception {
         String profileLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.profile") + "*";
         profileLabel.setText(profileLabelText);
@@ -787,12 +774,6 @@ public class MainContentController implements Initializable {
         customParametersLabel.setText(customParametersLabelText);
         loadTooltip(languageCode, "prop.tooltip.customParameters", customParametersImg, customParametersLabel, customParameters);
 
-        String cheatProtectionLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.cheatProtection");
-        String cheatProtectionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.cheatProtectionEnable");
-        cheatProtectionLabel.setText(cheatProtectionLabelText);
-        cheatProtection.setText(cheatProtectionText);
-        loadTooltip(languageCode, "prop.tooltip.cheatProtection", cheatProtectionImg, cheatProtectionLabel, cheatProtection);
-
         String teamCollisionLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.teamCollision");
         String teamCollisionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.teamCollisionEnable");
         teamCollisionLabel.setText(teamCollisionLabelText);
@@ -856,10 +837,8 @@ public class MainContentController implements Initializable {
         loadTooltip(languageCode, "prop.tooltip.spectatorsChat", spectatorsChatImg, spectatorsChatLabel, spectatorsChat);
 
         String chatLoggingFileLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.chatLoggingFile");
-        String exploreLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.exploreFolder");
         chatLoggingFileLabel.setText(chatLoggingFileLabelText);
-        exploreLoggingFile.setText(exploreLabelText);
-        loadTooltip(languageCode, "prop.tooltip.chatLoggingFile", chatLoggingFileImg, chatLoggingFileLabel, chatLoggingFile, exploreLoggingFile);
+        loadTooltip(languageCode, "prop.tooltip.chatLoggingFile", chatLoggingFileImg, chatLoggingFileLabel, chatLoggingFile);
     }
 
     private void loadActualProfile(ProfileDto profile) {
@@ -921,7 +900,6 @@ public class MainContentController implements Initializable {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
         }
-        cheatProtection.setSelected(profile.getCheatProtection() != null ? profile.getCheatProtection(): false);
         teamCollision.setSelected(profile.getTeamCollision() != null ? profile.getTeamCollision(): false);
         adminPause.setSelected(profile.getAdminCanPause() != null ? profile.getAdminCanPause(): false);
         adminLogin.setSelected(profile.getAnnounceAdminLogin() != null ? profile.getAnnounceAdminLogin(): false);
@@ -1312,27 +1290,6 @@ public class MainContentController implements Initializable {
     }
 
     @FXML
-    private void cheatProtectionOnAction() {
-        try {
-            if (profileSelect.getValue() != null) {
-                String profileName = profileSelect.getValue().getName();
-                if (!facade.updateProfileSetCheatProtection(profileName, cheatProtection.isSelected())) {
-                    logger.warn("The cheat protection value could not be saved!: " + cheatProtection.isSelected());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.cheatProtectionNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
-            }
-        } catch (Exception e) {
-            String headerText = "The cheat protection value could not be saved!";
-            logger.error(headerText, e);
-            Utils.errorDialog(headerText, e);
-        }
-    }
-
-    @FXML
     private void teamCollisionOnAction() {
         try {
             if (profileSelect.getValue() != null) {
@@ -1416,19 +1373,4 @@ public class MainContentController implements Initializable {
         }
     }
 
-    @FXML
-    private void exploreLoggingFileOnAction() {
-        try {
-            FileChooser fileChooser = new FileChooser();
-            String message = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties", "prop.message.chatLoggingFile");
-            fileChooser.setTitle(message + " ...");
-            File selectedFile = fileChooser.showSaveDialog(MainApplication.getPrimaryStage());
-            if (selectedFile != null) {
-                chatLoggingFile.setText(selectedFile.getAbsolutePath());
-            }
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), e);
-        }
-    }
 }

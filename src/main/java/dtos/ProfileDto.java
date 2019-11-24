@@ -29,7 +29,6 @@ public class ProfileDto {
     private final String customParameters;
     private final ObservableList<MapDto> mapList;
     private final Boolean takeover;
-    private final Boolean cheatProtection;
     private final Boolean teamCollision;
     private final Boolean adminCanPause;
     private final Boolean announceAdminLogin;
@@ -47,7 +46,7 @@ public class ProfileDto {
     public ProfileDto(String name, SelectDto language, GameTypeDto gametype, MapDto map, SelectDto difficulty, SelectDto length, SelectDto maxPlayers,
                       String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
                       String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, ObservableList<MapDto> mapList,
-                      Boolean takeover, Boolean cheatProtection, Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting,
+                      Boolean takeover, Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting,
                       Double mapVotingTime, Boolean kickVoting, Double kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators,
                       Boolean voip, Boolean chatLogging, String chatLoggingFile) {
 
@@ -73,7 +72,6 @@ public class ProfileDto {
         this.customParameters = customParameters;
         this.mapList = mapList;
         this.takeover = takeover;
-        this.cheatProtection = cheatProtection;
         this.teamCollision = teamCollision;
         this.adminCanPause = adminCanPause;
         this.announceAdminLogin = announceAdminLogin;
@@ -174,10 +172,6 @@ public class ProfileDto {
 
     public Boolean getTakeover() {
         return takeover;
-    }
-
-    public Boolean getCheatProtection() {
-        return cheatProtection;
     }
 
     public Boolean getTeamCollision() {

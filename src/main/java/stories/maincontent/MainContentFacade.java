@@ -49,7 +49,6 @@ public interface MainContentFacade {
     boolean updateProfileSetPublicTextChat(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetSpectatorsChat(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetVoip(String profileName, boolean isSelected) throws SQLException;
-    boolean updateProfileSetCheatProtection(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetTeamCollision(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetAdminCanPause(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetAnnounceAdminLogin(String profileName, boolean isSelected) throws SQLException;

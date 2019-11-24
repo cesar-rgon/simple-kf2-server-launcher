@@ -49,7 +49,6 @@ public class ProfileDtoFactory {
                 profile.getCustomParameters(),
                 mapDtoFactory.newDtos(profile.getMapList()),
                 profile.getTakeover(),
-                profile.getCheatProtection(),
                 profile.getTeamCollision(),
                 profile.getAdminCanPause(),
                 profile.getAnnounceAdminLogin(),

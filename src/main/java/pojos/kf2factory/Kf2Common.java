@@ -185,6 +185,42 @@ public abstract class Kf2Common {
 
     protected abstract String runKf2Server(String installationFolder, Profile profile);
 
+    protected void replaceInFileKfWebAdminIni(String installationFolder, Profile profile) {
+        try {
+            File kfWebAdminIni = new File(installationFolder + "/KFGame/Config/" + profile.getName() + "/KFWebAdmin.ini");
+            BufferedReader br = new BufferedReader(new FileReader(kfWebAdminIni));
+            String strTempFile = installationFolder + "/KFGame/Config/" + profile.getName() + "/KFWebAdmin.ini.tmp";
+            File tempFile = new File(strTempFile);
+            PrintWriter pw = new PrintWriter(new FileWriter(strTempFile));
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (StringUtils.isNotBlank(line) && line.contains("bChatLog=")) {
+                    pw.println("bChatLog=" + (profile.getChatLogging() != null ? profile.getChatLogging() : "False"));
+                } else {
+                    if (StringUtils.isBlank(line) || !line.contains("Filename=")) {
+                        pw.println(line);
+                    }
+                    if (StringUtils.isNotBlank(line) && line.contains("[WebAdmin.Chatlog]") &&
+                            profile.getChatLogging() != null && profile.getChatLogging() && profile.getChatLoggingFile() != null) {
+                        pw.println("Filename=" + profile.getChatLoggingFile());
+                    }
+                }
+            }
+
+            br.close();
+            pw.close();
+            kfWebAdminIni.delete();
+            tempFile.renameTo(kfWebAdminIni);
+        } catch (Exception e) {
+            if (!byConsole) {
+                logger.error(e.getMessage(), e);
+                Utils.errorDialog(e.getMessage(), e);
+            } else {
+                System.out.println(e);
+            }
+        }
+    }
+
     protected void replaceInFileKfEngineIni(String installationFolder, Profile profile, String filename) {
         try {
             File kfEngineIni = new File(installationFolder + "/KFGame/Config/" + profile.getName() + "/" + filename);
@@ -392,6 +428,38 @@ public abstract class Kf2Common {
             modifiedLine = "ServerMOTD=" + (profile.getWelcomeMessage() != null ? profile.getWelcomeMessage(): "");
             modifiedLine = modifiedLine.replaceAll("\n","\\\\n");
         }
+        if (line.contains("bDisableMapVote=")) {
+            modifiedLine = "bDisableMapVote=" + (profile.getMapVoting() != null ? !profile.getMapVoting(): "True");
+        }
+        if (line.contains("MapVoteDuration=") && profile.getMapVotingTime() != null) {
+            modifiedLine = "MapVoteDuration=" + profile.getMapVotingTime();
+        }
+        if (line.contains("bDisableKickVote=")) {
+            modifiedLine = "bDisableKickVote=" + (profile.getKickVoting() != null ? !profile.getKickVoting(): "True");
+        }
+        if (line.contains("KickVotePercentage=") && profile.getKickPercentage() != null) {
+            modifiedLine = "KickVotePercentage=" + profile.getKickPercentage();
+        }
+        if (line.contains("bDisablePublicTextChat=")) {
+            modifiedLine = "bDisablePublicTextChat=" + (profile.getPublicTextChat() != null ? !profile.getPublicTextChat(): "True");
+        }
+        if (line.contains("bPartitionSpectators=")) {
+            modifiedLine = "bPartitionSpectators=" + (profile.getSpectatorsOnlyChatToOtherSpectators() != null ? profile.getSpectatorsOnlyChatToOtherSpectators(): "False");
+        }
+        if (line.contains("bDisableVOIP=")) {
+            modifiedLine = "bDisableVOIP=" + (profile.getVoip() != null ? !profile.getVoip(): "True");
+        }
+        if (line.contains("bDisableTeamCollision=")) {
+            modifiedLine = "bDisableTeamCollision=" + (profile.getTeamCollision() != null ? !profile.getTeamCollision(): "True");
+        }
+        if (line.contains("bAdminCanPause=")) {
+            modifiedLine = "bAdminCanPause=" + (profile.getAdminCanPause() != null ? profile.getAdminCanPause(): "False");
+        }
+        if (line.contains("bSilentAdminLogin=")) {
+            modifiedLine = "bSilentAdminLogin=" + (profile.getAnnounceAdminLogin() != null ? !profile.getAnnounceAdminLogin(): "True");
+        }
+
+
         return modifiedLine;
     }
 

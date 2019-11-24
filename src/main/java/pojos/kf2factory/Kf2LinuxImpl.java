@@ -129,6 +129,7 @@ public class Kf2LinuxImpl extends Kf2Common {
             replaceInFileKfEngineIni(installationFolder, profile, "LinuxServer-KFEngine.ini");
             replaceInFileKfWebIni(installationFolder, profile, StandardCharsets.UTF_8);
             replaceInFileKfGameIni(installationFolder, profile, "LinuxServer-KFGame.ini");
+            replaceInFileKfWebAdminIni(installationFolder, profile);
 
             Process proccess = null;
             if (!byConsole) {

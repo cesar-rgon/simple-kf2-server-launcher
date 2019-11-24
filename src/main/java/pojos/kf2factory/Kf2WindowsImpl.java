@@ -129,6 +129,7 @@ public class Kf2WindowsImpl extends Kf2Common {
             replaceInFileKfEngineIni(installationFolder, profile, "PCServer-KFEngine.ini");
             replaceInFileKfWebIni(installationFolder, profile, StandardCharsets.ISO_8859_1);
             replaceInFileKfGameIni(installationFolder, profile, "PCServer-KFGame.ini");
+            replaceInFileKfWebAdminIni(installationFolder, profile);
 
             Process process = Runtime.getRuntime().exec(command.toString(),null, new File(installationFolder));
             Session.getInstance().getProcessList().add(process);

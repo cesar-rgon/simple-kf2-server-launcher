@@ -453,17 +453,6 @@ public class MainContentFacadeImpl implements MainContentFacade {
     }
 
     @Override
-    public boolean updateProfileSetCheatProtection(String profileName, boolean isSelected) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
-        if (profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            profile.setCheatProtection(isSelected);
-            return ProfileDao.getInstance().update(profile);
-        }
-        return false;
-    }
-
-    @Override
     public boolean updateProfileSetTeamCollision(String profileName, boolean isSelected) throws SQLException {
         Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
         if (profileOpt.isPresent()) {
