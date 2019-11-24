@@ -41,6 +41,16 @@ public class ProfileDto {
     private final Boolean voip;
     private final Boolean chatLogging;
     private final String chatLoggingFile;
+    private final Boolean chatLoggingFileTimestamp;
+    private final Double timeBetweenKicks;
+    private final Double maxIdleTime;
+    private final Boolean deadPlayersCanTalk;
+    private final Integer readyUpDelay;
+    private final Integer gameStartDelay;
+    private final Integer maxSpectators;
+    private final Boolean mapObjetives;
+    private final Boolean pickupItems;
+    private final Double friendlyFirePercentage;
 
 
     public ProfileDto(String name, SelectDto language, GameTypeDto gametype, MapDto map, SelectDto difficulty, SelectDto length, SelectDto maxPlayers,
@@ -48,7 +58,8 @@ public class ProfileDto {
                       String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, ObservableList<MapDto> mapList,
                       Boolean takeover, Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting,
                       Double mapVotingTime, Boolean kickVoting, Double kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators,
-                      Boolean voip, Boolean chatLogging, String chatLoggingFile) {
+                      Boolean voip, Boolean chatLogging, String chatLoggingFile, Boolean chatLoggingFileTimestamp, Double timeBetweenKicks, Double maxIdleTime, Boolean deadPlayersCanTalk,
+                      Integer readyUpDelay, Integer gameStartDelay, Integer maxSpectators, Boolean mapObjetives, Boolean pickupItems, Double friendlyFirePercentage) {
 
         super();
         this.name = new SimpleStringProperty(name);
@@ -84,6 +95,16 @@ public class ProfileDto {
         this.voip = voip;
         this.chatLogging = chatLogging;
         this.chatLoggingFile = chatLoggingFile;
+        this.chatLoggingFileTimestamp = chatLoggingFileTimestamp;
+        this.timeBetweenKicks = timeBetweenKicks;
+        this.maxIdleTime = maxIdleTime;
+        this.deadPlayersCanTalk = deadPlayersCanTalk;
+        this.readyUpDelay = readyUpDelay;
+        this.gameStartDelay = gameStartDelay;
+        this.maxSpectators = maxSpectators;
+        this.mapObjetives = mapObjetives;
+        this.pickupItems = pickupItems;
+        this.friendlyFirePercentage = friendlyFirePercentage;
     }
 
     public StringProperty getNameProperty() {
@@ -220,6 +241,46 @@ public class ProfileDto {
 
     public Double getKickPercentage() {
         return kickPercentage;
+    }
+
+    public Boolean getChatLoggingFileTimestamp() {
+        return chatLoggingFileTimestamp;
+    }
+
+    public Double getTimeBetweenKicks() {
+        return timeBetweenKicks;
+    }
+
+    public Double getMaxIdleTime() {
+        return maxIdleTime;
+    }
+
+    public Boolean getDeadPlayersCanTalk() {
+        return deadPlayersCanTalk;
+    }
+
+    public Integer getMaxSpectators() {
+        return maxSpectators;
+    }
+
+    public Boolean getMapObjetives() {
+        return mapObjetives;
+    }
+
+    public Boolean getPickupItems() {
+        return pickupItems;
+    }
+
+    public Double getFriendlyFirePercentage() {
+        return friendlyFirePercentage;
+    }
+
+    public Integer getReadyUpDelay() {
+        return readyUpDelay;
+    }
+
+    public Integer getGameStartDelay() {
+        return gameStartDelay;
     }
 
     @Override

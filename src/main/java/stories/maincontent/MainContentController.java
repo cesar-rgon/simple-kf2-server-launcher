@@ -17,7 +17,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebView;
-import javafx.stage.FileChooser;
 import javafx.util.Callback;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -25,10 +24,8 @@ import org.apache.logging.log4j.Logger;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
-import start.MainApplication;
 import utils.Utils;
 
-import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
@@ -150,6 +147,43 @@ public class MainContentController implements Initializable {
     @FXML private ImageView chatLoggingFileImg;
     @FXML private Label chatLoggingFileLabel;
     @FXML private TextField chatLoggingFile;
+    @FXML private CheckBox chatLoggingFileTimestamp;
+
+    @FXML private ImageView timeBetweenKicksImg;
+    @FXML private Label timeBetweenKicksLabel;
+    @FXML private TextField timeBetweenKicks;
+
+    @FXML private ImageView maxIdleTimeImg;
+    @FXML private Label maxIdleTimeLabel;
+    @FXML private TextField maxIdleTime;
+
+    @FXML private ImageView deadPlayersCanTalkImg;
+    @FXML private Label deadPlayersCanTalkLabel;
+    @FXML private CheckBox deadPlayersCanTalk;
+
+    @FXML private ImageView readyUpDelayImg;
+    @FXML private Label readyUpDelayLabel;
+    @FXML private TextField readyUpDelay;
+
+    @FXML private ImageView gameStartDelayImg;
+    @FXML private Label gameStartDelayLabel;
+    @FXML private TextField gameStartDelay;
+
+    @FXML private ImageView maxSpectatorsImg;
+    @FXML private Label maxSpectatorsLabel;
+    @FXML private TextField maxSpectators;
+
+    @FXML private ImageView mapObjetivesImg;
+    @FXML private Label mapObjetivesLabel;
+    @FXML private CheckBox mapObjetives;
+
+    @FXML private ImageView pickupItemsImg;
+    @FXML private Label pickupItemsLabel;
+    @FXML private CheckBox pickupItems;
+
+    @FXML private ImageView friendlyFirePercentageImg;
+    @FXML private Label friendlyFirePercentageLabel;
+    @FXML private TextField friendlyFirePercentage;
 
 
     public MainContentController() {
@@ -592,6 +626,32 @@ public class MainContentController implements Initializable {
             }
         });
 
+        timeBetweenKicks.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                Double oldValue = null;
+                try {
+                    if (!newPropertyValue) {
+                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getTimeBetweenKicks();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
+                        if (!facade.updateProfileSetTimeBetweenKicks(profileName, StringUtils.isNotEmpty(timeBetweenKicks.getText()) ? Double.parseDouble(timeBetweenKicks.getText()): null)) {
+                            String timeBetweenKicksValue = StringUtils.isNotEmpty(timeBetweenKicks.getText())? timeBetweenKicks.getText(): "";
+                            logger.warn("The time between kick votes value could not be saved! " + timeBetweenKicksValue);
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.profileNotUpdated");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.timeBetweenKicksNotSaved");
+                            Utils.warningDialog(headerText, contentText);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    Utils.errorDialog(e.getMessage(), e);
+                    timeBetweenKicks.setText(oldValue != null? String.valueOf(oldValue): "");
+                }
+            }
+        });
+
         kickPercentage.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
@@ -619,6 +679,58 @@ public class MainContentController implements Initializable {
         });
 
 
+        maxIdleTime.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                Double oldValue = null;
+                try {
+                    if (!newPropertyValue) {
+                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getMaxIdleTime();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
+                        if (!facade.updateProfileSetMaxIdleTime(profileName, StringUtils.isNotEmpty(maxIdleTime.getText()) ? Double.parseDouble(maxIdleTime.getText()): null)) {
+                            String maxIdleTimeValue = StringUtils.isNotEmpty(maxIdleTime.getText())? maxIdleTime.getText(): "";
+                            logger.warn("The maximum idle time value could not be saved! " + maxIdleTimeValue);
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.profileNotUpdated");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.maxIdleTimeNotSaved");
+                            Utils.warningDialog(headerText, contentText);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    Utils.errorDialog(e.getMessage(), e);
+                    maxIdleTime.setText(oldValue != null? String.valueOf(oldValue): "");
+                }
+            }
+        });
+
+        readyUpDelay.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                Integer oldValue = null;
+                try {
+                    if (!newPropertyValue) {
+                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getReadyUpDelay();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
+                        if (!facade.updateProfileSetReadyUpDelay(profileName, StringUtils.isNotEmpty(readyUpDelay.getText()) ? Integer.parseInt(readyUpDelay.getText()): null)) {
+                            String readyUpDelayValue = StringUtils.isNotEmpty(readyUpDelay.getText())? readyUpDelay.getText(): "";
+                            logger.warn("The ready up delay value could not be saved! " + readyUpDelayValue);
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.profileNotUpdated");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.readyUpDelayNotSaved");
+                            Utils.warningDialog(headerText, contentText);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    Utils.errorDialog(e.getMessage(), e);
+                    readyUpDelay.setText(oldValue != null? String.valueOf(oldValue): "");
+                }
+            }
+        });
+
         chatLoggingFile.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
@@ -637,6 +749,84 @@ public class MainContentController implements Initializable {
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), e);
+                }
+            }
+        });
+
+        gameStartDelay.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                Integer oldValue = null;
+                try {
+                    if (!newPropertyValue) {
+                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getGameStartDelay();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
+                        if (!facade.updateProfileSetGameStartDelay(profileName, StringUtils.isNotEmpty(gameStartDelay.getText()) ? Integer.parseInt(gameStartDelay.getText()): null)) {
+                            String gameStartDelayValue = StringUtils.isNotEmpty(gameStartDelay.getText())? gameStartDelay.getText(): "";
+                            logger.warn("The game start delay value could not be saved! " + gameStartDelayValue);
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.profileNotUpdated");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.gameStartDelayNotSaved");
+                            Utils.warningDialog(headerText, contentText);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    Utils.errorDialog(e.getMessage(), e);
+                    gameStartDelay.setText(oldValue != null? String.valueOf(oldValue): "");
+                }
+            }
+        });
+
+        maxSpectators.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                Integer oldValue = null;
+                try {
+                    if (!newPropertyValue) {
+                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getMaxSpectators();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
+                        if (!facade.updateProfileSetMaxSpectators(profileName, StringUtils.isNotEmpty(maxSpectators.getText()) ? Integer.parseInt(maxSpectators.getText()): null)) {
+                            String maxSpectatorsValue = StringUtils.isNotEmpty(maxSpectators.getText())? maxSpectators.getText(): "";
+                            logger.warn("The maximum spectators value could not be saved! " + maxSpectatorsValue);
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.profileNotUpdated");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.maxSpectatorsNotSaved");
+                            Utils.warningDialog(headerText, contentText);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    Utils.errorDialog(e.getMessage(), e);
+                    maxSpectators.setText(oldValue != null? String.valueOf(oldValue): "");
+                }
+            }
+        });
+
+        friendlyFirePercentage.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                Double oldValue = null;
+                try {
+                    if (!newPropertyValue) {
+                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getFriendlyFirePercentage();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
+                        if (!facade.updateProfileSetFriendlyFirePercentage(profileName, StringUtils.isNotEmpty(friendlyFirePercentage.getText()) ? Double.parseDouble(friendlyFirePercentage.getText()): null)) {
+                            String friendlyFirePercentageValue = StringUtils.isNotEmpty(friendlyFirePercentage.getText())? friendlyFirePercentage.getText(): "";
+                            logger.warn("The friendly fire percentage value could not be saved! " + friendlyFirePercentageValue);
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.profileNotUpdated");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                                    "prop.message.friendlyFirePercentageNotSaved");
+                            Utils.warningDialog(headerText, contentText);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    Utils.errorDialog(e.getMessage(), e);
+                    friendlyFirePercentage.setText(oldValue != null? String.valueOf(oldValue): "");
                 }
             }
         });
@@ -837,8 +1027,53 @@ public class MainContentController implements Initializable {
         loadTooltip(languageCode, "prop.tooltip.spectatorsChat", spectatorsChatImg, spectatorsChatLabel, spectatorsChat);
 
         String chatLoggingFileLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.chatLoggingFile");
+        String chatLoggingFileTimestampText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.chatLoggingFileTimestamp");
         chatLoggingFileLabel.setText(chatLoggingFileLabelText);
-        loadTooltip(languageCode, "prop.tooltip.chatLoggingFile", chatLoggingFileImg, chatLoggingFileLabel, chatLoggingFile);
+        chatLoggingFileTimestamp.setText(chatLoggingFileTimestampText);
+        loadTooltip(languageCode, "prop.tooltip.chatLoggingFile", chatLoggingFileImg, chatLoggingFileLabel, chatLoggingFileTimestamp, chatLoggingFile);
+
+        String timeBetweenKicksLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.timeBetweenKicks");
+        timeBetweenKicksLabel.setText(timeBetweenKicksLabelText);
+        loadTooltip(languageCode, "prop.tooltip.timeBetweenKicks", timeBetweenKicksImg, timeBetweenKicksLabel, timeBetweenKicks);
+
+        String maxIdleTimeLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.maxIdleTime");
+        maxIdleTimeLabel.setText(maxIdleTimeLabelText);
+        loadTooltip(languageCode, "prop.tooltip.maxIdleTime", maxIdleTimeImg, maxIdleTimeLabel, maxIdleTime);
+
+        String deadPlayersCanTalkLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.deadPlayersCanTalk");
+        String deadPlayersCanTalkText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.deadPlayersCanTalkEnable");
+        deadPlayersCanTalkLabel.setText(deadPlayersCanTalkLabelText);
+        deadPlayersCanTalk.setText(deadPlayersCanTalkText);
+        loadTooltip(languageCode, "prop.tooltip.deadPlayersCanTalk", deadPlayersCanTalkImg, deadPlayersCanTalkLabel, deadPlayersCanTalk);
+
+        String readyUpDelayLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.readyUpDelay");
+        readyUpDelayLabel.setText(readyUpDelayLabelText);
+        loadTooltip(languageCode, "prop.tooltip.readyUpDelay", readyUpDelayImg, readyUpDelayLabel, readyUpDelay);
+
+        String gameStartDelayLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.gameStartDelay");
+        gameStartDelayLabel.setText(gameStartDelayLabelText);
+        loadTooltip(languageCode, "prop.tooltip.gameStartDelay", gameStartDelayImg, gameStartDelayLabel, gameStartDelay);
+
+        String maxSpectatorsLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.maxSpectators");
+        maxSpectatorsLabel.setText(maxSpectatorsLabelText);
+        loadTooltip(languageCode, "prop.tooltip.maxSpectators", maxSpectatorsImg, maxSpectatorsLabel, maxSpectators);
+
+        String mapObjetivesLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.mapObjetives");
+        String mapObjetivesText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.mapObjetivesEnable");
+        mapObjetivesLabel.setText(mapObjetivesLabelText);
+        mapObjetives.setText(mapObjetivesText);
+        loadTooltip(languageCode, "prop.tooltip.mapObjetives", mapObjetivesImg, mapObjetivesLabel, mapObjetives);
+
+        String pickupItemsLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.pickupItems");
+        String pickupItemsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.pickupItemsEnable");
+        pickupItemsLabel.setText(pickupItemsLabelText);
+        pickupItems.setText(pickupItemsText);
+        loadTooltip(languageCode, "prop.tooltip.pickupItems", pickupItemsImg, pickupItemsLabel, pickupItems);
+
+        String friendlyFirePercentageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.friendlyFirePercentage");
+        friendlyFirePercentageLabel.setText(friendlyFirePercentageLabelText);
+        loadTooltip(languageCode, "prop.tooltip.friendlyFirePercentage", friendlyFirePercentageImg, friendlyFirePercentageLabel, friendlyFirePercentage);
+
     }
 
     private void loadActualProfile(ProfileDto profile) {
@@ -912,6 +1147,16 @@ public class MainContentController implements Initializable {
         mapVotingTime.setText(profile.getMapVotingTime() != null? String.valueOf(profile.getMapVotingTime()): "");
         kickPercentage.setText(profile.getKickPercentage() != null? String.valueOf(profile.getKickPercentage()): "");
         chatLoggingFile.setText(profile.getChatLoggingFile());
+        chatLoggingFileTimestamp.setSelected(profile.getChatLoggingFileTimestamp() != null ? profile.getChatLoggingFileTimestamp(): false);
+        timeBetweenKicks.setText(profile.getTimeBetweenKicks() != null? String.valueOf(profile.getTimeBetweenKicks()): "");
+        maxIdleTime.setText(profile.getMaxIdleTime() != null? String.valueOf(profile.getMaxIdleTime()): "");
+        deadPlayersCanTalk.setSelected(profile.getDeadPlayersCanTalk() != null ? profile.getDeadPlayersCanTalk(): false);
+        readyUpDelay.setText(profile.getReadyUpDelay() != null? String.valueOf(profile.getReadyUpDelay()): "");
+        gameStartDelay.setText(profile.getGameStartDelay() != null? String.valueOf(profile.getGameStartDelay()): "");
+        maxSpectators.setText(profile.getMaxSpectators() != null? String.valueOf(profile.getMaxSpectators()): "");
+        mapObjetives.setSelected(profile.getMapObjetives() != null ? profile.getMapObjetives(): false);
+        pickupItems.setSelected(profile.getPickupItems() != null ? profile.getPickupItems(): false);
+        friendlyFirePercentage.setText(profile.getFriendlyFirePercentage() != null? String.valueOf(profile.getFriendlyFirePercentage()): "");
     }
 
 
@@ -1373,4 +1618,87 @@ public class MainContentController implements Initializable {
         }
     }
 
+    @FXML
+    private void chatLoggingFileTimestampOnAction() {
+        try {
+            if (profileSelect.getValue() != null) {
+                String profileName = profileSelect.getValue().getName();
+                if (!facade.updateProfileSetChatLoggingFileTimestamp(profileName, chatLoggingFileTimestamp.isSelected())) {
+                    logger.warn("The chat logging file timestamp value could not be saved!: " + adminLogin.isSelected());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.profileNotUpdated");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.chatLoggingFileTimestampNotSaved");
+                    Utils.warningDialog(headerText, contentText);
+                }
+            }
+        } catch (Exception e) {
+            String headerText = "The chat logging file timestamp value could not be saved!";
+            logger.error(headerText, e);
+            Utils.errorDialog(headerText, e);
+        }
+    }
+
+    @FXML
+    private void deadPlayersCanTalkOnAction() {
+        try {
+            if (profileSelect.getValue() != null) {
+                String profileName = profileSelect.getValue().getName();
+                if (!facade.updateProfileSetDeadPlayersCanTalk(profileName, deadPlayersCanTalk.isSelected())) {
+                    logger.warn("The dead players can talk value could not be saved!: " + deadPlayersCanTalk.isSelected());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.profileNotUpdated");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.deadPlayersCanTalkNotSaved");
+                    Utils.warningDialog(headerText, contentText);
+                }
+            }
+        } catch (Exception e) {
+            String headerText = "The dead players can talk value could not be saved!";
+            logger.error(headerText, e);
+            Utils.errorDialog(headerText, e);
+        }
+    }
+
+    @FXML
+    private void mapObjetivesOnAction() {
+        try {
+            if (profileSelect.getValue() != null) {
+                String profileName = profileSelect.getValue().getName();
+                if (!facade.updateProfileSetMapObjetives(profileName, mapObjetives.isSelected())) {
+                    logger.warn("The map objetives value could not be saved!: " + mapObjetives.isSelected());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.profileNotUpdated");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.mapObjetivesNotSaved");
+                    Utils.warningDialog(headerText, contentText);
+                }
+            }
+        } catch (Exception e) {
+            String headerText = "The map objetives value could not be saved!";
+            logger.error(headerText, e);
+            Utils.errorDialog(headerText, e);
+        }
+    }
+
+    @FXML
+    private void pickupItemsOnAction() {
+        try {
+            if (profileSelect.getValue() != null) {
+                String profileName = profileSelect.getValue().getName();
+                if (!facade.updateProfileSetPickupItems(profileName, pickupItems.isSelected())) {
+                    logger.warn("The pick up items value could not be saved!: " + pickupItems.isSelected());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.profileNotUpdated");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.pickupItemsNotSaved");
+                    Utils.warningDialog(headerText, contentText);
+                }
+            }
+        } catch (Exception e) {
+            String headerText = "The pick up items value could not be saved!";
+            logger.error(headerText, e);
+            Utils.errorDialog(headerText, e);
+        }
+    }
 }

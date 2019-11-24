@@ -497,7 +497,11 @@ public class MainContentFacadeImpl implements MainContentFacade {
     }
 
     @Override
-    public boolean updateProfileSetMapVotingTime(String profileName, Double mapVotingTime) throws SQLException {
+    public boolean updateProfileSetMapVotingTime(String profileName, Double mapVotingTime) throws Exception {
+        if (mapVotingTime < 0) {
+            throw new Exception("Error: Invalid value. Minimun: 0");
+        }
+
         Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -528,6 +532,140 @@ public class MainContentFacadeImpl implements MainContentFacade {
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setChatLoggingFile(chatLoggingFile);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetChatLoggingFileTimestamp(String profileName, boolean isSelected) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setChatLoggingFileTimestamp(isSelected);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetTimeBetweenKicks(String profileName, Double timeBetweenKicks) throws Exception {
+        if (timeBetweenKicks < 0) {
+            throw new Exception("Error: Invalid value. Minimun: 0");
+        }
+
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setTimeBetweenKicks(timeBetweenKicks);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetMaxIdleTime(String profileName, Double maxIdleTime) throws Exception {
+        if ((maxIdleTime < 0) || (maxIdleTime > 300)) {
+            throw new Exception("Error: Invalid value. Minimun: 0, maximum: 300.");
+        }
+
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setMaxIdleTime(maxIdleTime);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetDeadPlayersCanTalk(String profileName, boolean isSelected) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setDeadPlayersCanTalk(isSelected);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetReadyUpDelay(String profileName, Integer readyUpDelay) throws Exception {
+        if (readyUpDelay < 0) {
+            throw new Exception("Error: Invalid value. Minimun: 0.");
+        }
+
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setReadyUpDelay(readyUpDelay);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetGameStartDelay(String profileName, Integer gameStartDelay) throws Exception {
+        if (gameStartDelay < 0) {
+            throw new Exception("Error: Invalid value. Minimun: 0.");
+        }
+
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setGameStartDelay(gameStartDelay);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetMaxSpectators(String profileName, Integer maxSpectators) throws Exception {
+        if (maxSpectators < 0) {
+            throw new Exception("Error: Invalid value. Minimun: 0.");
+        }
+
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setMaxSpectators(maxSpectators);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetMapObjetives(String profileName, boolean isSelected) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setMapObjetives(isSelected);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetPickupItems(String profileName, boolean isSelected) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setPickupItems(isSelected);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean updateProfileSetFriendlyFirePercentage(String profileName, Double friendlyFirePercentage) throws Exception {
+        if ((friendlyFirePercentage < 0) || (friendlyFirePercentage > 1)) {
+            throw new Exception("Error: Invalid value. Minimun: 0, maximum: 1.");
+        }
+
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setFriendlyFirePercentage(friendlyFirePercentage);
             return ProfileDao.getInstance().update(profile);
         }
         return false;

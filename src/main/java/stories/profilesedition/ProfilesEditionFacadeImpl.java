@@ -87,14 +87,24 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                 false,
                 true,
                 true,
-                null,
+                60.0,
                 true,
-                null,
-                true,
-                false,
+                0.66,
                 true,
                 false,
-                null
+                true,
+                false,
+                null,
+                true,
+                10.0,
+                0.0,
+                true,
+                90,
+                4,
+                2,
+                true,
+                true,
+                0.0
         );
 
         ProfileDao.getInstance().insert(newProfile);
@@ -187,7 +197,17 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                     profileToBeClonedOpt.get().getSpectatorsOnlyChatToOtherSpectators(),
                     profileToBeClonedOpt.get().getVoip(),
                     profileToBeClonedOpt.get().getChatLogging(),
-                    profileToBeClonedOpt.get().getChatLoggingFile()
+                    profileToBeClonedOpt.get().getChatLoggingFile(),
+                    profileToBeClonedOpt.get().getChatLoggingFileTimestamp(),
+                    profileToBeClonedOpt.get().getTimeBetweenKicks(),
+                    profileToBeClonedOpt.get().getMaxIdleTime(),
+                    profileToBeClonedOpt.get().getDeadPlayersCanTalk(),
+                    profileToBeClonedOpt.get().getReadyUpDelay(),
+                    profileToBeClonedOpt.get().getGameStartDelay(),
+                    profileToBeClonedOpt.get().getMaxSpectators(),
+                    profileToBeClonedOpt.get().getMapObjetives(),
+                    profileToBeClonedOpt.get().getPickupItems(),
+                    profileToBeClonedOpt.get().getFriendlyFirePercentage()
             );
             ProfileDao.getInstance().insert(newProfile);
             return profileDtoFactory.newDto(newProfile);
@@ -539,6 +559,16 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                     properties.getProperty("exported.profile" + profileIndex + ".customParameters"),
                     new ArrayList<Map>(),
                     Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".takeover")),
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
+                    null,
                     null,
                     null,
                     null,

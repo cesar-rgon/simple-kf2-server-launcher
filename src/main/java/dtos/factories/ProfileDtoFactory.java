@@ -60,7 +60,17 @@ public class ProfileDtoFactory {
                 profile.getSpectatorsOnlyChatToOtherSpectators(),
                 profile.getVoip(),
                 profile.getChatLogging(),
-                profile.getChatLoggingFile()
+                profile.getChatLoggingFile(),
+                profile.getChatLoggingFileTimestamp(),
+                profile.getTimeBetweenKicks(),
+                profile.getMaxIdleTime(),
+                profile.getDeadPlayersCanTalk(),
+                profile.getReadyUpDelay(),
+                profile.getGameStartDelay(),
+                profile.getMaxSpectators(),
+                profile.getMapObjetives(),
+                profile.getPickupItems(),
+                profile.getFriendlyFirePercentage()
         );
     }
 

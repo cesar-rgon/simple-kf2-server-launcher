@@ -196,12 +196,14 @@ public abstract class Kf2Common {
             while ((line = br.readLine()) != null) {
                 if (StringUtils.isNotBlank(line) && line.contains("bChatLog=")) {
                     pw.println("bChatLog=" + (profile.getChatLogging() != null ? profile.getChatLogging() : "False"));
+                } else if (StringUtils.isNotBlank(line) && line.contains("bIncludeTimeStamp=")) {
+                    pw.println("bIncludeTimeStamp=" + (profile.getChatLoggingFileTimestamp()!= null ? profile.getChatLoggingFileTimestamp() : "False"));
                 } else {
                     if (StringUtils.isBlank(line) || !line.contains("Filename=")) {
                         pw.println(line);
                     }
                     if (StringUtils.isNotBlank(line) && line.contains("[WebAdmin.Chatlog]") &&
-                            profile.getChatLogging() != null && profile.getChatLogging() && profile.getChatLoggingFile() != null) {
+                            profile.getChatLogging() != null && profile.getChatLogging() && StringUtils.isNotBlank(profile.getChatLoggingFile())) {
                         pw.println("Filename=" + profile.getChatLoggingFile());
                     }
                 }
@@ -458,8 +460,33 @@ public abstract class Kf2Common {
         if (line.contains("bSilentAdminLogin=")) {
             modifiedLine = "bSilentAdminLogin=" + (profile.getAnnounceAdminLogin() != null ? !profile.getAnnounceAdminLogin(): "True");
         }
-
-
+        if (line.contains("TimeBetweenFailedVotes=") && profile.getTimeBetweenKicks() != null) {
+            modifiedLine = "TimeBetweenFailedVotes=" + profile.getTimeBetweenKicks();
+        }
+        if (line.contains("MaxIdleTime=") && profile.getMaxIdleTime() != null) {
+            modifiedLine = "MaxIdleTime=" + profile.getMaxIdleTime();
+        }
+        if (line.contains("bEnableDeadToVOIP=")) {
+            modifiedLine = "bEnableDeadToVOIP=" + (profile.getDeadPlayersCanTalk() != null ? profile.getDeadPlayersCanTalk(): "False");
+        }
+        if (line.contains("ReadyUpDelay=") && profile.getReadyUpDelay() != null) {
+            modifiedLine = "ReadyUpDelay=" + profile.getReadyUpDelay();
+        }
+        if (line.contains("GameStartDelay=") && profile.getGameStartDelay() != null) {
+            modifiedLine = "GameStartDelay=" + profile.getGameStartDelay();
+        }
+        if (line.contains("MaxSpectators=") && profile.getMaxSpectators() != null) {
+            modifiedLine = "MaxSpectators=" + profile.getMaxSpectators();
+        }
+        if (line.contains("bEnableMapObjectives=")) {
+            modifiedLine = "bEnableMapObjectives=" + (profile.getMapObjetives() != null ? profile.getMapObjetives(): "False");
+        }
+        if (line.contains("bDisablePickups=")) {
+            modifiedLine = "bDisablePickups=" + (profile.getPickupItems() != null ? !profile.getPickupItems(): "True");
+        }
+        if (line.contains("FriendlyFireScale=") && profile.getFriendlyFirePercentage() != null) {
+            modifiedLine = "FriendlyFireScale=" + profile.getFriendlyFirePercentage();
+        }
         return modifiedLine;
     }
 

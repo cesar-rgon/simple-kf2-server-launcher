@@ -123,6 +123,36 @@ public class Profile extends CommonEntity {
     @Column(name="CHAT_LOGGING_FILE", length = 255)
     private String chatLoggingFile;
 
+    @Column(name="CHAT_LOGGING_FILE_TIMESTAMP")
+    private Boolean chatLoggingFileTimestamp;
+
+    @Column(name="TIME_BETWEEN_KICK_VOTES")
+    private Double timeBetweenKicks;
+
+    @Column(name="MAX_IDLE_TIME")
+    private Double maxIdleTime;
+
+    @Column(name="DEAD_PLAYERS_CAN_TALK")
+    private Boolean deadPlayersCanTalk;
+
+    @Column(name="READY_UP_DELAY")
+    private Integer readyUpDelay;
+
+    @Column(name="GAME_START_DELAY")
+    private Integer gameStartDelay;
+
+    @Column(name="MAX_SPECTATORS")
+    private Integer maxSpectators;
+
+    @Column(name="MAP_OBJETIVES")
+    private Boolean mapObjetives;
+
+    @Column(name="PICK_UP_ITEMS")
+    private Boolean pickupItems;
+
+    @Column(name="FRIENDLY_FIRE_PERCENTAGE")
+    private Double friendlyFirePercentage;
+
 
     public Profile() {
         super();
@@ -134,7 +164,8 @@ public class Profile extends CommonEntity {
                    String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, List<Map> mapList, Boolean takeover,
                    Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting, Double mapVotingTime,
                    Boolean kickVoting, Double kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators, Boolean voip,
-                   Boolean chatLogging, String chatLoggingFile) {
+                   Boolean chatLogging, String chatLoggingFile, Boolean chatLoggingFileTimestamp, Double timeBetweenKicks, Double maxIdleTime, Boolean deadPlayersCanTalk,
+                   Integer readyUpDelay, Integer gameStartDelay, Integer maxSpectators, Boolean mapObjetives, Boolean pickupItems, Double friendlyFirePercentage) {
 
         super();
         this.name = name;
@@ -170,6 +201,16 @@ public class Profile extends CommonEntity {
         this.voip = voip;
         this.chatLogging = chatLogging;
         this.chatLoggingFile = chatLoggingFile;
+        this.chatLoggingFileTimestamp = chatLoggingFileTimestamp;
+        this.timeBetweenKicks = timeBetweenKicks;
+        this.maxIdleTime = maxIdleTime;
+        this.deadPlayersCanTalk = deadPlayersCanTalk;
+        this.readyUpDelay = readyUpDelay;
+        this.gameStartDelay = gameStartDelay;
+        this.maxSpectators = maxSpectators;
+        this.mapObjetives = mapObjetives;
+        this.pickupItems = pickupItems;
+        this.friendlyFirePercentage = friendlyFirePercentage;
     }
 
     @Override
@@ -444,5 +485,85 @@ public class Profile extends CommonEntity {
 
     public void setKickPercentage(Double kickPercentage) {
         this.kickPercentage = kickPercentage;
+    }
+
+    public Boolean getChatLoggingFileTimestamp() {
+        return chatLoggingFileTimestamp;
+    }
+
+    public void setChatLoggingFileTimestamp(Boolean chatLoggingFileTimestamp) {
+        this.chatLoggingFileTimestamp = chatLoggingFileTimestamp;
+    }
+
+    public Double getTimeBetweenKicks() {
+        return timeBetweenKicks;
+    }
+
+    public void setTimeBetweenKicks(Double timeBetweenKicks) {
+        this.timeBetweenKicks = timeBetweenKicks;
+    }
+
+    public Double getMaxIdleTime() {
+        return maxIdleTime;
+    }
+
+    public void setMaxIdleTime(Double maxIdleTime) {
+        this.maxIdleTime = maxIdleTime;
+    }
+
+    public Boolean getDeadPlayersCanTalk() {
+        return deadPlayersCanTalk;
+    }
+
+    public void setDeadPlayersCanTalk(Boolean deadPlayersCanTalk) {
+        this.deadPlayersCanTalk = deadPlayersCanTalk;
+    }
+
+    public Integer getReadyUpDelay() {
+        return readyUpDelay;
+    }
+
+    public void setReadyUpDelay(Integer readyUpDelay) {
+        this.readyUpDelay = readyUpDelay;
+    }
+
+    public Integer getGameStartDelay() {
+        return gameStartDelay;
+    }
+
+    public void setGameStartDelay(Integer gameStartDelay) {
+        this.gameStartDelay = gameStartDelay;
+    }
+
+    public Integer getMaxSpectators() {
+        return maxSpectators;
+    }
+
+    public void setMaxSpectators(Integer maxSpectators) {
+        this.maxSpectators = maxSpectators;
+    }
+
+    public Boolean getMapObjetives() {
+        return mapObjetives;
+    }
+
+    public void setMapObjetives(Boolean mapObjetives) {
+        this.mapObjetives = mapObjetives;
+    }
+
+    public Boolean getPickupItems() {
+        return pickupItems;
+    }
+
+    public void setPickupItems(Boolean pickupItems) {
+        this.pickupItems = pickupItems;
+    }
+
+    public Double getFriendlyFirePercentage() {
+        return friendlyFirePercentage;
+    }
+
+    public void setFriendlyFirePercentage(Double friendlyFirePercentage) {
+        this.friendlyFirePercentage = friendlyFirePercentage;
     }
 }

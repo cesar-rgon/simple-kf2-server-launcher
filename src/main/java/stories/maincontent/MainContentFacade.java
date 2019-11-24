@@ -53,9 +53,17 @@ public interface MainContentFacade {
     boolean updateProfileSetAdminCanPause(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetAnnounceAdminLogin(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetChatLogging(String profileName, boolean isSelected) throws SQLException;
-    boolean updateProfileSetMapVotingTime(String profileName, Double mapVotingTime) throws SQLException;
+    boolean updateProfileSetMapVotingTime(String profileName, Double mapVotingTime) throws Exception;
     boolean updateProfileSetKickPercentage(String profileName, Double kickPercentage) throws Exception;
     boolean updateProfileSetChatLoggingFile(String profileName, String chatLoggingFile) throws SQLException;
-
-
+    boolean updateProfileSetChatLoggingFileTimestamp(String profileName, boolean isSelected) throws SQLException;
+    boolean updateProfileSetTimeBetweenKicks(String profileName, Double timeBetweenKicks) throws Exception;
+    boolean updateProfileSetMaxIdleTime(String profileName, Double maxIdleTime) throws Exception;
+    boolean updateProfileSetDeadPlayersCanTalk(String profileName, boolean isSelected) throws SQLException;
+    boolean updateProfileSetReadyUpDelay(String profileName, Integer readyUpDelay) throws Exception;
+    boolean updateProfileSetGameStartDelay(String profileName, Integer gameStartDelay) throws Exception;
+    boolean updateProfileSetMaxSpectators(String profileName, Integer maxSpectators) throws Exception;
+    boolean updateProfileSetMapObjetives(String profileName, boolean isSelected) throws SQLException;
+    boolean updateProfileSetPickupItems(String profileName, boolean isSelected) throws SQLException;
+    boolean updateProfileSetFriendlyFirePercentage(String profileName, Double friendlyFirePercentage) throws Exception;
 }
