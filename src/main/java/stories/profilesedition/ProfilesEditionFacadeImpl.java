@@ -2,9 +2,7 @@ package stories.profilesedition;
 
 import daos.*;
 import dtos.ProfileDto;
-import pojos.ProfileToDisplay;
 import dtos.factories.ProfileDtoFactory;
-import pojos.ProfileToDisplayFactory;
 import entities.*;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ButtonType;
@@ -12,6 +10,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.ProfileToDisplay;
+import pojos.ProfileToDisplayFactory;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import utils.Utils;
@@ -256,6 +256,29 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
             properties.setProperty("exported.profile" + profileIndex + ".customParameters", StringUtils.isNotBlank(profile.getCustomParameters())? profile.getCustomParameters(): "");
             properties.setProperty("exported.profile" + profileIndex + ".mapListSize", profile.getMapList()!=null? String.valueOf(profile.getMapList().size()): "0");
             properties.setProperty("exported.profile" + profileIndex + ".takeover", profile.getTakeover()!=null? String.valueOf(profile.getTakeover()): "false");
+
+            properties.setProperty("exported.profile" + profileIndex + ".mapVoting", profile.getMapVoting()? String.valueOf(profile.getMapVoting()): "false");
+            properties.setProperty("exported.profile" + profileIndex + ".mapVotingTime", profile.getMapVotingTime() != null? String.valueOf(profile.getMapVotingTime()): "");
+            properties.setProperty("exported.profile" + profileIndex + ".kickVoting", profile.getKickVoting()? String.valueOf(profile.getKickVoting()): "false");
+            properties.setProperty("exported.profile" + profileIndex + ".kickPercentage", profile.getKickPercentage() != null? String.valueOf(profile.getKickPercentage()): "");
+            properties.setProperty("exported.profile" + profileIndex + ".timeBetweenKicks", profile.getTimeBetweenKicks() != null? String.valueOf(profile.getTimeBetweenKicks()): "");
+            properties.setProperty("exported.profile" + profileIndex + ".maxIdleTime", profile.getMaxIdleTime() != null? String.valueOf(profile.getMaxIdleTime()): "");
+            properties.setProperty("exported.profile" + profileIndex + ".publicTextChat", profile.getPublicTextChat()? String.valueOf(profile.getPublicTextChat()): "false");
+            properties.setProperty("exported.profile" + profileIndex + ".spectatorsChat", profile.getSpectatorsOnlyChatToOtherSpectators()? String.valueOf(profile.getSpectatorsOnlyChatToOtherSpectators()): "false");
+            properties.setProperty("exported.profile" + profileIndex + ".voip", profile.getVoip()? String.valueOf(profile.getVoip()): "false");
+            properties.setProperty("exported.profile" + profileIndex + ".deadPlayersCanTalk", profile.getDeadPlayersCanTalk()? String.valueOf(profile.getDeadPlayersCanTalk()): "false");
+            properties.setProperty("exported.profile" + profileIndex + ".chatLogging", profile.getChatLogging()? String.valueOf(profile.getChatLogging()): "false");
+            properties.setProperty("exported.profile" + profileIndex + ".chatLoggingFile", StringUtils.isNotBlank(profile.getChatLoggingFile())? profile.getChatLoggingFile(): "");
+            properties.setProperty("exported.profile" + profileIndex + ".chatLoggingFileTimestamp", profile.getChatLoggingFileTimestamp()? String.valueOf(profile.getChatLoggingFileTimestamp()): "false");
+            properties.setProperty("exported.profile" + profileIndex + ".teamCollision", profile.getTeamCollision()!=null? String.valueOf(profile.getTeamCollision()): "false");
+            properties.setProperty("exported.profile" + profileIndex + ".adminPause", profile.getAdminCanPause()!=null? String.valueOf(profile.getAdminCanPause()): "false");
+            properties.setProperty("exported.profile" + profileIndex + ".adminLogin", profile.getAnnounceAdminLogin()!=null? String.valueOf(profile.getAnnounceAdminLogin()): "false");
+            properties.setProperty("exported.profile" + profileIndex + ".readyUpDelay", profile.getReadyUpDelay() != null? String.valueOf(profile.getReadyUpDelay()): "");
+            properties.setProperty("exported.profile" + profileIndex + ".gameStartDelay", profile.getGameStartDelay() != null? String.valueOf(profile.getGameStartDelay()): "");
+            properties.setProperty("exported.profile" + profileIndex + ".maxSpectators", profile.getMaxSpectators() != null? String.valueOf(profile.getMaxSpectators()): "");
+            properties.setProperty("exported.profile" + profileIndex + ".mapObjetives", profile.getMapObjetives()? String.valueOf(profile.getMapObjetives()): "false");
+            properties.setProperty("exported.profile" + profileIndex + ".pickupItems", profile.getPickupItems()? String.valueOf(profile.getPickupItems()): "false");
+            properties.setProperty("exported.profile" + profileIndex + ".friendlyFirePercentage", profile.getFriendlyFirePercentage() != null? String.valueOf(profile.getFriendlyFirePercentage()): "");
 
             if (profile.getMapList() != null && !profile.getMapList().isEmpty()) {
                 int mapIndex = 1;
@@ -515,7 +538,6 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
             if (savedProfileList.size() < selectedProfileList.size()) {
                 List<String> selectedProfileNameList = selectedProfileList.stream().map(dto -> dto.getProfileName()).collect(Collectors.toList());
                 List<String> savedProfileNameList = savedProfileList.stream().map(profile -> profile.getName()).collect(Collectors.toList());
-                ;
 
                 for (String selectedProfileName : selectedProfileNameList) {
                     if (!savedProfileNameList.contains(selectedProfileName)) {
@@ -536,6 +558,32 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
             Optional<Difficulty> difficultyOpt = DifficultyDao.getInstance().findByCode(properties.getProperty("exported.profile" + profileIndex + ".difficulty"));
             Optional<Length> lengthOpt = LengthDao.getInstance().findByCode(properties.getProperty("exported.profile" + profileIndex + ".length"));
             Optional<MaxPlayers> maxPlayersOpt = MaxPlayersDao.getInstance().findByCode(properties.getProperty("exported.profile" + profileIndex + ".maxPlayers"));
+            String webPortStr = properties.getProperty("exported.profile" + profileIndex + ".webPort");
+            String gamePortStr = properties.getProperty("exported.profile" + profileIndex + ".gamePort");
+            String queryPortStr = properties.getProperty("exported.profile" + profileIndex + ".queryPort");
+            String mapVotingTimeStr = properties.getProperty("exported.profile" + profileIndex + ".mapVotingTime");
+            String kickPercentageStr = properties.getProperty("exported.profile" + profileIndex + ".kickPercentage");
+            String timeBetweenKicksStr = properties.getProperty("exported.profile" + profileIndex + ".timeBetweenKicks");
+            String maxIdleTimeStr = properties.getProperty("exported.profile" + profileIndex + ".maxIdleTime");
+            String readyUpDelayStr = properties.getProperty("exported.profile" + profileIndex + ".readyUpDelay");
+            String gameStartDelayStr = properties.getProperty("exported.profile" + profileIndex + ".gameStartDelay");
+            String maxSpectatorsStr = properties.getProperty("exported.profile" + profileIndex + ".maxSpectators");
+            String friendlyFirePercentageStr = properties.getProperty("exported.profile" + profileIndex + ".friendlyFirePercentage");
+            String webPageStr = properties.getProperty("exported.profile" + profileIndex + ".webPage");
+            String takeoverStr = properties.getProperty("exported.profile" + profileIndex + ".takeover");
+            String teamCollisionStr = properties.getProperty("exported.profile" + profileIndex + ".teamCollision");
+            String adminPauseStr = properties.getProperty("exported.profile" + profileIndex + ".adminPause");
+            String adminLoginStr = properties.getProperty("exported.profile" + profileIndex + ".adminLogin");
+            String mapVotingStr = properties.getProperty("exported.profile" + profileIndex + ".mapVoting");
+            String kickVotingStr = properties.getProperty("exported.profile" + profileIndex + ".kickVoting");
+            String publicTextChatStr = properties.getProperty("exported.profile" + profileIndex + ".publicTextChat");
+            String spectatorsChatStr = properties.getProperty("exported.profile" + profileIndex + ".spectatorsChat");
+            String voipStr = properties.getProperty("exported.profile" + profileIndex + ".voip");
+            String chatLoggingStr = properties.getProperty("exported.profile" + profileIndex + ".chatLogging");
+            String chatLoggingFileTimestampStr = properties.getProperty("exported.profile" + profileIndex + ".chatLoggingFileTimestamp");
+            String deadPlayersCanTalkStr = properties.getProperty("exported.profile" + profileIndex + ".deadPlayersCanTalk");
+            String mapObjetivesStr = properties.getProperty("exported.profile" + profileIndex + ".mapObjetives");
+            String pickupItemsStr = properties.getProperty("exported.profile" + profileIndex + ".pickupItems");
 
             return new Profile(
                     profileName,
@@ -547,40 +595,40 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
                     maxPlayersOpt.isPresent() ? maxPlayersOpt.get() : null,
                     properties.getProperty("exported.profile" + profileIndex + ".serverName"),
                     properties.getProperty("exported.profile" + profileIndex + ".serverPassword"),
-                    Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".webPage")),
+                    StringUtils.isNotBlank(webPageStr) ? Boolean.parseBoolean(webPageStr): true,
                     properties.getProperty("exported.profile" + profileIndex + ".webPassword"),
-                    Integer.parseInt(properties.getProperty("exported.profile" + profileIndex + ".webPort")),
-                    Integer.parseInt(properties.getProperty("exported.profile" + profileIndex + ".gamePort")),
-                    Integer.parseInt(properties.getProperty("exported.profile" + profileIndex + ".queryPort")),
+                    StringUtils.isNotBlank(webPortStr) ? Integer.parseInt(webPortStr): 8080,
+                    StringUtils.isNotBlank(gamePortStr) ? Integer.parseInt(gamePortStr): 7777,
+                    StringUtils.isNotBlank(queryPortStr) ? Integer.parseInt(queryPortStr): 27015,
                     properties.getProperty("exported.profile" + profileIndex + ".yourClan"),
                     properties.getProperty("exported.profile" + profileIndex + ".yourWebLink"),
                     properties.getProperty("exported.profile" + profileIndex + ".urlImageServer"),
                     properties.getProperty("exported.profile" + profileIndex + ".welcomeMessage"),
                     properties.getProperty("exported.profile" + profileIndex + ".customParameters"),
                     new ArrayList<Map>(),
-                    Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".takeover")),
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null,
-                    null
+                    StringUtils.isNotBlank(takeoverStr) ? Boolean.parseBoolean(takeoverStr): false,
+                    StringUtils.isNotBlank(teamCollisionStr) ? Boolean.parseBoolean(teamCollisionStr): true,
+                    StringUtils.isNotBlank(adminPauseStr) ? Boolean.parseBoolean(adminPauseStr): false,
+                    StringUtils.isNotBlank(adminLoginStr) ? Boolean.parseBoolean(adminLoginStr): true,
+                    StringUtils.isNotBlank(mapVotingStr) ? Boolean.parseBoolean(mapVotingStr): true,
+                    StringUtils.isNotBlank(mapVotingTimeStr) ? Double.parseDouble(mapVotingTimeStr): 60,
+                    StringUtils.isNotBlank(kickVotingStr) ? Boolean.parseBoolean(kickVotingStr): true,
+                    StringUtils.isNotBlank(kickPercentageStr) ? Double.parseDouble(kickPercentageStr): 0.66,
+                    StringUtils.isNotBlank(publicTextChatStr) ? Boolean.parseBoolean(publicTextChatStr): true,
+                    StringUtils.isNotBlank(spectatorsChatStr) ? Boolean.parseBoolean(spectatorsChatStr): false,
+                    StringUtils.isNotBlank(voipStr) ? Boolean.parseBoolean(voipStr): true,
+                    StringUtils.isNotBlank(chatLoggingStr) ? Boolean.parseBoolean(chatLoggingStr): false,
+                    properties.getProperty("exported.profile" + profileIndex + ".chatLoggingFile"),
+                    StringUtils.isNotBlank(chatLoggingFileTimestampStr) ? Boolean.parseBoolean(chatLoggingFileTimestampStr): true,
+                    StringUtils.isNotBlank(timeBetweenKicksStr) ? Double.parseDouble(timeBetweenKicksStr): 10,
+                    StringUtils.isNotBlank(maxIdleTimeStr) ? Double.parseDouble(maxIdleTimeStr): 0,
+                    StringUtils.isNotBlank(deadPlayersCanTalkStr) ? Boolean.parseBoolean(deadPlayersCanTalkStr): true,
+                    StringUtils.isNotBlank(readyUpDelayStr) ? Integer.parseInt(readyUpDelayStr): 90,
+                    StringUtils.isNotBlank(gameStartDelayStr) ? Integer.parseInt(gameStartDelayStr): 4,
+                    StringUtils.isNotBlank(maxSpectatorsStr) ? Integer.parseInt(maxSpectatorsStr): 2,
+                    StringUtils.isNotBlank(mapObjetivesStr) ? Boolean.parseBoolean(mapObjetivesStr): true,
+                    StringUtils.isNotBlank(pickupItemsStr) ? Boolean.parseBoolean(pickupItemsStr): true,
+                    StringUtils.isNotBlank(friendlyFirePercentageStr) ? Double.parseDouble(friendlyFirePercentageStr): 0
             );
         } catch (SQLException e) {
             logger.error("Error getting the profile " + profileName + " from file", e);
