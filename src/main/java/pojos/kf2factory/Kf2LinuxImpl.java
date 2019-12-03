@@ -174,4 +174,22 @@ public class Kf2LinuxImpl extends Kf2Common {
             return null;
         }
     }
+
+    @Override
+    protected void executeFileBeforeRunServer(File fileToBeExecuted) throws Exception {
+        String executeFileViaConsoleStr = propertyService.getPropertyValue("properties/config.properties", "prop.config.executeFileViaConsole");
+        boolean executeFileViaConsole = StringUtils.isNotBlank(executeFileViaConsoleStr) ? Boolean.parseBoolean(executeFileViaConsoleStr): false;
+        if (executeFileViaConsole) {
+            Runtime.getRuntime().exec(new String[]{"xterm",
+                            "-T", "Running executable file",
+                            "-fa", "DejaVu Sans Mono",
+                            "-fs", "11",
+                            "-geometry", "120x25+0-0",
+                            "-xrm", "XTerm.vt100.allowTitleOps: false",
+                            "-e", fileToBeExecuted.getAbsolutePath()},
+                    null, fileToBeExecuted.getParentFile());
+        } else {
+            Runtime.getRuntime().exec(fileToBeExecuted.getAbsolutePath(), null, fileToBeExecuted.getParentFile());
+        }
+    }
 }

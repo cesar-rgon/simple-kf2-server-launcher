@@ -1391,6 +1391,7 @@ public class MainContentController implements Initializable {
                     selectedProfileNameList = facade.selectProfiles(message, profileSelect.getValue().getName());
             }
 
+            facade.runExecutableFile();
             for (String profileName: selectedProfileNameList) {
                 Session.getInstance().setConsole((StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
                         "< " + new Date() + " - Run Server >\n" + facade.runServer(profileName));

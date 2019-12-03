@@ -169,6 +169,10 @@ public abstract class Kf2Common {
                     });
                     for (File sourceFile: sourceFiles) {
                         FileUtils.copyFileToDirectory(sourceFile, profileFolder);
+                        if ("DefaultWebAdmin.ini".equalsIgnoreCase(sourceFile.getName())) {
+                            File targetFile = new File(configFolder.getAbsolutePath() + "/" + profileName + "/KFWebAdmin.ini");
+                            FileUtils.copyFile(sourceFile, targetFile);
+                        }
                     }
                 }
             }
@@ -500,6 +504,7 @@ public abstract class Kf2Common {
                 String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.steamInstallDirInvalid");
                 Utils.warningDialog(headerText, contentText);
             } catch (Exception e) {
+                logger.error(e.getMessage(), e);
                 Utils.errorDialog(e.getMessage(), e);
             } finally {
                 return "";
@@ -568,4 +573,29 @@ public abstract class Kf2Common {
     }
 
     public abstract Long getIdWorkShopFromPath(Path path, String installationFolder);
+
+    public void runExecutableFile() {
+        try {
+            String executeFileBeforeRunKF2ServerStr = propertyService.getPropertyValue("properties/config.properties", "prop.config.enableExecuteFileBeforeRunKF2Server");
+            boolean executeFileBeforeRunKF2Server = StringUtils.isNotBlank(executeFileBeforeRunKF2ServerStr) ? Boolean.parseBoolean(executeFileBeforeRunKF2ServerStr): false;
+            if (executeFileBeforeRunKF2Server) {
+                String fileToBeExecuted = propertyService.getPropertyValue("properties/config.properties", "prop.config.fileToBeExecuted");
+                File file = new File(fileToBeExecuted);
+                if (file.exists() && file.isFile() && file.canExecute()) {
+                    executeFileBeforeRunServer(file);
+                } else {
+                    String message = "Error: The file does not exits or is not a file or is not executable";
+                    logger.error(StringUtils.isNotBlank(fileToBeExecuted) ? message + ": " + fileToBeExecuted: message);
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.executeFile");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.fileNotValid");
+                    Utils.warningDialog(headerText, StringUtils.isNotBlank(fileToBeExecuted) ? contentText + ": " + fileToBeExecuted: contentText);
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    protected abstract void executeFileBeforeRunServer(File fileToBeExecuted) throws Exception;
 }

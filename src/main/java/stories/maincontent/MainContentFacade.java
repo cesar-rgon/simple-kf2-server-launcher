@@ -66,4 +66,5 @@ public interface MainContentFacade {
     boolean updateProfileSetMapObjetives(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetPickupItems(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetFriendlyFirePercentage(String profileName, Double friendlyFirePercentage) throws Exception;
+    void runExecutableFile();
 }

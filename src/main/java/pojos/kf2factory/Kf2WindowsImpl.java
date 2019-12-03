@@ -173,5 +173,17 @@ public class Kf2WindowsImpl extends Kf2Common {
             return null;
         }
     }
+
+    @Override
+    protected void executeFileBeforeRunServer(File fileToBeExecuted) throws Exception {
+        String executeFileViaConsoleStr = propertyService.getPropertyValue("properties/config.properties", "prop.config.executeFileViaConsole");
+        boolean executeFileViaConsole = StringUtils.isNotBlank(executeFileViaConsoleStr) ? Boolean.parseBoolean(executeFileViaConsoleStr): false;
+        StringBuffer command = new StringBuffer();
+        if (executeFileViaConsole) {
+            command.append("cmd /C start /wait ");
+        }
+        command.append(fileToBeExecuted.getAbsolutePath());
+        Runtime.getRuntime().exec(command.toString(),null, fileToBeExecuted.getParentFile());
+    }
 }
 

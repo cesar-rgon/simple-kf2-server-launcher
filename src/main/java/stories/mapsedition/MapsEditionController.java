@@ -565,14 +565,14 @@ public class MapsEditionController implements Initializable {
 
                 officialMapList = Files.walk(Paths.get(installationFolder + "/KFGame/BrewedPC/Maps"))
                         .filter(Files::isRegularFile)
-                        .filter(f -> f.getFileName().toString().toUpperCase().startsWith("KF-"))
-                        .filter(f -> f.getFileName().toString().toUpperCase().endsWith(".KFM"))
+                        .filter(file -> file.getFileName().toString().toUpperCase().startsWith("KF-"))
+                        .filter(file -> file.getFileName().toString().toUpperCase().endsWith(".KFM"))
                         .collect(Collectors.toList());
 
                 customMapList = Files.walk(Paths.get(installationFolder + "/KFGame/Cache"))
                         .filter(Files::isRegularFile)
-                        .filter(f -> f.getFileName().toString().toUpperCase().startsWith("KF-"))
-                        .filter(f -> f.getFileName().toString().toUpperCase().endsWith(".KFM"))
+                        .filter(file -> file.getFileName().toString().toUpperCase().startsWith("KF-"))
+                        .filter(file -> file.getFileName().toString().toUpperCase().endsWith(".KFM"))
                         .collect(Collectors.toList());
 
                 File[] cacheFolderList = new File(installationFolder + "/KFGame/Cache").listFiles();
@@ -581,9 +581,9 @@ public class MapsEditionController implements Initializable {
                     Kf2Common kf2Common = Kf2Factory.getInstance();
 
                     modList = Arrays.stream(cacheFolderList)
-                            .filter(f -> f.isDirectory())
-                            .map(f -> f.toPath())
-                            .filter(f -> !idWorkShopCustomMapList.contains(kf2Common.getIdWorkShopFromPath(f, installationFolder)))
+                            .filter(file -> file.isDirectory())
+                            .map(file -> file.toPath())
+                            .filter(path -> !idWorkShopCustomMapList.contains(kf2Common.getIdWorkShopFromPath(path, installationFolder)))
                             .collect(Collectors.toList());
                 }
 

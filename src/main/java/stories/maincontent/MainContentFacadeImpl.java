@@ -670,4 +670,10 @@ public class MainContentFacadeImpl implements MainContentFacade {
         }
         return false;
     }
+
+    @Override
+    public void runExecutableFile() {
+        Kf2Common kf2Common = Kf2Factory.getInstance();
+        kf2Common.runExecutableFile();
+    }
 }
