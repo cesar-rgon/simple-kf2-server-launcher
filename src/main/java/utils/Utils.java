@@ -2,6 +2,7 @@ package utils;
 
 import dtos.ProfileDto;
 import dtos.SelectDto;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
@@ -12,6 +13,7 @@ import javafx.util.Callback;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import pojos.AddMapsToProfile;
+import pojos.MapToDisplay;
 import pojos.ProfileToDisplay;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -410,6 +412,82 @@ public class Utils {
         return new ArrayList<ProfileToDisplay>();
     }
 
+
+    public static List<MapToDisplay> selectMapsDialog(List<MapToDisplay> mapList) {
+        Dialog<TableView<MapToDisplay>> dialog = new Dialog<TableView<MapToDisplay>>();
+        dialog.setHeaderText("Select custom maps/mods to do the operation");
+
+        TableView<MapToDisplay> tableView = new TableView<MapToDisplay>();
+
+        // First Column
+        TableColumn<MapToDisplay, Boolean> selectColumn = new TableColumn<MapToDisplay, Boolean>();
+        selectColumn.setText("Select");
+        selectColumn.setCellFactory(col -> new CheckBoxTableCell<>());
+        selectColumn.setCellValueFactory(cellData -> cellData.getValue().selectedProperty());
+        selectColumn.setSortable(false);
+        selectColumn.setEditable(true);
+        selectColumn.setMinWidth(50);
+
+        // Second Column
+        TableColumn<MapToDisplay, String> idWorkShopColumn = new TableColumn<MapToDisplay, String>();
+        idWorkShopColumn.setText("Id WorkShop");
+        idWorkShopColumn.setCellValueFactory(cellData -> cellData.getValue().idWorkShopProperty());
+        idWorkShopColumn.setSortable(false);
+        idWorkShopColumn.setEditable(false);
+        idWorkShopColumn.setMinWidth(150);
+
+        // Third Column
+        TableColumn<MapToDisplay, String> mapNameColumn = new TableColumn<MapToDisplay, String>();
+        mapNameColumn.setText("Map name");
+        mapNameColumn.setCellValueFactory(cellData -> cellData.getValue().mapNameProperty());
+        mapNameColumn.setSortable(false);
+        mapNameColumn.setEditable(false);
+        mapNameColumn.setMinWidth(150);
+
+        tableView.getColumns().add(selectColumn);
+        tableView.getColumns().add(idWorkShopColumn);
+        tableView.getColumns().add(mapNameColumn);
+        tableView.setItems(FXCollections.observableArrayList(mapList));
+        tableView.setEditable(true);
+
+        dialog.getDialogPane().setContent(tableView);
+        dialog.setResizable(true);
+        dialog.getDialogPane().setMinWidth(800);
+        dialog.getDialogPane().setMinHeight(400);
+
+        ButtonType buttonTypeOk = null;
+        ButtonType buttonTypeCancel = null;
+        try {
+            PropertyService propertyService = new PropertyServiceImpl();
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            String okText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.ok");
+            buttonTypeOk = new ButtonType(okText, ButtonBar.ButtonData.OK_DONE);
+            String cancelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.cancel");
+            buttonTypeCancel = new ButtonType(cancelText, ButtonBar.ButtonData.CANCEL_CLOSE);
+        } catch (Exception e) {
+            buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+            buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        }
+
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
+        dialog.getDialogPane().getButtonTypes().add(buttonTypeCancel);
+        ButtonType finalButtonTypeOk = buttonTypeOk;
+        dialog.setResultConverter(new Callback<ButtonType, TableView<MapToDisplay>>() {
+            @Override
+            public TableView call(ButtonType b) {
+                if (b == finalButtonTypeOk) {
+                    return tableView;
+                }
+                return null;
+            }
+        });
+
+        Optional<TableView<MapToDisplay>> result = dialog.showAndWait();
+
+        // ...
+
+        return null;
+    }
 
     public static Optional<ProfileToDisplay> selectProfileDialog(String headerText, List<ProfileToDisplay> profileList) {
         Dialog<TableView<ProfileToDisplay>> dialog = new Dialog<TableView<ProfileToDisplay>>();
