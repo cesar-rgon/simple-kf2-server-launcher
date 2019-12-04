@@ -1,19 +1,35 @@
 package pojos;
 
 import javafx.beans.property.*;
+import javafx.scene.control.Hyperlink;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import services.PropertyService;
+import services.PropertyServiceImpl;
+import stories.mapsedition.MapsEditionFacadeImpl;
 
 public class MapToDisplay {
 
+    private static final Logger logger = LogManager.getLogger(MapToDisplay.class);
     private BooleanProperty selected;
-    private StringProperty idWorkShop;
-    private StringProperty mapName;
+    private Long idWorkShop;
+    private Hyperlink workShopPage;
+    private StringProperty commentary;
 
     public MapToDisplay(Long idWorkShop,
-                        String mapName) {
+                        String commentary) {
         super();
         this.selected = new SimpleBooleanProperty(true);
-        this.idWorkShop = new SimpleStringProperty(String.valueOf(idWorkShop));
-        this.mapName = new SimpleStringProperty(mapName);
+        this.idWorkShop = idWorkShop;
+        PropertyService propertyService = new PropertyServiceImpl();
+        String baseUrlWorkshop = null;
+        try {
+            baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
+            this.workShopPage = new Hyperlink(baseUrlWorkshop + idWorkShop);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+        this.commentary = new SimpleStringProperty(commentary);
     }
 
     public boolean isSelected() {
@@ -29,30 +45,30 @@ public class MapToDisplay {
     }
 
     public Long getIdWorkShop() {
-        try {
-            return Long.parseLong(idWorkShop.get());
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    public StringProperty idWorkShopProperty() {
         return idWorkShop;
     }
 
-    public void setIdWorkShop(String idWorkShop) {
-        this.idWorkShop.set(idWorkShop);
+    public void setIdWorkShop(Long idWorkShop) {
+        this.idWorkShop = idWorkShop;
     }
 
-    public String getMapName() {
-        return mapName.get();
+    public Hyperlink getWorkShopPage() {
+        return workShopPage;
     }
 
-    public StringProperty mapNameProperty() {
-        return mapName;
+    public void setWorkShopPage(Hyperlink workShopPage) {
+        this.workShopPage = workShopPage;
     }
 
-    public void setMapName(String mapName) {
-        this.mapName.set(mapName);
+    public String getCommentary() {
+        return commentary.get();
+    }
+
+    public StringProperty commentaryProperty() {
+        return commentary;
+    }
+
+    public void setCommentary(String commentary) {
+        this.commentary.set(commentary);
     }
 }
