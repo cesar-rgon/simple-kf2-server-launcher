@@ -2,11 +2,16 @@ package utils;
 
 import dtos.ProfileDto;
 import dtos.SelectDto;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.util.Callback;
@@ -20,7 +25,10 @@ import services.PropertyServiceImpl;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import java.awt.*;
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.Key;
@@ -413,15 +421,34 @@ public class Utils {
     }
 
 
-    public static List<MapToDisplay> selectMapsDialog(List<MapToDisplay> mapList) {
-        Dialog<TableView<MapToDisplay>> dialog = new Dialog<TableView<MapToDisplay>>();
-        dialog.setHeaderText("Select custom maps/mods to do the operation");
+    public static List<MapToDisplay> selectMapsDialog(String headerText, List<MapToDisplay> mapList) {
+        if (mapList == null || mapList.isEmpty()) {
+            return new ArrayList<MapToDisplay>();
+        }
 
+        Dialog<TableView<MapToDisplay>> dialog = new Dialog<TableView<MapToDisplay>>();
+        PropertyService propertyService = new PropertyServiceImpl();
+        String selectText = "";
+        String workShopPageText = "";
+        String commentaryText = "";
+
+        try {
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            selectText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.select");
+            workShopPageText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.workShopPage");
+            commentaryText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.commentary");
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
+            dialog.setTitle(applicationTitle);
+        } catch (Exception e) {
+            dialog.setTitle("");
+        }
+
+        dialog.setHeaderText(headerText);
         TableView<MapToDisplay> tableView = new TableView<MapToDisplay>();
 
         // First Column
         TableColumn<MapToDisplay, Boolean> selectColumn = new TableColumn<MapToDisplay, Boolean>();
-        selectColumn.setText("Select");
+        selectColumn.setText(selectText);
         selectColumn.setCellFactory(col -> new CheckBoxTableCell<>());
         selectColumn.setCellValueFactory(cellData -> cellData.getValue().selectedProperty());
         selectColumn.setSortable(false);
@@ -429,20 +456,42 @@ public class Utils {
         selectColumn.setMinWidth(50);
 
         // Second Column
-        TableColumn<MapToDisplay, String> idWorkShopColumn = new TableColumn<MapToDisplay, String>();
-        idWorkShopColumn.setText("Id WorkShop");
-        idWorkShopColumn.setCellValueFactory(cellData -> cellData.getValue().idWorkShopProperty());
+        TableColumn<MapToDisplay, Hyperlink> idWorkShopColumn = new TableColumn<MapToDisplay, Hyperlink>();
+        idWorkShopColumn.setText(workShopPageText);
+        idWorkShopColumn.setCellFactory(new Callback<TableColumn<MapToDisplay, Hyperlink>, TableCell<MapToDisplay, Hyperlink>>() {
+                                            @Override
+                                            public TableCell<MapToDisplay, Hyperlink> call(TableColumn<MapToDisplay, Hyperlink> param) {
+                                                TableCell<MapToDisplay, Hyperlink> cell = new TableCell<MapToDisplay, Hyperlink>() {
+                                                    @Override
+                                                    protected void updateItem(Hyperlink item, boolean empty) {
+                                                        setGraphic(item);
+                                                        if (!empty){
+                                                            item.setOnAction(e -> {
+                                                                try {
+                                                                    Desktop.getDesktop().browse(new URI(item.getText()));
+                                                                } catch (Exception ex) {
+                                                                    ex.printStackTrace();
+                                                                }
+                                                            });
+                                                        }
+                                                    }
+                                                };
+                                                return cell;
+                                            }
+                                        }
+        );
+        idWorkShopColumn.setCellValueFactory(new PropertyValueFactory<>("workShopPage"));
         idWorkShopColumn.setSortable(false);
         idWorkShopColumn.setEditable(false);
-        idWorkShopColumn.setMinWidth(150);
+        idWorkShopColumn.setMinWidth(480);
 
         // Third Column
         TableColumn<MapToDisplay, String> mapNameColumn = new TableColumn<MapToDisplay, String>();
-        mapNameColumn.setText("Map name");
-        mapNameColumn.setCellValueFactory(cellData -> cellData.getValue().mapNameProperty());
+        mapNameColumn.setText(commentaryText);
+        mapNameColumn.setCellValueFactory(cellData -> cellData.getValue().commentaryProperty());
         mapNameColumn.setSortable(false);
         mapNameColumn.setEditable(false);
-        mapNameColumn.setMinWidth(150);
+        mapNameColumn.setMinWidth(270);
 
         tableView.getColumns().add(selectColumn);
         tableView.getColumns().add(idWorkShopColumn);
@@ -458,7 +507,6 @@ public class Utils {
         ButtonType buttonTypeOk = null;
         ButtonType buttonTypeCancel = null;
         try {
-            PropertyService propertyService = new PropertyServiceImpl();
             String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             String okText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.ok");
             buttonTypeOk = new ButtonType(okText, ButtonBar.ButtonData.OK_DONE);
@@ -483,10 +531,17 @@ public class Utils {
         });
 
         Optional<TableView<MapToDisplay>> result = dialog.showAndWait();
-
-        // ...
-
-        return null;
+        if (result.isPresent() && result.get() != null && result.get().getItems() != null && !result.get().getItems().isEmpty()) {
+            List<MapToDisplay> selectedMaps = new ArrayList<MapToDisplay>();
+            for (MapToDisplay mapToDisplay : mapList) {
+                Boolean isSelected = selectColumn.getCellData(mapToDisplay);
+                if (isSelected != null && isSelected) {
+                    selectedMaps.add(mapToDisplay);
+                }
+            }
+            return selectedMaps;
+        }
+        return new ArrayList<MapToDisplay>();
     }
 
     public static Optional<ProfileToDisplay> selectProfileDialog(String headerText, List<ProfileToDisplay> profileList) {

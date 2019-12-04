@@ -44,7 +44,7 @@ public class TimeListener extends TimerTask {
 
                         if (kfmFilesPath != null && !kfmFilesPath.isEmpty()) {
                             String filenameWithExtension = kfmFilesPath.get(0).getFileName().toString();
-                            String[] array = filenameWithExtension.split(".kfm");
+                            String[] array = filenameWithExtension.split("\\.");
                             String filenameWithoutExtension = array[0];
                             map.setCode(filenameWithoutExtension);
                             map.setDownloaded(true);

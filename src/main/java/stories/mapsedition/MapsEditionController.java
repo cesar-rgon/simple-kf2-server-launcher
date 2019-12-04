@@ -548,68 +548,70 @@ public class MapsEditionController implements Initializable {
                 return;
             }
 
-            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.importOperation");
+            Kf2Common kf2Common = Kf2Factory.getInstance();
+            List<MapToDisplay> customMapList = Files.walk(Paths.get(installationFolder + "/KFGame/Cache"))
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
+                    .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
+                    .map(path -> {
+                        String filenameWithExtension = path.getFileName().toString();
+                        String[] array = filenameWithExtension.split("\\.");
+                        String mapName = array[0];
+                        Long idWorkShop = kf2Common.getIdWorkShopFromPath(path.getParent(), installationFolder);
+                        return new MapToDisplay(idWorkShop, mapName);
+                    })
+                    .collect(Collectors.toList());
+
+            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectCustomMaps");
+            List<MapToDisplay> selectedCustomMapList = Utils.selectMapsDialog(headerText, customMapList);
+
+            File[] cacheFolderList = new File(installationFolder + "/KFGame/Cache").listFiles();
+            List<MapToDisplay> selectedModList = null;
+            if (cacheFolderList != null && cacheFolderList.length > 0) {
+                List<Long> idWorkShopCustomMapList = customMapList.stream().map(MapToDisplay::getIdWorkShop).collect(Collectors.toList());
+
+                List<MapToDisplay> modList = Arrays.stream(cacheFolderList)
+                        .filter(file -> file.isDirectory())
+                        .map(file -> file.toPath())
+                        .filter(path -> !idWorkShopCustomMapList.contains(kf2Common.getIdWorkShopFromPath(path, installationFolder)))
+                        .map(path -> {
+                            Long idWorkShop = Long.parseLong(path.getFileName().toString());
+                            return new MapToDisplay(idWorkShop, "MOD [" + idWorkShop + "]");
+                        })
+                        .collect(Collectors.toList());
+
+                headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectMods");
+                selectedModList = Utils.selectMapsDialog(headerText, modList);
+            }
+
+            List<String> officialMapNameList = Files.walk(Paths.get(installationFolder + "/KFGame/BrewedPC/Maps"))
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
+                    .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
+                    .map(path -> {
+                        String filenameWithExtension = path.getFileName().toString();
+                        String[] array = filenameWithExtension.split("\\.");
+                        return array[0];
+                    })
+                    .collect(Collectors.toList());
+
+            headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.importOperation");
             String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.confirmImportOperation");
             Optional<ButtonType> result = Utils.questionDialog(headerText, contentText);
+            
+            StringBuffer successOfficialMaps = new StringBuffer();
+            StringBuffer successCustomMaps = new StringBuffer();
+            StringBuffer successMods = new StringBuffer();
+            StringBuffer errorsOfficialMaps = new StringBuffer();
+            StringBuffer errorsCustomMaps = new StringBuffer();
+            StringBuffer errorsMods = new StringBuffer();
+
             if (result.isPresent() && result.get().equals(ButtonType.OK)) {
                 logger.info("Starting the process to import maps and mods from the server to the launcher");
 
-                StringBuffer successOfficialMaps = new StringBuffer();
-                StringBuffer successCustomMaps = new StringBuffer();
-                StringBuffer successMods = new StringBuffer();
-                StringBuffer errorsOfficialMaps = new StringBuffer();
-                StringBuffer errorsCustomMaps = new StringBuffer();
-                StringBuffer errorsMods = new StringBuffer();
-                Kf2Common kf2Common = Kf2Factory.getInstance();
-
-                List<MapToDisplay> customMapList = Files.walk(Paths.get(installationFolder + "/KFGame/Cache"))
-                        .filter(Files::isRegularFile)
-                        .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
-                        .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
-                        .map(path -> {
-                            String filenameWithExtension = path.getFileName().toString();
-                            String[] array = filenameWithExtension.split(".");
-                            String mapName = array[0];
-                            Long idWorkShop = kf2Common.getIdWorkShopFromPath(path.getParent(), installationFolder);
-                            return new MapToDisplay(idWorkShop, mapName);
-                        })
-                        .collect(Collectors.toList());
-
-                List<MapToDisplay> selectedCustomMapList = Utils.selectMapsDialog(customMapList);
                 importCustomMapsFromServer(selectedCustomMapList, selectedProfileNameList, successCustomMaps, errorsCustomMaps);
-
-                File[] cacheFolderList = new File(installationFolder + "/KFGame/Cache").listFiles();
-
-                if (cacheFolderList != null && cacheFolderList.length > 0) {
-                    List<Long> idWorkShopCustomMapList = customMapList.stream().map(MapToDisplay::getIdWorkShop).collect(Collectors.toList());
-
-                    List<MapToDisplay> modList = Arrays.stream(cacheFolderList)
-                            .filter(file -> file.isDirectory())
-                            .map(file -> file.toPath())
-                            .filter(path -> !idWorkShopCustomMapList.contains(kf2Common.getIdWorkShopFromPath(path, installationFolder)))
-                            .map(path -> {
-                                String folderName = path.getFileName().toString();
-                                Long idWorkShop = kf2Common.getIdWorkShopFromPath(path.getParent(), installationFolder);
-                                return new MapToDisplay(idWorkShop, folderName);
-                            })
-                            .collect(Collectors.toList());
-
-                    List<MapToDisplay> selectedModList = Utils.selectMapsDialog(modList);
-                    importModsFromServer(selectedModList, selectedProfileNameList, successMods, errorsMods);
-                }
-
-                List<String> officialMapNameList = Files.walk(Paths.get(installationFolder + "/KFGame/BrewedPC/Maps"))
-                        .filter(Files::isRegularFile)
-                        .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
-                        .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
-                        .map(path -> {
-                            String filenameWithExtension = path.getFileName().toString();
-                            String[] array = filenameWithExtension.split(".");
-                            return array[0];
-                        })
-                        .collect(Collectors.toList());
+                importModsFromServer(selectedModList, selectedProfileNameList, successMods, errorsMods);
                 importOfficialMapsFromServer(officialMapNameList, selectedProfileNameList, successOfficialMaps, errorsOfficialMaps);
-
 
                 officialMapsTab.setGraphic(new Label("(" + officialMapsFlowPane.getChildren().size() + ")"));
                 customMapsModsTab.setGraphic(new Label("(" + customMapsFlowPane.getChildren().size() + ")"));
@@ -656,6 +658,7 @@ public class MapsEditionController implements Initializable {
                     Utils.warningDialog(headerText + ":", message.toString() + "\n" + contentText);
                 }
             }
+
         } catch (Exception e) {
             String message = "Error importing maps and mods from server to the launcher";
             logger.error(message, e);
@@ -733,7 +736,7 @@ public class MapsEditionController implements Initializable {
                 MapDto mapInDataBase = facade.findMapOrModByIdWorkShop(customMapToDisplay.getIdWorkShop());
                 if (mapInDataBase == null) {
                     MapDto customMap = facade.createNewCustomMapFromWorkshop(customMapToDisplay.getIdWorkShop(),
-                                                                             customMapToDisplay.getMapName(),
+                                                                             customMapToDisplay.getCommentary(),
                                                                              installationFolder,
                                                                              true,
                                                                              false,
@@ -748,7 +751,7 @@ public class MapsEditionController implements Initializable {
                         success.append(mapNameLabel).append(": ").append(customMap.getKey()).append(" - id WorkShop: ").append(customMapToDisplay.getIdWorkShop()).append("\n");
                     } else {
                         logger.error("Error importing the custom map with idWorkShop: " + customMapToDisplay.getIdWorkShop());
-                        errors.append(mapNameLabel).append(": ").append(customMapToDisplay.getMapName()).append(" - id WorkShop: ").append(customMapToDisplay.getIdWorkShop()).append("\n");
+                        errors.append(mapNameLabel).append(": ").append(customMapToDisplay.getCommentary()).append(" - id WorkShop: ").append(customMapToDisplay.getIdWorkShop()).append("\n");
                     }
                 } else {
                     Boolean mapAddedToProfiles = facade.addProfilesToMap(mapInDataBase.getKey(), selectedProfileNameList);
@@ -763,13 +766,13 @@ public class MapsEditionController implements Initializable {
                             success.append(mapNameLabel).append(": ").append(mapInDataBase.getKey()).append(" - id WorkShop: ").append(customMapToDisplay.getIdWorkShop()).append("\n");
                         } else {
                             logger.error("Error importing the custom map with idWorkShop: " + customMapToDisplay.getIdWorkShop());
-                            errors.append(mapNameLabel).append(": ").append(customMapToDisplay.getMapName()).append(" - id WorkShop: ").append(customMapToDisplay.getIdWorkShop()).append("\n");
+                            errors.append(mapNameLabel).append(": ").append(customMapToDisplay.getCommentary()).append(" - id WorkShop: ").append(customMapToDisplay.getIdWorkShop()).append("\n");
                         }
                     }
                 }
             } catch (Exception e) {
-                logger.error("Error importing the custom map: " + customMapToDisplay.getMapName(), e);
-                errors.append(mapNameLabel).append(": ").append(customMapToDisplay.getMapName()).append(" - idWorkShop: ").append(customMapToDisplay.getIdWorkShop()).append("\n");
+                logger.error("Error importing the custom map: " + customMapToDisplay.getCommentary(), e);
+                errors.append(mapNameLabel).append(": ").append(customMapToDisplay.getCommentary()).append(" - idWorkShop: ").append(customMapToDisplay.getIdWorkShop()).append("\n");
             }
         }
     }

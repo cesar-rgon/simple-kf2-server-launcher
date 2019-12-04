@@ -4,12 +4,14 @@ import daos.*;
 import dtos.ProfileDto;
 import dtos.factories.ProfileDtoFactory;
 import entities.*;
+import entities.Map;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ButtonType;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.MapToDisplay;
 import pojos.ProfileToDisplay;
 import pojos.ProfileToDisplayFactory;
 import services.PropertyService;
@@ -21,10 +23,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -693,51 +692,90 @@ public class ProfilesEditionFacadeImpl implements ProfilesEditionFacade {
 
     private List<Map> importProfileMapsFromFile(int profileIndex, Profile profile, Properties properties) throws Exception {
         List<Map> mapList = new ArrayList<Map>();
+        java.util.Map<String,Integer> officialMapsIndex = new HashMap<String, Integer>();
+        List<MapToDisplay> customMapListToDisplay = new ArrayList<MapToDisplay>();
+        java.util.Map<Long,Integer> customMapsIndex = new HashMap<Long, Integer>();
         int numberOfMaps = Integer.parseInt(properties.getProperty("exported.profile" + profileIndex + ".mapListSize"));
 
         for (int mapIndex = 1; mapIndex <= numberOfMaps; mapIndex++) {
             String mapName = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".name");
             try {
                 boolean official = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".official"));
-                Optional<Map> mapInDataBaseOpt;
-                Long idWorkShop = null;
                 if (official) {
-                    mapInDataBaseOpt = MapDao.getInstance().findByCode(mapName);
+                    officialMapsIndex.put(mapName, mapIndex);
                 } else {
                     String strIdWorkShop = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".idWorkShop");
-                    idWorkShop = StringUtils.isNotBlank(strIdWorkShop) ? Long.parseLong(strIdWorkShop) : 0;
-                    mapInDataBaseOpt = MapDao.getInstance().findByIdWorkShop(idWorkShop);
-                }
-
-                if (mapInDataBaseOpt.isPresent()) {
-                    mapInDataBaseOpt.get().getProfileList().add(profile);
-                    if (MapDao.getInstance().update(mapInDataBaseOpt.get())) {
-                        mapList.add(mapInDataBaseOpt.get());
-                    }
-                } else {
-                    boolean downloaded = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".downloaded"));
-                    String urlInfo = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlInfo");
-                    String urlPhoto = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlPhoto");
-                    String strMod = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".mod");
-                    Boolean mod = StringUtils.isNotBlank(strMod)? Boolean.parseBoolean(strMod): null;
-                    List<Profile> profileList = new ArrayList<Profile>();
-                    profileList.add(profile);
-                    Map map = new Map(mapName, official, urlInfo, idWorkShop, urlPhoto, downloaded, mod, profileList);
-                    if (map.isOfficial()) {
-                        if (MapDao.getInstance().insert(map) != null) {
-                            mapList.add(map);
-                        }
-                    } else {
-                        if (createNewCustomMapFromWorkshop(map)) {
-                            mapList.add(map);
-                        }
-                    }
+                    Long idWorkShop = StringUtils.isNotBlank(strIdWorkShop) ? Long.parseLong(strIdWorkShop) : 0;
+                    boolean isMod = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".mod"));
+                    customMapListToDisplay.add(new MapToDisplay(idWorkShop, mapName));
+                    customMapsIndex.put(idWorkShop, mapIndex);
                 }
             } catch (Exception e) {
                 logger.error("Error importing the map " + mapName + " of profile index " + profileIndex + " from file", e);
             }
         }
+
+        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectMapsModsForProfile");
+        List<MapToDisplay> selectedCustomMapList = Utils.selectMapsDialog(headerText + " " + profile.getName(), customMapListToDisplay);
+
+        for (java.util.Map.Entry<String, Integer> entry : officialMapsIndex.entrySet()) {
+            String mapName = entry.getKey();
+            Integer mapIndex = entry.getValue();
+            try {
+                Optional<Map> mapInDataBaseOpt = MapDao.getInstance().findByCode(mapName);
+                Map map = getImportedMap(mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, mapName, null, true);
+                if (map != null) {
+                    mapList.add(map);
+                }
+            } catch (Exception e) {
+                logger.error("Error importing the official map " + mapName + " of profile index " + profileIndex + " from file", e);
+            }
+        }
+
+        for (MapToDisplay customMap: selectedCustomMapList) {
+            Integer mapIndex = customMapsIndex.get(customMap.getIdWorkShop());
+            try {
+                Optional<Map> mapInDataBaseOpt = MapDao.getInstance().findByIdWorkShop(customMap.getIdWorkShop());
+                Map map = getImportedMap(mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, customMap.getCommentary(), customMap.getIdWorkShop(), false);
+                if (map != null) {
+                    mapList.add(map);
+                }
+            } catch (Exception e) {
+                logger.error("Error importing the official map " + customMap.getCommentary() + " of profile index " + profileIndex + " from file", e);
+            }
+        }
+
         return mapList;
+    }
+
+
+    private Map getImportedMap(Optional<Map> mapInDataBaseOpt, Profile profile, Properties properties, int profileIndex, Integer mapIndex, String mapName, Long idWorkShop, boolean official) throws Exception {
+        if (mapInDataBaseOpt.isPresent()) {
+            mapInDataBaseOpt.get().getProfileList().add(profile);
+            if (MapDao.getInstance().update(mapInDataBaseOpt.get())) {
+                return mapInDataBaseOpt.get();
+            }
+        } else {
+            boolean downloaded = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".downloaded"));
+            String urlInfo = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlInfo");
+            String urlPhoto = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlPhoto");
+            String strMod = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".mod");
+            Boolean mod = StringUtils.isNotBlank(strMod)? Boolean.parseBoolean(strMod): null;
+            List<Profile> profileList = new ArrayList<Profile>();
+            profileList.add(profile);
+            Map map = new Map(mapName, official, urlInfo, idWorkShop, urlPhoto, downloaded, mod, profileList);
+            if (map.isOfficial()) {
+                if (MapDao.getInstance().insert(map) != null) {
+                    return map;
+                }
+            } else {
+                if (createNewCustomMapFromWorkshop(map)) {
+                    return map;
+                }
+            }
+        }
+        return null;
     }
 
     private boolean createNewCustomMapFromWorkshop(Map map) throws Exception {
