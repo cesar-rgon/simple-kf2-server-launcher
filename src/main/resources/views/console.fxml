@@ -24,7 +24,7 @@
                 <Insets />
             </GridPane.margin>
         </ImageView>
-      <TextArea fx:id="console" editable="false" opacity="0.75" wrapText="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+      <TextArea fx:id="consoleArea" editable="false" opacity="0.75" wrapText="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
          <font>
             <Font name="Consolas" size="20.0" />
          </font>

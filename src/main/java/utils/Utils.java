@@ -2,7 +2,6 @@ package utils;
 
 import dtos.ProfileDto;
 import dtos.SelectDto;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
@@ -28,7 +27,6 @@ import javax.crypto.spec.SecretKeySpec;
 import java.awt.*;
 import java.io.*;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.Key;
@@ -36,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Utils {
 
@@ -382,28 +381,40 @@ public class Utils {
 
         ButtonType buttonTypeOk = null;
         ButtonType buttonTypeCancel = null;
+        ButtonType selectAll = null;
+        ButtonType selectNone = null;
         try {
             String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             String okText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.ok");
             buttonTypeOk = new ButtonType(okText, ButtonBar.ButtonData.OK_DONE);
             String cancelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.cancel");
             buttonTypeCancel = new ButtonType(cancelText, ButtonBar.ButtonData.CANCEL_CLOSE);
+            String selectAllText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.selectMaps");
+            selectAll = new ButtonType(selectAllText, ButtonBar.ButtonData.LEFT);
+            String unselectAllText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unselectMaps");
+            selectNone = new ButtonType(unselectAllText, ButtonBar.ButtonData.LEFT);
         } catch (Exception e) {
             buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
             buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
         }
 
-        dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
-        dialog.getDialogPane().getButtonTypes().add(buttonTypeCancel);
+        dialog.getDialogPane().getButtonTypes().addAll(selectAll, selectNone, buttonTypeOk, buttonTypeCancel);
         ButtonType finalButtonTypeOk = buttonTypeOk;
-        dialog.setResultConverter(new Callback<ButtonType, TableView<ProfileToDisplay>>() {
-            @Override
-            public TableView call(ButtonType b) {
-                if (b == finalButtonTypeOk) {
-                    return tableView;
-                }
-                return null;
+        ButtonType finalUnselectAll = selectNone;
+        ButtonType finalSelectAll = selectAll;
+        dialog.setResultConverter(b -> {
+            if (b.equals(finalButtonTypeOk) ) {
+                return tableView;
             }
+            if (b.equals(finalUnselectAll)) {
+                profileList.stream().forEach(p -> p.setSelected(false));
+                dialog.showAndWait();
+            }
+            if (b.equals(finalSelectAll)) {
+                profileList.stream().forEach(p -> p.setSelected(true));
+                dialog.showAndWait();
+            }
+            return null;
         });
 
         Optional<TableView<ProfileToDisplay>> result = dialog.showAndWait();
@@ -506,28 +517,43 @@ public class Utils {
 
         ButtonType buttonTypeOk = null;
         ButtonType buttonTypeCancel = null;
+        ButtonType selectNone = null;
+        ButtonType selectAll = null;
         try {
             String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             String okText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.ok");
             buttonTypeOk = new ButtonType(okText, ButtonBar.ButtonData.OK_DONE);
             String cancelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.cancel");
             buttonTypeCancel = new ButtonType(cancelText, ButtonBar.ButtonData.CANCEL_CLOSE);
+            String selectAllText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.selectMaps");
+            selectAll = new ButtonType(selectAllText, ButtonBar.ButtonData.LEFT);
+            String unselectAllText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unselectMaps");
+            selectNone = new ButtonType(unselectAllText, ButtonBar.ButtonData.LEFT);
         } catch (Exception e) {
             buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
             buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+            selectAll = new ButtonType("Select all", ButtonBar.ButtonData.LEFT);
+            selectNone = new ButtonType("Unselect all", ButtonBar.ButtonData.LEFT);
         }
 
-        dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
-        dialog.getDialogPane().getButtonTypes().add(buttonTypeCancel);
+        dialog.getDialogPane().getButtonTypes().addAll(selectAll, selectNone, buttonTypeOk, buttonTypeCancel);
+
         ButtonType finalButtonTypeOk = buttonTypeOk;
-        dialog.setResultConverter(new Callback<ButtonType, TableView<MapToDisplay>>() {
-            @Override
-            public TableView call(ButtonType b) {
-                if (b == finalButtonTypeOk) {
-                    return tableView;
-                }
-                return null;
+        ButtonType finalUnselectAll = selectNone;
+        ButtonType finalSelectAll = selectAll;
+        dialog.setResultConverter(b -> {
+            if (b.equals(finalButtonTypeOk) ) {
+                return tableView;
             }
+            if (b.equals(finalUnselectAll)) {
+                mapList.stream().forEach(m -> m.setSelected(false));
+                dialog.showAndWait();
+            }
+            if (b.equals(finalSelectAll)) {
+                mapList.stream().forEach(m -> m.setSelected(true));
+                dialog.showAndWait();
+            }
+            return null;
         });
 
         Optional<TableView<MapToDisplay>> result = dialog.showAndWait();

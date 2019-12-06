@@ -11,7 +11,7 @@ import java.util.ResourceBundle;
 
 public class ConsoleController implements Initializable {
 
-    @FXML private TextArea console;
+    @FXML private TextArea consoleArea;
 
     public ConsoleController() {
         super();
@@ -19,6 +19,6 @@ public class ConsoleController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        console.setText(StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole(): "");
+        consoleArea.setText(StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole(): "");
     }
 }

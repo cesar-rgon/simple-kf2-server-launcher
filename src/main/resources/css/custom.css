@@ -2,6 +2,10 @@
     -fx-background-color: #191513;
 }
 
+.combo-box, .combo-box-popup .list-view, .text-field, .text-area .content {
+    -fx-border-color: #333333;
+}
+
 .menu-button:hover, .menu-item:hover {
     -fx-background-color: #c15d11;
     -fx-cursor: hand;
@@ -74,13 +78,9 @@
 .text-field, .text-area {
     -fx-font-family: "Ubuntu Bold";
     -fx-text-box-border: transparent;
+    -fx-focus-color: transparent;
     -fx-font-size: 14;
     -fx-text-fill: white;
-}
-
-#console {
-    -fx-font-family: "Ubuntu";
-    -fx-font-weight: normal;
 }
 
 .check-box {
@@ -182,4 +182,8 @@
     -fx-border-color: #c15d11;
     -fx-border-width:3px;
     -fx-border-radius: 10px;
+}
+
+#consoleArea {
+    -fx-focus-color: #c15d11;
 }

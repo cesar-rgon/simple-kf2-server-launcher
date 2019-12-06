@@ -191,9 +191,19 @@ public class MapsEditionController implements Initializable {
             });
         }
         GridPane gridpane = new GridPane();
+        gridpane.setStyle("-fx-border-color: #c15d11;-fx-border-width:3px;-fx-border-radius: 10px;-fx-effect: dropshadow(three-pass-box, red, 20, 0, 0, 0);");
         gridpane.add(mapPreview, 1, 1);
         GridPane.setColumnSpan(mapPreview, 2);
-        gridpane.add(new CheckBox(), 1, 2);
+        CheckBox checkbox = new CheckBox();
+        checkbox.setOpacity(0.5);
+        checkbox.setOnAction(e -> {
+            if (checkbox.isSelected()) {
+                checkbox.setOpacity(1);
+            } else {
+                checkbox.setOpacity(0.5);
+            }
+        });
+        gridpane.add(checkbox, 1, 2);
         gridpane.add(mapNameLabel, 2, 2);
         mapNameLabel.setMinHeight(20);
         mapNameLabel.setMaxWidth(mapPreview.getFitWidth() - 25);
@@ -275,7 +285,7 @@ public class MapsEditionController implements Initializable {
     }
 
     private Double getWidthGridPaneByNumberOfColums() {
-        return (MainApplication.getPrimaryStage().getWidth() - (50 * mapsSlider.getValue()) - 90) / mapsSlider.getValue();
+        return (MainApplication.getPrimaryStage().getWidth() - (50 * mapsSlider.getValue()) - 130) / mapsSlider.getValue();
     }
 
     private void resizeGridPane(GridPane gridPane) {
@@ -851,6 +861,11 @@ public class MapsEditionController implements Initializable {
             GridPane gridpane = (GridPane) node;
             CheckBox checkbox = (CheckBox)gridpane.getChildren().get(1);
             checkbox.setSelected(selectMaps);
+            if (checkbox.isSelected()) {
+                checkbox.setOpacity(1);
+            } else {
+                checkbox.setOpacity(0.5);
+            }
         }
         try {
             String labelText = "";
