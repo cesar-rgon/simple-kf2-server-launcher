@@ -1,41 +1,9 @@
-![Logo](src/main/resources/images/documentation/kf2banner.png)
+![Logo](doc/images/kf2banner.png)
 
 _[Click here to open documentation in english | Pulse aquí para abrir documentación en inglés](README.md)_
 
 ---
 Aplicación para personalizar y lanzar fácilmente un servidor de Killing Floor 2 a través de una interfaz visual en lugar de editar ficheros batch o de configuración del servidor. Ha sido desarrollado en Java y la interfaz es compatible con los S.O. Windows y Linux.
-
-*Ejemplo de configuración*
-
-![Ejemplo de configuración](src/main/resources/images/documentation/screenshot00.png)
-
-*Resultado después de unirse al servidor mediante el cliente de juego*
-
-![In game](src/main/resources/images/documentation/screenshot-in-game.jpg)
-
-### Índice
-> 1. [Caracteristicas](#caracteristicas)
-> 2. [Pre-requisitos](#pre-requisitos)
-> 3. [Instalar y ejecutar el lanzador](#instalar-y-ejecutar-el-lanzador)
->   - [En Windows](#en-windows)
->   - [En Linux](#en-linux)
-> 4. [Instalar el servidor](#instalar-el-servidor)
-> 5. [Configuracion basica](#configuracion-basica)
->   - [Pagina principal](#pagina-principal)
->   - [Pagina WebAdmin](#pagina-webadmin)
->   - [Pagina de la consola](#pagina-de-la-consola)
-> 6. [Mapas personalizados y mods](#mapas-personalizados-y-mods)
-> 7. [Configuracion avanzada](#configuracion-avanzada)
->   - [Lista de perfiles](#lista-de-perfiles)
->   - [Lista de tipos de juegos](#lista-de-tipos-de-juegos)
->   - [Lista de Dificultades](#lista-de-dificultades)
->   - [Lista de Longitudes](#lista-de-longitudes)
->   - [Lista de maximo jugadores](#lista-de-maximo-jugadores)
-> 8. [Ejecutar un fichero antes de lanzar el servidor](#ejecutar-un-fichero-antes-de-lanzar-el-servidor)
-> 9. [Parametros por consola](#parametros-por-consola)
-> 10. [Donacion](#donacion)
-
-## Caracteristicas
 
 ```
 Versión: 2.0.4 final
@@ -44,6 +12,16 @@ Autor: César Rodríguez González
 Idiomas: Inglés, Español, Francés
 Traducción a francés por: -foG.Nox
 ```
+
+*Ejemplo de configuración*
+
+![Ejemplo de configuración](doc/images/screenshot00.png)
+
+*Resultado después de unirse al servidor mediante el cliente de juego*
+
+![In game](doc/images/screenshot-in-game.jpg)
+
+## Características
 
 - Instalar/actualizar el servidor a la última versión oficial o beta. 
 - Lanzar el servidor con los parámetros especificados por el usuario en la página principal del lanzador.
@@ -59,292 +37,45 @@ Traducción a francés por: -foG.Nox
 - Todas estas características están disponibles a través de la interfaz del lanzador en Windows y Linux.
 
 ## Pre-requisitos
-- Conexión a internet para descargar, actualizar y publicar un servidor de Killing Floor 2.
-- Abrir los puertos necesarios en el router y firewall si quieres que el servidor sea visible en internet.
-
-  | Puerto      | Por defecto | Protocolo  | Qué controla esta opción                                                                  |
-  |-------------|-------------|------------|-------------------------------------------------------------------------------------------|
-  | Game Port   | 7777        | UDP        | Este es el puerto principal por donde envía conexiones el juego                           |
-  | Query Port  | 27015       | UDP        | Este es el puerto usado para comunicarse con el Servidor Maestro de Steam                 |
-  | Web Admin   | 8080        | TCP        | Este puerto se usa para conectarse a la página WebAdmin del servidor (si fué habilitada)  |
-  | Steam Port  | 20560       | UDP        |                                                                                           |
-  | NTP Port    | 123         | UDP        | Semanal solamente - Usado para determinar el evento semanal correctamente                 |
-
-- Instalar Oracle JRE 8 (Java Runtime Environment) para poder ejecutar el lanzador. JRE puede ser descargado de [aquí](https://www.java.com/es/download/).
+Mira la documentación de esta sección [aquí](doc/es/PRE-REQUISITOS.md).
 
 ## Instalar y ejecutar el lanzador
 
-[![YouTube video](src/main/resources/images/documentation/video01.png)](https://www.youtube.com/watch?v=8k_-Q_7bxjI)
+[![YouTube video](doc/images/video01.png)](https://www.youtube.com/watch?v=8k_-Q_7bxjI)
 
-- Descargar la última versión del programa desde [aquí](https://github.com/cesar-rgon/simple-kf2-server-launcher/releases)
-- Extraer el contenido del fichero zip a una carpeta local.
-
-##### En Windows
-- Ejecuta el fichero "SimpleKF2ServerLauncher.jar" haciendo doble click sobre el fichero, como método alternativo, escribe los siguientes comandos en una terminal.  
-
-*Ejemplo*
-```
-C:\> cd SimpleKF2ServerLauncher-local-folder
-C:\SimpleKF2ServerLauncher-local-folder> java -jar SimpleKF2ServerLauncher.jar
-```
-*NOTA: Reemplaza SimpleKF2ServerLauncher-local-folder por la carpeta local que quieras.*
-
-##### En Linux
-- Ejecuta el fichero "SimpleKF2ServerLauncher.jar" con los siguientes comandos en una terminal:
-
-*Ejemplo*
-```
-$ cd SimpleKF2ServerLauncher-local-folder
-$ java -jar SimpleKF2ServerLauncher.jar
-```
-*NOTA: Reemplaza SimpleKF2ServerLauncher-local-folder por la carpeta local que quieras.*
-
-*NOTA: JRE debe ser la versión de Oracle (no OpenJDK disponible en los repositorios).*
+Mira la documentación de esta sección [aquí](doc/es/INSTALAR-LANZADOR.md).
 
 ## Instalar el servidor
 
-[![YouTube video](src/main/resources/images/documentation/video02.png)](https://www.youtube.com/watch?v=5voaloIeQDs)
+[![YouTube video](doc/images/video02.png)](https://www.youtube.com/watch?v=5voaloIeQDs)
 
-En la página de Instalar/Actualizar puedes instalar o actualizar el servidor de Killing Floor 2.
+Mira la documentación de esta sección [aquí](doc/es/INSTALAR-SERVIDOR.md).
 
-![Launcher screenshot](src/main/resources/images/documentation/screenshot03.png)
+## Configuración básica
 
-* _Carpeta de instalación_: Este campo es obligatorio. Necesario para encontrar la carpeta local donde el servidor debe ser instalado.
+[![YouTube video](doc/images/video03.png)](https://www.youtube.com/watch?v=TyOpbeKMaM0)
 
-* _Validar ficheros_: Este campo es opcional. Si está activado, la operación de instalar/actualizar revisa la integridad de los ficheros del servidor. Es una operación lenta.
-
-* _¿Actualizar a beta?_: Este campo es opcional. Si está activado, la operación actualiza a una versión beta del juego (si estuviera disponible).
-
-* _Rama beta_: Este campo es opcional. El usuario especifica el nombre de la rama beta (sólamente usado cuando el check anterior ha sido activado).
-
-## Configuracion basica
-
-[![YouTube video](src/main/resources/images/documentation/video03.png)](https://www.youtube.com/watch?v=TyOpbeKMaM0)
-
-#### Pagina principal
-![Launcher screenshot](src/main/resources/images/documentation/screenshot00.png)
-
-* _Perfil_: Este combo es obligatorio. Permite personalizar los valores de los filtros por nombre de perfil.
-
-* _Ejecutar servidor_: Ejecuta un servidor Killing Floor 2 con los filtros especificados. Todos los filtros obligatorios deben ser especificados. Los ficheros de configuración del servidor están ubicados en la carpeta: KFGame/Config/NOMBREPERFIL. De esta manera, los ficheros de configuración originales localizados en la carpeta: KFGame/Config nunca son modificados.
-Si hay más de un perfil definido, puedes lanzar múltiples servidores a la vez (uno por perfil). 
-
-* _Unirse al servidor_: Unirse a un servidor de Killing Floor 2 previamente iniciado. Si el servidor no ha sido iniciado, la operación iniciará el juego pero no se unirá a ningún servidor. Pre-requisitos: Deben estar instaladas las aplicaciones: Steam y cliente (juego) Killing Floor 2. 
-Si hay más de un perfil definido, puedes seleccionar a qué servidor quieres unirte (uno por perfil).
-
-###### Parametros basicos
- 
-* _Idioma_: Este combo es obligatorio. Permite seleccionar un idioma para la interfaz del lanzador. La lista de idiomas disponibles están en el apartado [Caracteristicas](#caracteristicas) de este documento.
-
-* _Mapa_: Este combo es obligatorio. Permite seleccionar un mapa oficial o personalizado específico. *NOTA: Los mapas personalizados son visibles en este campo sólamente si han sido descargados previamente.*
-
-* _Tipo de juego_: Este combo es obligatorio. Permite seleccionar un tipo de juego específico.
-
-* _Dificultad_: Este combo es obligatorio. Permite seleccionar un nivel de dificultad específico.
-
-* _Longitud_: Este combo es obligatorio. Permite seleccionar un número específico de oleadas.
-
-* _Máx. jugadores_: Este combo es obligatorio. Permite seleccionar un número máximo de jugadores específico en la partida.
-
-* _Nombre de servidor_: Este campo es obligatorio. Debe contener al menos un caracter. 
-
-* _Contraseña de servidor_: Este campo es opcional. Permite proteger tu servidor con una contraseña (se necesita conocer para poder unirse al juego).
-
-* _Página web_: Si el check de página web está activo, puedes gestionar el servidor mediante la página WebAdmin. El servidor de Killing Floor 2 debe haberse lanzado previamente a acceder a la página de WebAdmin.
-
-* _Contraseña web_: Este campo es opcional. Permite proteger la página de WebAdmin con una contraseña para autenticarse.
-
-* _Toma de control_: Si este check está habilitado, otras personas pueden tomar control del servidor, esto es, cambiar la contraseña y otras configuraciones, etc.
-
-* _URL imágen servidor_: Este campo es opcional. Este enlace debe corresponder a una imagen subida a internet que será usada como imágen de bienvenida en el servidor de Killing Floor 2. El formato y resolución debe ser PNG 512x256 píxeles.
-  
-* _Tu clan_: Este campo es opcional.
-
-* _Tu página web_: Este campo es opcional.
-
-* _Mensaje de bienvenida_: Este campo es opcional. Es un mensaje de bienvenida en la pantalla iniciar del servidor.
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot01.png)
-
-###### Parametros avanzados
-
-* _Votación de mapa_: Este check habilita o desabilita la pantalla de votación de mapa después de que el juego finaliza. 
-
-* _Tiempo de votación mapa_: Este campo es opcional. El tiempo, en segundos, que tienes para votar un mapa. 
-
-* _Votación de expulsión_: Este check habilita o deshabilita la posibilidad de votar una expulsión. 
-
-* _Porcentaje de expulsión_: Este campo es opcional. Indica cuántos jugadores tomará para realizar una expulsión. Ejemplo 0.50 = 50% es 3/6 jugadores, 0.66 = 66% es 4/6 jugadores, 0.83 = 83% is 5/6 jugadores, etc. Valor mínimo es 0, máximo es 1.
-
-* _Tiempo entre expulsiones_: Este campo es opcional. El tiempo, en segundos, que debes esperar después de un voto de expulsión fallido y antes de iniciar otro voto. 
-
-* _Tiempo inactivo expulsión_: Este campo es opcional. Establece el tiempo máximo de inactividad de los jugadores antes de que sean expulsados automáticamente. Máximo es 300 segundos. Los jugadores serán notificados mediante chat si están inactivos mucho tiempo.  
-
-* _Chat público_: Este check habilita o deshabilita el chat de texto por completo. 
-
-* _Chat de espectador_: Si este check está activo, los espectadores sólo podrán hablar a otros espectadores. No afecta al chat de texto.
-
-* _VoIP_: Este check habilita o deshabilita el chat de voz por completo. 
-
-* _Muertos pueden hablar_: Si este check está desactivado, los jugadores que mueren no podrán hablar hasta que retornen a la partida.
-
-* _Logs del chat_: Si este check está activado, el chat de texto será registrado en un fichero.
-
-* _Nombre fichero de logs_: Este campo es opcional. Indica el nombre del fichero usado para registrar el chat de texto. Puedes activar el uso de marca de tiempo con el nombre de fichero.
-
-* _Colisión de equipo_: Este check activa o desactiva la colisión de jugadores mientras caminan durante el juego. 
-
-* _Admin puede pausar_: Si este check está activo, permite a los administradores pausar el juego para todos los jugadores mediante el comando: pause. Si el juego está en pausa, los jugadores aún pueden conectarse y unirse al mismo.
- 
-* _Anunciar entrada Admin_: Si este check está activo, cuando te autenticas como un administrador en el juego, se anunciará a todo el mundo "NombreJugador se ha hecho Admin".
-
-* _Tiempo espera preparados_: Este campo es opcional. Indica el tiempo, en segundos, que debes esperar cuando todos los jugadores están preparados excepto uno.
-
-* _Tiempo espera comienzo_: Este campo es opcional. Indica el tiempo de espera, en segundos, que debes esperar cuando todos los jugadores están preparados. El valor mínimo es 1. 
-
-* _Max.espectadores_: Este campo es opcional. Indica el máximo número de espectadores permitidos.
-
-* _Objetivos de mapa_: Si este check está activo, estarán presentes los objetivos del mapa.
-
-* _Recoger artículos_: Este check activa o desactiva la recogida de armadura Kevlar y armas.
-
-* _Porcentaje fuego amigo_: Este campo es opcional. Permite a los jugadores infligir fuego amigo a otros miembros del equipo. El valor mínimo es 0, máximo es 1.
-
-* _Puertos_: Los puertos son opcionales. Necesitas abrir los puertos en tu router y firewall. Si se lanza más de un servidor, los puertos deben ser diferentes entre ellos (una configuración por perfil).
-
-* _Parámetros opcionales_: Este campo es opcional. Define parámetros adicionales. El formato debe ser: [?]parametro1=valor1?parametror2=valor2?...?parametroN=valorN
-
-  [?] significa: opcionalmente puedes comenzar los parámetros por "?"
-
-#### Pagina WebAdmin
-En esta sección puedes acceder a la página WebAdmin sólamente si el servidor ya está iniciado y la página web está activa en la sección "Página Principal" de la aplicación.
-WebAdmin te permite gestionar y controlar el servidor de Killing Floor 2.
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot02.png)
-
-#### Pagina de la consola
-En esta sección puedes ver los comandos generados por el lanzador cuando ejecutas o te unes a un servidor.
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot11.png)
+Mira la documentación de esta sección [aquí](doc/es/CONFIGURACION-BASICA.md).
 
 ## Mapas personalizados y mods
 
-[![YouTube video](src/main/resources/images/documentation/video04.png)](https://www.youtube.com/watch?v=1WzDAc8bdgY)
+[![YouTube video](doc/images/video04.png)](https://www.youtube.com/watch?v=1WzDAc8bdgY)
 
-En la página Mapas/Mods puedes gestionar mapas personalizados, mods y mapas oficiales presentes en el servidor.
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot04.png)
-
-* _Buscador_: Filtro para buscar mapas y mods por nombre mientras vas escribiendo el texto. 
-
-* _Columnas_: Barra deslizante que permite cambiar el tamaño de las miniaturas de los mapas según un número de columnas determinado. 
-
-* _Añadir nuevos mapas/mods_: Permite añadir nuevos mapas personalizados y mods desde el WorkShop de Steam mediante id de WorkShop o URL. Si hay más de un elemento, usa comas como separador. 
- 
-* _Selecciona todos los mapas/mods_: Permite seleccionar o deseleccionar todos los mapas personalizados y mods así como los mapas oficiales.
-
-* _Elimina mapas/mods_: Permite eliminar todos los mapas y mods previamente seleccionados.
-
-* _Importa mapas/mods_: Permite importar todos los mapas personalizados, mods y mapas oficiales del servidor al lanzador. Sólamente los elementos que no está aún presentes en el lanzador.
-
-* _Buscar en WorkShop_: Permite navegar en las páginas de WorkShop buscando nuevos mapas y mods. Luego puedes seleccionar cuál de ellos añadir al lanzador.
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot05.png)
+Mira la documentación de esta sección [aquí](doc/es/MAPAS-PERSONALIZADOS.md).
 
 ## Configuracion avanzada
 
-[![YouTube video](src/main/resources/images/documentation/video05.png)](https://www.youtube.com/watch?v=d3ZwFLU7izw)
+[![YouTube video](doc/images/video05.png)](https://www.youtube.com/watch?v=d3ZwFLU7izw)
 
-#### Lista de perfiles
-En esta sección puedes gestionar perfiles desde el lanzador. Cada perfil es usado para personalizar tus parámetros del servidor.
+Mira la documentación de esta sección [aquí](doc/es/CONFIGURACION-AVANZADA.md).
 
-![Launcher screenshot](src/main/resources/images/documentation/screenshot06.png)
+## Anexo
+- [Ejecutar un fichero antes de lanzar el servidor](doc/es/ANEXO.md#ejecutar-un-fichero-antes-de-lanzar-el-servidor)
+- [Parametros por consola](doc/es/ANEXO.md#parametros-por-consola)
 
-* _Doble click en un nombre de perfil_: Permite editar el nombre de perfil.
-* Añadir nuevo perfil_: Permite añadir un nuevo perfil. El nombre debe ser único.
-* _Clonar el perfil seleccionado_: Permite duplicar el perfil seleccionado a un nuevo perfil.
-* _Eliminar perfil seleccionado_: Permite eliminar el perfil seleccionado.
-* _Import profiles_: Permite importar perfiles desde fichero al lanzador.
-* _Exportar perfiles_: Permite exportar perfiles desde el lanzador a un fichero.
-
-**NOTA**: No se permite duplicación de nombre de perfil en ninguna de las operaciones.
-
-#### Lista de tipos de juegos
-En esta sección puedes añadir, editar o eliminar tipos de juegos del lanzador. Cada tipo de juego está compuesto por cuatro campos:
-1. _Código_: Código para identificar el tipo de juego. No es un texto libre, debe ser exactamente como es descrito en la documentación del servidor de Killing Floor 2. 
-2. _Descripción_: Texto libre para identificar el tipo de juego.
-3. _Dificultades activas_: Indica si el combo de dificultades está activo o no.
-4. _Longitudes activas_: Indica si el combo de longitudes está activo o no.
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot07.png)
-
-* _Añadir nuevo tipo de juego_: Permite añadir un nuevo tipo de juego sin duplicidad de código.
-* _Doble click en un código o descripción de tipo de juego_: Permite editar el campo.
-* _Eliminar el tipo de juego seleccionado_: Permite eliminar el código y descripción del tipo de juego seleccionado.
-
-#### Lista de Dificultades
-En esta sección puedes añadir, editar o eliminar dificultades del lanzador. Cada dificultad está compuesta por dos campos:
-1. _Código_: Código para identificar el tipo de dificultad. No es un texto libre, debe ser exactamente como es descrito en la documentación del servidor de Killing Floor 2. 
-2. _Descripción_: Texto libre para identificar el tipo de dificultad. 
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot08.png)
-
-* _Añadir nueva dificultad_: Permite añadir una nueva dificultad sin duplicidad de código.
-* _Doble click en un código o descripción de dificultad_: Permite editar el campo.
-* _Eliminar la dificultad seleccionada_: Permite eliminar el código y descripción de la dificultad seleccionada.
-
-#### Lista de Longitudes
-En esta sección puedes añadir, editar o eliminar longitudes del lanzador. Cada longitud está compuesta por dos campos:
-1. _Código_: Código para identificar el tipo de longitud. No es un texto libre, debe ser exactamente como es descrito en la documentación del servidor de Killing Floor 2. 
-2. _Descripción_: Texto libre para identificar el tipo de longitud. 
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot09.png)
-
-* _Añadir nueva longitud_: Permite añadir una nueva longitud sin duplicidad de código.
-* _Doble click en un código o descripción de longitud_: Permite editar el campo.
-* _Eliminar la longitud seleccionada_: Permite eliminar el código y descripción de la longitud seleccionada.
-
-#### Lista de maximo jugadores
-En esta sección puedes añadir, editar o eliminar el máx.jugadores del lanzador. Cada número máx. jugadores está compuesto por dos campos:
-1. _Código_: Código para identificar el máx.jugadores. No es un texto libre, debe ser exactamente como es descrito en la documentación del servidor de Killing Floor 2. 
-2. _Descripción_: Texto libre para identificar el máx.jugadores.
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot10.png)
-
-* _Añadir nuevo número de máx.jugadores_: Permite añadir un nuevo número de máx.jugadores sin duplicidad de código.
-* _Doble click en un código o descripción de máx.jugadores_: Permite editar el campo.
-* _Eliminar el máx.jugadores seleccionado_: Permite eliminar el código y descripción del máx.jugadores seleccionado.
-
-## Ejecutar un fichero antes de lanzar el servidor
-Opcionalmente, el lanzador permite ejecutar un fichero después de pulsar el botón "Ejectar servidor".
-Para habilitar esta funcionalidad, necesitas configurar los siguientes parámetros en el fichero properties/config.properties: 
-```
-prop.config.enableExecuteFileBeforeRunKF2Server=true
-prop.config.fileToBeExecuted=C:\\ruta\\a\\mi\\fichero\\ejemplo.exe
-```
-
-Además, si necesitas ejecutar un fichero a través de la consola, por ejemplo ficheros batch o de scripts, entonces activa el siguiente parámetro:
-```
-prop.config.executeFileViaConsole=true
-```
-
-## Parametros por consola
-El lanzador permite ejecutar servidores a través de parámetros de terminal sin interacción del usuario con la interfaz.
-
-Los parámetros aceptados son: *Por ejemplo*:
-
-```
-java -jar SimpleKF2ServerLauncher.jar --profiles nombrePerfil1 [nombrePerfil2 nombrePerfil3 ... ]
-```
-*NOTE: [ ] significa que estos parámetros son opcionales*
-
-- Este comando ejecuta uno o varios servidores, uno por nombre de perfil.
-- Los nombres de perfiles deben estar separados por espacio en blanco.
-- Los nombres de perfiles deben existir en la base de datos del lanzador.
-
-## Donacion
+## Donación
 Si encontraste útil esta aplicación, te gustó y quieres contribuir, puedes donar la cantidad que estimes [aquí](https://www.paypal.me/cesarrgon).
 
-![Paypal logo](src/main/resources/images/documentation/paypal-logo.png)
+![Paypal logo](doc/images/paypal-logo.png)
 
 ¡Muchas gracias!

@@ -1,41 +1,9 @@
-![Logo](src/main/resources/images/documentation/kf2banner.png)
+![Logo](doc/images/kf2banner.png)
 
 _[Click here to open documentation in spanish | Pulse aquí para abrir documentación en español](LEEME.md)_
 
 ---
 Application to easily customize and launch a Killing Floor 2 server through a visual interface instead of edditing batch files or server's config files. It has been developed with Java, so the interface is compatible on Windows and Linux OS.
-
-*Example of configuration*
-
-![Example configuration](src/main/resources/images/documentation/screenshot00.png)
-
-*Result after join the server through the game's client*
-
-![In game](src/main/resources/images/documentation/screenshot-in-game.jpg)
-
-### Index
-> 1. [Features](#features)
-> 2. [Pre-requisites](#pre-requisites)
-> 3. [Install and run the launcher](#install-and-run-the-launcher)
->   - [On Windows OS](#on-windows-os)
->   - [On Linux OS](#on-linux-os)
-> 4. [Install the server](#install-the-server)
-> 5. [Basic configuration](#basic-configuration)
->   - [Main page](#main-page)
->   - [WebAdmin page](#webadmin-page)
->   - [Console page](#console-page)
-> 6. [Custom maps and mods](#custom-maps-and-mods)
-> 7. [Advanced configuration](#advanced-configuration)
->   - [Profile list](#profile-list)
->   - [Game type list](#game-type-list)
->   - [Difficulty list](#difficulty-list)
->   - [Length list](#length-list)
->   - [Maximum players list](#maximum-players-list)
-> 8. [Execute a file before launch the server](#execute-a-file-before-launch-the-server)
-> 9. [Console parameters](#console-parameters)
-> 10. [Donation](#donation)
-
-## Features
 
 ```
 Version: 2.0.4 final
@@ -44,6 +12,16 @@ Author: César Rodríguez González
 Languages: English, Spanish, French
 Translation to french by: -foG.Nox
 ```
+
+*Example of configuration*
+
+![Example configuration](doc/images/screenshot00.png)
+
+*Result after join the server through the game's client*
+
+![In game](doc/images/screenshot-in-game.jpg)
+
+## Features
 
 - Install/Update server to the latest official or beta version.
 - Launch the server with specified parameters by the user in launcher's main page.
@@ -59,292 +37,45 @@ Translation to french by: -foG.Nox
 - All those features are available through the launcher's interface on Windows and Linux OS.
 
 ## Pre-requisites
-- Internet connection to download, update and publish a Killing Floor 2 server.
-- Open needed ports in your router and firewall if you want your server be visible on internet.
-
-  | Port        | Default  | Protocol  | What this option controls                                                   |
-  |-------------|----------|-----------|-----------------------------------------------------------------------------|
-  | Game Port   | 7777     | UDP       | This is the main port the game will send connections over                   |
-  | Query Port  | 27015    | UDP       | This port is used to communicate with the Steam Master Server               |
-  | Web Admin   | 8080     | TCP       | This port is used to connect to your servers web admin page (if turned on)  |
-  | Steam Port  | 20560    | UDP       |                                                                             |
-  | NTP Port    | 123      | UDP       | Weekly Outbreak Only - Internet time lookup to determine correct Outbreak   |
-
-- Install Oracle JRE 8 (Java Runtime Environment) in order to be able to execute the launcher. JRE can be downloaded from [here](https://www.java.com/en/download/).
+See documentation about this section [here](doc/PRE-REQUISITES.md).
 
 ## Install and run the launcher
 
-[![YouTube video](src/main/resources/images/documentation/video01.png)](https://www.youtube.com/watch?v=1fAL5AK55QY)
+[![YouTube video](doc/images/video01.png)](https://www.youtube.com/watch?v=1fAL5AK55QY)
 
-- Download the latest release of the program from [here](https://github.com/cesar-rgon/simple-kf2-server-launcher/releases)
-- Extract the content of the zip file to a local folder.
-
-##### On Windows OS
-- Execute the file "SimpleKF2ServerLauncher.jar" just by double click over the file or, as an alternative method, type next commands in a terminal.
-
-*Example*
-```
-C:\> cd SimpleKF2ServerLauncher-local-folder
-C:\SimpleKF2ServerLauncher-local-folder> java -jar SimpleKF2ServerLauncher.jar
-```
-*NOTE: Replace SimpleKF2ServerLauncher-local-folder for the local folder that you want.*
-
-##### On Linux OS
-- Execute the file "SimpleKF2ServerLauncher.jar" with next commands in a terminal:
-
-*Example*
-```
-$ cd SimpleKF2ServerLauncher-local-folder
-$ java -jar SimpleKF2ServerLauncher.jar
-```
-*NOTE: Replace SimpleKF2ServerLauncher-local-folder for the local folder that you want.*
-
-*NOTE: The JRE must be the Oracle version (not the OpenJDK available in repositories).*
+See documentation about this section [here](doc/INSTALL-LAUNCHER.md).
 
 ## Install the server
 
-[![YouTube video](src/main/resources/images/documentation/video02.png)](https://www.youtube.com/watch?v=JYf4dvg04nc)
+[![YouTube video](doc/images/video02.png)](https://www.youtube.com/watch?v=JYf4dvg04nc)
 
-Under Install/Update page you can install or update the Killing Floor 2 server.
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot03.png)
-
-* _Installation folder_: This field is mandatory. Needed to find the local folder where the server must be installed.
-
-* _Validate files_: This field is optional. If enabled, the install/update operation checks the integrity of the server's files. Slow operation.
-
-* _Update to beta?_: This field is optional. If enabled, the operation updates to a beta version of the game (if available).
-
-* _Beta brunch_: This field is optional. The user specifies the name of the beta brunch (only used when last check was enabled).
+See documentation about this section [here](doc/INSTALL-SERVER.md).
 
 ## Basic configuration
 
-[![YouTube video](src/main/resources/images/documentation/video03.png)](https://www.youtube.com/watch?v=2qVCiDyYjdw)
+[![YouTube video](doc/images/video03.png)](https://www.youtube.com/watch?v=2qVCiDyYjdw)
 
-#### Main page
-![Launcher screenshot](src/main/resources/images/documentation/screenshot00.png)
-
-* _Profile_: This combo is mandatory. It allows to customize filter values by profile name.
-
-* _Run server_: Run a Killing Floor 2 server with the specified filters. All mandatory fields must be specified. Server config files are placed in folder: KFGame/Config/PROFILENAME. So, the original config files placed in folder: KFGame/Config are never modified.
-If more than one profile, you can launch multiple servers at once (one per profile).
-
-* _Join server_: Join to a Killing Floor 2 server game previously started. If the server has not been started, the operation will start the game but it will not join to any sever. Pre-requisites: Steam application and Killing Floor 2 game client must be installed.
-If more than one profile, you can select wich server you want to join (one per profile).
-
-###### Basic parameters
-
-* _Language_: This combo is mandatory. It allows to select a language for the launcher's interface. List of available languages are described in the [Features](#features) section of this document. 
-
-* _Map_: This combo is mandatory. It allows you to select one specific official map or custom map. *NOTE: Custom maps are visible in this field only if they were already downloaded before*.
-
-* _Game Type_: This combo is mandatory. It allows you to select one specific game type.
-
-* _Difficulty_: This combo is mandatory. It allows you to select one specific difficulty level.
-
-* _Length_: This combo is mandatory. It allows you to select one specific number of waves.
-
-* _Max. players_: This field is mandatory. It allows you to select one specific maximum number of players in a match.
-
-* _Server name_: This field is mandatory. It must contain at least one character.
-
-* _Server password_: This field is optional. It allows you to protect your server with a password (needed to known to be able to join the game).
-
-* _Web page_: If web page check is enabled you can manage the server through WebAdmin page. Killing Floor 2 server must be launched before you can access WebAdmin page.
-
-* _Web password_: This field is optional. It allows you to protect WebAdmin page with a password to login.
-
-* _Takeover_: If this check is enabled other people can takeover the server, that means, change the password, change other configurations and take the control of the server.
-
-* _URL image server_: This field is optional. This link must return an uploaded image to internet and it will be used as the welcome image in your Killing Floor 2 server. Format and resolution must be PNG 512x256 pixels.
-
-* _Your clan_: This field is optional.
-
-* _Your web link_: This field is optional.
-
-* _Welcome message_: This field is optional. It's a welcome message in starting screen of the server.
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot01.png)
-
-###### Advanced parameters
-
-* _Map voting_: This check enables or disables map voting screen after a game ends.
-
-* _Map voting time_: This field is optional. The time, in seconds, you have to vote a map.
-
-* _Kick voting_: This check enables or disables the ability to cast a kick vote.
-
-* _Kick percentage_: This field is optional. How many players it will take to pass a kick vote. Example: 0.50 = 50% is 3/6 players, 0.66 = 66% is 4/6 players, 0.83 = 83% is 5/6 players, etc. Minimum value is 0, maximum is 1.
-
-* _Time between kick votes_: This field is optional. The time, in seconds, you must wait after a kick vote has failed before initiating another kick vote.
-
-* _Max.idle time to be kicked_: This field is optional. Set the maximum time players can idle before getting automatically kicked. Maximum is 300 seconds. Players will be notified via text chat if they're idling too long.
-
-* _Public text chat_: This check enables or disables text chat entirely.
-
-* _Spectators chat_: If this check is enabled, spectators will only be allowed to talk with other spectators. This does not affect text chat.
-
-* _VoIP_: This check enables or disables voice chat entirely.
-
-* _Dead players can talk_: If this check is false, players that die will not be able to voice chat until they spawn back in.
-
-* _Chat logging_: If this check is enabled, the in-game text chat will be logged to a file.
-
-* _Chat logging filename_: This field is optional. It indicates the filename used to log the text chat. You can enable the use of timestamp with the filename. 
-
-* _Team collision_: This check enables or disables players to be able to walk through each other during the game.
-
-* _Admin can pause_: If this check is enabled, it allows admins to pause the game for all players using the console command: pause. If game is paused, players will still be able to connect and join the server.
-
-* _Announce admin login_: if this check is enabled, when you login as admin in-game, it will announce to everyone "PlayerName has logged in as Admin".
-
-* _Ready up delay_: This field is optional. The time, in seconds, you must wait when all players are set to "Ready Up" except one player.    
-
-* _Game start delay_: This field is optional. The delay, in seconds, you wait after all players are set to "Ready Up". Lowest value you can use is 1.
-
-* _Max.spectators_: This field is optional. The maxium numbers of spectators allowed.
-
-* _Map objetives_: If this check is enabled, the stand your ground map objectives are present.
-
-* _Pick up items_: This check enables or disables Kevlar and weapon pick ups.
-
-* _Friendly fire percentage_: This field is optional. Enables players to inflict damage on their teammates. Minimun value is 0, maximum is 1.
-
-* _Ports_: These fields are optional. You need to open ports in your router and firewall. If more than one server is launched, ports must be different between them (one configuration per profile).
-
-* _Custom parameters_: This field is optional. It defines additional parameters. The format must be: [?]parameter1=value1?parameter2=value2?...?parameterN=valueN
-
-  [?] means: optionally you can start parameters by "?"
-  
-#### WebAdmin page
-In this section you can access to WebAdmin page only if the server is already started and web page is checked in "Main Page" section of the application.
-WebAdmin allows you to manage and control the Killing Floor 2 server.
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot02.png)
-
-#### Console page
-In this section you can see the commands generated by the launcher when you run or join a server.
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot11.png)
+See documentation about this section [here](doc/BASIC-CONFIGURATION.md).
 
 ## Custom maps and mods
 
-[![YouTube video](src/main/resources/images/documentation/video04.png)](https://www.youtube.com/watch?v=Y94hFK6jOEI)
+[![YouTube video](doc/images/video04.png)](https://www.youtube.com/watch?v=Y94hFK6jOEI)
 
-Under Maps/Mods page you can manage custom maps, mods and official maps present in the server.
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot04.png)
-
-* _Search_: Filter to search maps and mods by name while you are writing the text.
-
-* _Columns_: Slider that allows change the thumbnail size of the maps by the specific number of columns.
-
-* _Add new maps/mods_: It allows to add new custom maps and mods from Steam's WorkShop by WorkShop's Id or URL. If more than one element, use comma as separator.
-
-* _Select all maps/mods_: It allows to select or unselect all custom maps and mods as well as official maps.
-
-* _Delete maps/mods_: It allows to delete all maps and mods previously selected.
-
-* _Import maps/mods_: It allows to import all custom maps, mods and official maps from the server to the launcher. Only the elements not present already in the launcher.
-
-* _Search in WorkShop_: It allows to browse in Workshop's pages looking for new maps and mods. Then you can choose wich of them add to the launcher.
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot05.png)
-
+See documentation about this section [here](doc/CUSTOM-MAPS.md).
 
 ## Advanced configuration
 
-[![YouTube video](src/main/resources/images/documentation/video05.png)](https://www.youtube.com/watch?v=tFxy_neabug)
+[![YouTube video](doc/images/video05.png)](https://www.youtube.com/watch?v=tFxy_neabug)
 
-#### Profile list
-In this section you can manage profiles from the launcher. Each profile is used to customize your server parameters.
+See documentation about this section [here](doc/ADVANCED-CONFIGURATION.md).
 
-![Launcher screenshot](src/main/resources/images/documentation/screenshot06.png)
-
-* _Double click on a profile name_: It allows to edit the profile name.
-* _Add new profile_: It allows to add a new profile. The profile name must be unique.
-* _Clone selected profile_: It allows to duplicate the selected profile to a new profile.
-* _Remove selected profile_: It allows to remove the selected profile.
-* _Import profiles_: It allows to import profiles from a file to the launcher.
-* _Export profiles_: It allows to export profiles from the launcher to a file.
-
-**NOTE**: No profile name duplication accepted in any operation.
-
-#### Game type list
-In this section you can add, edit or remove game types from the launcher. Each game type is composed by four fields:
-1. _Code_: Code to identify the game type mode. It's not a free text, it has to be exactly like described in the Killing Floor 2 server documentation.
-2. _Description_: Free text to identify the game type mode.
-3. _Difficulties enabled_: If difficulties combo is active or not.
-4. _Lengths enabled_: If lengths combo is active or not.
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot07.png)
-
-* _Add new game type_: It allows to add a new game type with no code duplicated.
-* _Double click on a game type code or description_: It allows to edit the field.
-* _Remove selected game type_: It allows to remove the selected game type code and description.
-
-#### Difficulty list
-In this section you can add, edit or remove difficulties from the launcher. Each difficulty is composed by two fields:
-1. _Code_: Code to identify the difficulty mode. It's not a free text, it has to be exactly like described in the Killing Floor 2 server documentation.
-2. _Description_: Free text to identify the difficulty mode.
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot08.png)
-
-* _Add new difficulty_: It allows to add a new difficulty with no code duplicated.
-* _Double click on a difficulty code or description_: It allows to edit the field.
-* _Remove selected difficulty_: It allows to remove the selected difficulty code and description.
-
-#### Length list
-In this section you can add, edit or remove length modes from the launcher. Each length is composed by two fields:
-1. _Code_: Code to identify the length mode. It's not a free text, it has to be exactly like described in the Killing Floor 2 server documentation.
-2. _Description_: Free text to identify the length mode.
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot09.png)
-
-* _Add new length_: It allows to add a new length with no code duplicated.
-* _Double click on a length code or description_: It allows to edit the field.
-* _Remove selected length_: It allows to remove the selected length code and description.
-
-#### Maximum players list
-In this section you can add, edit or remove the max.players from the launcher. Each max.players is composed by two fields:
-1. _Code_: Code to identify the max.players. It's not a free text, it has to be exactly like described in the Killing Floor 2 server documentation.
-2. _Description_: Free text to identify the max.players.
-
-![Launcher screenshot](src/main/resources/images/documentation/screenshot10.png)
-
-* _Add new max.players_: It allows to add a new max.players with no code duplicated.
-* _Double click on a max.players code or description_: It allows to edit the field.
-* _Remove selected max.players_: It allows to remove the selected max.players code and description.
-
-## Execute a file before launch the server
-Optionally, the launcher allows to execute a file after you press the "Run server" button.
-To enable this functionality, you have to setup next parameters in properties/config.properties file 
-```
-prop.config.enableExecuteFileBeforeRunKF2Server=true
-prop.config.fileToBeExecuted=C:\\path\\to\\my\\file\\example.exe
-```
-
-Furthermore, if you need to execute a file via console, for example batch or script files, then enable next parameter:
-```
-prop.config.executeFileViaConsole=true
-```
-
-## Console parameters
-The launcher allows to execute servers through terminal parameters without user interaction with the interface.
-
-Accepted parameters are: *For example*
-```
-java -jar SimpleKF2ServerLauncher.jar --profiles profileName1 [profileName2 profileName3 ... ]
-```
-*NOTE: [ ] means that these parameters are optional*
-
-- This command executes one or multiple servers, one per profileName.
-- The profile names must be separated by whitespace.
-- The profile names must exist in launcher's database.
+## Annex
+- [Execute a file before launch the server](doc/ANNEX.md#execute-a-file-before-launch-the-server)
+- [Console parameters](doc/ANNEX.md#console-parameters)
 
 ## Donation
 If you find useful this application, you liked it and you want to contribute, you can donate the amount you desire [here](https://www.paypal.me/cesarrgon).
 
-![Paypal logo](src/main/resources/images/documentation/paypal-logo.png)
+![Paypal logo](doc/images/paypal-logo.png)
 
 Thank you very much!
