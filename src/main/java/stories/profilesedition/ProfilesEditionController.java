@@ -96,7 +96,7 @@ public class ProfilesEditionController implements Initializable {
     @FXML
     private void addProfileOnAction() {
         try {
-            String installationFolder = facade.findPropertyValue("prop.config.installationFolder");
+            String installationFolder = facade.findConfigPropertyValue("prop.config.installationFolder");
             if (StringUtils.isBlank(installationFolder)) {
                 logger.warn("Installation folder can not be empty and can not contains whitespaces. Define in Install/Update section: " + installationFolder);
                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
@@ -128,7 +128,7 @@ public class ProfilesEditionController implements Initializable {
     @FXML
     private void cloneProfileOnAction() {
         try {
-            String installationFolder = facade.findPropertyValue("prop.config.installationFolder");
+            String installationFolder = facade.findConfigPropertyValue("prop.config.installationFolder");
             if (StringUtils.isBlank(installationFolder)) {
                 logger.warn("Installation folder can not be empty and can not contains whitespaces. Define in Install/Update section: " + installationFolder);
                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
@@ -172,7 +172,7 @@ public class ProfilesEditionController implements Initializable {
     @FXML
     private void removeProfileOnAction() {
         try {
-            String installationFolder = facade.findPropertyValue("prop.config.installationFolder");
+            String installationFolder = facade.findConfigPropertyValue("prop.config.installationFolder");
             if (StringUtils.isBlank(installationFolder)) {
                 logger.warn("Installation folder can not be empty and can not contains whitespaces. Define in Install/Update section: " + installationFolder);
                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
@@ -193,7 +193,7 @@ public class ProfilesEditionController implements Initializable {
                     }
 
                     profilesTable.getItems().remove(selectedIndex);
-                    File profileConfigFolder = new File(facade.findPropertyValue("prop.config.installationFolder") + "/KFGame/Config/" + selectedProfile.getName());
+                    File profileConfigFolder = new File(facade.findConfigPropertyValue("prop.config.installationFolder") + "/KFGame/Config/" + selectedProfile.getName());
                     FileUtils.deleteDirectory(profileConfigFolder);
                 } else {
                     logger.warn("The profile can not be deleted from database: " + selectedProfile.getName());
@@ -220,7 +220,7 @@ public class ProfilesEditionController implements Initializable {
         String oldProfileName = (String)event.getOldValue();
         String newProfileName = ((String)event.getNewValue()).replaceAll(" ", "_");
         try {
-            String installationFolder = facade.findPropertyValue("prop.config.installationFolder");
+            String installationFolder = facade.findConfigPropertyValue("prop.config.installationFolder");
             if (StringUtils.isBlank(installationFolder)) {
                 logger.warn("Installation folder can not be empty and can not contains whitespaces. Define in Install/Update section: " + installationFolder);
                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
@@ -263,7 +263,7 @@ public class ProfilesEditionController implements Initializable {
     @FXML
     private void importProfileOnAction() {
         try {
-            String installationFolder = facade.findPropertyValue("prop.config.installationFolder");
+            String installationFolder = facade.findConfigPropertyValue("prop.config.installationFolder");
             if (StringUtils.isBlank(installationFolder)) {
                 logger.warn("Installation folder can not be empty and can not contains whitespaces. Define in Install/Update section: " + installationFolder);
                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");

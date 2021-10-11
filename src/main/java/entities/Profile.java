@@ -6,7 +6,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "PROFILES")
-public class Profile extends CommonEntity {
+public class Profile extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -223,12 +223,23 @@ public class Profile extends CommonEntity {
         this.id = id;
     }
 
-    public String getName() {
+    @Override
+    public String getCode() {
         return name;
     }
 
-    public void setName(String name) {
+    @Override
+    public void setCode(String name) {
         this.name = name;
+    }
+
+    @Override
+    public String getDescription() {
+        return "";
+    }
+
+    @Override
+    public void setDescription(String description) {
     }
 
     public Language getLanguage() {

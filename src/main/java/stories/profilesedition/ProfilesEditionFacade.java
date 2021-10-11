@@ -13,8 +13,8 @@ public interface ProfilesEditionFacade {
     ProfileDto createNewProfile(String profileName) throws Exception;
     boolean deleteSelectedProfile(String profileName, String installationFolder) throws Exception;
     ProfileDto updateChangedProfile(String oldProfileName, String newProfileName) throws SQLException;
-    String findPropertyValue(String key) throws Exception;
-    ProfileDto cloneSelectedProfile(String profileName, String newProfileName) throws SQLException;
+    String findConfigPropertyValue(String key) throws Exception;
+    ProfileDto cloneSelectedProfile(String profileName, String newProfileName) throws Exception;
     void exportProfilesToFile(List<ProfileToDisplay> profilesToExportDto, File file) throws Exception;
     ObservableList<ProfileDto> importProfilesFromFile(File file, String message, StringBuffer errorMessage) throws Exception;
     List<ProfileToDisplay> selectProfilesToBeExported(String message) throws SQLException;

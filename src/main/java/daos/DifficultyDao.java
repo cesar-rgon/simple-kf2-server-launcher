@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-public class DifficultyDao extends CommonDao<Difficulty> {
+public class DifficultyDao extends AbstractDao<Difficulty> {
 
     private static DifficultyDao instance = null;
 
@@ -25,11 +25,13 @@ public class DifficultyDao extends CommonDao<Difficulty> {
         return instance;
     }
 
+    @Override
     public List<Difficulty> listAll() throws SQLException {
         String query="select d from entities.Difficulty d order by d.code asc";
         return list(query, null);
     }
 
+    @Override
     public Optional<Difficulty> findByCode(String code) throws SQLException {
         String query="select d from entities.Difficulty d where d.code = :CODE";
         java.util.Map<String,Object> parameters = new HashMap<String,Object>();

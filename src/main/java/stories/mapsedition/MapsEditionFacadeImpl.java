@@ -9,15 +9,12 @@ import dtos.factories.ProfileDtoFactory;
 import entities.Map;
 import entities.Profile;
 import javafx.collections.ObservableList;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.ProfileToDisplay;
-import pojos.ProfileToDisplayFactory;
-import services.PropertyService;
-import services.PropertyServiceImpl;
-import stories.mapwebinfo.MapWebInfoFacadeImpl;
+import services.*;
+import stories.AbstractFacade;
 import utils.Utils;
 
 import java.io.BufferedReader;
@@ -30,30 +27,21 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class MapsEditionFacadeImpl implements MapsEditionFacade {
+public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEditionFacade {
 
     private static final Logger logger = LogManager.getLogger(MapsEditionFacadeImpl.class);
+
     private final MapDtoFactory mapDtoFactory;
     private final PropertyService propertyService;
     private final ProfileDtoFactory profileDtoFactory;
-    private final ProfileToDisplayFactory profileToDisplayFactory;
+    private final MapService mapService;
 
     public MapsEditionFacadeImpl() {
         super();
         this.mapDtoFactory = new MapDtoFactory();
         this.propertyService = new PropertyServiceImpl();
         this.profileDtoFactory = new ProfileDtoFactory();
-        this.profileToDisplayFactory = new ProfileToDisplayFactory();
-    }
-
-    @Override
-    public String findConfigPropertyValue(String key) throws Exception {
-        return propertyService.getPropertyValue("properties/config.properties", key);
-    }
-
-    @Override
-    public void setConfigPropertyValue(String key, String value) throws Exception {
-        propertyService.setProperty("properties/config.properties", key, value);
+        this.mapService = new MapServiceImpl();
     }
 
     private Map createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto, boolean downloaded, Boolean isMod, List<Profile> profileList) throws Exception {
@@ -63,23 +51,19 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         String urlInfo = baseUrlWorkshop + idWorkShop;
         Map customMap = new Map(mapName, false, urlInfo, idWorkShop, urlPhoto, downloaded, isMod, profileList);
-        Map insertedMap = MapDao.getInstance().insert(customMap);
-        if (insertedMap != null) {
-            profileList.stream().forEach(profile -> {
-                try {
-                    profile.getMapList().add(insertedMap);
-                    ProfileDao.getInstance().update(profile);
-                } catch (SQLException e) {
-                    logger.error("Error updating the profile " + profile.getName() + " with a new map: " + insertedMap.getCode(), e);
-                }
-            });
-        }
-        return insertedMap;
+        return mapService.createMap(customMap);
     }
 
     @Override
     public MapDto createNewCustomMapFromWorkshop(Long idWorkShop, String installationFolder, boolean downloaded, Boolean isMod, List<String> profileNameList) throws Exception {
-        List<Profile> profileList = profileNameList.stream().map(pn -> findProfileByName(pn)).collect(Collectors.toList());
+        List<Profile> profileList = profileNameList.stream().map(pn -> {
+            try {
+                return findProfileByCode(pn);
+            } catch (SQLException e) {
+                logger.error("Error finding a profile by name " + pn, e);
+                return null;
+            }
+        }).collect(Collectors.toList());
         if (profileList == null || profileList.isEmpty()) {
             return null;
         }
@@ -118,7 +102,14 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
 
     @Override
     public MapDto createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String installationFolder, boolean downloaded, Boolean isMod, List<String> profileNameList) throws Exception {
-        List<Profile> profileList = profileNameList.stream().map(pn -> findProfileByName(pn)).collect(Collectors.toList());
+        List<Profile> profileList = profileNameList.stream().map(pn -> {
+            try {
+                return findProfileByCode(pn);
+            } catch (SQLException e) {
+                logger.error("Error finding a profile by name " + pn, e);
+                return null;
+            }
+        }).collect(Collectors.toList());
         if (profileList == null || profileList.isEmpty()) {
             return null;
         }
@@ -159,39 +150,23 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
         return false;
     }
 
-    private Profile findProfileByName(String profileName) {
-        try {
-            Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
-            if (profileOpt.isPresent()) {
-                return profileOpt.get();
-            }
-            return null;
-        } catch (SQLException e) {
-            logger.error("Error finding a profile by name " + profileName, e);
-            return null;
-        }
-    }
 
     @Override
-    public MapDto insertOfficialMap(String mapName, List<String> profileNameList) throws SQLException {
-        List<Profile> profileList = profileNameList.stream().map(pn -> findProfileByName(pn)).collect(Collectors.toList());
+    public MapDto insertOfficialMap(String mapName, List<String> profileNameList) throws Exception {
+        List<Profile> profileList = profileNameList.stream().map(pn -> {
+            try {
+                return findProfileByCode(pn);
+            } catch (SQLException e) {
+                logger.error("Error finding a profile by name " + pn, e);
+                return null;
+            }
+        }).collect(Collectors.toList());
         if (profileList == null || profileList.isEmpty()) {
             return null;
         }
         Map newOfficialMap = new Map(mapName, true, null, null, "/KFGame/Web/images/maps/" + mapName + ".jpg", true, false, profileList);
-        Map insertedMap = MapDao.getInstance().insert(newOfficialMap);
-        if (insertedMap != null) {
-            profileList.stream().forEach(profile -> {
-                try {
-                    profile.getMapList().add(insertedMap);
-                    ProfileDao.getInstance().update(profile);
-                } catch (SQLException e) {
-                    logger.error("Error updating the profile " + profile.getName() + " with a new map: " + insertedMap.getCode(), e);
-                }
-            });
-            return mapDtoFactory.newDto(insertedMap);
-        }
-        return null;
+        Map insertedMap = mapService.createMap(newOfficialMap);
+        return insertedMap != null ? mapDtoFactory.newDto(insertedMap): null;
     }
 
     @Override
@@ -211,7 +186,7 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
 
     @Override
     public List<MapDto> getMapsFromProfile(String profileName) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
         if (profileOpt.isPresent()) {
             return mapDtoFactory.newDtos(profileOpt.get().getMapList());
         }
@@ -224,46 +199,30 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
         if (!mapOptional.isPresent()) {
             return false;
         }
-
-        List<Profile> profileList = profileNameList.stream().map(pn -> findProfileByName(pn))
+        List<Profile> profileList = profileNameList.stream().map(pn -> {
+                    try {
+                        return findProfileByCode(pn);
+                    } catch (SQLException e) {
+                        logger.error("Error finding a profile by name " + pn, e);
+                        return null;
+                    }
+                })
                 .filter(profile -> !profile.getMapList().contains(mapOptional.get()))
                 .collect(Collectors.toList());
         if (profileList == null || profileList.isEmpty()) {
             return null;
         }
-
-        profileList.stream().forEach(profile -> {
-            try {
-                profile.getMapList().add(mapOptional.get());
-                ProfileDao.getInstance().update(profile);
-            } catch (SQLException e) {
-                logger.error("Error updating the profile " + profile.getName() + " with the map: " + mapOptional.get().getCode(), e);
-            }
-        });
-        mapOptional.get().getProfileList().addAll(profileList);
-        return MapDao.getInstance().update(mapOptional.get());
+        return mapService.addProfilesToMap(mapOptional.get(), profileList);
     }
 
     @Override
     public MapDto deleteMapFromProfile(String mapName, String profileName, String installationFolder) throws Exception {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
         if (profileOpt.isPresent()) {
             Optional<Map> mapOpt = profileOpt.get().getMapList().stream().filter(m -> m.getCode().equalsIgnoreCase(mapName)).findFirst();
             if (mapOpt.isPresent()) {
-                profileOpt.get().getMapList().remove(mapOpt.get());
-                ProfileDao.getInstance().update(profileOpt.get());
-                mapOpt.get().getProfileList().remove(profileOpt.get());
-                MapDao.getInstance().update(mapOpt.get());
-
-                if (!mapOpt.get().isOfficial() && mapOpt.get().getProfileList().isEmpty()) {
-                    MapDao.getInstance().remove(mapOpt.get());
-                    File photo = new File(installationFolder + mapOpt.get().getUrlPhoto());
-                    photo.delete();
-                    File cacheFolder = new File(installationFolder + "/KFGame/Cache/" + mapOpt.get().getIdWorkShop());
-                    FileUtils.deleteDirectory(cacheFolder);
-                }
-
-                return mapDtoFactory.newDto(mapOpt.get());
+                Map deletedMap = mapService.deleteMap(mapOpt.get(), profileOpt.get(), installationFolder);
+                return mapDtoFactory.newDto(deletedMap);
             }
         }
         return null;
@@ -280,7 +239,7 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
 
     @Override
     public void unselectProfileMap(String profileName) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
         if (profileOpt.isPresent()) {
             profileOpt.get().setMap(null);
             ProfileDao.getInstance().update(profileOpt.get());
@@ -293,12 +252,7 @@ public class MapsEditionFacadeImpl implements MapsEditionFacade {
         if (allProfiles == null || allProfiles.isEmpty()) {
             return new ArrayList<String>();
         }
-
-        List<ProfileToDisplay> allProfilesToDisplay = profileToDisplayFactory.newOnes(allProfiles);
-        allProfilesToDisplay.stream().filter(p -> p.getProfileName().equalsIgnoreCase(defaultSelectedProfileName)).forEach(profile -> profile.setSelected(true));
-        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfiles");
-        List<ProfileToDisplay> selectedProfiles = Utils.selectProfilesDialog(headerText + ":", allProfilesToDisplay);
+        List<ProfileToDisplay> selectedProfiles = mapService.selectProfilesToImport(allProfiles, defaultSelectedProfileName);
         return selectedProfiles.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
     }
 }

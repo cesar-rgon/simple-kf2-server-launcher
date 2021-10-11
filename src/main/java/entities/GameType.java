@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "GAME_TYPES")
-public class GameType extends CommonEntity {
+public class GameType extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -19,6 +19,9 @@ public class GameType extends CommonEntity {
 
     @Column(name="LENGTH_ENABLED", nullable=false)
     boolean lengthEnabled;
+
+    // Not mapped attribute. This value is stored in .properties file of each language
+    private String description;
 
     public GameType() {
         super();
@@ -39,10 +42,12 @@ public class GameType extends CommonEntity {
         this.id = id;
     }
 
+    @Override
     public String getCode() {
         return code;
     }
 
+    @Override
     public void setCode(String code) {
         this.code = code;
     }
@@ -61,5 +66,15 @@ public class GameType extends CommonEntity {
 
     public void setLengthEnabled(boolean lengthEnabled) {
         this.lengthEnabled = lengthEnabled;
+    }
+
+    @Override
+    public String getDescription() {
+        return description;
+    }
+
+    @Override
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

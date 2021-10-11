@@ -11,8 +11,9 @@ import utils.Utils;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DifficultyDtoFactory {
+public class DifficultyDtoFactory extends AbstractDtoFactory<Difficulty, SelectDto> {
 
+    @Override
     public SelectDto newDto(Difficulty difficulty) {
         try {
             PropertyService propertyService = new PropertyServiceImpl();
@@ -25,6 +26,7 @@ public class DifficultyDtoFactory {
         }
     }
 
+    @Override
     public ObservableList<SelectDto> newDtos(List<Difficulty> difficulties) {
         List<SelectDto> dtoList = difficulties.stream().map(this::newDto).collect(Collectors.toList());
         return FXCollections.observableArrayList(dtoList);

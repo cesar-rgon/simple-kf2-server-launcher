@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-public class MapDao extends CommonDao<Map> {
+public class MapDao extends AbstractDao<Map> {
 
     private static MapDao instance = null;
 
@@ -25,11 +25,18 @@ public class MapDao extends CommonDao<Map> {
         return instance;
     }
 
+    @Override
+    public List<Map> listAll() throws SQLException {
+        String query="select m from entities.Map m";
+        return list(query, null);
+    }
+
     public List<Map> listNotOfficialMaps() throws SQLException {
         String query="select m from entities.Map m where m.official=false";
         return list(query, null);
     }
 
+    @Override
     public Optional<Map> findByCode(String code) throws SQLException {
         String query="select m from entities.Map m where m.code = :CODE";
         java.util.Map<String,Object> parameters = new HashMap<String,Object>();

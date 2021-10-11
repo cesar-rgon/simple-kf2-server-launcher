@@ -6,8 +6,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import services.DatabaseService;
-import services.DatabaseServiceImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import utils.Utils;
@@ -25,14 +23,12 @@ import java.util.stream.Stream;
 public abstract class Kf2Common {
 
     private static final Logger logger = LogManager.getLogger(Kf2Common.class);
-    protected final DatabaseService databaseService;
     protected final PropertyService propertyService;
     protected String languageCode;
     protected boolean byConsole;
 
     protected Kf2Common() {
         super();
-        databaseService = new DatabaseServiceImpl();
         propertyService = new PropertyServiceImpl();
         byConsole = false;
         try {
@@ -83,7 +79,7 @@ public abstract class Kf2Common {
                 PropertyService propertyService = new PropertyServiceImpl();
                 String installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.installationFolder");
                 if (isValid(installationFolder)) {
-                    createConfigFolder(installationFolder, profile.getName());
+                    createConfigFolder(installationFolder, profile.getCode());
                     return runKf2Server(installationFolder, profile);
                 }
             } else {
@@ -115,7 +111,7 @@ public abstract class Kf2Common {
     protected String validateParameters(Profile profile) {
         StringBuffer errorMessage = new StringBuffer();
         try {
-            if (profile == null || StringUtils.isEmpty(profile.getName())) {
+            if (profile == null || StringUtils.isEmpty(profile.getCode())) {
                 return propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profileNotEmpty") + "\n";
             }
             if (profile.getLanguage() == null) {
@@ -191,9 +187,9 @@ public abstract class Kf2Common {
 
     protected void replaceInFileKfWebAdminIni(String installationFolder, Profile profile) {
         try {
-            File kfWebAdminIni = new File(installationFolder + "/KFGame/Config/" + profile.getName() + "/KFWebAdmin.ini");
+            File kfWebAdminIni = new File(installationFolder + "/KFGame/Config/" + profile.getCode() + "/KFWebAdmin.ini");
             BufferedReader br = new BufferedReader(new FileReader(kfWebAdminIni));
-            String strTempFile = installationFolder + "/KFGame/Config/" + profile.getName() + "/KFWebAdmin.ini.tmp";
+            String strTempFile = installationFolder + "/KFGame/Config/" + profile.getCode() + "/KFWebAdmin.ini.tmp";
             File tempFile = new File(strTempFile);
             PrintWriter pw = new PrintWriter(new FileWriter(strTempFile));
             String line;
@@ -229,9 +225,9 @@ public abstract class Kf2Common {
 
     protected void replaceInFileKfEngineIni(String installationFolder, Profile profile, String filename) {
         try {
-            File kfEngineIni = new File(installationFolder + "/KFGame/Config/" + profile.getName() + "/" + filename);
+            File kfEngineIni = new File(installationFolder + "/KFGame/Config/" + profile.getCode() + "/" + filename);
             BufferedReader br = new BufferedReader(new FileReader(kfEngineIni));
-            String strTempFile = installationFolder + "/KFGame/Config/" + profile.getName() + "/" + filename + ".tmp";
+            String strTempFile = installationFolder + "/KFGame/Config/" + profile.getCode() + "/" + filename + ".tmp";
             File tempFile = new File(strTempFile);
             PrintWriter pw = new PrintWriter(new FileWriter(strTempFile));
             String line;
@@ -288,9 +284,9 @@ public abstract class Kf2Common {
 
     protected void replaceInFileKfGameIni(String installationFolder, Profile profile, String filename) {
         try {
-            File kfGameIni = new File(installationFolder + "/KFGame/Config/" + profile.getName() + "/" + filename);
+            File kfGameIni = new File(installationFolder + "/KFGame/Config/" + profile.getCode() + "/" + filename);
             BufferedReader br = new BufferedReader(new FileReader(kfGameIni));
-            String strTempFile = installationFolder + "/KFGame/Config/" + profile.getName() + "/" + filename + ".tmp";
+            String strTempFile = installationFolder + "/KFGame/Config/" + profile.getCode() + "/" + filename + ".tmp";
             File tempFile = new File(strTempFile);
             PrintWriter pw = new PrintWriter(new FileWriter(strTempFile));
             String line;
@@ -349,7 +345,7 @@ public abstract class Kf2Common {
     }
 
     protected void replaceInFileKfWebIni(String installationFolder, Profile profile, Charset charset) throws Exception {
-        String kfWebIniFile = installationFolder + "/KFGame/Config/" + profile.getName() + "/KFWeb.ini";
+        String kfWebIniFile = installationFolder + "/KFGame/Config/" + profile.getCode() + "/KFWeb.ini";
         StringBuilder contentBuilder = new StringBuilder();
         Path filePath = Paths.get(kfWebIniFile);
         Stream<String> stream = Files.lines( filePath, charset);

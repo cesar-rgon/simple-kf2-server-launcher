@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class GameTypeDao extends CommonDao<GameType> {
+public class GameTypeDao extends AbstractDao<GameType> {
 
     private static GameTypeDao instance = null;
 
@@ -26,11 +26,13 @@ public class GameTypeDao extends CommonDao<GameType> {
         return instance;
     }
 
+    @Override
     public List<GameType> listAll() throws SQLException {
         String query="select gt from entities.GameType gt order by gt.code asc";
         return list(query, null);
     }
 
+    @Override
     public Optional<GameType> findByCode(String code) throws SQLException {
         String query="select gt from entities.GameType gt where gt.code = :CODE";
         Map<String,Object> parameters = new HashMap<String,Object>();

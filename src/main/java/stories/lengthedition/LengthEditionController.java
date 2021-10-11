@@ -49,7 +49,7 @@ public class LengthEditionController implements Initializable {
             lengthCodeColumn.setCellValueFactory(cellData -> cellData.getValue().getKeyProperty());
             lengthDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             lengthDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().getValueProperty());
-            lengthTable.setItems(facade.listAllLength());
+            lengthTable.setItems(facade.listAllItems());
 
             String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthTitle");
             titleConfigLabel.setText(titleConfigLabelText);
@@ -85,7 +85,7 @@ public class LengthEditionController implements Initializable {
         String oldLengthCode = (String)event.getOldValue();
         String newLengthCode = (String)event.getNewValue();
         try {
-            SelectDto updatedLengthDto = facade.updateChangedLengthCode(oldLengthCode, newLengthCode);
+            SelectDto updatedLengthDto = facade.updateItemCode(oldLengthCode, newLengthCode);
             if (updatedLengthDto != null) {
                 lengthTable.getItems().remove(edittedRowIndex);
                 lengthTable.getItems().add(updatedLengthDto);
@@ -111,7 +111,7 @@ public class LengthEditionController implements Initializable {
         String newLengthDescription = (String)event.getNewValue();
         try {
             String code = lengthTable.getItems().get(edittedRowIndex).getKey();
-            SelectDto updatedLengthDto = facade.updateChangedLengthDescription(code, oldLengthDescription, newLengthDescription);
+            SelectDto updatedLengthDto = facade.updateItemDescription(code, oldLengthDescription, newLengthDescription);
             if (updatedLengthDto != null) {
                 lengthTable.getItems().remove(edittedRowIndex);
                 lengthTable.getItems().add(updatedLengthDto);
@@ -137,7 +137,7 @@ public class LengthEditionController implements Initializable {
             if (result.isPresent() && StringUtils.isNotBlank(result.get().getKey()) && StringUtils.isNotBlank(result.get().getValue())) {
                 String code = result.get().getKey();
                 String description = result.get().getValue();
-                lengthTable.getItems().add(facade.createNewLength(code, description));
+                lengthTable.getItems().add(facade.createItem(code, description));
             }
         } catch (Exception e) {
             String message = "The length can not be created!";
@@ -159,7 +159,7 @@ public class LengthEditionController implements Initializable {
                     Session.getInstance().setActualProfile(facade.unselectLengthInProfile(Session.getInstance().getActualProfile().getName()));
                 }
 
-                if (facade.deleteSelectedLength(selectedLength.getKey())) {
+                if (facade.deleteItem(selectedLength.getKey())) {
                     lengthTable.getItems().remove(selectedIndex);
                 } else {
                     logger.warn("The length can not be deleted from database: " + selectedLength.getKey() + " - " + selectedLength.getValue());

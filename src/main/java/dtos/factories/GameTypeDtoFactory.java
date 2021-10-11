@@ -1,6 +1,8 @@
 package dtos.factories;
 
 import dtos.GameTypeDto;
+import dtos.SelectDto;
+import entities.Difficulty;
 import entities.GameType;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,7 +13,7 @@ import utils.Utils;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class GameTypeDtoFactory {
+public class GameTypeDtoFactory extends AbstractDtoFactory<GameType, GameTypeDto> {
 
     public GameTypeDto newDto(GameType gameType) {
         try {

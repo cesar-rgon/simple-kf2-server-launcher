@@ -3,7 +3,6 @@ package pojos;
 import dtos.factories.DifficultyDtoFactory;
 import dtos.factories.GameTypeDtoFactory;
 import dtos.factories.LengthDtoFactory;
-import pojos.ProfileToDisplay;
 import entities.Profile;
 
 import java.util.List;
@@ -25,7 +24,7 @@ public class ProfileToDisplayFactory {
     public ProfileToDisplay newOne(Profile profile) {
         return new ProfileToDisplay(
                 profile.getId(),
-                profile.getName(),
+                profile.getCode(),
                 profile.getGametype() != null ? gameTypeDtoFactory.newDto(profile.getGametype()).getValue(): "",
                 profile.getMap() != null ? profile.getMap().getCode(): "",
                 profile.getDifficulty() != null ? difficultyDtoFactory.newDto(profile.getDifficulty()).getValue(): "",

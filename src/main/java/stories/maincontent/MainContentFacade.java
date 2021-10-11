@@ -4,6 +4,7 @@ import dtos.GameTypeDto;
 import dtos.MapDto;
 import dtos.ProfileDto;
 import dtos.SelectDto;
+import entities.Profile;
 import javafx.collections.ObservableList;
 import pojos.session.Session;
 
@@ -36,7 +37,7 @@ public interface MainContentFacade {
     boolean updateProfileSetWelcomeMessage(String profileName, String welcomeMessage) throws SQLException;
     boolean updateProfileSetCustomParameters(String profileName, String customParameters) throws SQLException;
     boolean updateProfileSetWebPage(String profileName, boolean isSelected) throws SQLException;
-    ProfileDto findProfileByName(String name) throws SQLException;
+    ProfileDto findProfileDtoByName(String name) throws SQLException;
     String runServer(String profileName) throws SQLException;
     String joinServer(String profileName) throws SQLException;
     ProfileDto getLastSelectedProfile() throws Exception;

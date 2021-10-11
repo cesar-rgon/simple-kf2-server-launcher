@@ -11,28 +11,34 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.ProfileToDisplay;
 import pojos.ProfileToDisplayFactory;
+import services.MapService;
+import services.MapServiceImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
-import stories.profilesedition.ProfilesEditionFacadeImpl;
+import stories.AbstractFacade;
 import utils.Utils;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class MapWebInfoFacadeImpl implements MapWebInfoFacade {
+public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFacade {
 
     private static final Logger logger = LogManager.getLogger(MapWebInfoFacadeImpl.class);
+
     private final PropertyService propertyService;
     private final MapDtoFactory mapDtoFactory;
+    private final MapService mapService;
+    private final ProfileToDisplayFactory profileToDisplayFactory;
 
     public MapWebInfoFacadeImpl() {
         super();
-        propertyService = new PropertyServiceImpl();
-        mapDtoFactory = new MapDtoFactory();
+        this.propertyService = new PropertyServiceImpl();
+        this.mapDtoFactory = new MapDtoFactory();
+        this.mapService = new MapServiceImpl();
+        this.profileToDisplayFactory = new ProfileToDisplayFactory();
     }
 
     @Override
@@ -52,22 +58,16 @@ public class MapWebInfoFacadeImpl implements MapWebInfoFacade {
         return false;
     }
 
-    private Profile findProfileByName(String profileName) {
-        try {
-            Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(profileName);
-            if (profileOpt.isPresent()) {
-                return profileOpt.get();
-            }
-            return null;
-        } catch (SQLException e) {
-            logger.error("Error finding a profile by name " + profileName, e);
-            return null;
-        }
-    }
-
     @Override
     public MapDto createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String strUrlMapImage, String installationFolder, List<String> profileNameList) throws Exception {
-        List<Profile> profileList = profileNameList.stream().map(pn -> findProfileByName(pn)).collect(Collectors.toList());
+        List<Profile> profileList = profileNameList.stream().map(pn -> {
+            try {
+                return findProfileByCode(pn);
+            } catch (SQLException e) {
+                logger.error("Error finding a profile by name " + pn, e);
+                return null;
+            }
+        }).collect(Collectors.toList());
         if (profileList == null || profileList.isEmpty()) {
             return null;
         }
@@ -86,18 +86,7 @@ public class MapWebInfoFacadeImpl implements MapWebInfoFacade {
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         String urlInfo = baseUrlWorkshop + idWorkShop;
         Map customMap = new Map(mapName, false, urlInfo, idWorkShop, urlPhoto, downloaded, mod, profileList);
-        Map insertedMap = MapDao.getInstance().insert(customMap);
-        if (insertedMap != null) {
-            profileList.stream().forEach(profile -> {
-                try {
-                    profile.getMapList().add(insertedMap);
-                    ProfileDao.getInstance().update(profile);
-                } catch (SQLException e) {
-                    logger.error("Error updating the profile " + profile.getName() + " with a new map: " + insertedMap.getCode(), e);
-                }
-            });
-        }
-        return insertedMap;
+        return mapService.createMap(customMap);
     }
 
     @Override
@@ -111,7 +100,14 @@ public class MapWebInfoFacadeImpl implements MapWebInfoFacade {
 
     @Override
     public boolean addProfilesToMap(String mapName, List<String> profileNameList) throws SQLException {
-        List<Profile> profileList = profileNameList.stream().map(pn -> findProfileByName(pn)).collect(Collectors.toList());
+        List<Profile> profileList = profileNameList.stream().map(pn -> {
+            try {
+                return findProfileByCode(pn);
+            } catch (SQLException e) {
+                logger.error("Error finding a profile by name " + pn, e);
+                return null;
+            }
+        }).collect(Collectors.toList());
         if (profileList == null || profileList.isEmpty()) {
             return false;
         }
@@ -119,17 +115,7 @@ public class MapWebInfoFacadeImpl implements MapWebInfoFacade {
         if (!mapOptional.isPresent()) {
             return false;
         }
-        profileList.stream().forEach(profile -> {
-            try {
-                profile.getMapList().add(mapOptional.get());
-                ProfileDao.getInstance().update(profile);
-            } catch (SQLException e) {
-                logger.error("Error updating the profile " + profile.getName() + " with the map: " + mapOptional.get().getCode(), e);
-            }
-        });
-
-        mapOptional.get().getProfileList().addAll(profileList);
-        return MapDao.getInstance().update(mapOptional.get());
+        return mapService.addProfilesToMap(mapOptional.get(), profileList);
     }
 
     private boolean isMapInProfile(Long idWorkShop, Profile profile) {
@@ -141,7 +127,6 @@ public class MapWebInfoFacadeImpl implements MapWebInfoFacade {
     public List<ProfileToDisplay> getProfilesWithoutMap(Long idWorkShop) throws SQLException {
         List<Profile> allProfiles = ProfileDao.getInstance().listAll();
         List<Profile> profilesWithoutMap = allProfiles.stream().filter(p -> !isMapInProfile(idWorkShop, p)).collect(Collectors.toList());
-        ProfileToDisplayFactory profileToDisplayFactory = new ProfileToDisplayFactory();
         return profileToDisplayFactory.newOnes(profilesWithoutMap);
     }
 }

@@ -4,6 +4,7 @@ import dtos.GameTypeDto;
 import dtos.MapDto;
 import dtos.ProfileDto;
 import dtos.SelectDto;
+import entities.Profile;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -411,7 +412,7 @@ public class MainContentController implements Initializable {
                 Integer oldValue = null;
                 try {
                     if (!newPropertyValue) {
-                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getWebPort();
+                        oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getWebPort();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetWebPort(profileName, StringUtils.isNotEmpty(webPort.getText()) ? Integer.parseInt(webPort.getText()): null)) {
                             String webPortValue = StringUtils.isNotEmpty(webPort.getText())? webPort.getText(): "";
@@ -437,7 +438,7 @@ public class MainContentController implements Initializable {
                 Integer oldValue = null;
                 try {
                     if (!newPropertyValue) {
-                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getGamePort();
+                        oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getGamePort();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetGamePort(profileName, StringUtils.isNotEmpty(gamePort.getText()) ? Integer.parseInt(gamePort.getText()): null)) {
                             String gamePortValue = StringUtils.isNotEmpty(gamePort.getText())? gamePort.getText(): "";
@@ -463,7 +464,7 @@ public class MainContentController implements Initializable {
                 Integer oldValue = null;
                 try {
                     if (!newPropertyValue) {
-                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getQueryPort();
+                        oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getQueryPort();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetQueryPort(profileName, StringUtils.isNotEmpty(queryPort.getText()) ? Integer.parseInt(queryPort.getText()): null)) {
                             String queryPortValue = StringUtils.isNotEmpty(queryPort.getText())? queryPort.getText(): "";
@@ -606,7 +607,7 @@ public class MainContentController implements Initializable {
                 Double oldValue = null;
                 try {
                     if (!newPropertyValue) {
-                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getMapVotingTime();
+                        oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getMapVotingTime();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetMapVotingTime(profileName, StringUtils.isNotEmpty(mapVotingTime.getText()) ? Double.parseDouble(mapVotingTime.getText()): null)) {
                             String mapVotingTimeValue = StringUtils.isNotEmpty(mapVotingTime.getText())? mapVotingTime.getText(): "";
@@ -632,7 +633,7 @@ public class MainContentController implements Initializable {
                 Double oldValue = null;
                 try {
                     if (!newPropertyValue) {
-                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getTimeBetweenKicks();
+                        oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getTimeBetweenKicks();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetTimeBetweenKicks(profileName, StringUtils.isNotEmpty(timeBetweenKicks.getText()) ? Double.parseDouble(timeBetweenKicks.getText()): null)) {
                             String timeBetweenKicksValue = StringUtils.isNotEmpty(timeBetweenKicks.getText())? timeBetweenKicks.getText(): "";
@@ -658,7 +659,7 @@ public class MainContentController implements Initializable {
                 Double oldValue = null;
                 try {
                     if (!newPropertyValue) {
-                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getKickPercentage();
+                        oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getKickPercentage();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetKickPercentage(profileName, StringUtils.isNotEmpty(kickPercentage.getText()) ? Double.parseDouble(kickPercentage.getText()): null)) {
                             String kickPercentageValue = StringUtils.isNotEmpty(kickPercentage.getText())? kickPercentage.getText(): "";
@@ -685,7 +686,7 @@ public class MainContentController implements Initializable {
                 Double oldValue = null;
                 try {
                     if (!newPropertyValue) {
-                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getMaxIdleTime();
+                        oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getMaxIdleTime();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetMaxIdleTime(profileName, StringUtils.isNotEmpty(maxIdleTime.getText()) ? Double.parseDouble(maxIdleTime.getText()): null)) {
                             String maxIdleTimeValue = StringUtils.isNotEmpty(maxIdleTime.getText())? maxIdleTime.getText(): "";
@@ -711,7 +712,7 @@ public class MainContentController implements Initializable {
                 Integer oldValue = null;
                 try {
                     if (!newPropertyValue) {
-                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getReadyUpDelay();
+                        oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getReadyUpDelay();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetReadyUpDelay(profileName, StringUtils.isNotEmpty(readyUpDelay.getText()) ? Integer.parseInt(readyUpDelay.getText()): null)) {
                             String readyUpDelayValue = StringUtils.isNotEmpty(readyUpDelay.getText())? readyUpDelay.getText(): "";
@@ -759,7 +760,7 @@ public class MainContentController implements Initializable {
                 Integer oldValue = null;
                 try {
                     if (!newPropertyValue) {
-                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getGameStartDelay();
+                        oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getGameStartDelay();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetGameStartDelay(profileName, StringUtils.isNotEmpty(gameStartDelay.getText()) ? Integer.parseInt(gameStartDelay.getText()): null)) {
                             String gameStartDelayValue = StringUtils.isNotEmpty(gameStartDelay.getText())? gameStartDelay.getText(): "";
@@ -785,7 +786,7 @@ public class MainContentController implements Initializable {
                 Integer oldValue = null;
                 try {
                     if (!newPropertyValue) {
-                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getMaxSpectators();
+                        oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getMaxSpectators();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetMaxSpectators(profileName, StringUtils.isNotEmpty(maxSpectators.getText()) ? Integer.parseInt(maxSpectators.getText()): null)) {
                             String maxSpectatorsValue = StringUtils.isNotEmpty(maxSpectators.getText())? maxSpectators.getText(): "";
@@ -811,7 +812,7 @@ public class MainContentController implements Initializable {
                 Double oldValue = null;
                 try {
                     if (!newPropertyValue) {
-                        oldValue = facade.findProfileByName(profileSelect.getValue().getName()).getFriendlyFirePercentage();
+                        oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getFriendlyFirePercentage();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
                         if (!facade.updateProfileSetFriendlyFirePercentage(profileName, StringUtils.isNotEmpty(friendlyFirePercentage.getText()) ? Double.parseDouble(friendlyFirePercentage.getText()): null)) {
                             String friendlyFirePercentageValue = StringUtils.isNotEmpty(friendlyFirePercentage.getText())? friendlyFirePercentage.getText(): "";
@@ -1163,7 +1164,7 @@ public class MainContentController implements Initializable {
     @FXML
     private void profileOnAction() {
         try {
-            ProfileDto databaseProfile = facade.findProfileByName(profileSelect.getValue().getName());
+            ProfileDto databaseProfile = facade.findProfileDtoByName(profileSelect.getValue().getName());
             loadActualProfile(databaseProfile);
             Session.getInstance().setActualProfile(profileSelect.getValue());
             propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", profileSelect.getValue().getName());
@@ -1222,7 +1223,7 @@ public class MainContentController implements Initializable {
                             "prop.message.mapNotSaved");
                     Utils.warningDialog(headerText, contentText);
                 }
-                ProfileDto databaseProfile = facade.findProfileByName(profileSelect.getValue().getName());
+                ProfileDto databaseProfile = facade.findProfileDtoByName(profileSelect.getValue().getName());
                 Session.getInstance().setActualProfile(databaseProfile);
             }
         } catch (Exception e) {

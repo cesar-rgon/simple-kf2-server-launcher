@@ -49,7 +49,7 @@ public class MaxPlayersEditionController implements Initializable {
             maxPlayersCodeColumn.setCellValueFactory(cellData -> cellData.getValue().getKeyProperty());
             maxPlayersDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             maxPlayersDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().getValueProperty());
-            maxPlayersTable.setItems(facade.listAllMaxPlayers());
+            maxPlayersTable.setItems(facade.listAllItems());
 
             String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.maxPlayersTitle");
             titleConfigLabel.setText(titleConfigLabelText);
@@ -86,7 +86,7 @@ public class MaxPlayersEditionController implements Initializable {
         String oldMaxPlayersCode = (String)event.getOldValue();
         String newMaxPlayersCode = (String)event.getNewValue();
         try {
-            SelectDto updatedMaxPlayersDto = facade.updateChangedMaxPlayersCode(oldMaxPlayersCode, newMaxPlayersCode);
+            SelectDto updatedMaxPlayersDto = facade.updateItemCode(oldMaxPlayersCode, newMaxPlayersCode);
             if (updatedMaxPlayersDto != null) {
                 maxPlayersTable.getItems().remove(edittedRowIndex);
                 maxPlayersTable.getItems().add(updatedMaxPlayersDto);
@@ -112,7 +112,7 @@ public class MaxPlayersEditionController implements Initializable {
         String newMaxPlayersDescription = (String)event.getNewValue();
         try {
             String code = maxPlayersTable.getItems().get(edittedRowIndex).getKey();
-            SelectDto updatedLengthDto = facade.updateChangedMaxPlayersDescription(code, oldMaxPlayersDescription, newMaxPlayersDescription);
+            SelectDto updatedLengthDto = facade.updateItemDescription(code, oldMaxPlayersDescription, newMaxPlayersDescription);
             if (updatedLengthDto != null) {
                 maxPlayersTable.getItems().remove(edittedRowIndex);
                 maxPlayersTable.getItems().add(updatedLengthDto);
@@ -138,7 +138,7 @@ public class MaxPlayersEditionController implements Initializable {
             if (result.isPresent() && StringUtils.isNotBlank(result.get().getKey()) && StringUtils.isNotBlank(result.get().getValue())) {
                 String code = result.get().getKey();
                 String description = result.get().getValue();
-                maxPlayersTable.getItems().add(facade.createNewMaxPlayers(code, description));
+                maxPlayersTable.getItems().add(facade.createItem(code, description));
             }
         } catch (Exception e) {
             String message = "The max. players can not be created!";
@@ -160,7 +160,7 @@ public class MaxPlayersEditionController implements Initializable {
                     Session.getInstance().setActualProfile(facade.unselectMaxPlayersInProfile(Session.getInstance().getActualProfile().getName()));
                 }
 
-                if (facade.deleteSelectedMaxPlayers(selectedMaxPlayers.getKey())) {
+                if (facade.deleteItem(selectedMaxPlayers.getKey())) {
                     maxPlayersTable.getItems().remove(selectedIndex);
                 } else {
                     logger.warn("The max. players can not be deleted from database: " + selectedMaxPlayers.getKey());

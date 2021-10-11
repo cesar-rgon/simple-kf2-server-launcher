@@ -1,10 +1,9 @@
 package pojos.listener;
 
+import daos.MapDao;
 import entities.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import services.DatabaseService;
-import services.DatabaseServiceImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 
@@ -19,18 +18,16 @@ import java.util.stream.Collectors;
 public class TimeListener extends TimerTask {
 
     private static final Logger logger = LogManager.getLogger(TimeListener.class);
-    private final DatabaseService databaseService;
 
     public TimeListener() {
         super();
-        databaseService = new DatabaseServiceImpl();
     }
 
     @Override
     public void run() {
         logger.info("Starting the process of checking downloaded custom maps and mods.");
         try {
-            List<Map> mapList = databaseService.listNotOfficialMaps();
+            List<Map> mapList = MapDao.getInstance().listNotOfficialMaps();
             if (mapList != null && !mapList.isEmpty()) {
                 PropertyService propertyService = new PropertyServiceImpl();
                 String installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.installationFolder");
@@ -49,13 +46,13 @@ public class TimeListener extends TimerTask {
                             map.setCode(filenameWithoutExtension);
                             map.setDownloaded(true);
                             map.setMod(false);
-                            databaseService.updateMap(map);
+                            MapDao.getInstance().update(map);
                         } else {
                             File folder = new File(installationFolder + "/KFGame/Cache/" + map.getIdWorkShop());
                             if (folder.exists()) {
                                 map.setDownloaded(true);
                                 map.setMod(true);
-                                databaseService.updateMap(map);
+                                MapDao.getInstance().update(map);
                             }
                         }
                     } catch (Exception ex) {

@@ -6,6 +6,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -149,7 +150,7 @@ public class GameTypesEditionController implements Initializable {
             });
             lengthsEnabledColumn.setCellValueFactory(cellData -> cellData.getValue().isLengthEnabledProperty());
 
-            gameTypesTable.setItems(facade.listAllGameTypes());
+            gameTypesTable.setItems((ObservableList) facade.listAllItems());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -162,7 +163,7 @@ public class GameTypesEditionController implements Initializable {
         String oldGameTypeCode = (String)event.getOldValue();
         String newGameTypeCode = (String)event.getNewValue();
         try {
-            GameTypeDto updatedGameTypeDto = facade.updateChangedGameTypeCode(oldGameTypeCode, newGameTypeCode);
+            GameTypeDto updatedGameTypeDto = facade.updateItemCode(oldGameTypeCode, newGameTypeCode);
             if (updatedGameTypeDto != null) {
                 gameTypesTable.getItems().remove(edittedRowIndex);
                 gameTypesTable.getItems().add(updatedGameTypeDto);
@@ -188,7 +189,7 @@ public class GameTypesEditionController implements Initializable {
         String newGameTypeDescription = (String)event.getNewValue();
         try {
             String code = gameTypesTable.getItems().get(edittedRowIndex).getKey();
-            GameTypeDto updatedGameTypeDto = facade.updateChangedGameTypeDescription(code, oldGameTypeDescription, newGameTypeDescription);
+            GameTypeDto updatedGameTypeDto = facade.updateItemDescription(code, oldGameTypeDescription, newGameTypeDescription);
             if (updatedGameTypeDto != null) {
                 gameTypesTable.getItems().remove(edittedRowIndex);
                 gameTypesTable.getItems().add(updatedGameTypeDto);
@@ -214,7 +215,7 @@ public class GameTypesEditionController implements Initializable {
             if (result.isPresent() && StringUtils.isNotBlank(result.get().getKey()) && StringUtils.isNotBlank(result.get().getValue())) {
                 String code = result.get().getKey();
                 String description = result.get().getValue();
-                gameTypesTable.getItems().add(facade.createNewGameType(code, description));
+                gameTypesTable.getItems().add(facade.createItem(code, description));
             }
         } catch (Exception e) {
             String message = "The game type can not be created!";
@@ -236,7 +237,7 @@ public class GameTypesEditionController implements Initializable {
                     Session.getInstance().setActualProfile(facade.unselectGametypeInProfile(Session.getInstance().getActualProfile().getName()));
                 }
 
-                if (facade.deleteSelectedGameType(selectedGameType.getKey())) {
+                if (facade.deleteItem(selectedGameType.getKey())) {
                     gameTypesTable.getItems().remove(selectedIndex);
                 } else {
                     logger.warn("The game type can not be deleted from database: " + selectedGameType.getKey() + " - " + selectedGameType.getValue());

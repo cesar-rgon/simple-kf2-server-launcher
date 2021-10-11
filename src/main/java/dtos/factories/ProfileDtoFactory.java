@@ -28,7 +28,7 @@ public class ProfileDtoFactory {
     }
 
     public ProfileDto newDto(Profile profile) {
-        return new ProfileDto(profile.getName(),
+        return new ProfileDto(profile.getCode(),
                 languageDtoFactory.newDto(profile.getLanguage()),
                 profile.getGametype() != null ? gameTypeDtoFactory.newDto(profile.getGametype()): null,
                 profile.getMap() != null ? mapDtoFactory.newDto(profile.getMap()): null,

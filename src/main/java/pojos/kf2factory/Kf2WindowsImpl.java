@@ -124,7 +124,7 @@ public class Kf2WindowsImpl extends Kf2Common {
                     command.append("?").append(profile.getCustomParameters());
                 }
             }
-            command.append("?ConfigSubDir=").append(profile.getName());
+            command.append("?ConfigSubDir=").append(profile.getCode());
 
             replaceInFileKfEngineIni(installationFolder, profile, "PCServer-KFEngine.ini");
             replaceInFileKfWebIni(installationFolder, profile, StandardCharsets.ISO_8859_1);

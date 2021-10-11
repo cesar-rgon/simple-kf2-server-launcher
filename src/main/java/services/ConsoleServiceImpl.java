@@ -16,7 +16,7 @@ public class ConsoleServiceImpl implements ConsoleService {
         for (String parameter: parameters) {
             if (!"--profiles".equalsIgnoreCase(parameter)) {
                 try {
-                    Optional<Profile> profileOpt = ProfileDao.getInstance().findByName(parameter);
+                    Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(parameter);
                     if (profileOpt.isPresent()) {
                         Kf2Common kf2Common = Kf2Factory.getInstance();
                         kf2Common.runServerByConsole(profileOpt.get());

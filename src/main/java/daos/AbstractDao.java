@@ -1,10 +1,9 @@
 package daos;
 
 
-import entities.CommonEntity;
+import entities.AbstractEntity;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.listener.TimeListener;
 
 import javax.persistence.*;
 import java.sql.SQLException;
@@ -14,21 +13,24 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 
-public abstract class CommonDao<T extends CommonEntity> {
+public abstract class AbstractDao<T extends AbstractEntity> {
 
-	private static final Logger logger = LogManager.getLogger(CommonDao.class);
+	private static final Logger logger = LogManager.getLogger(AbstractDao.class);
 	protected static EntityManagerFactory emf;
 	private static final String PERSISTENCE_UNIT = "kf2database";
 
 	private final Class<T> entityClass;
 
 
-	protected CommonDao(Class<T> entityClass) {
+	protected AbstractDao(Class<T> entityClass) {
 		this.entityClass = entityClass;
 		if (emf == null) {
 			emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT);
 		}
 	}
+
+	public abstract List<T> listAll() throws SQLException;
+	public abstract Optional<T> findByCode(String code) throws SQLException;
 
 	/**
 	 * Gets an entity by Id

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class MaxPlayersDao extends CommonDao<MaxPlayers> {
+public class MaxPlayersDao extends AbstractDao<MaxPlayers> {
 
     private static MaxPlayersDao instance = null;
 
@@ -26,6 +26,7 @@ public class MaxPlayersDao extends CommonDao<MaxPlayers> {
         return instance;
     }
 
+    @Override
     public List<MaxPlayers> listAll() throws SQLException {
         String query="select mp from entities.MaxPlayers mp";
         List<MaxPlayers> playerList = list(query, null);
@@ -49,6 +50,7 @@ public class MaxPlayersDao extends CommonDao<MaxPlayers> {
         return sortedPlayerList;
     }
 
+    @Override
     public Optional<MaxPlayers> findByCode(String code) throws SQLException {
         String query="select mp from entities.MaxPlayers mp where mp.code = :CODE";
         java.util.Map<String,Object> parameters = new HashMap<String,Object>();

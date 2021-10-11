@@ -7,10 +7,10 @@ import javafx.collections.ObservableList;
 import java.sql.SQLException;
 
 public interface MaxPlayersEditionFacade {
-    ObservableList<SelectDto> listAllMaxPlayers() throws SQLException;
-    SelectDto createNewMaxPlayers(String code, String description) throws Exception;
-    boolean deleteSelectedMaxPlayers(String code) throws Exception;
-    SelectDto updateChangedMaxPlayersCode(String oldCode, String newCode) throws Exception;
-    SelectDto updateChangedMaxPlayersDescription(String code, String oldDescription, String newDescription) throws Exception;
+    ObservableList<SelectDto> listAllItems() throws SQLException;
+    SelectDto createItem(String code, String description) throws Exception;
+    boolean deleteItem(String code) throws Exception;
+    SelectDto updateItemCode(String oldCode, String newCode) throws Exception;
+    SelectDto updateItemDescription(String code, String oldDescription, String newDescription) throws Exception;
     ProfileDto unselectMaxPlayersInProfile(String profileName) throws SQLException;
 }

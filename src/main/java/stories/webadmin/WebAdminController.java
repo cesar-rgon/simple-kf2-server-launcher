@@ -77,7 +77,7 @@ public class WebAdminController implements Initializable {
                 }
             });
             if (Session.getInstance().isRunningProcess() && Session.getInstance().getActualProfile() != null) {
-                ProfileDto databaseProfile = facade.findProfileByName(Session.getInstance().getActualProfile().getName());
+                ProfileDto databaseProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfile().getName());
                 if (databaseProfile.getWebPage() != null && databaseProfile.getWebPage()) {
                     webEngine.load("http://127.0.0.1:" + databaseProfile.getWebPort() + "/ServerAdmin");
                     webAdmin.setVisible(true);

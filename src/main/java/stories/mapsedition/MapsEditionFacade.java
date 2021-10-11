@@ -15,7 +15,7 @@ public interface MapsEditionFacade {
     MapDto createNewCustomMapFromWorkshop(Long idWorkShop, String installationFolder, boolean downloaded, Boolean isMod, List<String> profileNameList) throws Exception;
     MapDto createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String installationFolder, boolean downloaded, Boolean isMod, List<String> profileNameList) throws Exception;
     boolean isCorrectInstallationFolder(String installationFolder);
-    MapDto insertOfficialMap(String mapName, List<String> profileNameList) throws SQLException;
+    MapDto insertOfficialMap(String mapName, List<String> profileNameList) throws Exception;
     MapDto findMapOrModByIdWorkShop(Long idWorkShop) throws SQLException;
     ObservableList<ProfileDto> listAllProfiles() throws SQLException;
     List<MapDto> getMapsFromProfile(String profileName) throws SQLException;

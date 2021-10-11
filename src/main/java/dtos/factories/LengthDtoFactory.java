@@ -1,6 +1,7 @@
 package dtos.factories;
 
 import dtos.SelectDto;
+import entities.Difficulty;
 import entities.Length;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -11,8 +12,9 @@ import utils.Utils;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class LengthDtoFactory {
+public class LengthDtoFactory extends AbstractDtoFactory<Length, SelectDto> {
 
+    @Override
     public SelectDto newDto(Length length) {
         try {
             PropertyService propertyService = new PropertyServiceImpl();
@@ -25,6 +27,7 @@ public class LengthDtoFactory {
         }
     }
 
+    @Override
     public ObservableList<SelectDto> newDtos(List<Length> lengths) {
         List<SelectDto> dtoList = lengths.stream().map(this::newDto).collect(Collectors.toList());
         return FXCollections.observableArrayList(dtoList);

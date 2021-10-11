@@ -48,7 +48,7 @@ public class DifficultiesEditionController implements Initializable {
             difficultyCodeColumn.setCellValueFactory(cellData -> cellData.getValue().getKeyProperty());
             difficultyDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             difficultyDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().getValueProperty());
-            difficultiesTable.setItems(facade.listAllDifficulties());
+            difficultiesTable.setItems(facade.listAllItems());
 
             String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultyTitle");
             titleConfigLabel.setText(titleConfigLabelText);
@@ -83,7 +83,7 @@ public class DifficultiesEditionController implements Initializable {
         String oldDifficultyCode = (String)event.getOldValue();
         String newDifficultyCode = (String)event.getNewValue();
         try {
-            SelectDto updatedDifficultyDto = facade.updateChangedDifficultyCode(oldDifficultyCode, newDifficultyCode);
+            SelectDto updatedDifficultyDto = facade.updateItemCode(oldDifficultyCode, newDifficultyCode);
             if (updatedDifficultyDto != null) {
                 difficultiesTable.getItems().remove(edittedRowIndex);
                 difficultiesTable.getItems().add(updatedDifficultyDto);
@@ -109,7 +109,7 @@ public class DifficultiesEditionController implements Initializable {
         String newDifficultyDescription = (String)event.getNewValue();
         try {
             String code = difficultiesTable.getItems().get(edittedRowIndex).getKey();
-            SelectDto updatedGameTypeDto = facade.updateChangedDifficultyDescription(code, oldDifficultyDescription, newDifficultyDescription);
+            SelectDto updatedGameTypeDto = facade.updateItemDescription(code, oldDifficultyDescription, newDifficultyDescription);
             if (updatedGameTypeDto != null) {
                 difficultiesTable.getItems().remove(edittedRowIndex);
                 difficultiesTable.getItems().add(updatedGameTypeDto);
@@ -135,7 +135,7 @@ public class DifficultiesEditionController implements Initializable {
             if (result.isPresent() && StringUtils.isNotBlank(result.get().getKey()) && StringUtils.isNotBlank(result.get().getValue())) {
                 String code = result.get().getKey();
                 String description = result.get().getValue();
-                difficultiesTable.getItems().add(facade.createNewDifficulty(code, description));
+                difficultiesTable.getItems().add(facade.createItem(code, description));
             }
         } catch (Exception e) {
             String message = "The difficulty can not be created!";
@@ -157,7 +157,7 @@ public class DifficultiesEditionController implements Initializable {
                     Session.getInstance().setActualProfile(facade.unselectDifficultyInProfile(Session.getInstance().getActualProfile().getName()));
                 }
 
-                if (facade.deleteSelectedDifficulty(selectedDifficulty.getKey())) {
+                if (facade.deleteItem(selectedDifficulty.getKey())) {
                     difficultiesTable.getItems().remove(selectedIndex);
                 } else {
                     logger.warn("The difficulty can not be deleted from database: " + selectedDifficulty.getKey() + " - " + selectedDifficulty.getValue());

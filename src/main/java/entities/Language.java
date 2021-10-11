@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "LANGUAGES")
-public class Language extends CommonEntity {
+public class Language extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -37,18 +37,22 @@ public class Language extends CommonEntity {
         this.id = id;
     }
 
+    @Override
     public String getCode() {
         return code;
     }
 
+    @Override
     public void setCode(String code) {
         this.code = code;
     }
 
+    @Override
     public String getDescription() {
         return description;
     }
 
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }

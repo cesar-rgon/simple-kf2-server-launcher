@@ -6,7 +6,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "MAPS")
-public class Map extends CommonEntity {
+public class Map extends AbstractEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -64,12 +64,23 @@ public class Map extends CommonEntity {
         this.id = id;
     }
 
+    @Override
     public String getCode() {
         return code;
     }
 
+    @Override
     public void setCode(String code) {
         this.code = code;
+    }
+
+    @Override
+    public String getDescription() {
+        return "";
+    }
+
+    @Override
+    public void setDescription(String description) {
     }
 
     public boolean isOfficial() {
