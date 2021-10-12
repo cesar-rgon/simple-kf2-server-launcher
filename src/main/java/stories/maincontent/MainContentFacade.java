@@ -1,16 +1,12 @@
 package stories.maincontent;
 
 import dtos.GameTypeDto;
-import dtos.MapDto;
 import dtos.ProfileDto;
 import dtos.SelectDto;
-import entities.Profile;
 import javafx.collections.ObservableList;
-import pojos.session.Session;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 
 public interface MainContentFacade {
     ObservableList<ProfileDto> listAllProfiles() throws SQLException;

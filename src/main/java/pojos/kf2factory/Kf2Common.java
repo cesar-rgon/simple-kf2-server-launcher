@@ -1,6 +1,7 @@
 package pojos.kf2factory;
 
-import entities.Map;
+import entities.AbstractMap;
+import entities.CustomMapMod;
 import entities.Profile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -260,11 +261,11 @@ public abstract class Kf2Common {
                 }
             }
 
-            List<Map> customMapsMods = profile.getMapList().stream().filter(m -> !m.isOfficial()).collect(Collectors.toList());
+            List<AbstractMap> customMapsMods = profile.getMapList().stream().filter(m -> !m.isOfficial()).collect(Collectors.toList());
             if (customMapsMods != null && !customMapsMods.isEmpty()) {
                 pw.println("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]");
-                for (Map customMapMod: customMapsMods) {
-                    pw.println("ServerSubscribedWorkshopItems=" + customMapMod.getIdWorkShop() + " // " + customMapMod.getCode());
+                for (AbstractMap customMapMod: customMapsMods) {
+                    pw.println("ServerSubscribedWorkshopItems=" + ((CustomMapMod) customMapMod).getIdWorkShop() + " // " + customMapMod.getCode());
                 }
             }
 
@@ -295,7 +296,7 @@ public abstract class Kf2Common {
                     String[] array = line.split(" ");
                     String mapName = array[0].replace("[", "");
 
-                    Optional<Map> map = profile.getMapList().stream().filter(m -> m.getCode().equals(mapName)).findFirst();
+                    Optional<AbstractMap> map = profile.getMapList().stream().filter(m -> m.getCode().equals(mapName)).findFirst();
                     if (map.isPresent() && map.get().isOfficial() || line.contains("[KF-Default KFMapSummary]")) {
                         pw.println(line);
                         while (!line.contains("MapName=")) {
@@ -319,9 +320,9 @@ public abstract class Kf2Common {
                 }
             }
 
-            List<Map> customMaps = profile.getMapList().stream().filter(m -> !m.isOfficial() && m.getMod() != null && !m.getMod()).collect(Collectors.toList());
+            List<AbstractMap> customMaps = profile.getMapList().stream().filter(m -> !m.isOfficial()).collect(Collectors.toList());
             if (customMaps != null && !customMaps.isEmpty()) {
-                for (Map customMap: customMaps) {
+                for (AbstractMap customMap: customMaps) {
                     pw.println("[" + customMap.getCode() + " KFMapSummary]");
                     pw.println("MapName=" + customMap.getCode());
                     pw.println("MapAssociation=2");
@@ -378,15 +379,14 @@ public abstract class Kf2Common {
             modifiedLine = null;
         }
         if (line.contains("GameMapCycles=(Maps=(")) {
-            List<Map> officialMaps = profile.getMapList().stream()
+            List<AbstractMap> officialMaps = profile.getMapList().stream()
                     .filter(m -> m.isOfficial())
                     .sorted((o1, o2) -> o1.getCode().compareTo(o2.getCode()))
                     .collect(Collectors.toList());
 
-            List<Map> downloadedCustomMaps = profile.getMapList().stream()
-                    .filter(m -> m.isDownloaded())
+            List<AbstractMap> downloadedCustomMaps = profile.getMapList().stream()
                     .filter(m -> !m.isOfficial())
-                    .filter(m -> m.getMod() != null && !m.getMod())
+                    .filter(m -> ((CustomMapMod) m).isDownloaded())
                     .sorted((o1, o2) -> o1.getCode().compareTo(o2.getCode()))
                     .collect(Collectors.toList());
 
@@ -539,12 +539,12 @@ public abstract class Kf2Common {
 
     }
 
-    private String generateMapCycleLine(List<Map> officialMaps, List<Map> downloadedCustomMaps) {
+    private String generateMapCycleLine(List<AbstractMap> officialMaps, List<AbstractMap> downloadedCustomMaps) {
         StringBuffer sb = new StringBuffer("GameMapCycles=(Maps=(");
 
         if (!officialMaps.isEmpty()) {
             sb.append("\"----- OFFICIAL MAPS -----\",");
-            for (Map map: officialMaps) {
+            for (AbstractMap map: officialMaps) {
                 sb.append("\"").append(map.getCode()).append("\"");
                 if (officialMaps.indexOf(map) < (officialMaps.size() - 1)) {
                     sb.append(",");
@@ -557,7 +557,7 @@ public abstract class Kf2Common {
                 sb.append(",");
             }
             sb.append("\"----- CUSTOM MAPS -----\",");
-            for (Map map: downloadedCustomMaps) {
+            for (AbstractMap map: downloadedCustomMaps) {
                 sb.append("\"").append(map.getCode()).append("\"");
                 if (downloadedCustomMaps.indexOf(map) < (downloadedCustomMaps.size() - 1)) {
                     sb.append(",");

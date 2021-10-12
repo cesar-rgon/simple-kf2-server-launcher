@@ -1,10 +1,6 @@
 package stories.maincontent;
 
-import dtos.GameTypeDto;
-import dtos.MapDto;
-import dtos.ProfileDto;
-import dtos.SelectDto;
-import entities.Profile;
+import dtos.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -43,7 +39,7 @@ public class MainContentController implements Initializable {
     @FXML private ComboBox<ProfileDto> profileSelect;
     @FXML private ComboBox<SelectDto> languageSelect;
     @FXML private ComboBox<GameTypeDto> gameTypeSelect;
-    @FXML private ComboBox<MapDto> mapSelect;
+    @FXML private ComboBox<AbstractMapDto> mapSelect;
     @FXML private ComboBox<SelectDto> difficultySelect;
     @FXML private ComboBox<SelectDto> lengthSelect;
     @FXML private ComboBox<SelectDto> maxPlayersSelect;
@@ -226,12 +222,12 @@ public class MainContentController implements Initializable {
             Utils.errorDialog(e.getMessage(), e);
         }
 
-        mapSelect.setCellFactory(new Callback<ListView<MapDto>, ListCell<MapDto>>() {
+        mapSelect.setCellFactory(new Callback<ListView<AbstractMapDto>, ListCell<AbstractMapDto>>() {
             @Override
-            public ListCell<MapDto> call(ListView<MapDto> p) {
-                ListCell<MapDto> listCell = new ListCell<MapDto>() {
+            public ListCell<AbstractMapDto> call(ListView<AbstractMapDto> p) {
+                ListCell<AbstractMapDto> listCell = new ListCell<AbstractMapDto>() {
 
-                    private GridPane createMapGridPane(MapDto map) {
+                    private GridPane createMapGridPane(AbstractMapDto map) {
                         Label mapNameLabel = new Label(map.getKey());
                         mapNameLabel.setStyle("-fx-padding: 5;");
                         Label mapType;
@@ -273,7 +269,7 @@ public class MainContentController implements Initializable {
                     }
 
                     @Override
-                    protected void updateItem(MapDto map, boolean empty) {
+                    protected void updateItem(AbstractMapDto map, boolean empty) {
                         super.updateItem(map, empty);
                         if (map != null) {
                             setGraphic(createMapGridPane(map));
@@ -285,8 +281,8 @@ public class MainContentController implements Initializable {
             }
         });
 
-        mapSelect.setButtonCell(new ListCell<MapDto>() {
-            private GridPane createMapGridPane(MapDto map) {
+        mapSelect.setButtonCell(new ListCell<AbstractMapDto>() {
+            private GridPane createMapGridPane(AbstractMapDto map) {
                 Label mapNameLabel = new Label(map.getKey());
                 mapNameLabel.setStyle("-fx-font-weight: bold;");
                 Image image;
@@ -331,7 +327,7 @@ public class MainContentController implements Initializable {
             }
 
             @Override
-            protected void updateItem(MapDto map, boolean empty) {
+            protected void updateItem(AbstractMapDto map, boolean empty) {
                 super.updateItem(map, empty);
                 if (map != null) {
                     setGraphic(createMapGridPane(map));
@@ -1082,22 +1078,21 @@ public class MainContentController implements Initializable {
         previousSelectedLanguageCode = profile.getLanguage().getKey();
         gameTypeSelect.setValue(profile.getGametype());
 
-        List<MapDto> officialMaps = profile.getMapList().stream()
+        List<AbstractMapDto> officialMaps = profile.getMapList().stream()
                 .filter(m -> m.isOfficial())
                 .sorted((o1, o2) -> o1.getKey().compareTo(o2.getKey()))
                 .collect(Collectors.toList());
 
-        List<MapDto> downloadedCustomMaps = profile.getMapList().stream()
-                .filter(m -> m.isDownloaded())
+        List<AbstractMapDto> downloadedCustomMaps = profile.getMapList().stream()
                 .filter(m -> !m.isOfficial())
-                .filter(m -> m.getMod() != null && !m.getMod())
+                .filter(m -> ((CustomMapModDto) m).isDownloaded())
                 .sorted((o1, o2) -> o1.getKey().compareTo(o2.getKey()))
                 .collect(Collectors.toList());
 
-        List<MapDto> mapList = new ArrayList<MapDto>(officialMaps);
+        List<AbstractMapDto> mapList = new ArrayList<AbstractMapDto>(officialMaps);
         mapList.addAll(downloadedCustomMaps);
         mapSelect.setItems(FXCollections.observableArrayList(mapList));
-        Optional<MapDto> selectedMapOpt = mapList.stream().filter(m -> m.getKey().equalsIgnoreCase(profile.getMap().getKey())).findFirst();
+        Optional<AbstractMapDto> selectedMapOpt = mapList.stream().filter(m -> m.getKey().equalsIgnoreCase(profile.getMap().getKey())).findFirst();
         if (selectedMapOpt.isPresent()) {
             mapSelect.getSelectionModel().select(mapList.indexOf(selectedMapOpt.get()));
         }

@@ -4,14 +4,12 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 
-import java.util.List;
-
 public class ProfileDto {
 
     private final StringProperty name;
     private final SelectDto language;
     private final GameTypeDto gametype;
-    private final MapDto map;
+    private final AbstractMapDto map;
     private final SelectDto difficulty;
     private final SelectDto length;
     private final SelectDto maxPlayers;
@@ -27,7 +25,7 @@ public class ProfileDto {
     private final String urlImageServer;
     private final String welcomeMessage;
     private final String customParameters;
-    private final ObservableList<MapDto> mapList;
+    private final ObservableList<AbstractMapDto> mapList;
     private final Boolean takeover;
     private final Boolean teamCollision;
     private final Boolean adminCanPause;
@@ -53,9 +51,9 @@ public class ProfileDto {
     private final Double friendlyFirePercentage;
 
 
-    public ProfileDto(String name, SelectDto language, GameTypeDto gametype, MapDto map, SelectDto difficulty, SelectDto length, SelectDto maxPlayers,
+    public ProfileDto(String name, SelectDto language, GameTypeDto gametype, AbstractMapDto map, SelectDto difficulty, SelectDto length, SelectDto maxPlayers,
                       String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
-                      String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, ObservableList<MapDto> mapList,
+                      String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, ObservableList<AbstractMapDto> mapList,
                       Boolean takeover, Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting,
                       Double mapVotingTime, Boolean kickVoting, Double kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators,
                       Boolean voip, Boolean chatLogging, String chatLoggingFile, Boolean chatLoggingFileTimestamp, Double timeBetweenKicks, Double maxIdleTime, Boolean deadPlayersCanTalk,
@@ -123,7 +121,7 @@ public class ProfileDto {
         return gametype;
     }
 
-    public MapDto getMap() {
+    public AbstractMapDto getMap() {
         return map;
     }
 
@@ -187,7 +185,7 @@ public class ProfileDto {
         return customParameters;
     }
 
-    public ObservableList<MapDto> getMapList() {
+    public ObservableList<AbstractMapDto> getMapList() {
         return mapList;
     }
 

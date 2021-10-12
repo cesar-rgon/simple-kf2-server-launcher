@@ -1,6 +1,8 @@
 package stories.mapsedition;
 
-import dtos.MapDto;
+import dtos.AbstractMapDto;
+import dtos.CustomMapModDto;
+import dtos.OfficialMapDto;
 import dtos.ProfileDto;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -36,7 +38,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.*;
@@ -50,7 +51,7 @@ public class MapsEditionController implements Initializable {
     private final PropertyService propertyService;
     protected String languageCode;
     private String installationFolder;
-    private List<MapDto> mapList;
+    private List<AbstractMapDto> mapList;
     private boolean selectMaps;
 
     @FXML private Slider mapsSlider;
@@ -96,7 +97,7 @@ public class MapsEditionController implements Initializable {
                                 profileSelect.getItems().get(0));
 
                 mapList = facade.getMapsFromProfile(profileSelect.getValue().getName());
-                for (MapDto map: mapList) {
+                for (AbstractMapDto map: mapList) {
                     GridPane gridpane = createMapGridPane(map);
                     if (map.isOfficial()) {
                         officialMapsFlowPane.getChildren().add(gridpane);
@@ -165,7 +166,7 @@ public class MapsEditionController implements Initializable {
     }
 
 
-    private GridPane createMapGridPane(MapDto map) {
+    private GridPane createMapGridPane(AbstractMapDto map) {
         Label mapNameLabel = new Label(map.getKey());
         Image image = null;
         if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(map.getUrlPhoto())) {
@@ -210,7 +211,8 @@ public class MapsEditionController implements Initializable {
         mapNameLabel.setAlignment(Pos.BOTTOM_CENTER);
 
         int rowIndex = 3;
-        if (!map.isDownloaded()) {
+
+        if (!map.isOfficial() && !((CustomMapModDto) map).isDownloaded()) {
             String message = "";
             try {
                 message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.startServer");
@@ -225,7 +227,8 @@ public class MapsEditionController implements Initializable {
             warningMessage.setAlignment(Pos.CENTER);
             rowIndex++;
         }
-        if (map.getMod() != null && map.getMod()) {
+
+        if (!map.isOfficial()) {
             Label warningMessage = new Label("[MOD]");
             warningMessage.setStyle("-fx-text-fill: yellow;");
             GridPane.setColumnSpan(warningMessage, 2);
@@ -233,9 +236,10 @@ public class MapsEditionController implements Initializable {
             GridPane.setHalignment(warningMessage, HPos.CENTER);
             rowIndex++;
         }
+
         StringBuffer tooltipText = new StringBuffer();
         if (!map.isOfficial()) {
-            tooltipText.append("id WorkShop: ").append(map.getIdWorkShop());
+            tooltipText.append("id WorkShop: ").append(((CustomMapModDto)map).getIdWorkShop());
         }
         if (StringUtils.isNotBlank(map.getUrlPhoto())) {
             if (StringUtils.isNotBlank(tooltipText)) {
@@ -249,7 +253,7 @@ public class MapsEditionController implements Initializable {
             }
             tooltipText.append(message).append(": ").append(map.getUrlInfo());
         }
-        if (map.isDownloaded()) {
+        if (map.isOfficial() || ((CustomMapModDto) map).isDownloaded()) {
             if (StringUtils.isNotBlank(tooltipText)) {
                 tooltipText.append("\n");
             }
@@ -261,6 +265,7 @@ public class MapsEditionController implements Initializable {
             }
             tooltipText.append(message).append(": ").append(installationFolder).append(map.getUrlPhoto());
         }
+
         if (StringUtils.isNotBlank(tooltipText)) {
             Tooltip tooltip = new Tooltip(tooltipText.toString());
             Tooltip.install(gridpane, tooltip);
@@ -325,7 +330,7 @@ public class MapsEditionController implements Initializable {
     private void searchMapsKeyReleased() {
         officialMapsFlowPane.getChildren().clear();
         customMapsFlowPane.getChildren().clear();
-        for (MapDto map: mapList) {
+        for (AbstractMapDto map: mapList) {
             String mapLabel = StringUtils.upperCase(map.getKey());
             if (mapLabel.contains(StringUtils.upperCase(searchMaps.getText()))) {
                 GridPane gridpane = createMapGridPane(map);
@@ -381,12 +386,12 @@ public class MapsEditionController implements Initializable {
                                 } else {
                                     idWorkShop = Long.parseLong(idUrlWorkShopArray[i]);
                                 }
-                                MapDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
+                                CustomMapModDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
                                 if (mapModInDataBase == null) {
                                     // The map is not in dabatabase, create a new map for actual profile
                                     List<String> profileNameList = new ArrayList<String>();
                                     profileNameList.add(addMapsToProfile.getProfileName());
-                                    MapDto customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, installationFolder, false, null, profileNameList);
+                                    CustomMapModDto customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, installationFolder, false, profileNameList);
                                     if (customMap != null) {
                                         if (addMapsToProfile.getProfileName().equalsIgnoreCase(profileSelect.getValue().getName())) {
                                             mapList.add(customMap);
@@ -485,7 +490,7 @@ public class MapsEditionController implements Initializable {
                 String question = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteMapsQuestion");
                 Optional<ButtonType> result = Utils.questionDialog(question, message.toString());
                 if (result.isPresent() && result.get().equals(ButtonType.OK)) {
-                    List<MapDto> mapsToRemove = new ArrayList<MapDto>();
+                    List<AbstractMapDto> mapsToRemove = new ArrayList<AbstractMapDto>();
                     StringBuffer errors = new StringBuffer();
                     for (Node node : removeList) {
                         try {
@@ -495,7 +500,7 @@ public class MapsEditionController implements Initializable {
                             if (profileSelect.getValue().getMap() != null && mapNameLabel.getText().equalsIgnoreCase(profileSelect.getValue().getMap().getKey())) {
                                 facade.unselectProfileMap(profileSelect.getValue().getName());
                             }
-                            MapDto map = facade.deleteMapFromProfile(mapNameLabel.getText(), profileSelect.getValue().getName(), installationFolder);
+                            AbstractMapDto map = facade.deleteMapFromProfile(mapNameLabel.getText(), profileSelect.getValue().getName(), installationFolder);
                             if (map != null) {
                                 mapsToRemove.add(map);
                                 if (map.isOfficial()) {
@@ -690,9 +695,9 @@ public class MapsEditionController implements Initializable {
 
         for (String officialMapName: officialMapNameList) {
             try {
-                MapDto mapInDataBase = facade.findMapByName(officialMapName);
+                AbstractMapDto mapInDataBase = facade.findMapByName(officialMapName);
                 if (mapInDataBase == null) {
-                    MapDto insertedMap = facade.insertOfficialMap(officialMapName, selectedProfileNameList);
+                    OfficialMapDto insertedMap = facade.insertOfficialMap(officialMapName, selectedProfileNameList);
                     if (insertedMap != null) {
                         if (selectedProfileNameList.contains(profileSelect.getValue().getName()) &&
                                 !mapList.stream().filter(m -> m.isOfficial() && m.getKey().equalsIgnoreCase(mapInDataBase.getKey())).findFirst().isPresent()) {
@@ -743,17 +748,18 @@ public class MapsEditionController implements Initializable {
 
         for (MapToDisplay customMapToDisplay: customMapList) {
             try {
-                MapDto mapInDataBase = facade.findMapOrModByIdWorkShop(customMapToDisplay.getIdWorkShop());
+                CustomMapModDto mapInDataBase = facade.findMapOrModByIdWorkShop(customMapToDisplay.getIdWorkShop());
                 if (mapInDataBase == null) {
-                    MapDto customMap = facade.createNewCustomMapFromWorkshop(customMapToDisplay.getIdWorkShop(),
-                                                                             customMapToDisplay.getCommentary(),
-                                                                             installationFolder,
-                                                                             true,
-                                                                             false,
-                                                                              selectedProfileNameList);
+                    CustomMapModDto customMap = facade.createNewCustomMapFromWorkshop(
+                            customMapToDisplay.getIdWorkShop(),
+                            customMapToDisplay.getCommentary(),
+                            installationFolder,
+                           false,
+                            selectedProfileNameList
+                    );
                     if (customMap != null) {
                         if (selectedProfileNameList.contains(profileSelect.getValue().getName()) &&
-                                !mapList.stream().filter(m -> !m.isOfficial() && m.getIdWorkShop().equals(mapInDataBase.getIdWorkShop())).findFirst().isPresent()) {
+                                !mapList.stream().filter(m -> !m.isOfficial() && ((CustomMapModDto) m).getIdWorkShop().equals(mapInDataBase.getIdWorkShop())).findFirst().isPresent()) {
                             mapList.add(customMap);
                             GridPane gridpane = createMapGridPane(customMap);
                             customMapsFlowPane.getChildren().add(gridpane);
@@ -768,7 +774,7 @@ public class MapsEditionController implements Initializable {
                     if (mapAddedToProfiles != null) {
                         if (mapAddedToProfiles) {
                             if (selectedProfileNameList.contains(profileSelect.getValue().getName()) &&
-                                    !mapList.stream().filter(m -> !m.isOfficial() && m.getIdWorkShop().equals(mapInDataBase.getIdWorkShop())).findFirst().isPresent()) {
+                                    !mapList.stream().filter(m -> !m.isOfficial() && ((CustomMapModDto) m).getIdWorkShop().equals(mapInDataBase.getIdWorkShop())).findFirst().isPresent()) {
                                 mapList.add(mapInDataBase);
                                 GridPane gridpane = createMapGridPane(mapInDataBase);
                                 customMapsFlowPane.getChildren().add(gridpane);
@@ -802,12 +808,12 @@ public class MapsEditionController implements Initializable {
 
         for (MapToDisplay modToDisplay: modList) {
             try {
-                MapDto modInDataBase = facade.findMapOrModByIdWorkShop(modToDisplay.getIdWorkShop());
+                CustomMapModDto modInDataBase = facade.findMapOrModByIdWorkShop(modToDisplay.getIdWorkShop());
                 if (modInDataBase == null) {
-                    MapDto mod = facade.createNewCustomMapFromWorkshop(modToDisplay.getIdWorkShop(), installationFolder, true, true, selectedProfileNameList);
+                    CustomMapModDto mod = facade.createNewCustomMapFromWorkshop(modToDisplay.getIdWorkShop(), installationFolder, true, selectedProfileNameList);
                     if (mod != null) {
                         if (selectedProfileNameList.contains(profileSelect.getValue().getName()) &&
-                                !mapList.stream().filter(m -> !m.isOfficial() && m.getIdWorkShop().equals(modInDataBase.getIdWorkShop())).findFirst().isPresent()) {
+                                !mapList.stream().filter(m -> !m.isOfficial() && ((CustomMapModDto) m).getIdWorkShop().equals(modInDataBase.getIdWorkShop())).findFirst().isPresent()) {
                             mapList.add(mod);
                             GridPane gridpane = createMapGridPane(mod);
                             customMapsFlowPane.getChildren().add(gridpane);
@@ -822,7 +828,7 @@ public class MapsEditionController implements Initializable {
                     if (modAddedToProfiles != null) {
                         if (modAddedToProfiles) {
                             if (selectedProfileNameList.contains(profileSelect.getValue().getName()) &&
-                                    !mapList.stream().filter(m -> !m.isOfficial() && m.getIdWorkShop().equals(modInDataBase.getIdWorkShop())).findFirst().isPresent()) {
+                                    !mapList.stream().filter(m -> !m.isOfficial() && ((CustomMapModDto) m).getIdWorkShop().equals(modInDataBase.getIdWorkShop())).findFirst().isPresent()) {
                                 mapList.add(modInDataBase);
                                 GridPane gridpane = createMapGridPane(modInDataBase);
                                 customMapsFlowPane.getChildren().add(gridpane);
@@ -887,7 +893,7 @@ public class MapsEditionController implements Initializable {
             customMapsFlowPane.getChildren().clear();
             officialMapsFlowPane.getChildren().clear();
             mapList = facade.getMapsFromProfile(profileSelect.getValue().getName());
-            for (MapDto map : mapList) {
+            for (AbstractMapDto map : mapList) {
                 GridPane gridpane = createMapGridPane(map);
                 if (map.isOfficial()) {
                     officialMapsFlowPane.getChildren().add(gridpane);

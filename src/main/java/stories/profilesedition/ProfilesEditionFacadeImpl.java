@@ -4,7 +4,7 @@ import daos.*;
 import dtos.ProfileDto;
 import dtos.factories.ProfileDtoFactory;
 import entities.*;
-import entities.Map;
+import entities.AbstractMap;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -51,10 +51,10 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
         String defaultGamePort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultGamePort");
         String defaultQueryPort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultQueryPort");
 
-        List<Map> officialMaps = MapDao.getInstance().listOfficialMaps();
-        Map firstOfficialMap = null;
+        List officialMaps = OfficialMapDao.getInstance().listAll();
+        OfficialMap firstOfficialMap = null;
         if (officialMaps != null && !officialMaps.isEmpty()) {
-            firstOfficialMap = officialMaps.get(0);
+            firstOfficialMap = (OfficialMap) officialMaps.get(0);
         }
         Optional<MaxPlayers> defaultMaxPlayers = MaxPlayersDao.getInstance().findByCode("6");
 

@@ -1,20 +1,20 @@
 package stories.mapwebinfo;
 
-import daos.MapDao;
+import daos.CustomMapModDao;
+import daos.OfficialMapDao;
 import daos.ProfileDao;
-import dtos.MapDto;
+import dtos.CustomMapModDto;
 import dtos.factories.MapDtoFactory;
-import entities.Map;
+import entities.AbstractMap;
+import entities.CustomMapMod;
+import entities.OfficialMap;
 import entities.Profile;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.ProfileToDisplay;
 import pojos.ProfileToDisplayFactory;
-import services.MapService;
-import services.MapServiceImpl;
-import services.PropertyService;
-import services.PropertyServiceImpl;
+import services.*;
 import stories.AbstractFacade;
 import utils.Utils;
 
@@ -30,14 +30,16 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
 
     private final PropertyService propertyService;
     private final MapDtoFactory mapDtoFactory;
-    private final MapService mapService;
+    private final OfficialMapServiceImpl officialMapService;
+    private final CustomMapModServiceImpl customMapModService;
     private final ProfileToDisplayFactory profileToDisplayFactory;
 
     public MapWebInfoFacadeImpl() {
         super();
         this.propertyService = new PropertyServiceImpl();
         this.mapDtoFactory = new MapDtoFactory();
-        this.mapService = new MapServiceImpl();
+        this.officialMapService = new OfficialMapServiceImpl();
+        this.customMapModService = new CustomMapModServiceImpl();
         this.profileToDisplayFactory = new ProfileToDisplayFactory();
     }
 
@@ -59,7 +61,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
     }
 
     @Override
-    public MapDto createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String strUrlMapImage, String installationFolder, List<String> profileNameList) throws Exception {
+    public CustomMapModDto createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String strUrlMapImage, String installationFolder, List<String> profileNameList) throws Exception {
         List<Profile> profileList = profileNameList.stream().map(pn -> {
             try {
                 return findProfileByCode(pn);
@@ -75,31 +77,32 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         String absoluteTargetFolder = installationFolder + customMapLocalFolder;
         File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
-        Map insertedMap = createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, false, null, profileList);
-        return insertedMap != null ? mapDtoFactory.newDto(insertedMap): null;
+        CustomMapMod insertedMap = createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, false, null, profileList);
+        return insertedMap != null ? (CustomMapModDto) mapDtoFactory.newDto(insertedMap): null;
     }
 
-    private Map createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto, boolean downloaded, Boolean mod, List<Profile> profileList) throws Exception {
+    private CustomMapMod createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto, boolean downloaded, Boolean mod, List<Profile> profileList) throws Exception {
         if ((StringUtils.isBlank(mapName) || idWorkShop == null)) {
             return null;
         }
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         String urlInfo = baseUrlWorkshop + idWorkShop;
-        Map customMap = new Map(mapName, false, urlInfo, idWorkShop, urlPhoto, downloaded, mod, profileList);
-        return mapService.createMap(customMap);
+        CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, profileList, idWorkShop, downloaded);
+        return (CustomMapMod) customMapModService.createMap(customMap);
     }
 
     @Override
-    public MapDto findMapOrModByIdWorkShop(Long idWorkShop) throws SQLException {
-        Optional<Map> mapOpt = MapDao.getInstance().findByIdWorkShop(idWorkShop);
+    public CustomMapModDto findMapOrModByIdWorkShop(Long idWorkShop) throws SQLException {
+        Optional<CustomMapMod> mapOpt = CustomMapModDao.getInstance().findByIdWorkShop(idWorkShop);
         if (mapOpt.isPresent()) {
-            return mapDtoFactory.newDto(mapOpt.get());
+            return (CustomMapModDto) mapDtoFactory.newDto(mapOpt.get());
         }
         return null;
     }
 
     @Override
     public boolean addProfilesToMap(String mapName, List<String> profileNameList) throws SQLException {
+
         List<Profile> profileList = profileNameList.stream().map(pn -> {
             try {
                 return findProfileByCode(pn);
@@ -111,15 +114,22 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         if (profileList == null || profileList.isEmpty()) {
             return false;
         }
-        Optional<Map> mapOptional = MapDao.getInstance().findByCode(mapName);
-        if (!mapOptional.isPresent()) {
-            return false;
+
+        Optional<OfficialMap> officialMapOptional = OfficialMapDao.getInstance().findByCode(mapName);
+        if (officialMapOptional.isPresent()) {
+            return officialMapService.addProfilesToMap(officialMapOptional.get(), profileList);
         }
-        return mapService.addProfilesToMap(mapOptional.get(), profileList);
+
+        Optional<CustomMapMod> customMapModOptional = CustomMapModDao.getInstance().findByCode(mapName);
+        if (customMapModOptional.isPresent()) {
+            return customMapModService.addProfilesToMap(customMapModOptional.get(),profileList);
+        }
+
+        return false;
     }
 
     private boolean isMapInProfile(Long idWorkShop, Profile profile) {
-        Optional<Map> mapOpt = profile.getMapList().stream().filter(m -> idWorkShop.equals(m.getIdWorkShop())).findFirst();
+        Optional<AbstractMap> mapOpt = profile.getMapList().stream().filter(m -> idWorkShop.equals(((CustomMapMod) m).getIdWorkShop())).findFirst();
         return mapOpt.isPresent();
     }
 

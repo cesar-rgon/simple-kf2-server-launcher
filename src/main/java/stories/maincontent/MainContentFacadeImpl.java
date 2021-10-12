@@ -97,7 +97,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
-            Optional<Map> mapOpt = profile.getMapList().stream().filter(m -> m.getCode().equals(mapCode)).findFirst();
+            Optional<AbstractMap> mapOpt = profile.getMapList().stream().filter(m -> m.getCode().equals(mapCode)).findFirst();
             if (mapOpt.isPresent()) {
                 profile.setMap(mapOpt.get());
                 return ProfileDao.getInstance().update(profile);

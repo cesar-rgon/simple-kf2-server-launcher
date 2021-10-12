@@ -7,8 +7,10 @@
         <class>entities.GameType</class>
         <class>entities.Language</class>
         <class>entities.Length</class>
-        <class>entities.Map</class>
         <class>entities.MaxPlayers</class>
+        <class>entities.AbstractMap</class>
+        <class>entities.OfficialMap</class>
+        <class>entities.CustomMapMod</class>
         <class>entities.Profile</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 

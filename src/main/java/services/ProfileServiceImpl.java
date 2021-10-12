@@ -2,7 +2,7 @@ package services;
 
 import daos.*;
 import entities.*;
-import entities.Map;
+import entities.AbstractMap;
 import javafx.scene.control.ButtonType;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,12 +24,14 @@ public class ProfileServiceImpl implements ProfileService {
 
     private static final Logger logger = LogManager.getLogger(ProfileServiceImpl.class);
     private final PropertyService propertyService;
-    private final MapService mapService;
+    private final AbstractMapService officialMapService;
+    private final AbstractMapService customMapModService;
 
     public ProfileServiceImpl() {
         super();
         this.propertyService = new PropertyServiceImpl();
-        this.mapService = new MapServiceImpl();
+        this.officialMapService = new OfficialMapServiceImpl();
+        this.customMapModService = new CustomMapModServiceImpl();
     }
 
     @Override
@@ -53,20 +55,24 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public boolean deleteProfile(Profile profile, String installationFolder) throws Exception {
-        List<Map> mapList = new ArrayList<Map>(profile.getMapList());
+        List<AbstractMap> mapList = new ArrayList<AbstractMap>(profile.getMapList());
         profile.setMap(null);
         profile.getMapList().clear();
         ProfileDao.getInstance().update(profile);
         Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profile.getCode());
-        for (Map map: mapList) {
+        for (AbstractMap map: mapList) {
             map.getProfileList().remove(profileOpt.get());
-            MapDao.getInstance().update(map);
-            if (!map.isOfficial() && map.getProfileList().isEmpty()) {
-                if (MapDao.getInstance().remove(map)) {
-                    File photo = new File(installationFolder + map.getUrlPhoto());
-                    photo.delete();
-                    File cacheFolder = new File(installationFolder + "/KFGame/Cache/" + map.getIdWorkShop());
-                    FileUtils.deleteDirectory(cacheFolder);
+            if (map.isOfficial()) {
+                OfficialMapDao.getInstance().update((OfficialMap) map);
+            } else {
+                CustomMapModDao.getInstance().update((CustomMapMod) map);
+                if (map.getProfileList().isEmpty()) {
+                    if (CustomMapModDao.getInstance().remove((CustomMapMod) map)) {
+                        File photo = new File(installationFolder + map.getUrlPhoto());
+                        photo.delete();
+                        File cacheFolder = new File(installationFolder + "/KFGame/Cache/" + ((CustomMapMod) map).getIdWorkShop());
+                        FileUtils.deleteDirectory(cacheFolder);
+                    }
                 }
             }
         }
@@ -95,7 +101,7 @@ public class ProfileServiceImpl implements ProfileService {
                 profileToBeCloned.getUrlImageServer(),
                 profileToBeCloned.getWelcomeMessage(),
                 profileToBeCloned.getCustomParameters(),
-                new ArrayList<Map>(profileToBeCloned.getMapList()),
+                new ArrayList<AbstractMap>(profileToBeCloned.getMapList()),
                 profileToBeCloned.getTakeover(),
                 profileToBeCloned.getTeamCollision(),
                 profileToBeCloned.getAdminCanPause(),
@@ -176,14 +182,16 @@ public class ProfileServiceImpl implements ProfileService {
 
             if (profile.getMapList() != null && !profile.getMapList().isEmpty()) {
                 int mapIndex = 1;
-                for (Map map: profile.getMapList()) {
+                for (AbstractMap map: profile.getMapList()) {
                     properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".name", map.getCode());
-                    properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".official", String.valueOf(map.isOfficial()));
-                    properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".downloaded", String.valueOf(map.isDownloaded()));
                     properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlInfo", StringUtils.isNotBlank(map.getUrlInfo())? map.getUrlInfo(): "");
-                    properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".idWorkShop", map.getIdWorkShop()!=null? String.valueOf(map.getIdWorkShop()): "");
                     properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlPhoto", StringUtils.isNotBlank(map.getUrlPhoto())? map.getUrlPhoto(): "");
-                    properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".mod", map.getMod()!=null? String.valueOf(map.getMod()): "");
+                    properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".official", String.valueOf(map.isOfficial()));
+                    if (!map.isOfficial()) {
+                        properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".idWorkShop", ((CustomMapMod) map).getIdWorkShop()!=null? String.valueOf(((CustomMapMod) map).getIdWorkShop()): "");
+                        properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".downloaded", String.valueOf(((CustomMapMod) map).isDownloaded()));
+                    }
+
                     mapIndex++;
                 }
             }
@@ -527,7 +535,7 @@ public class ProfileServiceImpl implements ProfileService {
                     properties.getProperty("exported.profile" + profileIndex + ".urlImageServer"),
                     properties.getProperty("exported.profile" + profileIndex + ".welcomeMessage"),
                     properties.getProperty("exported.profile" + profileIndex + ".customParameters"),
-                    new ArrayList<Map>(),
+                    new ArrayList<AbstractMap>(),
                     StringUtils.isNotBlank(takeoverStr) ? Boolean.parseBoolean(takeoverStr): false,
                     StringUtils.isNotBlank(teamCollisionStr) ? Boolean.parseBoolean(teamCollisionStr): true,
                     StringUtils.isNotBlank(adminPauseStr) ? Boolean.parseBoolean(adminPauseStr): false,
@@ -564,11 +572,11 @@ public class ProfileServiceImpl implements ProfileService {
             try {
                 Profile savedProfile = ProfileDao.getInstance().insert(profile);
 
-                List<Map> mapList = importProfileMapsFromFile(profile.getId(), savedProfile, properties);
+                List<AbstractMap> mapList = importProfileMapsFromFile(profile.getId(), savedProfile, properties);
                 savedProfile.getMapList().addAll(mapList);
 
                 String mapName = properties.getProperty("exported.profile" + profile.getId() + ".map");
-                Optional<Map> mapOpt = mapList.stream().filter(m -> m.getCode().equalsIgnoreCase(mapName)).findFirst();
+                Optional<AbstractMap> mapOpt = mapList.stream().filter(m -> m.getCode().equalsIgnoreCase(mapName)).findFirst();
                 savedProfile.setMap(mapOpt.isPresent()? mapOpt.get(): null);
 
                 ProfileDao.getInstance().update(savedProfile);
@@ -581,8 +589,8 @@ public class ProfileServiceImpl implements ProfileService {
         return savedProfileList;
     }
 
-    private List<Map> importProfileMapsFromFile(int profileIndex, Profile profile, Properties properties) throws Exception {
-        List<Map> mapList = new ArrayList<Map>();
+    private List<AbstractMap> importProfileMapsFromFile(int profileIndex, Profile profile, Properties properties) throws Exception {
+        List<AbstractMap> mapList = new ArrayList<AbstractMap>();
         java.util.Map<String,Integer> officialMapsIndex = new HashMap<String, Integer>();
         List<MapToDisplay> customMapListToDisplay = new ArrayList<MapToDisplay>();
         java.util.Map<Long,Integer> customMapsIndex = new HashMap<Long, Integer>();
@@ -597,7 +605,6 @@ public class ProfileServiceImpl implements ProfileService {
                 } else {
                     String strIdWorkShop = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".idWorkShop");
                     Long idWorkShop = StringUtils.isNotBlank(strIdWorkShop) ? Long.parseLong(strIdWorkShop) : 0;
-                    boolean isMod = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".mod"));
                     customMapListToDisplay.add(new MapToDisplay(idWorkShop, mapName));
                     customMapsIndex.put(idWorkShop, mapIndex);
                 }
@@ -614,8 +621,8 @@ public class ProfileServiceImpl implements ProfileService {
             String mapName = entry.getKey();
             Integer mapIndex = entry.getValue();
             try {
-                Optional<Map> mapInDataBaseOpt = MapDao.getInstance().findByCode(mapName);
-                Map map = getImportedMap(mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, mapName, null, true);
+                Optional mapInDataBaseOpt = OfficialMapDao.getInstance().findByCode(mapName);
+                AbstractMap map = getImportedMap(mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, mapName, null, true);
                 if (map != null) {
                     mapList.add(map);
                 }
@@ -627,8 +634,8 @@ public class ProfileServiceImpl implements ProfileService {
         for (MapToDisplay customMap: selectedCustomMapList) {
             Integer mapIndex = customMapsIndex.get(customMap.getIdWorkShop());
             try {
-                Optional<Map> mapInDataBaseOpt = MapDao.getInstance().findByIdWorkShop(customMap.getIdWorkShop());
-                Map map = getImportedMap(mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, customMap.getCommentary(), customMap.getIdWorkShop(), false);
+                Optional mapInDataBaseOpt = CustomMapModDao.getInstance().findByIdWorkShop(customMap.getIdWorkShop());
+                AbstractMap map = getImportedMap(mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, customMap.getCommentary(), customMap.getIdWorkShop(), false);
                 if (map != null) {
                     mapList.add(map);
                 }
@@ -640,27 +647,32 @@ public class ProfileServiceImpl implements ProfileService {
         return mapList;
     }
 
-    private Map getImportedMap(Optional<Map> mapInDataBaseOpt, Profile profile, Properties properties, int profileIndex, Integer mapIndex, String mapName, Long idWorkShop, boolean official) throws Exception {
+    private AbstractMap getImportedMap(Optional<AbstractMap> mapInDataBaseOpt, Profile profile, Properties properties, int profileIndex, Integer mapIndex, String mapName, Long idWorkShop, boolean official) throws Exception {
         if (mapInDataBaseOpt.isPresent()) {
             mapInDataBaseOpt.get().getProfileList().add(profile);
-            if (MapDao.getInstance().update(mapInDataBaseOpt.get())) {
-                return mapInDataBaseOpt.get();
-            }
-        } else {
-            boolean downloaded = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".downloaded"));
-            String urlInfo = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlInfo");
-            String urlPhoto = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlPhoto");
-            String strMod = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".mod");
-            Boolean mod = StringUtils.isNotBlank(strMod)? Boolean.parseBoolean(strMod): null;
-            List<Profile> profileList = new ArrayList<Profile>();
-            profileList.add(profile);
-            Map map = new Map(mapName, official, urlInfo, idWorkShop, urlPhoto, downloaded, mod, profileList);
-            if (map.isOfficial()) {
-                if (MapDao.getInstance().insert(map) != null) {
-                    return map;
+            if (mapInDataBaseOpt.get().isOfficial()) {
+                if (OfficialMapDao.getInstance().update((OfficialMap) mapInDataBaseOpt.get())) {
+                    return mapInDataBaseOpt.get();
                 }
             } else {
-                if (createNewCustomMapFromWorkshop(map)) {
+                if (CustomMapModDao.getInstance().update((CustomMapMod) mapInDataBaseOpt.get())) {
+                    return mapInDataBaseOpt.get();
+                }
+            }
+        } else {
+            List<Profile> profileList = new ArrayList<Profile>();
+            profileList.add(profile);
+            String urlInfo = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlInfo");
+            String urlPhoto = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlPhoto");
+
+            AbstractMap map = null;
+            if (official) {
+                map = new OfficialMap(mapName, urlInfo, urlPhoto, profileList);
+                return officialMapService.createItem(map);
+            } else {
+                boolean downloaded = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".downloaded"));
+                map = new CustomMapMod(mapName, urlInfo, urlPhoto, profileList, idWorkShop, downloaded);
+                if (createNewCustomMapFromWorkshop((CustomMapMod) map)) {
                     return map;
                 }
             }
@@ -668,7 +680,7 @@ public class ProfileServiceImpl implements ProfileService {
         return null;
     }
 
-    private boolean createNewCustomMapFromWorkshop(Map map) throws Exception {
+    private boolean createNewCustomMapFromWorkshop(CustomMapMod map) throws Exception {
         String installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.installationFolder");
         URL urlWorkShop = new URL(map.getUrlInfo());
         BufferedReader reader = new BufferedReader(new InputStreamReader(urlWorkShop.openStream()));
@@ -683,9 +695,8 @@ public class ProfileServiceImpl implements ProfileService {
         }
         reader.close();
         Utils.downloadImageFromUrlToFile(strUrlMapImage, installationFolder + map.getUrlPhoto());
-        map.setMod(null);
         map.setDownloaded(false);
-        Map insertedMap = mapService.createItem(map);;
+        AbstractMap insertedMap = customMapModService.createItem(map);;
         return (insertedMap != null);
     }
 }

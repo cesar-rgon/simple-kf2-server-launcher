@@ -1,6 +1,6 @@
 package pojos.session;
 
-import dtos.MapDto;
+import dtos.AbstractMapDto;
 import dtos.ProfileDto;
 
 import java.util.ArrayList;
@@ -12,7 +12,7 @@ public class Session {
 
     private ProfileDto actualProfile;
     private String console;
-    private MapDto map;
+    private AbstractMapDto map;
     private List<Process> processList;
     private ProfileDto mapsProfile;
 
@@ -61,11 +61,11 @@ public class Session {
         this.console = console;
     }
 
-    public MapDto getMap() {
+    public AbstractMapDto getMap() {
         return map;
     }
 
-    public void setMap(MapDto map) {
+    public void setMap(AbstractMapDto map) {
         this.map = map;
     }
 

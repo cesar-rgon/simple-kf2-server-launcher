@@ -1,6 +1,6 @@
 package stories.mapwebinfo;
 
-import dtos.MapDto;
+import dtos.CustomMapModDto;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -174,10 +174,10 @@ public class MapWebInfoController implements Initializable {
             List<ProfileToDisplay> selectedProfiles = Utils.selectProfilesDialog(headerText + ":", profilesWithoutMap);
             if (selectedProfiles != null && !selectedProfiles.isEmpty()) {
                 List<String> selectedProfileNameList = selectedProfiles.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
-                MapDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
+                CustomMapModDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
 
                 if (mapModInDataBase == null) {
-                    MapDto customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, mapName, strUrlMapImage,  installationFolder, selectedProfileNameList);
+                    CustomMapModDto customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, mapName, strUrlMapImage,  installationFolder, selectedProfileNameList);
                     if (customMap != null) {
                         if (profilesWithoutMap.size() - selectedProfiles.size() == 0) {
                             addMap.setVisible(false);

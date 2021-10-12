@@ -26,7 +26,7 @@ public class Profile extends AbstractEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="ID_MAP", referencedColumnName="ID")
-    private Map map;
+    private AbstractMap map;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="ID_DIFFICULTY", referencedColumnName="ID")
@@ -85,7 +85,7 @@ public class Profile extends AbstractEntity {
             joinColumns = {@JoinColumn(name = "ID_PROFILE")},
             inverseJoinColumns = {@JoinColumn(name = "ID_MAP")}
     )
-    private List<Map> mapList;
+    private List<AbstractMap> mapList;
 
     @Column(name="TEAM_COLLISION")
     private Boolean teamCollision;
@@ -156,12 +156,12 @@ public class Profile extends AbstractEntity {
 
     public Profile() {
         super();
-        this.mapList = new ArrayList<Map>();
+        this.mapList = new ArrayList<AbstractMap>();
     }
 
-    public Profile(String name, Language language, GameType gametype, Map map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,
+    public Profile(String name, Language language, GameType gametype, AbstractMap map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,
                    String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
-                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, List<Map> mapList, Boolean takeover,
+                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, List<AbstractMap> mapList, Boolean takeover,
                    Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting, Double mapVotingTime,
                    Boolean kickVoting, Double kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators, Boolean voip,
                    Boolean chatLogging, String chatLoggingFile, Boolean chatLoggingFileTimestamp, Double timeBetweenKicks, Double maxIdleTime, Boolean deadPlayersCanTalk,
@@ -258,11 +258,11 @@ public class Profile extends AbstractEntity {
         this.gametype = gametype;
     }
 
-    public Map getMap() {
+    public AbstractMap getMap() {
         return map;
     }
 
-    public void setMap(Map map) {
+    public void setMap(AbstractMap map) {
         this.map = map;
     }
 
@@ -386,11 +386,11 @@ public class Profile extends AbstractEntity {
         this.customParameters = customParameters;
     }
 
-    public List<Map> getMapList() {
+    public List<AbstractMap> getMapList() {
         return mapList;
     }
 
-    public void setMapList(List<Map> mapList) {
+    public void setMapList(List<AbstractMap> mapList) {
         this.mapList = mapList;
     }
 

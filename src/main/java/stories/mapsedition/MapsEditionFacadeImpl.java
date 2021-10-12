@@ -1,18 +1,24 @@
 package stories.mapsedition;
 
-import daos.MapDao;
+import daos.CustomMapModDao;
+import daos.OfficialMapDao;
 import daos.ProfileDao;
-import dtos.MapDto;
+import dtos.AbstractMapDto;
+import dtos.CustomMapModDto;
+import dtos.OfficialMapDto;
 import dtos.ProfileDto;
 import dtos.factories.MapDtoFactory;
 import dtos.factories.ProfileDtoFactory;
-import entities.Map;
+import entities.AbstractMap;
+import entities.CustomMapMod;
+import entities.OfficialMap;
 import entities.Profile;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.ProfileToDisplay;
+import pojos.ProfileToDisplayFactory;
 import services.*;
 import stories.AbstractFacade;
 import utils.Utils;
@@ -22,6 +28,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.SQLException;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -34,28 +41,32 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     private final MapDtoFactory mapDtoFactory;
     private final PropertyService propertyService;
     private final ProfileDtoFactory profileDtoFactory;
-    private final MapService mapService;
+    private final OfficialMapServiceImpl officialMapService;
+    private final CustomMapModServiceImpl customMapModService;
+    private final ProfileToDisplayFactory profileToDisplayFactory;
 
     public MapsEditionFacadeImpl() {
         super();
         this.mapDtoFactory = new MapDtoFactory();
         this.propertyService = new PropertyServiceImpl();
         this.profileDtoFactory = new ProfileDtoFactory();
-        this.mapService = new MapServiceImpl();
+        this.officialMapService = new OfficialMapServiceImpl();
+        this.customMapModService = new CustomMapModServiceImpl();
+        this.profileToDisplayFactory = new ProfileToDisplayFactory();
     }
 
-    private Map createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto, boolean downloaded, Boolean isMod, List<Profile> profileList) throws Exception {
+    private CustomMapMod createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto, boolean downloaded, List<Profile> profileList) throws Exception {
         if ((StringUtils.isBlank(mapName) || idWorkShop == null)) {
             return null;
         }
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         String urlInfo = baseUrlWorkshop + idWorkShop;
-        Map customMap = new Map(mapName, false, urlInfo, idWorkShop, urlPhoto, downloaded, isMod, profileList);
-        return mapService.createMap(customMap);
+        CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, profileList, idWorkShop, downloaded);
+        return (CustomMapMod) customMapModService.createMap(customMap);
     }
 
     @Override
-    public MapDto createNewCustomMapFromWorkshop(Long idWorkShop, String installationFolder, boolean downloaded, Boolean isMod, List<String> profileNameList) throws Exception {
+    public CustomMapModDto createNewCustomMapFromWorkshop(Long idWorkShop, String installationFolder, boolean downloaded, List<String> profileNameList) throws Exception {
         List<Profile> profileList = profileNameList.stream().map(pn -> {
             try {
                 return findProfileByCode(pn);
@@ -96,12 +107,12 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
 
-        Map newMap = createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, downloaded, isMod, profileList);
-        return mapDtoFactory.newDto(newMap);
+        CustomMapMod newCustomMapMod = createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, downloaded, profileList);
+        return (CustomMapModDto) mapDtoFactory.newDto(newCustomMapMod);
     }
 
     @Override
-    public MapDto createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String installationFolder, boolean downloaded, Boolean isMod, List<String> profileNameList) throws Exception {
+    public CustomMapModDto createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String installationFolder, boolean downloaded, List<String> profileNameList) throws Exception {
         List<Profile> profileList = profileNameList.stream().map(pn -> {
             try {
                 return findProfileByCode(pn);
@@ -134,8 +145,8 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
 
-        Map newMap = createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, downloaded, isMod, profileList);
-        return mapDtoFactory.newDto(newMap);
+        CustomMapMod newMap = createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, downloaded, profileList);
+        return (CustomMapModDto) mapDtoFactory.newDto(newMap);
     }
 
     @Override
@@ -152,7 +163,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
 
     @Override
-    public MapDto insertOfficialMap(String mapName, List<String> profileNameList) throws Exception {
+    public OfficialMapDto insertOfficialMap(String mapName, List<String> profileNameList) throws Exception {
         List<Profile> profileList = profileNameList.stream().map(pn -> {
             try {
                 return findProfileByCode(pn);
@@ -164,16 +175,16 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         if (profileList == null || profileList.isEmpty()) {
             return null;
         }
-        Map newOfficialMap = new Map(mapName, true, null, null, "/KFGame/Web/images/maps/" + mapName + ".jpg", true, false, profileList);
-        Map insertedMap = mapService.createMap(newOfficialMap);
-        return insertedMap != null ? mapDtoFactory.newDto(insertedMap): null;
+        OfficialMap newOfficialMap = new OfficialMap(mapName, "", "/KFGame/Web/images/maps/" + mapName + ".jpg", profileList);
+        OfficialMap insertedMap = (OfficialMap) officialMapService.createMap(newOfficialMap);
+        return insertedMap != null ? (OfficialMapDto) mapDtoFactory.newDto(insertedMap): null;
     }
 
     @Override
-    public MapDto findMapOrModByIdWorkShop(Long idWorkShop) throws SQLException {
-        Optional<Map> mapOpt = MapDao.getInstance().findByIdWorkShop(idWorkShop);
+    public CustomMapModDto findMapOrModByIdWorkShop(Long idWorkShop) throws SQLException {
+        Optional<CustomMapMod> mapOpt = CustomMapModDao.getInstance().findByIdWorkShop(idWorkShop);
         if (mapOpt.isPresent()) {
-            return mapDtoFactory.newDto(mapOpt.get());
+            return (CustomMapModDto) mapDtoFactory.newDto(mapOpt.get());
         }
         return null;
     }
@@ -184,21 +195,20 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         return profileDtoFactory.newDtos(profiles);
     }
 
+
     @Override
-    public List<MapDto> getMapsFromProfile(String profileName) throws SQLException {
+    public List<AbstractMapDto> getMapsFromProfile(String profileName) throws SQLException {
         Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
         if (profileOpt.isPresent()) {
             return mapDtoFactory.newDtos(profileOpt.get().getMapList());
         }
-        return new ArrayList<MapDto>();
+        return new ArrayList<AbstractMapDto>();
     }
+
 
     @Override
     public Boolean addProfilesToMap(String mapName, List<String> profileNameList) throws SQLException {
-        Optional<Map> mapOptional = MapDao.getInstance().findByCode(mapName);
-        if (!mapOptional.isPresent()) {
-            return false;
-        }
+
         List<Profile> profileList = profileNameList.stream().map(pn -> {
                     try {
                         return findProfileByCode(pn);
@@ -207,32 +217,64 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
                         return null;
                     }
                 })
-                .filter(profile -> !profile.getMapList().contains(mapOptional.get()))
                 .collect(Collectors.toList());
         if (profileList == null || profileList.isEmpty()) {
             return null;
         }
-        return mapService.addProfilesToMap(mapOptional.get(), profileList);
+
+        Optional<OfficialMap> officialMapOptional = OfficialMapDao.getInstance().findByCode(mapName);
+        if (officialMapOptional.isPresent()) {
+            return officialMapService.addProfilesToMap(
+                    officialMapOptional.get(),
+                    profileList.stream().filter(profile -> !profile.getMapList().contains(officialMapOptional.get())).collect(Collectors.toList())
+            );
+        }
+
+        Optional<CustomMapMod> customMapModOptional = CustomMapModDao.getInstance().findByCode(mapName);
+        if (customMapModOptional.isPresent()) {
+            return customMapModService.addProfilesToMap(
+                    customMapModOptional.get(),
+                    profileList.stream().filter(profile -> !profile.getMapList().contains(customMapModOptional.get())).collect(Collectors.toList())
+            );
+        }
+
+        return null;
     }
 
+
+
     @Override
-    public MapDto deleteMapFromProfile(String mapName, String profileName, String installationFolder) throws Exception {
+    public AbstractMapDto deleteMapFromProfile(String mapName, String profileName, String installationFolder) throws Exception {
         Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
         if (profileOpt.isPresent()) {
-            Optional<Map> mapOpt = profileOpt.get().getMapList().stream().filter(m -> m.getCode().equalsIgnoreCase(mapName)).findFirst();
+            Optional<AbstractMap> mapOpt = profileOpt.get().getMapList().stream().filter(m -> m.getCode().equalsIgnoreCase(mapName)).findFirst();
+
             if (mapOpt.isPresent()) {
-                Map deletedMap = mapService.deleteMap(mapOpt.get(), profileOpt.get(), installationFolder);
-                return mapDtoFactory.newDto(deletedMap);
+                Optional<OfficialMap> officialMapOptional = OfficialMapDao.getInstance().findByCode(mapName);
+                if (officialMapOptional.isPresent()) {
+                    OfficialMap deletedMap = (OfficialMap) officialMapService.deleteMap(officialMapOptional.get(), profileOpt.get());
+                    return mapDtoFactory.newDto(deletedMap);
+                }
+
+                Optional<CustomMapMod> customMapModOptional = CustomMapModDao.getInstance().findByCode(mapName);
+                if (customMapModOptional.isPresent()) {
+                    CustomMapMod deletedMap = (CustomMapMod) customMapModService.deleteMap(customMapModOptional.get(), profileOpt.get(), installationFolder);
+                    return mapDtoFactory.newDto(deletedMap);
+                }
             }
         }
         return null;
     }
 
     @Override
-    public MapDto findMapByName(String mapName) throws SQLException {
-        Optional<Map> mapOpt = MapDao.getInstance().findByCode(mapName);
-        if (mapOpt.isPresent()) {
-            return mapDtoFactory.newDto(mapOpt.get());
+    public AbstractMapDto findMapByName(String mapName) throws SQLException {
+        Optional<OfficialMap> officialMapOptional = OfficialMapDao.getInstance().findByCode(mapName);
+        if (officialMapOptional.isPresent()) {
+            return mapDtoFactory.newDto(officialMapOptional.get());
+        }
+        Optional<CustomMapMod> customMapModOptional = CustomMapModDao.getInstance().findByCode(mapName);
+        if (customMapModOptional.isPresent()) {
+            return mapDtoFactory.newDto(customMapModOptional.get());
         }
         return null;
     }
@@ -252,7 +294,15 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         if (allProfiles == null || allProfiles.isEmpty()) {
             return new ArrayList<String>();
         }
-        List<ProfileToDisplay> selectedProfiles = mapService.selectProfilesToImport(allProfiles, defaultSelectedProfileName);
+        List<ProfileToDisplay> selectedProfiles = selectProfilesToImport(allProfiles, defaultSelectedProfileName);
         return selectedProfiles.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
+    }
+
+    public List<ProfileToDisplay> selectProfilesToImport(List<Profile> allProfiles, String defaultSelectedProfileName) throws Exception {
+        List<ProfileToDisplay> allProfilesToDisplay = profileToDisplayFactory.newOnes(allProfiles);
+        allProfilesToDisplay.stream().filter(p -> p.getProfileName().equalsIgnoreCase(defaultSelectedProfileName)).forEach(profile -> profile.setSelected(true));
+        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfiles");
+        return Utils.selectProfilesDialog(headerText + ":", allProfilesToDisplay);
     }
 }

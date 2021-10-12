@@ -1,7 +1,8 @@
 package pojos.listener;
 
-import daos.MapDao;
-import entities.Map;
+import daos.CustomMapModDao;
+import entities.AbstractMap;
+import entities.CustomMapMod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.PropertyService;
@@ -27,11 +28,11 @@ public class TimeListener extends TimerTask {
     public void run() {
         logger.info("Starting the process of checking downloaded custom maps and mods.");
         try {
-            List<Map> mapList = MapDao.getInstance().listNotOfficialMaps();
+            List<CustomMapMod> mapList = CustomMapModDao.getInstance().listAll();
             if (mapList != null && !mapList.isEmpty()) {
                 PropertyService propertyService = new PropertyServiceImpl();
                 String installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.installationFolder");
-                for (Map map : mapList) {
+                for (CustomMapMod map : mapList) {
                     try {
                         List<Path> kfmFilesPath = Files.walk(Paths.get(installationFolder + "/KFGame/Cache/" + map.getIdWorkShop()))
                                 .filter(Files::isRegularFile)
@@ -45,14 +46,12 @@ public class TimeListener extends TimerTask {
                             String filenameWithoutExtension = array[0];
                             map.setCode(filenameWithoutExtension);
                             map.setDownloaded(true);
-                            map.setMod(false);
-                            MapDao.getInstance().update(map);
+                            CustomMapModDao.getInstance().update(map);
                         } else {
                             File folder = new File(installationFolder + "/KFGame/Cache/" + map.getIdWorkShop());
                             if (folder.exists()) {
                                 map.setDownloaded(true);
-                                map.setMod(true);
-                                MapDao.getInstance().update(map);
+                                CustomMapModDao.getInstance().update(map);
                             }
                         }
                     } catch (Exception ex) {
