@@ -27,6 +27,7 @@ public abstract class AbstractMap extends AbstractEntity {
     private List<Profile> profileList;
 
     // Not mapped attribute
+    @Transient
     private boolean official;
 
     protected AbstractMap() {

@@ -15,6 +15,7 @@ public class Difficulty extends AbstractEntity {
     private String code;
 
     // Not mapped attribute. This value is stored in .properties file of each language
+    @Transient
     private String description;
 
 

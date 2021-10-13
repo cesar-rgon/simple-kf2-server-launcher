@@ -21,6 +21,7 @@ public class GameType extends AbstractEntity {
     boolean lengthEnabled;
 
     // Not mapped attribute. This value is stored in .properties file of each language
+    @Transient
     private String description;
 
     public GameType() {
