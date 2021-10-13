@@ -33,6 +33,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
     private final OfficialMapServiceImpl officialMapService;
     private final CustomMapModServiceImpl customMapModService;
     private final ProfileToDisplayFactory profileToDisplayFactory;
+    private final ProfileService profileService;
 
     public MapWebInfoFacadeImpl() {
         super();
@@ -41,6 +42,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         this.officialMapService = new OfficialMapServiceImpl();
         this.customMapModService = new CustomMapModServiceImpl();
         this.profileToDisplayFactory = new ProfileToDisplayFactory();
+        this.profileService = new ProfileServiceImpl();
     }
 
     @Override
@@ -135,7 +137,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
 
     @Override
     public List<ProfileToDisplay> getProfilesWithoutMap(Long idWorkShop) throws SQLException {
-        List<Profile> allProfiles = ProfileDao.getInstance().listAll();
+        List<Profile> allProfiles = profileService.listAllProfiles();
         List<Profile> profilesWithoutMap = allProfiles.stream().filter(p -> !isMapInProfile(idWorkShop, p)).collect(Collectors.toList());
         return profileToDisplayFactory.newOnes(profilesWithoutMap);
     }

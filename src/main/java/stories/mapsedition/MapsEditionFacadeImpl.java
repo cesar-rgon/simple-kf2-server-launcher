@@ -44,6 +44,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     private final OfficialMapServiceImpl officialMapService;
     private final CustomMapModServiceImpl customMapModService;
     private final ProfileToDisplayFactory profileToDisplayFactory;
+    private final ProfileService profileService;
 
     public MapsEditionFacadeImpl() {
         super();
@@ -53,6 +54,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         this.officialMapService = new OfficialMapServiceImpl();
         this.customMapModService = new CustomMapModServiceImpl();
         this.profileToDisplayFactory = new ProfileToDisplayFactory();
+        this.profileService = new ProfileServiceImpl();
     }
 
     private CustomMapMod createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto, boolean downloaded, List<Profile> profileList) throws Exception {
@@ -191,14 +193,14 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
     @Override
     public ObservableList<ProfileDto> listAllProfiles() throws SQLException {
-        List<Profile> profiles = ProfileDao.getInstance().listAll();
+        List<Profile> profiles = profileService.listAllProfiles();
         return profileDtoFactory.newDtos(profiles);
     }
 
 
     @Override
     public List<AbstractMapDto> getMapsFromProfile(String profileName) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             return mapDtoFactory.newDtos(profileOpt.get().getMapList());
         }
@@ -245,7 +247,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
     @Override
     public AbstractMapDto deleteMapFromProfile(String mapName, String profileName, String installationFolder) throws Exception {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Optional<AbstractMap> mapOpt = profileOpt.get().getMapList().stream().filter(m -> m.getCode().equalsIgnoreCase(mapName)).findFirst();
 
@@ -281,7 +283,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
     @Override
     public void unselectProfileMap(String profileName) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             profileOpt.get().setMap(null);
             ProfileDao.getInstance().update(profileOpt.get());
@@ -290,7 +292,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
     @Override
     public List<String> selectProfilesToImport(String defaultSelectedProfileName) throws Exception {
-        List<Profile> allProfiles = ProfileDao.getInstance().listAll();
+        List<Profile> allProfiles = profileService.listAllProfiles();
         if (allProfiles == null || allProfiles.isEmpty()) {
             return new ArrayList<String>();
         }

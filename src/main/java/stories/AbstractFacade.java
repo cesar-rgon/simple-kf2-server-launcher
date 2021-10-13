@@ -4,6 +4,8 @@ import daos.ProfileDao;
 import dtos.ProfileDto;
 import dtos.factories.ProfileDtoFactory;
 import entities.Profile;
+import services.ProfileService;
+import services.ProfileServiceImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 
@@ -12,8 +14,15 @@ import java.util.Optional;
 
 public abstract class AbstractFacade {
 
+    private final ProfileService profileService;
+
+    protected AbstractFacade() {
+        super();
+        this.profileService = new ProfileServiceImpl();
+    }
+
     public Profile findProfileByCode(String profileName) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             return profileOpt.get();
         }
@@ -21,9 +30,9 @@ public abstract class AbstractFacade {
     }
 
     public ProfileDto findProfileDtoByName(String profileName) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
-        ProfileDtoFactory profileDtoFactory = new ProfileDtoFactory();
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
+            ProfileDtoFactory profileDtoFactory = new ProfileDtoFactory();
             return profileDtoFactory.newDto(profileOpt.get());
         }
         return null;

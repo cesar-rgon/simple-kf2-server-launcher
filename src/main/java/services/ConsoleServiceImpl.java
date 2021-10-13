@@ -1,6 +1,5 @@
 package services;
 
-import daos.ProfileDao;
 import entities.Profile;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
@@ -11,12 +10,19 @@ import java.util.Optional;
 
 public class ConsoleServiceImpl implements ConsoleService {
 
+    private final ProfileService profileService;
+
+    public ConsoleServiceImpl() {
+        super();
+        this.profileService = new ProfileServiceImpl();
+    }
+
     @Override
     public void runServersByConsole(List<String> parameters) {
         for (String parameter: parameters) {
             if (!"--profiles".equalsIgnoreCase(parameter)) {
                 try {
-                    Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(parameter);
+                    Optional<Profile> profileOpt = profileService.findProfileByCode(parameter);
                     if (profileOpt.isPresent()) {
                         Kf2Common kf2Common = Kf2Factory.getInstance();
                         kf2Common.runServerByConsole(profileOpt.get());

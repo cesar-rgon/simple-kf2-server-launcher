@@ -9,12 +9,16 @@ import dtos.factories.ProfileDtoFactory;
 import entities.Difficulty;
 import entities.Profile;
 import services.DifficultyServiceImpl;
+import services.ProfileService;
+import services.ProfileServiceImpl;
 import stories.AbstractEditionFacade;
 
 import java.sql.SQLException;
 import java.util.Optional;
 
 public class DifficultiesEditionFacadeImpl extends AbstractEditionFacade<Difficulty, SelectDto> implements DifficultiesEditionFacade {
+
+    private final ProfileService profileService;
 
     public DifficultiesEditionFacadeImpl() {
         super(
@@ -23,12 +27,13 @@ public class DifficultiesEditionFacadeImpl extends AbstractEditionFacade<Difficu
                 new DifficultyDtoFactory(),
                 new DifficultyServiceImpl()
         );
+        this.profileService = new ProfileServiceImpl();
     }
 
 
     @Override
     public ProfileDto unselectDifficultyInProfile(String profileName) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             profileOpt.get().setDifficulty(null);
             ProfileDao.getInstance().update(profileOpt.get());

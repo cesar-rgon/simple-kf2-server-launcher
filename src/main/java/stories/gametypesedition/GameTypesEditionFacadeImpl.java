@@ -11,12 +11,16 @@ import entities.Profile;
 import org.apache.commons.lang3.StringUtils;
 import services.GameTypeServiceImpl;
 import services.Kf2Service;
+import services.ProfileService;
+import services.ProfileServiceImpl;
 import stories.AbstractEditionFacade;
 
 import java.sql.SQLException;
 import java.util.Optional;
 
 public class GameTypesEditionFacadeImpl extends AbstractEditionFacade<GameType, GameTypeDto> implements GameTypesEditionFacade {
+
+    private final ProfileService profileService;
 
     public GameTypesEditionFacadeImpl() {
         super(
@@ -25,6 +29,7 @@ public class GameTypesEditionFacadeImpl extends AbstractEditionFacade<GameType, 
                 new GameTypeDtoFactory(),
                 new GameTypeServiceImpl()
         );
+        this.profileService = new ProfileServiceImpl();
     }
 
     @Override
@@ -53,7 +58,7 @@ public class GameTypesEditionFacadeImpl extends AbstractEditionFacade<GameType, 
 
     @Override
     public ProfileDto unselectGametypeInProfile(String profileName) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             profileOpt.get().setGametype(null);
             ProfileDao.getInstance().update(profileOpt.get());

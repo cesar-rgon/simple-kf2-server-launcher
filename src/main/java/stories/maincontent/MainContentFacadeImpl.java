@@ -12,6 +12,8 @@ import javafx.collections.ObservableList;
 import pojos.ProfileToDisplayFactory;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
+import services.ProfileService;
+import services.ProfileServiceImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import stories.AbstractFacade;
@@ -31,6 +33,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     private final DifficultyDtoFactory difficultyDtoFactory;
     private final LengthDtoFactory lengthDtoFactory;
     private final MaxPlayersDtoFactory maxPlayersDtoFactory;
+    private final ProfileService profileService;
 
     public MainContentFacadeImpl() {
         super();
@@ -40,11 +43,12 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         difficultyDtoFactory = new DifficultyDtoFactory();
         lengthDtoFactory = new LengthDtoFactory();
         maxPlayersDtoFactory = new MaxPlayersDtoFactory();
+        profileService = new ProfileServiceImpl();
     }
 
     @Override
     public ObservableList<ProfileDto> listAllProfiles() throws SQLException {
-        List<Profile> profiles = ProfileDao.getInstance().listAll();
+        List<Profile> profiles = profileService.listAllProfiles();
         return profileDtoFactory.newDtos(profiles);
     }
 
@@ -80,7 +84,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetGameType(String profileName, String gameTypeCode) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             Optional<GameType> gameTypeOpt = GameTypeDao.getInstance().findByCode(gameTypeCode);
@@ -94,7 +98,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetMap(String profileName, String mapCode) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             Optional<AbstractMap> mapOpt = profile.getMapList().stream().filter(m -> m.getCode().equals(mapCode)).findFirst();
@@ -108,7 +112,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetDifficulty(String profileName, String difficultyCode) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             Optional<Difficulty> difficultyOpt = DifficultyDao.getInstance().findByCode(difficultyCode);
@@ -122,7 +126,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetLength(String profileName, String lengthCode) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             Optional<Length> lengthOpt = LengthDao.getInstance().findByCode(lengthCode);
@@ -136,7 +140,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetMaxPlayers(String profileName, String maxPlayersCode) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             Optional<MaxPlayers> maxPlayersOpt = MaxPlayersDao.getInstance().findByCode(maxPlayersCode);
@@ -150,7 +154,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetLanguage(String profileName, String languageCode) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             Optional<Language> languageOpt = LanguageDao.getInstance().findByCode(languageCode);
@@ -164,7 +168,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetServerName(String profileName, String serverName) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setServerName(serverName);
@@ -175,7 +179,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetServerPassword(String profileName, String serverPassword) throws Exception {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setServerPassword(Utils.encryptAES(serverPassword));
@@ -186,7 +190,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetWebPassword(String profileName, String webPassword) throws Exception {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setWebPassword(Utils.encryptAES(webPassword));
@@ -197,7 +201,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetWebPort(String profileName, Integer webPort) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setWebPort(webPort);
@@ -208,7 +212,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetGamePort(String profileName, Integer gamePort) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setGamePort(gamePort);
@@ -219,7 +223,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetQueryPort(String profileName, Integer queryPort) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setQueryPort(queryPort);
@@ -230,7 +234,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetYourClan(String profileName, String yourClan) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setYourClan(yourClan);
@@ -241,7 +245,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetYourWebLink(String profileName, String yourWebLink) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setYourWebLink(yourWebLink);
@@ -252,7 +256,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetUrlImageServer(String profileName, String urlImageServer) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setUrlImageServer(urlImageServer);
@@ -263,7 +267,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetWelcomeMessage(String profileName, String welcomeMessage) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setWelcomeMessage(welcomeMessage);
@@ -274,7 +278,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetCustomParameters(String profileName, String customParameters) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setCustomParameters(customParameters);
@@ -285,7 +289,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetWebPage(String profileName, boolean isSelected) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setWebPage(isSelected);
@@ -296,14 +300,14 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public String runServer(String profileName) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         Kf2Common kf2Common = Kf2Factory.getInstance();
         return kf2Common.runServer(profileOpt.isPresent()? profileOpt.get(): null);
     }
 
     @Override
     public String joinServer(String profileName) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Kf2Common kf2Common = Kf2Factory.getInstance();
             return kf2Common.joinServer(profileOpt.get());
@@ -317,11 +321,11 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     public ProfileDto getLastSelectedProfile() throws Exception {
         PropertyService propertyService = new PropertyServiceImpl();
         String lastProfileName = propertyService.getPropertyValue("properties/config.properties", "prop.config.lastSelectedProfile");
-        Optional<Profile> lastProfile = ProfileDao.getInstance().findByCode(lastProfileName);
+        Optional<Profile> lastProfile = profileService.findProfileByCode(lastProfileName);
         if (lastProfile.isPresent()) {
             return profileDtoFactory.newDto(lastProfile.get());
         } else {
-            List<Profile> profileList = ProfileDao.getInstance().listAll();
+            List<Profile> profileList = profileService.listAllProfiles();
             if (profileList != null && !profileList.isEmpty()) {
                 return profileDtoFactory.newDto(profileList.get(0));
             } else {
@@ -333,7 +337,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     @Override
     public List<String> selectProfiles(String message, String actualProfileName) throws SQLException {
         ProfileToDisplayFactory profileToDisplayFactory = new ProfileToDisplayFactory();
-        List<Profile> allProfiles = ProfileDao.getInstance().listAll();
+        List<Profile> allProfiles = profileService.listAllProfiles();
         List<ProfileToDisplay> allProfilesToDisplay = profileToDisplayFactory.newOnes(allProfiles);
 
         Optional<ProfileToDisplay> actualProfile = allProfilesToDisplay.stream().filter(p -> p.getProfileName().equalsIgnoreCase(actualProfileName)).findFirst();
@@ -349,7 +353,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     @Override
     public String selectProfile(String message, String actualProfileName) throws SQLException {
         ProfileToDisplayFactory profileToDisplayFactory = new ProfileToDisplayFactory();
-        List<Profile> allProfiles = ProfileDao.getInstance().listAll();
+        List<Profile> allProfiles = profileService.listAllProfiles();
         List<ProfileToDisplay> allProfilesToDisplay = profileToDisplayFactory.newOnes(allProfiles);
 
         Optional<ProfileToDisplay> actualProfile = allProfilesToDisplay.stream().filter(p -> p.getProfileName().equalsIgnoreCase(actualProfileName)).findFirst();
@@ -378,7 +382,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetTakeover(String profileName, boolean isSelected) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setTakeover(isSelected);
@@ -389,7 +393,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetMapVoting(String profileName, boolean isSelected) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setMapVoting(isSelected);
@@ -400,7 +404,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetKickVoting(String profileName, boolean isSelected) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setKickVoting(isSelected);
@@ -411,7 +415,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetPublicTextChat(String profileName, boolean isSelected) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setPublicTextChat(isSelected);
@@ -422,7 +426,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetSpectatorsChat(String profileName, boolean isSelected) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setSpectatorsOnlyChatToOtherSpectators(isSelected);
@@ -433,7 +437,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetVoip(String profileName, boolean isSelected) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setVoip(isSelected);
@@ -444,7 +448,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetTeamCollision(String profileName, boolean isSelected) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setTeamCollision(isSelected);
@@ -455,7 +459,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetAdminCanPause(String profileName, boolean isSelected) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setAdminCanPause(isSelected);
@@ -466,7 +470,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetAnnounceAdminLogin(String profileName, boolean isSelected) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setAnnounceAdminLogin(isSelected);
@@ -477,7 +481,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetChatLogging(String profileName, boolean isSelected) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setChatLogging(isSelected);
@@ -492,7 +496,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
             throw new Exception("Error: Invalid value. Minimun: 0");
         }
 
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setMapVotingTime(mapVotingTime);
@@ -507,7 +511,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
             throw new Exception("Error: Invalid value. Minimun: 0, maximum: 1.");
         }
 
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setKickPercentage(kickPercentage);
@@ -518,7 +522,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetChatLoggingFile(String profileName, String chatLoggingFile) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setChatLoggingFile(chatLoggingFile);
@@ -529,7 +533,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetChatLoggingFileTimestamp(String profileName, boolean isSelected) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setChatLoggingFileTimestamp(isSelected);
@@ -544,7 +548,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
             throw new Exception("Error: Invalid value. Minimun: 0");
         }
 
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setTimeBetweenKicks(timeBetweenKicks);
@@ -559,7 +563,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
             throw new Exception("Error: Invalid value. Minimun: 0, maximum: 300.");
         }
 
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setMaxIdleTime(maxIdleTime);
@@ -570,7 +574,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetDeadPlayersCanTalk(String profileName, boolean isSelected) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setDeadPlayersCanTalk(isSelected);
@@ -585,7 +589,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
             throw new Exception("Error: Invalid value. Minimun: 0.");
         }
 
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setReadyUpDelay(readyUpDelay);
@@ -600,7 +604,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
             throw new Exception("Error: Invalid value. Minimun: 0.");
         }
 
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setGameStartDelay(gameStartDelay);
@@ -615,7 +619,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
             throw new Exception("Error: Invalid value. Minimun: 0.");
         }
 
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setMaxSpectators(maxSpectators);
@@ -626,7 +630,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetMapObjetives(String profileName, boolean isSelected) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setMapObjetives(isSelected);
@@ -637,7 +641,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean updateProfileSetPickupItems(String profileName, boolean isSelected) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setPickupItems(isSelected);
@@ -652,7 +656,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
             throw new Exception("Error: Invalid value. Minimun: 0, maximum: 1.");
         }
 
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setFriendlyFirePercentage(friendlyFirePercentage);

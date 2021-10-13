@@ -39,7 +39,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
 
     @Override
     public ObservableList<ProfileDto> listAllProfiles() throws SQLException {
-        List<Profile> profiles = ProfileDao.getInstance().listAll();
+        List<Profile> profiles = profileService.listAllProfiles();
         return profileDtoFactory.newDtos(profiles);
     }
 
@@ -110,7 +110,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
 
     @Override
     public boolean deleteSelectedProfile(String profileName, String installationFolder) throws Exception {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             return profileService.deleteProfile(profileOpt.get(), installationFolder);
         }
@@ -123,7 +123,8 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
         if (StringUtils.isBlank(newProfileName) || newProfileName.equalsIgnoreCase(oldProfileName)) {
             return null;
         }
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(oldProfileName);
+
+        Optional<Profile> profileOpt = profileService.findProfileByCode(oldProfileName);
         if (profileOpt.isPresent()) {
             profileOpt.get().setCode(newProfileName);
             if (ProfileDao.getInstance().update(profileOpt.get())) {
@@ -136,8 +137,8 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
 
     @Override
     public ProfileDto cloneSelectedProfile(String profileName, String newProfileName) throws Exception {
-        Optional<Profile> profileToBeClonedOpt = ProfileDao.getInstance().findByCode(profileName);
 
+        Optional<Profile> profileToBeClonedOpt = profileService.findProfileByCode(profileName);
         if (profileToBeClonedOpt.isPresent()) {
             Profile newProfile = profileService.cloneProfile(profileToBeClonedOpt.get(), newProfileName);
             return profileDtoFactory.newDto(newProfile);
@@ -150,7 +151,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
     public void exportProfilesToFile(List<ProfileToDisplay> profilesToExportDto, File file) throws Exception {
         List<Profile> profilesToExport = profilesToExportDto.stream().map(dto -> {
             try {
-                Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(dto.getProfileName());
+                Optional<Profile> profileOpt = profileService.findProfileByCode(dto.getProfileName());
                 if (profileOpt.isPresent()) {
                     return profileOpt.get();
                 }
@@ -170,7 +171,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
 
     @Override
     public List<ProfileToDisplay> selectProfilesToBeExported(String message) throws SQLException {
-        List<Profile> allProfiles = ProfileDao.getInstance().listAll();
+        List<Profile> allProfiles = profileService.listAllProfiles();
         List<ProfileToDisplay> allProfilesToDisplay = profileToDisplayFactory.newOnes(allProfiles);
         allProfilesToDisplay.stream().forEach(p -> p.setSelected(true));
         return Utils.selectProfilesDialog(message + ":", allProfilesToDisplay);

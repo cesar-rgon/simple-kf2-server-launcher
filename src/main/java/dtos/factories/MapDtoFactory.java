@@ -41,25 +41,11 @@ public class MapDtoFactory {
     }
 
     public AbstractMapDto newDto(AbstractMap map) {
-        try {
-            Optional<OfficialMap> officialMapOptional = OfficialMapDao.getInstance().findByCode(map.getCode());
-            if (officialMapOptional.isPresent()) {
-                return newOfficialMapDto(officialMapOptional.get());
-            }
-        } catch (SQLException e) {
-            logger.error("Error getting the Dto for the map " + map.getCode(), e);
-            return null;
+        if (map.isOfficial()) {
+            return newOfficialMapDto((OfficialMap) map);
+        } else {
+            return newCustomMapModDto((CustomMapMod) map);
         }
-        try {
-            Optional<CustomMapMod> customMapModOptional = CustomMapModDao.getInstance().findByCode(map.getCode());
-            if (customMapModOptional.isPresent()) {
-                return newCustomMapModDto(customMapModOptional.get());
-            }
-        } catch (SQLException e) {
-            logger.error("Error getting the Dto for the map " + map.getCode(), e);
-            return null;
-        }
-        return null;
     }
 
     public ObservableList<AbstractMapDto> newDtos(List<AbstractMap> maps) {

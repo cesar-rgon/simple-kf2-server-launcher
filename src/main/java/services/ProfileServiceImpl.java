@@ -35,6 +35,40 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
+    public Optional<Profile> findProfileByCode(String profileName) throws SQLException {
+        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
+        List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
+
+        if (profileOpt.isPresent()) {
+            profileOpt.get().getMapList().forEach(m -> {
+                if (idsMapasOficiales.contains(m.getId())) {
+                    m.setOfficial(true);
+                } else {
+                    m.setOfficial(false);
+                }
+            });
+        }
+        return profileOpt;
+    }
+
+    @Override
+    public List<Profile> listAllProfiles() throws SQLException {
+        List<Profile> profiles = ProfileDao.getInstance().listAll();
+        List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
+
+        profiles.stream().forEach(p -> {
+            p.getMapList().forEach(m -> {
+                if (idsMapasOficiales.contains(m.getId())) {
+                    m.setOfficial(true);
+                } else {
+                    m.setOfficial(false);
+                }
+            });
+        });
+        return profiles;
+    }
+
+    @Override
     public Profile createItem(Profile profile) throws Exception {
         return ProfileDao.getInstance().insert(profile);
     }
@@ -59,7 +93,7 @@ public class ProfileServiceImpl implements ProfileService {
         profile.setMap(null);
         profile.getMapList().clear();
         ProfileDao.getInstance().update(profile);
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profile.getCode());
+        Optional<Profile> profileOpt = findProfileByCode(profile.getCode());
         for (AbstractMap map: mapList) {
             map.getProfileList().remove(profileOpt.get());
             if (map.isOfficial()) {
