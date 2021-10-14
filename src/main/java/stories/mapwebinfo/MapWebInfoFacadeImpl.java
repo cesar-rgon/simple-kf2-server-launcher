@@ -131,7 +131,11 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
     }
 
     private boolean isMapInProfile(Long idWorkShop, Profile profile) {
-        Optional<AbstractMap> mapOpt = profile.getMapList().stream().filter(m -> idWorkShop.equals(((CustomMapMod) m).getIdWorkShop())).findFirst();
+        Optional<AbstractMap> mapOpt = profile.getMapList()
+                .stream()
+                .filter(m -> !m.isOfficial())
+                .filter(m -> idWorkShop.equals(((CustomMapMod) m).getIdWorkShop()))
+                .findFirst();
         return mapOpt.isPresent();
     }
 

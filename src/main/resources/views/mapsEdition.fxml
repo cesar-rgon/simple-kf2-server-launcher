@@ -1,74 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.scene.image.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<fx:root id="centerPane" fx:id="mapsEditionGridPane" prefHeight="745.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapsedition.MapsEditionController">
+<fx:root id="centerPane" fx:id="mapsEditionGridPane" prefHeight="745.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapsedition.MapsEditionController">
    <children>
-      <Label fx:id="profileLabel" text="Profile" GridPane.halignment="LEFT" GridPane.rowIndex="1">
-         <GridPane.margin>
-            <Insets left="15.0" />
-         </GridPane.margin>
-      </Label>
-      <ComboBox fx:id="profileSelect" onAction="#profileOnAction" prefWidth="350.0" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="1">
-         <GridPane.margin>
-            <Insets left="62.0" />
-         </GridPane.margin></ComboBox>
-      <Button fx:id="importMapsFromServer" mnemonicParsing="false" onAction="#importMapsFromServerOnAction" prefWidth="200.0" text="Import  maps/mods" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.valignment="CENTER" />
-      <Button fx:id="searchInWorkShop" mnemonicParsing="false" onAction="#searchInWorkShopOnAction" prefWidth="200.0" text="Search in WorkShop" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-         <GridPane.margin>
-            <Insets />
-         </GridPane.margin>
-      </Button>
-      <Button fx:id="selectAllMaps" mnemonicParsing="false" onAction="#selectAllMapsOnAction" prefWidth="200.0" text="Select all maps/mods" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-         <GridPane.margin>
-            <Insets />
-         </GridPane.margin>
-      </Button>
-      <TextField fx:id="searchMaps" maxWidth="280.0" onKeyReleased="#searchMapsKeyReleased" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
-         <GridPane.margin>
-            <Insets left="35.0" />
-         </GridPane.margin></TextField>
-      <ImageView fx:id="searchImg" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+      <ImageView fx:id="profileImg" fitHeight="30.0" fitWidth="110.0" pickOnBounds="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
          <image>
-            <Image url="@../images/find.png" />
+            <Image url="@../images/label.png" />
          </image>
-         <GridPane.margin>
-            <Insets />
-         </GridPane.margin>
       </ImageView>
-      <Button fx:id="addNewMaps" mnemonicParsing="false" onAction="#addNewMapsOnAction" prefWidth="200.0" text="Add new maps/mods" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <Label fx:id="profileLabel" text="PROFILE" GridPane.columnIndex="1" GridPane.halignment="RIGHT">
          <GridPane.margin>
-            <Insets />
-         </GridPane.margin></Button>
-      <Button fx:id="removeMaps" alignment="CENTER" mnemonicParsing="false" onAction="#removeMapsOnAction" prefWidth="200.0" text="Delete maps/mods" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
-         <GridPane.margin>
-            <Insets />
-         </GridPane.margin></Button>
-      <Label fx:id="sliderLabel" text="Columns" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
-         <GridPane.margin>
-            <Insets right="282.0" />
+            <Insets right="10.0" />
          </GridPane.margin>
       </Label>
-      <Slider fx:id="mapsSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" maxWidth="280.0" min="2.0" minorTickCount="0" onMouseClicked="#mapsSliderOnMouseClicked" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5.0" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
-         <padding>
-            <Insets right="10.0" />
-         </padding>
+      <ComboBox fx:id="profileSelect" cache="true" onAction="#profileOnAction" prefWidth="350.0" GridPane.columnIndex="2">
          <GridPane.margin>
-            <Insets top="23.0" />
-         </GridPane.margin></Slider>
-      <TabPane fx:id="mapsModsTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnSpan="5" GridPane.rowIndex="2">
+            <Insets />
+         </GridPane.margin></ComboBox>
+
+      <Button fx:id="importMapsFromServer" mnemonicParsing="false" onAction="#importMapsFromServerOnAction" prefWidth="200.0" text="Import  maps/mods" visible="false" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets top="100.0" />
+         </GridPane.margin></Button>
+      <Button fx:id="searchInWorkShop" mnemonicParsing="false" onAction="#searchInWorkShopOnAction" prefWidth="200.0" text="Search in WorkShop" visible="false" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets top="100.0" />
+         </GridPane.margin>
+      </Button>
+      <Button fx:id="selectAllMaps" mnemonicParsing="false" onAction="#selectAllMapsOnAction" prefWidth="200.0" text="Select all maps/mods" visible="false" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets top="100.0" />
+         </GridPane.margin>
+      </Button>
+      <Button fx:id="addNewMaps" mnemonicParsing="false" onAction="#addNewMapsOnAction" prefWidth="200.0" text="Add new maps/mods" visible="false" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets top="100.0" />
+         </GridPane.margin></Button>
+      <Button fx:id="removeMaps" alignment="CENTER" mnemonicParsing="false" onAction="#removeMapsOnAction" prefWidth="200.0" text="Delete maps/mods" visible="false" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets top="100.0" />
+         </GridPane.margin></Button>
+
+      <TabPane fx:id="mapsModsTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnSpan="5" GridPane.rowIndex="1">
         <tabs>
           <Tab id="titleConfigLabel" fx:id="customMapsModsTab" text="Custom Maps and Mods">
                <content>
                   <ScrollPane fx:id="customMapsScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS">
                      <content>
-                        <FlowPane fx:id="customMapsFlowPane" hgap="50.0" style="-fx-background-color: black;;" vgap="50.0">
+                        <FlowPane fx:id="customMapsFlowPane" alignment="TOP_CENTER" columnHalignment="CENTER" hgap="50.0" style="-fx-background-color: black;;" vgap="50.0">
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
@@ -92,17 +75,58 @@
             </Tab>
         </tabs>
       </TabPane>
+      <Slider fx:id="mapsSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" maxWidth="280.0" min="2.0" minorTickCount="0" onMouseClicked="#mapsSliderOnMouseClicked" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5.0" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets bottom="-40.0" top="10.0" />
+         </GridPane.margin>
+         <padding>
+            <Insets left="250.0" />
+         </padding></Slider>
+      <Label fx:id="sliderLabel" text="Columns" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets right="40.0" top="118.0" />
+         </GridPane.margin>
+      </Label>
+      <TextField fx:id="searchMaps" maxWidth="250.0" onKeyReleased="#searchMapsKeyReleased" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets right="50.0" top="120.0" />
+         </GridPane.margin></TextField>
+      <ImageView fx:id="searchImg" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+         <image>
+            <Image url="@../images/find.png" />
+         </image>
+         <GridPane.margin>
+            <Insets right="50.0" top="122.0" />
+         </GridPane.margin>
+      </ImageView>
+      <ImageView fx:id="actionImg" fitHeight="30.0" fitWidth="110.0" pickOnBounds="true" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+         <image>
+            <Image url="@../images/label.png" />
+         </image>
+         <GridPane.margin>
+            <Insets right="301.0" />
+         </GridPane.margin>
+      </ImageView>
+      <Label fx:id="actionsLabel" text="ACTIONS" GridPane.columnIndex="3" GridPane.halignment="RIGHT">
+         <GridPane.margin>
+            <Insets right="311.0" />
+         </GridPane.margin>
+      </Label>
+      <ComboBox fx:id="actionSelect" cache="true" prefWidth="250.0" GridPane.columnIndex="3" GridPane.halignment="RIGHT">
+         <GridPane.margin>
+            <Insets right="50.0" />
+         </GridPane.margin></ComboBox>
    </children>
    <columnConstraints>
-      <ColumnConstraints hgrow="ALWAYS" minWidth="242.0" prefWidth="1210.0" />
-      <ColumnConstraints hgrow="ALWAYS" minWidth="242.0" prefWidth="1210.0" />
-      <ColumnConstraints hgrow="ALWAYS" minWidth="242.0" prefWidth="1210.0" />
-      <ColumnConstraints hgrow="ALWAYS" minWidth="242.0" prefWidth="1210.0" />
-      <ColumnConstraints hgrow="ALWAYS" minWidth="242.0" prefWidth="1210.0" />
+      <ColumnConstraints hgrow="ALWAYS" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
+      <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="50.0" />
+      <ColumnConstraints hgrow="ALWAYS" minWidth="242.0" prefWidth="255.0" />
+      <ColumnConstraints hgrow="ALWAYS" minWidth="242.0" />
+      <ColumnConstraints hgrow="ALWAYS" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
+      <ColumnConstraints hgrow="ALWAYS" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
    </columnConstraints>
    <rowConstraints>
-      <RowConstraints fillHeight="false" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" valignment="CENTER" vgrow="NEVER" />
-      <RowConstraints fillHeight="false" maxHeight="70.0" minHeight="70.0" prefHeight="70.0" vgrow="NEVER" />
+      <RowConstraints minHeight="80.0" prefHeight="80.0" vgrow="NEVER" />
       <RowConstraints minHeight="610.0" vgrow="ALWAYS" />
    </rowConstraints>
 </fx:root>

@@ -27,20 +27,20 @@ public class CustomMapModDao extends AbstractDao<CustomMapMod> {
 
     @Override
     public List<CustomMapMod> listAll() throws SQLException {
-        String query="select m from entities.CustomMapMod cmm";
+        String query="select cmm from entities.CustomMapMod cmm";
         return list(query, null);
     }
 
     @Override
     public Optional<CustomMapMod> findByCode(String code) throws SQLException {
-        String query="select m from entities.CustomMapMod cmm where cmm.code = :CODE";
+        String query="select cmm from entities.CustomMapMod cmm where cmm.code = :CODE";
         java.util.Map<String,Object> parameters = new HashMap<String,Object>();
         parameters.put("CODE", code);
         return find(query, parameters);
     }
 
     public Optional<CustomMapMod> findByIdWorkShop(Long idWorkShop) throws SQLException {
-        String query="select m from entities.CustomMapMod cmm where cmm.idWorkShop=:IDWORKSHOP";
+        String query="select cmm from entities.CustomMapMod cmm where cmm.idWorkShop=:IDWORKSHOP";
         java.util.Map<String,Object> parameters = new HashMap<String,Object>();
         parameters.put("IDWORKSHOP", idWorkShop);
         List<CustomMapMod> list = list(query, parameters);

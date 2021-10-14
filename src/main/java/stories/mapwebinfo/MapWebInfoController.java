@@ -104,7 +104,7 @@ public class MapWebInfoController implements Initializable {
                         if (titleList != null && titleList.getLength() > 0) {
                             Node title = titleList.item(0);
                             if (title.getTextContent().toUpperCase().startsWith("STEAM WORKSHOP")) {
-                                mapName = title.getTextContent().replace("Steam Workshop ::", "");
+                                mapName = title.getTextContent().replace("Steam Workshop::", "");
                                 NodeList linkList = doc.getElementsByTagName("link");
                                 for (int i=0; i < linkList.getLength(); i++) {
                                     Node link = linkList.item(i);

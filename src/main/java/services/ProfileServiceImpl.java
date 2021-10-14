@@ -70,6 +70,14 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public Profile createItem(Profile profile) throws Exception {
+        List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
+        profile.getMapList().forEach(m -> {
+            if (idsMapasOficiales.contains(m.getId())) {
+                m.setOfficial(true);
+            } else {
+                m.setOfficial(false);
+            }
+        });
         return ProfileDao.getInstance().insert(profile);
     }
 

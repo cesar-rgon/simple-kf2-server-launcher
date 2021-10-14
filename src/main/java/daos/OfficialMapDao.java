@@ -27,13 +27,13 @@ public class OfficialMapDao extends AbstractDao<OfficialMap> {
 
     @Override
     public List<OfficialMap> listAll() throws SQLException {
-        String query="select m from entities.OfficialMap om";
+        String query="select om from entities.OfficialMap om";
         return list(query, null);
     }
 
     @Override
     public Optional<OfficialMap> findByCode(String code) throws SQLException {
-        String query="select m from entities.OfficialMap om where om.code = :CODE";
+        String query="select om from entities.OfficialMap om where om.code = :CODE";
         java.util.Map<String,Object> parameters = new HashMap<String,Object>();
         parameters.put("CODE", code);
         return find(query, parameters);

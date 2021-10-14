@@ -228,15 +228,6 @@ public class MapsEditionController implements Initializable {
             rowIndex++;
         }
 
-        if (!map.isOfficial()) {
-            Label warningMessage = new Label("[MOD]");
-            warningMessage.setStyle("-fx-text-fill: yellow;");
-            GridPane.setColumnSpan(warningMessage, 2);
-            gridpane.add(warningMessage,1, rowIndex);
-            GridPane.setHalignment(warningMessage, HPos.CENTER);
-            rowIndex++;
-        }
-
         StringBuffer tooltipText = new StringBuffer();
         if (!map.isOfficial()) {
             tooltipText.append("id WorkShop: ").append(((CustomMapModDto)map).getIdWorkShop());
