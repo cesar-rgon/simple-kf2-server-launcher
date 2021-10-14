@@ -11,7 +11,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -26,6 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.AddMapsToProfile;
 import pojos.MapToDisplay;
+import pojos.enums.EnumSortedMapsCriteria;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import pojos.session.Session;
@@ -58,11 +58,11 @@ public class MapsEditionController implements Initializable {
     @FXML private FlowPane officialMapsFlowPane;
     @FXML private FlowPane customMapsFlowPane;
     @FXML private TextField searchMaps;
-    @FXML private Button addNewMaps;
-    @FXML private Button searchInWorkShop;
-    @FXML private Button removeMaps;
-    @FXML private Button selectAllMaps;
-    @FXML private Button importMapsFromServer;
+    @FXML private MenuItem addNewMaps;
+    @FXML private MenuItem searchInWorkShop;
+    @FXML private MenuItem removeMaps;
+    @FXML private CheckBox selectAllMaps;
+    @FXML private MenuItem importMapsFromServer;
     @FXML private TabPane mapsModsTabPane;
     @FXML private Tab customMapsModsTab;
     @FXML private Tab officialMapsTab;
@@ -97,14 +97,7 @@ public class MapsEditionController implements Initializable {
                                 profileSelect.getItems().get(0));
 
                 mapList = facade.getMapsFromProfile(profileSelect.getValue().getName());
-                for (AbstractMapDto map: mapList) {
-                    GridPane gridpane = createMapGridPane(map);
-                    if (map.isOfficial()) {
-                        officialMapsFlowPane.getChildren().add(gridpane);
-                    } else {
-                        customMapsFlowPane.getChildren().add(gridpane);
-                    }
-                }
+                orderMapsByName();
             } else {
                 profileSelect.setValue(null);
                 mapList = null;
@@ -125,23 +118,23 @@ public class MapsEditionController implements Initializable {
 
             String addNewMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addMaps");
             addNewMaps.setText(addNewMapsText);
-            addNewMaps.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addMaps")));
+            // addNewMaps.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addMaps")));
 
             String searchInWorkShopText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.searchInWorkShop");
             searchInWorkShop.setText(searchInWorkShopText);
-            searchInWorkShop.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.searchInWorkShop")));
+            // searchInWorkShop.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.searchInWorkShop")));
 
             String removeMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeMaps");
             removeMaps.setText(removeMapsText);
-            removeMaps.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeMaps")));
+            // removeMaps.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeMaps")));
 
             String selectAllMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.selectMaps");
             selectAllMaps.setText(selectAllMapsText);
-            selectAllMaps.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.selectAllMaps")));
+            // selectAllMaps.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.selectAllMaps")));
 
             String importMapsFromServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importMaps");
             importMapsFromServer.setText(importMapsFromServerText);
-            importMapsFromServer.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.importMaps")));
+            // importMapsFromServer.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.importMaps")));
 
             String sliderLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.slider");
             sliderLabel.setText(sliderLabelText);
@@ -898,6 +891,29 @@ public class MapsEditionController implements Initializable {
             Session.getInstance().setMapsProfile(profileSelect.getValue());
         } catch (SQLException e) {
             Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void orderMapsByName() {
+        customMapsFlowPane.getChildren().clear();
+        officialMapsFlowPane.getChildren().clear();
+
+        if (EnumSortedMapsCriteria.NOMBRE_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
+            mapList = mapList.stream().sorted((m1, m2) -> m1.getKey().compareTo(m2.getKey())).collect(Collectors.toList());
+            Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.NOMBRE_ASC);
+        } else {
+            mapList = mapList.stream().sorted((m1, m2) -> m2.getKey().compareTo(m1.getKey())).collect(Collectors.toList());
+            Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.NOMBRE_DESC);
+        }
+
+        for (AbstractMapDto map : mapList) {
+            GridPane gridpane = createMapGridPane(map);
+            if (map.isOfficial()) {
+                officialMapsFlowPane.getChildren().add(gridpane);
+            } else {
+                customMapsFlowPane.getChildren().add(gridpane);
+            }
         }
     }
 }

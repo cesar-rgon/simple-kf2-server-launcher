@@ -6,7 +6,7 @@
     -fx-border-color: #333333;
 }
 
-.menu-button:hover, .menu-item:hover {
+.menu-button:hover, .menu-item:hover, #actionsMenuBar {
     -fx-background-color: #c15d11;
     -fx-cursor: hand;
 }
@@ -148,7 +148,7 @@
     -fx-background-color: #c15d11;
 }
 
-#searchMaps, #viewPaneCombo, #profileSelect {
+#viewPaneCombo, #profileSelect {
     -fx-background-color: #c15d11;
 }
 

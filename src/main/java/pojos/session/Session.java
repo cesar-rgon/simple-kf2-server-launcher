@@ -2,6 +2,7 @@ package pojos.session;
 
 import dtos.AbstractMapDto;
 import dtos.ProfileDto;
+import pojos.enums.EnumSortedMapsCriteria;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +16,7 @@ public class Session {
     private AbstractMapDto map;
     private List<Process> processList;
     private ProfileDto mapsProfile;
+    private EnumSortedMapsCriteria sortedMapsCriteria;
 
     /**
      * Singleton constructor
@@ -24,6 +26,7 @@ public class Session {
         console = "";
         map = null;
         processList = new ArrayList<Process>();
+        sortedMapsCriteria = EnumSortedMapsCriteria.NOMBRE_DESC;
     }
 
     public static Session getInstance() {
@@ -83,5 +86,13 @@ public class Session {
 
     public void setMapsProfile(ProfileDto mapsProfile) {
         this.mapsProfile = mapsProfile;
+    }
+
+    public EnumSortedMapsCriteria getSortedMapsCriteria() {
+        return sortedMapsCriteria;
+    }
+
+    public void setSortedMapsCriteria(EnumSortedMapsCriteria sortedMapsCriteria) {
+        this.sortedMapsCriteria = sortedMapsCriteria;
     }
 }

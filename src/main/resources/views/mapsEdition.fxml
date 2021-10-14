@@ -22,29 +22,6 @@
             <Insets />
          </GridPane.margin></ComboBox>
 
-      <Button fx:id="importMapsFromServer" mnemonicParsing="false" onAction="#importMapsFromServerOnAction" prefWidth="200.0" text="Import  maps/mods" visible="false" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
-         <GridPane.margin>
-            <Insets top="100.0" />
-         </GridPane.margin></Button>
-      <Button fx:id="searchInWorkShop" mnemonicParsing="false" onAction="#searchInWorkShopOnAction" prefWidth="200.0" text="Search in WorkShop" visible="false" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
-         <GridPane.margin>
-            <Insets top="100.0" />
-         </GridPane.margin>
-      </Button>
-      <Button fx:id="selectAllMaps" mnemonicParsing="false" onAction="#selectAllMapsOnAction" prefWidth="200.0" text="Select all maps/mods" visible="false" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
-         <GridPane.margin>
-            <Insets top="100.0" />
-         </GridPane.margin>
-      </Button>
-      <Button fx:id="addNewMaps" mnemonicParsing="false" onAction="#addNewMapsOnAction" prefWidth="200.0" text="Add new maps/mods" visible="false" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
-         <GridPane.margin>
-            <Insets top="100.0" />
-         </GridPane.margin></Button>
-      <Button fx:id="removeMaps" alignment="CENTER" mnemonicParsing="false" onAction="#removeMapsOnAction" prefWidth="200.0" text="Delete maps/mods" visible="false" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
-         <GridPane.margin>
-            <Insets top="100.0" />
-         </GridPane.margin></Button>
-
       <TabPane fx:id="mapsModsTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnSpan="5" GridPane.rowIndex="1">
         <tabs>
           <Tab id="titleConfigLabel" fx:id="customMapsModsTab" text="Custom Maps and Mods">
@@ -89,14 +66,14 @@
       </Label>
       <TextField fx:id="searchMaps" maxWidth="250.0" onKeyReleased="#searchMapsKeyReleased" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
          <GridPane.margin>
-            <Insets right="50.0" top="120.0" />
+            <Insets right="40.0" top="120.0" />
          </GridPane.margin></TextField>
       <ImageView fx:id="searchImg" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
          <image>
             <Image url="@../images/find.png" />
          </image>
          <GridPane.margin>
-            <Insets right="50.0" top="122.0" />
+            <Insets right="40.0" top="122.0" />
          </GridPane.margin>
       </ImageView>
       <ImageView fx:id="actionImg" fitHeight="30.0" fitWidth="110.0" pickOnBounds="true" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
@@ -104,18 +81,37 @@
             <Image url="@../images/label.png" />
          </image>
          <GridPane.margin>
-            <Insets right="301.0" />
+            <Insets right="48.0" />
          </GridPane.margin>
       </ImageView>
       <Label fx:id="actionsLabel" text="ACTIONS" GridPane.columnIndex="3" GridPane.halignment="RIGHT">
          <GridPane.margin>
-            <Insets right="311.0" />
+            <Insets right="58.0" />
          </GridPane.margin>
       </Label>
-      <ComboBox fx:id="actionSelect" cache="true" prefWidth="250.0" GridPane.columnIndex="3" GridPane.halignment="RIGHT">
+
+      <MenuBar id="actionsMenuBar" fx:id="actionsMenuBar" maxWidth="40.0" BorderPane.alignment="CENTER" GridPane.columnIndex="3" GridPane.halignment="RIGHT">
+      <menus>
+         <Menu fx:id="actions" mnemonicParsing="false" text="V">
+            <items>
+               <MenuItem fx:id="addNewMaps" mnemonicParsing="false" onAction="#addNewMapsOnAction" text="Add new maps" />
+               <MenuItem fx:id="searchInWorkShop" mnemonicParsing="false" onAction="#searchInWorkShopOnAction" text="Search in WorkShop" />
+               <MenuItem fx:id="removeMaps" mnemonicParsing="false" onAction="#removeMapsOnAction" text="Remove maps" />
+               <MenuItem fx:id="importMapsFromServer" mnemonicParsing="false" onAction="#importMapsFromServerOnAction" text="Import maps from KF2 server" />
+               <Menu fx:id="orderMaps" mnemonicParsing="false" text="Order maps">
+                  <items>
+                     <MenuItem fx:id="orderMapsByName" mnemonicParsing="false" text="By name" onAction="#orderMapsByName" />
+                     <MenuItem fx:id="orderMapsByDate" mnemonicParsing="false" text="By date" />
+                  </items>
+               </Menu>
+            </items>
+         </Menu>
+      </menus>
+      </MenuBar>
+      <CheckBox fx:id="selectAllMaps" mnemonicParsing="false" onAction="#selectAllMapsOnAction" text="Select all" GridPane.columnIndex="3" GridPane.halignment="LEFT">
          <GridPane.margin>
-            <Insets right="50.0" />
-         </GridPane.margin></ComboBox>
+            <Insets top="120.0" />
+         </GridPane.margin></CheckBox>
    </children>
    <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
