@@ -8,11 +8,23 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
 
 public class CustomMapModServiceImpl extends AbstractMapService {
 
     public CustomMapModServiceImpl() {
         super();
+    }
+
+    @Override
+    public List listAll() throws SQLException {
+        return CustomMapModDao.getInstance().listAll();
+    }
+
+    @Override
+    public Optional findByCode(String mapName) throws SQLException {
+        return CustomMapModDao.getInstance().findByCode(mapName);
     }
 
     @Override

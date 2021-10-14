@@ -224,18 +224,18 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
             return null;
         }
 
-        Optional<OfficialMap> officialMapOptional = OfficialMapDao.getInstance().findByCode(mapName);
+        Optional officialMapOptional = officialMapService.findMapByCode(mapName);
         if (officialMapOptional.isPresent()) {
             return officialMapService.addProfilesToMap(
-                    officialMapOptional.get(),
+                    (OfficialMap) officialMapOptional.get(),
                     profileList.stream().filter(profile -> !profile.getMapList().contains(officialMapOptional.get())).collect(Collectors.toList())
             );
         }
 
-        Optional<CustomMapMod> customMapModOptional = CustomMapModDao.getInstance().findByCode(mapName);
+        Optional customMapModOptional = customMapModService.findMapByCode(mapName);
         if (customMapModOptional.isPresent()) {
             return customMapModService.addProfilesToMap(
-                    customMapModOptional.get(),
+                    (CustomMapMod) customMapModOptional.get(),
                     profileList.stream().filter(profile -> !profile.getMapList().contains(customMapModOptional.get())).collect(Collectors.toList())
             );
         }
@@ -252,15 +252,16 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
             Optional<AbstractMap> mapOpt = profileOpt.get().getMapList().stream().filter(m -> m.getCode().equalsIgnoreCase(mapName)).findFirst();
 
             if (mapOpt.isPresent()) {
-                Optional<OfficialMap> officialMapOptional = OfficialMapDao.getInstance().findByCode(mapName);
+
+                Optional officialMapOptional = officialMapService.findMapByCode(mapName);
                 if (officialMapOptional.isPresent()) {
-                    OfficialMap deletedMap = (OfficialMap) officialMapService.deleteMap(officialMapOptional.get(), profileOpt.get());
+                    OfficialMap deletedMap = (OfficialMap) officialMapService.deleteMap((OfficialMap) officialMapOptional.get(), profileOpt.get());
                     return mapDtoFactory.newDto(deletedMap);
                 }
 
-                Optional<CustomMapMod> customMapModOptional = CustomMapModDao.getInstance().findByCode(mapName);
+                Optional customMapModOptional = customMapModService.findMapByCode(mapName);
                 if (customMapModOptional.isPresent()) {
-                    CustomMapMod deletedMap = (CustomMapMod) customMapModService.deleteMap(customMapModOptional.get(), profileOpt.get(), installationFolder);
+                    CustomMapMod deletedMap = (CustomMapMod) customMapModService.deleteMap((CustomMapMod) customMapModOptional.get(), profileOpt.get(), installationFolder);
                     return mapDtoFactory.newDto(deletedMap);
                 }
             }
@@ -270,13 +271,14 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
     @Override
     public AbstractMapDto findMapByName(String mapName) throws SQLException {
-        Optional<OfficialMap> officialMapOptional = OfficialMapDao.getInstance().findByCode(mapName);
+
+        Optional officialMapOptional = officialMapService.findMapByCode(mapName);
         if (officialMapOptional.isPresent()) {
-            return mapDtoFactory.newDto(officialMapOptional.get());
+            return mapDtoFactory.newDto((OfficialMap) officialMapOptional.get());
         }
-        Optional<CustomMapMod> customMapModOptional = CustomMapModDao.getInstance().findByCode(mapName);
+        Optional customMapModOptional = customMapModService.findMapByCode(mapName);
         if (customMapModOptional.isPresent()) {
-            return mapDtoFactory.newDto(customMapModOptional.get());
+            return mapDtoFactory.newDto((CustomMapMod) customMapModOptional.get());
         }
         return null;
     }

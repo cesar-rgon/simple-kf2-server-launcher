@@ -1092,9 +1092,11 @@ public class MainContentController implements Initializable {
         List<AbstractMapDto> mapList = new ArrayList<AbstractMapDto>(officialMaps);
         mapList.addAll(downloadedCustomMaps);
         mapSelect.setItems(FXCollections.observableArrayList(mapList));
-        Optional<AbstractMapDto> selectedMapOpt = mapList.stream().filter(m -> m.getKey().equalsIgnoreCase(profile.getMap().getKey())).findFirst();
-        if (selectedMapOpt.isPresent()) {
-            mapSelect.getSelectionModel().select(mapList.indexOf(selectedMapOpt.get()));
+        if (profile.getMap() != null) {
+            Optional<AbstractMapDto> selectedMapOpt = mapList.stream().filter(m -> m.getKey().equals(profile.getMap().getKey())).findFirst();
+            if (selectedMapOpt.isPresent()) {
+                mapSelect.getSelectionModel().select(mapList.indexOf(selectedMapOpt.get()));
+            }
         }
 
         difficultySelect.setValue(profile.getDifficulty());

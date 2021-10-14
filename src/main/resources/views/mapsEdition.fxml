@@ -24,11 +24,11 @@
 
       <TabPane fx:id="mapsModsTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnSpan="5" GridPane.rowIndex="1">
         <tabs>
-          <Tab id="titleConfigLabel" fx:id="customMapsModsTab" text="Custom Maps and Mods">
+          <Tab id="titleConfigLabel" fx:id="customMapsModsTab" onSelectionChanged="#customMapsModsTabOnSelectionChanged" text="Custom Maps and Mods">
                <content>
                   <ScrollPane fx:id="customMapsScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS">
                      <content>
-                        <FlowPane fx:id="customMapsFlowPane" alignment="TOP_CENTER" columnHalignment="CENTER" hgap="50.0" style="-fx-background-color: black;;" vgap="50.0">
+                        <FlowPane fx:id="customMapsFlowPane" columnHalignment="CENTER" hgap="50.0" style="-fx-background-color: black;;" vgap="50.0">
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
@@ -37,7 +37,7 @@
                   </ScrollPane>
                </content>
             </Tab>
-          <Tab id="titleConfigLabel" fx:id="officialMapsTab" text="Official Maps">
+          <Tab id="titleConfigLabel" fx:id="officialMapsTab" onSelectionChanged="#officialMapsTabOnSelectionChanged" text="Official Maps">
                <content>
                   <ScrollPane fx:id="officialMapsScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS">
                      <content>
@@ -61,36 +61,36 @@
          </padding></Slider>
       <Label fx:id="sliderLabel" text="Columns" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
          <GridPane.margin>
-            <Insets right="40.0" top="118.0" />
+            <Insets right="29.0" top="118.0" />
          </GridPane.margin>
       </Label>
-      <TextField fx:id="searchMaps" maxWidth="250.0" onKeyReleased="#searchMapsKeyReleased" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+      <TextField fx:id="searchMaps" maxWidth="200.0" onKeyReleased="#searchMapsKeyReleased" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
          <GridPane.margin>
-            <Insets right="40.0" top="120.0" />
+            <Insets top="120.0" />
          </GridPane.margin></TextField>
       <ImageView fx:id="searchImg" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
          <image>
             <Image url="@../images/find.png" />
          </image>
          <GridPane.margin>
-            <Insets right="40.0" top="122.0" />
+            <Insets top="122.0" />
          </GridPane.margin>
       </ImageView>
-      <ImageView fx:id="actionImg" fitHeight="30.0" fitWidth="110.0" pickOnBounds="true" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+      <ImageView fx:id="actionImg" fitHeight="30.0" fitWidth="110.0" pickOnBounds="true" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
          <image>
             <Image url="@../images/label.png" />
          </image>
          <GridPane.margin>
-            <Insets right="48.0" />
+            <Insets right="41.0" />
          </GridPane.margin>
       </ImageView>
-      <Label fx:id="actionsLabel" text="ACTIONS" GridPane.columnIndex="3" GridPane.halignment="RIGHT">
+      <Label fx:id="actionsLabel" text="ACTIONS" GridPane.columnIndex="3" GridPane.halignment="LEFT">
          <GridPane.margin>
-            <Insets right="58.0" />
+            <Insets left="45.0" />
          </GridPane.margin>
       </Label>
 
-      <MenuBar id="actionsMenuBar" fx:id="actionsMenuBar" maxWidth="40.0" BorderPane.alignment="CENTER" GridPane.columnIndex="3" GridPane.halignment="RIGHT">
+      <MenuBar id="actionsMenuBar" fx:id="actionsMenuBar" maxHeight="29.0" maxWidth="40.0" minHeight="29.0" minWidth="40.0" BorderPane.alignment="CENTER" GridPane.columnIndex="3" GridPane.halignment="LEFT">
       <menus>
          <Menu fx:id="actions" mnemonicParsing="false" text="V">
             <items>
@@ -100,25 +100,28 @@
                <MenuItem fx:id="importMapsFromServer" mnemonicParsing="false" onAction="#importMapsFromServerOnAction" text="Import maps from KF2 server" />
                <Menu fx:id="orderMaps" mnemonicParsing="false" text="Order maps">
                   <items>
-                     <MenuItem fx:id="orderMapsByName" mnemonicParsing="false" text="By name" onAction="#orderMapsByName" />
+                     <MenuItem fx:id="orderMapsByName" mnemonicParsing="false" onAction="#orderMapsByName" text="By name" />
                      <MenuItem fx:id="orderMapsByDate" mnemonicParsing="false" text="By date" />
                   </items>
                </Menu>
             </items>
          </Menu>
       </menus>
+         <GridPane.margin>
+            <Insets left="111.0" />
+         </GridPane.margin>
       </MenuBar>
-      <CheckBox fx:id="selectAllMaps" mnemonicParsing="false" onAction="#selectAllMapsOnAction" text="Select all" GridPane.columnIndex="3" GridPane.halignment="LEFT">
+      <CheckBox fx:id="selectAllMaps" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#selectAllMapsOnAction" text="Select all" GridPane.columnIndex="2" GridPane.halignment="RIGHT">
          <GridPane.margin>
             <Insets top="120.0" />
          </GridPane.margin></CheckBox>
    </children>
    <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
-      <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="50.0" />
-      <ColumnConstraints hgrow="ALWAYS" minWidth="242.0" prefWidth="255.0" />
-      <ColumnConstraints hgrow="ALWAYS" minWidth="242.0" />
-      <ColumnConstraints hgrow="ALWAYS" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
+      <ColumnConstraints hgrow="ALWAYS" />
+      <ColumnConstraints hgrow="ALWAYS" minWidth="300.0" prefWidth="300.0" />
+      <ColumnConstraints hgrow="ALWAYS" />
+      <ColumnConstraints hgrow="ALWAYS" maxWidth="110.0" minWidth="110.0" prefWidth="110.0" />
       <ColumnConstraints hgrow="ALWAYS" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
    </columnConstraints>
    <rowConstraints>

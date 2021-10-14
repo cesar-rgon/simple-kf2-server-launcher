@@ -6,11 +6,23 @@ import entities.OfficialMap;
 import entities.Profile;
 
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Optional;
 
 public class OfficialMapServiceImpl extends AbstractMapService {
 
     public OfficialMapServiceImpl() {
         super();
+    }
+
+    @Override
+    public List listAll() throws SQLException {
+        return OfficialMapDao.getInstance().listAll();
+    }
+
+    @Override
+    public Optional findByCode(String mapName) throws SQLException {
+        return OfficialMapDao.getInstance().findByCode(mapName);
     }
 
     @Override

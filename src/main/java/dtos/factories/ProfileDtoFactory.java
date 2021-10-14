@@ -1,11 +1,14 @@
 package dtos.factories;
 
+import dtos.AbstractMapDto;
 import dtos.ProfileDto;
+import entities.AbstractMap;
 import entities.Profile;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ProfileDtoFactory {
@@ -28,10 +31,19 @@ public class ProfileDtoFactory {
     }
 
     public ProfileDto newDto(Profile profile) {
+
+        AbstractMapDto selectedMap = null;
+        if (profile.getMap() != null) {
+            Optional<AbstractMap> mapInListOpt = profile.getMapList().stream().filter(m -> m.getId().equals(profile.getMap().getId())).findFirst();
+            if (mapInListOpt.isPresent()) {
+                selectedMap = mapDtoFactory.newDto(profile.getMap());
+            }
+        }
+
         return new ProfileDto(profile.getCode(),
                 languageDtoFactory.newDto(profile.getLanguage()),
                 profile.getGametype() != null ? gameTypeDtoFactory.newDto(profile.getGametype()): null,
-                profile.getMap() != null ? mapDtoFactory.newDto(profile.getMap()): null,
+                selectedMap,
                 profile.getDifficulty() != null ? difficultyDtoFactory.newDto(profile.getDifficulty()): null,
                 profile.getLength() != null ? lengthDtoFactory.newDto(profile.getLength()): null,
                 profile.getMaxPlayers() != null ? maxPlayersDtoFactory.newDto(profile.getMaxPlayers()): null,

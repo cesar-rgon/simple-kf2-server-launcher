@@ -5,6 +5,8 @@ import entities.AbstractMap;
 import entities.CustomMapMod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import services.AbstractMapService;
+import services.CustomMapModServiceImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 
@@ -19,20 +21,23 @@ import java.util.stream.Collectors;
 public class TimeListener extends TimerTask {
 
     private static final Logger logger = LogManager.getLogger(TimeListener.class);
+    private final AbstractMapService customMapModService;
 
     public TimeListener() {
         super();
+        this.customMapModService = new CustomMapModServiceImpl();
     }
 
     @Override
     public void run() {
         logger.info("Starting the process of checking downloaded custom maps and mods.");
         try {
-            List<CustomMapMod> mapList = CustomMapModDao.getInstance().listAll();
+            List mapList = customMapModService.listAllMaps();;
             if (mapList != null && !mapList.isEmpty()) {
                 PropertyService propertyService = new PropertyServiceImpl();
                 String installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.installationFolder");
-                for (CustomMapMod map : mapList) {
+                for (Object item : mapList) {
+                    CustomMapMod map = (CustomMapMod) item;
                     try {
                         List<Path> kfmFilesPath = Files.walk(Paths.get(installationFolder + "/KFGame/Cache/" + map.getIdWorkShop()))
                                 .filter(Files::isRegularFile)

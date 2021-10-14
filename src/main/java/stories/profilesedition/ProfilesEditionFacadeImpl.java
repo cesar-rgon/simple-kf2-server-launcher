@@ -28,12 +28,14 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
     private final PropertyService propertyService;
     private final ProfileToDisplayFactory profileToDisplayFactory;
     private final ProfileService profileService;
+    private final AbstractMapService officialMapService;
 
     public ProfilesEditionFacadeImpl() {
         profileDtoFactory = new ProfileDtoFactory();
         propertyService = new PropertyServiceImpl();
         profileToDisplayFactory = new ProfileToDisplayFactory();
         this.profileService = new ProfileServiceImpl();
+        this.officialMapService = new OfficialMapServiceImpl();
     }
 
 
@@ -51,7 +53,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
         String defaultGamePort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultGamePort");
         String defaultQueryPort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultQueryPort");
 
-        List officialMaps = OfficialMapDao.getInstance().listAll();
+        List officialMaps = officialMapService.listAllMaps();
         OfficialMap firstOfficialMap = null;
         if (officialMaps != null && !officialMaps.isEmpty()) {
             firstOfficialMap = (OfficialMap) officialMaps.get(0);

@@ -663,7 +663,7 @@ public class ProfileServiceImpl implements ProfileService {
             String mapName = entry.getKey();
             Integer mapIndex = entry.getValue();
             try {
-                Optional mapInDataBaseOpt = OfficialMapDao.getInstance().findByCode(mapName);
+                Optional mapInDataBaseOpt = officialMapService.findMapByCode(mapName);
                 AbstractMap map = getImportedMap(mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, mapName, null, true);
                 if (map != null) {
                     mapList.add(map);

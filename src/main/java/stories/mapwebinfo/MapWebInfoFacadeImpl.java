@@ -117,14 +117,14 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
             return false;
         }
 
-        Optional<OfficialMap> officialMapOptional = OfficialMapDao.getInstance().findByCode(mapName);
+        Optional officialMapOptional = officialMapService.findMapByCode(mapName);
         if (officialMapOptional.isPresent()) {
-            return officialMapService.addProfilesToMap(officialMapOptional.get(), profileList);
+            return officialMapService.addProfilesToMap((OfficialMap) officialMapOptional.get(), profileList);
         }
 
-        Optional<CustomMapMod> customMapModOptional = CustomMapModDao.getInstance().findByCode(mapName);
+        Optional customMapModOptional = customMapModService.findMapByCode(mapName);
         if (customMapModOptional.isPresent()) {
-            return customMapModService.addProfilesToMap(customMapModOptional.get(),profileList);
+            return customMapModService.addProfilesToMap((CustomMapMod) customMapModOptional.get(),profileList);
         }
 
         return false;

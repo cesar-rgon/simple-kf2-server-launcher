@@ -6,6 +6,7 @@ import dtos.OfficialMapDto;
 import dtos.ProfileDto;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -312,6 +313,13 @@ public class MapsEditionController implements Initializable {
 
     @FXML
     private void searchMapsKeyReleased() {
+        if (StringUtils.isNotBlank(searchMaps.getText())) {
+            selectAllMaps.setSelected(false);
+            selectAllMapsOnAction();
+            selectAllMaps.setVisible(false);
+        } else {
+            selectAllMaps.setVisible(true);
+        }
         officialMapsFlowPane.getChildren().clear();
         customMapsFlowPane.getChildren().clear();
         for (AbstractMapDto map: mapList) {
@@ -545,6 +553,10 @@ public class MapsEditionController implements Initializable {
             List<String> selectedProfileNameList = facade.selectProfilesToImport(profileSelect.getValue().getName());
             if (selectedProfileNameList == null || selectedProfileNameList.isEmpty()) {
                 return;
+            }
+
+            if (!Files.exists(Paths.get(installationFolder + "/KFGame/Cache"))) {
+                Files.createDirectory(Paths.get(installationFolder + "/KFGame/Cache"));
             }
 
             Kf2Common kf2Common = Kf2Factory.getInstance();
@@ -842,11 +854,16 @@ public class MapsEditionController implements Initializable {
     @FXML
     private void selectAllMapsOnAction() {
         ObservableList<Node> nodes = null;
-        if (officialMapsTab.isSelected()) {
-            nodes = officialMapsFlowPane.getChildren();
+        if (selectAllMaps.isSelected()) {
+            if (officialMapsTab.isSelected()) {
+                nodes = officialMapsFlowPane.getChildren();
+            } else {
+                nodes = customMapsFlowPane.getChildren();
+            }
         } else {
-            nodes = customMapsFlowPane.getChildren();
+            nodes = FXCollections.concat(officialMapsFlowPane.getChildren(), customMapsFlowPane.getChildren());
         }
+
         for (Node node: nodes) {
             GridPane gridpane = (GridPane) node;
             CheckBox checkbox = (CheckBox)gridpane.getChildren().get(1);
@@ -914,6 +931,22 @@ public class MapsEditionController implements Initializable {
             } else {
                 customMapsFlowPane.getChildren().add(gridpane);
             }
+        }
+    }
+
+    @FXML
+    private void officialMapsTabOnSelectionChanged() {
+        if (selectAllMaps.isSelected()) {
+            selectAllMaps.setSelected(false);
+            selectAllMapsOnAction();
+        }
+    }
+
+    @FXML
+    private void customMapsModsTabOnSelectionChanged() {
+        if (selectAllMaps.isSelected()) {
+            selectAllMaps.setSelected(false);
+            selectAllMapsOnAction();
         }
     }
 }
