@@ -173,6 +173,10 @@ public abstract class Kf2Common {
                     }
                 }
             }
+            File cacheFolder = new File(installationFolder + "/KFGame/Cache");
+            if (!cacheFolder.exists()) {
+                cacheFolder.mkdir();
+            }
         } catch (IOException e) {
             String message = "Error copying files to profiles's config folder";
             if (!byConsole) {

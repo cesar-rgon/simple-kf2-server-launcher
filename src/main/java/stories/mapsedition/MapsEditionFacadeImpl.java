@@ -19,6 +19,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.ProfileToDisplay;
 import pojos.ProfileToDisplayFactory;
+import pojos.kf2factory.Kf2Common;
+import pojos.kf2factory.Kf2Factory;
 import services.*;
 import stories.AbstractFacade;
 import utils.Utils;
@@ -302,11 +304,19 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         return selectedProfiles.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
     }
 
+
     public List<ProfileToDisplay> selectProfilesToImport(List<Profile> allProfiles, String defaultSelectedProfileName) throws Exception {
         List<ProfileToDisplay> allProfilesToDisplay = profileToDisplayFactory.newOnes(allProfiles);
         allProfilesToDisplay.stream().filter(p -> p.getProfileName().equalsIgnoreCase(defaultSelectedProfileName)).forEach(profile -> profile.setSelected(true));
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
         String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfiles");
         return Utils.selectProfilesDialog(headerText + ":", allProfilesToDisplay);
+    }
+
+    @Override
+    public String runServer(String profileName) throws SQLException {
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
+        Kf2Common kf2Common = Kf2Factory.getInstance();
+        return kf2Common.runServer(profileOpt.isPresent()? profileOpt.get(): null);
     }
 }

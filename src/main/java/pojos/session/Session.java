@@ -95,4 +95,5 @@ public class Session {
     public void setSortedMapsCriteria(EnumSortedMapsCriteria sortedMapsCriteria) {
         this.sortedMapsCriteria = sortedMapsCriteria;
     }
+
 }

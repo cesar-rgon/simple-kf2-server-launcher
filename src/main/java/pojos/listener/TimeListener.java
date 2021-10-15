@@ -1,7 +1,6 @@
 package pojos.listener;
 
 import daos.CustomMapModDao;
-import entities.AbstractMap;
 import entities.CustomMapMod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,6 +65,7 @@ public class TimeListener extends TimerTask {
                 }
             }
             logger.info("The process of checking downloaded custom maps and mods has finished.");
+
         } catch (Exception e) {
             String message = "Error checking if the maps/mods have been downloaded. See stacktrace for more details:";
             logger.error(message, e);

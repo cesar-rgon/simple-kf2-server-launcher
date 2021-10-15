@@ -11,6 +11,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
@@ -143,6 +144,7 @@ public class TemplateController implements Initializable {
 
             String mapsTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.maps");
             maps.setDisable(mapsTitle.equals(title));
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);

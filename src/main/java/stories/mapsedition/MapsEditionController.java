@@ -8,6 +8,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -213,12 +214,25 @@ public class MapsEditionController implements Initializable {
             } catch (Exception e) {
                 message = "Start server to download it";
             }
-            Label warningMessage = new Label(message);
-            warningMessage.setStyle("-fx-text-fill: yellow;");
-            GridPane.setColumnSpan(warningMessage, 2);
-            gridpane.add(warningMessage,1, rowIndex);
-            warningMessage.setMaxWidth(mapPreview.getFitWidth());
-            warningMessage.setAlignment(Pos.CENTER);
+
+            Hyperlink startServerLink = new Hyperlink(message);
+            startServerLink.setStyle("-fx-text-fill: yellow;");
+            startServerLink.setMaxWidth(mapPreview.getFitWidth());
+            startServerLink.setAlignment(Pos.CENTER);
+            startServerLink.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent e) {
+                    try {
+                        Session.getInstance().setConsole((StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
+                                "< " + new Date() + " - Run Server >\n" + facade.runServer(profileSelect.getValue().getName()));
+                    } catch (SQLException ex) {
+                        logger.error(ex.getMessage(), ex);
+                        Utils.errorDialog(ex.getMessage(), ex);
+                    }
+                }
+            });
+            GridPane.setColumnSpan(startServerLink, 2);
+            gridpane.add(startServerLink,1, rowIndex);
             rowIndex++;
         }
 
@@ -286,9 +300,9 @@ public class MapsEditionController implements Initializable {
         mapPreview.setFitHeight(width/2);
         mapNameLabel.setMaxWidth(mapPreview.getFitWidth() - 25);
         if (gridPane.getChildren().size() > 3) {
-            Label warningMessage = (Label) gridPane.getChildren().get(3);
-            warningMessage.setMaxWidth(mapPreview.getFitWidth());
-            warningMessage.setAlignment(Pos.CENTER);
+            Hyperlink startServerLink = (Hyperlink) gridPane.getChildren().get(3);
+            startServerLink.setMaxWidth(mapPreview.getFitWidth());
+            startServerLink.setAlignment(Pos.CENTER);
         }
     }
 
@@ -905,6 +919,10 @@ public class MapsEditionController implements Initializable {
 
             officialMapsTab.setGraphic(new Label("(" + officialMapsFlowPane.getChildren().size() + ")"));
             customMapsModsTab.setGraphic(new Label("(" + customMapsFlowPane.getChildren().size() + ")"));
+            if (selectAllMaps.isSelected()) {
+                selectAllMaps.setSelected(false);
+                selectAllMapsOnAction();
+            }
             Session.getInstance().setMapsProfile(profileSelect.getValue());
         } catch (SQLException e) {
             Utils.errorDialog(e.getMessage(), e);

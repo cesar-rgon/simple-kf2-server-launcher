@@ -4,10 +4,12 @@ import dtos.AbstractMapDto;
 import dtos.CustomMapModDto;
 import dtos.OfficialMapDto;
 import dtos.ProfileDto;
+import entities.Profile;
 import javafx.collections.ObservableList;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public interface MapsEditionFacade {
     String findConfigPropertyValue(String key) throws Exception;
@@ -24,4 +26,5 @@ public interface MapsEditionFacade {
     AbstractMapDto findMapByName(String mapName) throws SQLException;
     void unselectProfileMap(String profileName) throws SQLException;
     List<String> selectProfilesToImport(String defaultSelectedProfileName) throws Exception;
+    String runServer(String profileName) throws SQLException;
 }
