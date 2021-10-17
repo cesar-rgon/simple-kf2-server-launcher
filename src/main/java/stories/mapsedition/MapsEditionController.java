@@ -20,13 +20,17 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.AddMapsToProfile;
 import pojos.MapToDisplay;
+import pojos.enums.EnumMasTab;
 import pojos.enums.EnumSortedMapsCriteria;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
@@ -72,6 +76,10 @@ public class MapsEditionController implements Initializable {
     @FXML private ImageView searchImg;
     @FXML private ComboBox<ProfileDto> profileSelect;
     @FXML private Label profileLabel;
+    @FXML private Label actionsLabel;
+    @FXML private Menu orderMaps;
+    @FXML private MenuItem orderMapsByName;
+    @FXML private MenuItem orderMapsByDate;
 
     public MapsEditionController() {
         super();
@@ -86,8 +94,11 @@ public class MapsEditionController implements Initializable {
             selectMaps = true;
             installationFolder = facade.findConfigPropertyValue("prop.config.installationFolder");
 
-            String profileLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileLowercase");
+            String profileLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profile");
             profileLabel.setText(profileLabelText);
+
+            String actionsLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.actions");
+            actionsLabel.setText(actionsLabelText);
 
             ObservableList<ProfileDto> profileOptions = facade.listAllProfiles();
             profileSelect.setItems(profileOptions);
@@ -99,20 +110,23 @@ public class MapsEditionController implements Initializable {
                                 profileSelect.getItems().get(0));
 
                 mapList = facade.getMapsFromProfile(profileSelect.getValue().getName());
-                orderMapsByName();
+                orderMapsByNameOnAction();
             } else {
                 profileSelect.setValue(null);
                 mapList = null;
             }
             Session.getInstance().setMapsProfile(profileSelect.getValue());
 
-            officialMapsTab.setGraphic(new Label("(" + officialMapsFlowPane.getChildren().size() + ")"));
             String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
-            officialMapsTab.setText(officialMapsTabText);
+            officialMapsTab.setGraphic(createTabTitle(officialMapsTabText, officialMapsFlowPane.getChildren().size()));
+            officialMapsTab.setText("");
 
-            customMapsModsTab.setGraphic(new Label("(" + customMapsFlowPane.getChildren().size() + ")"));
             String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
-            customMapsModsTab.setText(customMapsModsTabText);
+            customMapsModsTab.setGraphic(createTabTitle(customMapsModsTabText, customMapsFlowPane.getChildren().size()));
+            customMapsModsTab.setText("");
+
+            SingleSelectionModel<Tab> selectionModel = mapsModsTabPane.getSelectionModel();
+            selectionModel.select(EnumMasTab.OFFICIAL_MAPS_TAB.equals(Session.getInstance().getSelectedMapTab()) ? officialMapsTab: customMapsModsTab);
 
             Tooltip searchTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.searchMaps"));
             searchMaps.setTooltip(searchTooltip);
@@ -120,23 +134,28 @@ public class MapsEditionController implements Initializable {
 
             String addNewMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addMaps");
             addNewMaps.setText(addNewMapsText);
-            // addNewMaps.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addMaps")));
 
             String searchInWorkShopText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.searchInWorkShop");
             searchInWorkShop.setText(searchInWorkShopText);
-            // searchInWorkShop.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.searchInWorkShop")));
 
             String removeMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeMaps");
             removeMaps.setText(removeMapsText);
-            // removeMaps.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeMaps")));
 
             String selectAllMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.selectMaps");
             selectAllMaps.setText(selectAllMapsText);
-            // selectAllMaps.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.selectAllMaps")));
+            selectAllMaps.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.selectAllMaps")));
 
             String importMapsFromServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importMaps");
             importMapsFromServer.setText(importMapsFromServerText);
-            // importMapsFromServer.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.importMaps")));
+
+            String orderMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMaps");
+            orderMaps.setText(orderMapsText);
+
+            String orderMapsByNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByName");
+            orderMapsByName.setText(orderMapsByNameText);
+
+            String orderMapsByDateText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByDate");
+            orderMapsByDate.setText(orderMapsByDateText);
 
             String sliderLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.slider");
             sliderLabel.setText(sliderLabelText);
@@ -161,8 +180,28 @@ public class MapsEditionController implements Initializable {
     }
 
 
+    private HBox createTabTitle(String text, int numberOfMaps) {
+
+        Circle circle = new Circle(0,0, 12, Color.LIGHTBLUE);
+        Text numberOfMapsText = new Text(String.valueOf(numberOfMaps));
+        numberOfMapsText.setFont(Font.loadFont(getClass().getClassLoader().getResource("fonts/Ubuntu-B.ttf").toExternalForm(), 11));
+        numberOfMapsText.setFill(Color.DARKBLUE);
+        StackPane stackPane = new StackPane(circle, numberOfMapsText);
+
+        Text title = new Text(text);
+        title.setFill(Color.WHITE);
+
+        HBox separator = new HBox();
+        separator.setPrefWidth(5);
+
+        HBox contentPane = new HBox();
+        contentPane.getChildren().addAll(title,separator,stackPane);
+
+        return contentPane;
+    }
+
     private GridPane createMapGridPane(AbstractMapDto map) {
-        Label mapNameLabel = new Label(map.getKey());
+
         Image image = null;
         if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(map.getUrlPhoto())) {
             image = new Image("file:" + installationFolder + "/" + map.getUrlPhoto());
@@ -187,9 +226,9 @@ public class MapsEditionController implements Initializable {
             });
         }
         GridPane gridpane = new GridPane();
-        gridpane.setStyle("-fx-border-color: #c15d11;-fx-border-width:3px;-fx-border-radius: 10px;-fx-effect: dropshadow(three-pass-box, red, 20, 0, 0, 0);");
+        //gridpane.setStyle("-fx-border-color: #c15d11;-fx-border-width:3px;-fx-border-radius: 10px;");
+        gridpane.getStyleClass().add("gridPane");
         gridpane.add(mapPreview, 1, 1);
-        GridPane.setColumnSpan(mapPreview, 2);
         CheckBox checkbox = new CheckBox();
         checkbox.setOpacity(0.5);
         checkbox.setOnAction(e -> {
@@ -199,15 +238,21 @@ public class MapsEditionController implements Initializable {
                 checkbox.setOpacity(0.5);
             }
         });
-        gridpane.add(checkbox, 1, 2);
-        gridpane.add(mapNameLabel, 2, 2);
+
+        Label mapNameLabel = new Label(map.getKey(), checkbox);
         mapNameLabel.setMinHeight(20);
         mapNameLabel.setMaxWidth(mapPreview.getFitWidth() - 25);
         mapNameLabel.setAlignment(Pos.BOTTOM_CENTER);
 
+        gridpane.add(mapNameLabel, 1, 2);
+
         int rowIndex = 3;
 
-        if (!map.isOfficial() && !((CustomMapModDto) map).isDownloaded()) {
+        if (map.isOfficial() || ((CustomMapModDto) map).isDownloaded()) {
+            Node emptyNode = new Hyperlink(StringUtils.EMPTY);
+            gridpane.add(emptyNode,1, rowIndex);
+            rowIndex++;
+        } else {
             String message = "";
             try {
                 message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.startServer");
@@ -216,8 +261,8 @@ public class MapsEditionController implements Initializable {
             }
 
             Hyperlink startServerLink = new Hyperlink(message);
-            startServerLink.setStyle("-fx-text-fill: yellow;");
-            startServerLink.setMaxWidth(mapPreview.getFitWidth());
+            startServerLink.setStyle("-fx-text-fill: yellow; -fx-underline: true;");
+            startServerLink.setMaxWidth(Double.MAX_VALUE);
             startServerLink.setAlignment(Pos.CENTER);
             startServerLink.setOnAction(new EventHandler<ActionEvent>() {
                 @Override
@@ -231,10 +276,10 @@ public class MapsEditionController implements Initializable {
                     }
                 }
             });
-            GridPane.setColumnSpan(startServerLink, 2);
             gridpane.add(startServerLink,1, rowIndex);
             rowIndex++;
         }
+
 
         StringBuffer tooltipText = new StringBuffer();
         if (!map.isOfficial()) {
@@ -294,14 +339,14 @@ public class MapsEditionController implements Initializable {
 
     private void resizeGridPane(GridPane gridPane) {
         ImageView mapPreview = (ImageView) gridPane.getChildren().get(0);
-        Label mapNameLabel = (Label) gridPane.getChildren().get(2);
+        Label mapNameLabel = (Label) gridPane.getChildren().get(1);
         Double width = getWidthGridPaneByNumberOfColums();
         mapPreview.setFitWidth(width);
         mapPreview.setFitHeight(width/2);
         mapNameLabel.setMaxWidth(mapPreview.getFitWidth() - 25);
         if (gridPane.getChildren().size() > 3) {
             Hyperlink startServerLink = (Hyperlink) gridPane.getChildren().get(3);
-            startServerLink.setMaxWidth(mapPreview.getFitWidth());
+            startServerLink.setMaxWidth(Double.MAX_VALUE);
             startServerLink.setAlignment(Pos.CENTER);
         }
     }
@@ -432,7 +477,8 @@ public class MapsEditionController implements Initializable {
                 }
 
                 if (StringUtils.isNotBlank(success)) {
-                    customMapsModsTab.setGraphic(new Label("(" + customMapsFlowPane.getChildren().size() + ")"));
+                    String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
+                    customMapsModsTab.setGraphic(createTabTitle(customMapsModsTabText, customMapsFlowPane.getChildren().size()));
                     String message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapsAdded");
                     Utils.infoDialog(message + ":", success.toString());
                 } else {
@@ -469,8 +515,9 @@ public class MapsEditionController implements Initializable {
 
             for (Node node : officialNodes) {
                 GridPane gridpane = (GridPane) node;
-                CheckBox checkbox = (CheckBox) gridpane.getChildren().get(1);
-                Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                Label mapNameLabel = (Label) gridpane.getChildren().get(1);
+                CheckBox checkbox = (CheckBox) mapNameLabel.getGraphic();
+
                 if (checkbox.isSelected()) {
                     removeList.add(gridpane);
                     message.append(mapNameLabel.getText()).append("\n");
@@ -479,8 +526,9 @@ public class MapsEditionController implements Initializable {
 
             for (Node node : customNodes) {
                 GridPane gridpane = (GridPane) node;
-                CheckBox checkbox = (CheckBox) gridpane.getChildren().get(1);
-                Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                Label mapNameLabel = (Label) gridpane.getChildren().get(1);
+                CheckBox checkbox = (CheckBox) mapNameLabel.getGraphic();
+
                 if (checkbox.isSelected()) {
                     removeList.add(gridpane);
                     message.append(mapNameLabel.getText()).append("\n");
@@ -501,7 +549,7 @@ public class MapsEditionController implements Initializable {
                     for (Node node : removeList) {
                         try {
                             GridPane gridpane = (GridPane) node;
-                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                            Label mapNameLabel = (Label) gridpane.getChildren().get(1);
 
                             if (profileSelect.getValue().getMap() != null && mapNameLabel.getText().equalsIgnoreCase(profileSelect.getValue().getMap().getKey())) {
                                 facade.unselectProfileMap(profileSelect.getValue().getName());
@@ -522,12 +570,15 @@ public class MapsEditionController implements Initializable {
                             Utils.errorDialog(e.getMessage(), e);
                         }
                     }
+
                     if (!mapsToRemove.isEmpty()) {
                         try {
                             mapList.clear();
                             mapList = facade.getMapsFromProfile(profileSelect.getValue().getName());
-                            officialMapsTab.setGraphic(new Label("(" + officialMapsFlowPane.getChildren().size() + ")"));
-                            customMapsModsTab.setGraphic(new Label("(" + customMapsFlowPane.getChildren().size() + ")"));
+                            String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
+                            officialMapsTab.setGraphic(createTabTitle(officialMapsTabText, officialMapsFlowPane.getChildren().size()));
+                            String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
+                            customMapsModsTab.setGraphic(createTabTitle(customMapsModsTabText, customMapsFlowPane.getChildren().size()));
                         } catch (SQLException e) {
                             logger.error(e.getMessage(), e);
                             Utils.errorDialog(e.getMessage(), e);
@@ -638,8 +689,10 @@ public class MapsEditionController implements Initializable {
                 importModsFromServer(selectedModList, selectedProfileNameList, successMods, errorsMods);
                 importOfficialMapsFromServer(officialMapNameList, selectedProfileNameList, successOfficialMaps, errorsOfficialMaps);
 
-                officialMapsTab.setGraphic(new Label("(" + officialMapsFlowPane.getChildren().size() + ")"));
-                customMapsModsTab.setGraphic(new Label("(" + customMapsFlowPane.getChildren().size() + ")"));
+                String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
+                officialMapsTab.setGraphic(createTabTitle(officialMapsTabText, officialMapsFlowPane.getChildren().size()));
+                String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
+                customMapsModsTab.setGraphic(createTabTitle(customMapsModsTabText, customMapsFlowPane.getChildren().size()));
 
                 logger.info("The process to import maps and mods from the server to the launcher has finished.");
                 if (StringUtils.isNotBlank(successOfficialMaps) || StringUtils.isNotBlank(successCustomMaps) || StringUtils.isNotBlank(successMods)) {
@@ -880,7 +933,8 @@ public class MapsEditionController implements Initializable {
 
         for (Node node: nodes) {
             GridPane gridpane = (GridPane) node;
-            CheckBox checkbox = (CheckBox)gridpane.getChildren().get(1);
+            Label mapNameLabel = (Label)gridpane.getChildren().get(1);
+            CheckBox checkbox = (CheckBox) mapNameLabel.getGraphic();
             checkbox.setSelected(selectMaps);
             if (checkbox.isSelected()) {
                 checkbox.setOpacity(1);
@@ -917,20 +971,23 @@ public class MapsEditionController implements Initializable {
                 }
             }
 
-            officialMapsTab.setGraphic(new Label("(" + officialMapsFlowPane.getChildren().size() + ")"));
-            customMapsModsTab.setGraphic(new Label("(" + customMapsFlowPane.getChildren().size() + ")"));
+            String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
+            officialMapsTab.setGraphic(createTabTitle(officialMapsTabText, officialMapsFlowPane.getChildren().size()));
+            String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
+            customMapsModsTab.setGraphic(createTabTitle(customMapsModsTabText, customMapsFlowPane.getChildren().size()));
+
             if (selectAllMaps.isSelected()) {
                 selectAllMaps.setSelected(false);
                 selectAllMapsOnAction();
             }
             Session.getInstance().setMapsProfile(profileSelect.getValue());
-        } catch (SQLException e) {
+        } catch (Exception e) {
             Utils.errorDialog(e.getMessage(), e);
         }
     }
 
     @FXML
-    private void orderMapsByName() {
+    private void orderMapsByNameOnAction() {
         customMapsFlowPane.getChildren().clear();
         officialMapsFlowPane.getChildren().clear();
 
@@ -954,7 +1011,10 @@ public class MapsEditionController implements Initializable {
 
     @FXML
     private void officialMapsTabOnSelectionChanged() {
-        if (selectAllMaps.isSelected()) {
+        if (customMapsModsTab != null && !officialMapsTab.isSelected()) {
+            Session.getInstance().setSelectedMapTab(EnumMasTab.CUSTOM_MAPS_TAB);
+        }
+        if (selectAllMaps != null && selectAllMaps.isSelected()) {
             selectAllMaps.setSelected(false);
             selectAllMapsOnAction();
         }
@@ -962,9 +1022,17 @@ public class MapsEditionController implements Initializable {
 
     @FXML
     private void customMapsModsTabOnSelectionChanged() {
-        if (selectAllMaps.isSelected()) {
+        if (officialMapsTab != null && !customMapsModsTab.isSelected()) {
+            Session.getInstance().setSelectedMapTab(EnumMasTab.OFFICIAL_MAPS_TAB);
+        }
+        if (selectAllMaps != null && selectAllMaps.isSelected()) {
             selectAllMaps.setSelected(false);
             selectAllMapsOnAction();
         }
+    }
+
+    @FXML
+    private void orderMapsByDateOnAction() {
+        Utils.warningDialog("Not implemented yet", "This feature will be available soon.");
     }
 }

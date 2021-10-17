@@ -7,19 +7,22 @@
 
 <fx:root id="centerPane" fx:id="mapsEditionGridPane" prefHeight="745.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapsedition.MapsEditionController">
    <children>
-      <ImageView fx:id="profileImg" fitHeight="30.0" fitWidth="110.0" pickOnBounds="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+      <ImageView fx:id="profileImg" fitHeight="30.0" fitWidth="110.0" pickOnBounds="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
          <image>
             <Image url="@../images/label.png" />
          </image>
-      </ImageView>
-      <Label fx:id="profileLabel" text="PROFILE" GridPane.columnIndex="1" GridPane.halignment="RIGHT">
          <GridPane.margin>
-            <Insets right="10.0" />
+            <Insets top="30.0" />
+         </GridPane.margin>
+      </ImageView>
+      <Label fx:id="profileLabel" alignment="CENTER_RIGHT" text="PROFILE" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
+         <GridPane.margin>
+            <Insets right="10.0" top="36.0" />
          </GridPane.margin>
       </Label>
-      <ComboBox fx:id="profileSelect" cache="true" onAction="#profileOnAction" prefWidth="350.0" GridPane.columnIndex="2">
+      <ComboBox fx:id="profileSelect" cache="true" onAction="#profileOnAction" prefWidth="350.0" GridPane.columnIndex="2" GridPane.valignment="TOP">
          <GridPane.margin>
-            <Insets />
+            <Insets top="30.0" />
          </GridPane.margin></ComboBox>
 
       <TabPane fx:id="mapsModsTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnSpan="5" GridPane.rowIndex="1">
@@ -54,43 +57,43 @@
       </TabPane>
       <Slider fx:id="mapsSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" maxWidth="280.0" min="2.0" minorTickCount="0" onMouseClicked="#mapsSliderOnMouseClicked" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5.0" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER" GridPane.valignment="CENTER">
          <GridPane.margin>
-            <Insets bottom="-40.0" top="10.0" />
+            <Insets bottom="-40.0" right="5.0" top="30.0" />
          </GridPane.margin>
          <padding>
-            <Insets left="250.0" />
+            <Insets left="263.0" />
          </padding></Slider>
-      <Label fx:id="sliderLabel" text="Columns" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+      <Label fx:id="sliderLabel" text="Columns" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
          <GridPane.margin>
-            <Insets right="29.0" top="118.0" />
+            <Insets top="15.0" />
          </GridPane.margin>
       </Label>
       <TextField fx:id="searchMaps" maxWidth="200.0" onKeyReleased="#searchMapsKeyReleased" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
          <GridPane.margin>
-            <Insets top="120.0" />
+            <Insets top="130.0" />
          </GridPane.margin></TextField>
       <ImageView fx:id="searchImg" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
          <image>
             <Image url="@../images/find.png" />
          </image>
          <GridPane.margin>
-            <Insets top="122.0" />
+            <Insets top="132.0" />
          </GridPane.margin>
       </ImageView>
-      <ImageView fx:id="actionImg" fitHeight="30.0" fitWidth="110.0" pickOnBounds="true" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+      <ImageView fx:id="actionImg" fitHeight="30.0" fitWidth="110.0" pickOnBounds="true" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
          <image>
             <Image url="@../images/label.png" />
          </image>
          <GridPane.margin>
-            <Insets right="41.0" />
+            <Insets top="30.0" />
          </GridPane.margin>
       </ImageView>
-      <Label fx:id="actionsLabel" text="ACTIONS" GridPane.columnIndex="3" GridPane.halignment="LEFT">
+      <Label fx:id="actionsLabel" text="ACTIONS" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
          <GridPane.margin>
-            <Insets left="45.0" />
+            <Insets right="10.0" top="36.0" />
          </GridPane.margin>
       </Label>
 
-      <MenuBar id="actionsMenuBar" fx:id="actionsMenuBar" maxHeight="29.0" maxWidth="40.0" minHeight="29.0" minWidth="40.0" BorderPane.alignment="CENTER" GridPane.columnIndex="3" GridPane.halignment="LEFT">
+      <MenuBar id="actionsMenuBar" fx:id="actionsMenuBar" maxHeight="29.0" maxWidth="40.0" minHeight="29.0" minWidth="40.0" BorderPane.alignment="CENTER" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.valignment="TOP">
       <menus>
          <Menu fx:id="actions" mnemonicParsing="false" text="V">
             <items>
@@ -100,32 +103,32 @@
                <MenuItem fx:id="importMapsFromServer" mnemonicParsing="false" onAction="#importMapsFromServerOnAction" text="Import maps from KF2 server" />
                <Menu fx:id="orderMaps" mnemonicParsing="false" text="Order maps">
                   <items>
-                     <MenuItem fx:id="orderMapsByName" mnemonicParsing="false" onAction="#orderMapsByName" text="By name" />
-                     <MenuItem fx:id="orderMapsByDate" mnemonicParsing="false" text="By date" />
+                     <MenuItem fx:id="orderMapsByName" mnemonicParsing="false" onAction="#orderMapsByNameOnAction" text="By name" />
+                     <MenuItem fx:id="orderMapsByDate" mnemonicParsing="false" onAction="#orderMapsByDateOnAction" text="By date" />
                   </items>
                </Menu>
             </items>
          </Menu>
       </menus>
          <GridPane.margin>
-            <Insets left="111.0" />
+            <Insets top="30.0" />
          </GridPane.margin>
       </MenuBar>
-      <CheckBox fx:id="selectAllMaps" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#selectAllMapsOnAction" text="Select all" GridPane.columnIndex="2" GridPane.halignment="RIGHT">
+      <CheckBox fx:id="selectAllMaps" alignment="CENTER" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" onAction="#selectAllMapsOnAction" text="Select all" GridPane.columnIndex="4" GridPane.halignment="LEFT">
          <GridPane.margin>
-            <Insets top="120.0" />
+            <Insets left="10.0" top="130.0" />
          </GridPane.margin></CheckBox>
    </children>
    <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
       <ColumnConstraints hgrow="ALWAYS" />
       <ColumnConstraints hgrow="ALWAYS" minWidth="300.0" prefWidth="300.0" />
-      <ColumnConstraints hgrow="ALWAYS" />
-      <ColumnConstraints hgrow="ALWAYS" maxWidth="110.0" minWidth="110.0" prefWidth="110.0" />
+      <ColumnConstraints hgrow="ALWAYS" minWidth="80.0" prefWidth="80.0" />
+      <ColumnConstraints hgrow="ALWAYS" minWidth="110.0" prefWidth="110.0" />
       <ColumnConstraints hgrow="ALWAYS" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
    </columnConstraints>
    <rowConstraints>
-      <RowConstraints minHeight="80.0" prefHeight="80.0" vgrow="NEVER" />
-      <RowConstraints minHeight="610.0" vgrow="ALWAYS" />
+      <RowConstraints minHeight="100.0" prefHeight="100.0" vgrow="NEVER" />
+      <RowConstraints minHeight="590.0" vgrow="ALWAYS" />
    </rowConstraints>
 </fx:root>

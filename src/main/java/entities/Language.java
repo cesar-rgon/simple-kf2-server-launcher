@@ -7,7 +7,7 @@ import javax.persistence.*;
 public class Language extends AbstractEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name="ID", updatable=false, nullable=false)
     private Integer id;
 

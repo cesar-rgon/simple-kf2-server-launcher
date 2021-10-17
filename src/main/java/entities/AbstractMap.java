@@ -10,7 +10,7 @@ import java.util.List;
 public abstract class AbstractMap extends AbstractEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name="ID", updatable=false, nullable=false)
     private Integer id;
 

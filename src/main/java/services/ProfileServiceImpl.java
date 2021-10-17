@@ -610,20 +610,23 @@ public class ProfileServiceImpl implements ProfileService {
 
     private List<Profile> saveProfilesToDatabase(List<Profile> selectedProfileList, Properties properties) {
         List<Profile> savedProfileList = new ArrayList<Profile>();
+
+        int profileIndex = 1;
         for (Profile profile: selectedProfileList) {
             try {
                 Profile savedProfile = ProfileDao.getInstance().insert(profile);
 
-                List<AbstractMap> mapList = importProfileMapsFromFile(profile.getId(), savedProfile, properties);
+                List<AbstractMap> mapList = importProfileMapsFromFile(profileIndex, savedProfile, properties);
                 savedProfile.getMapList().addAll(mapList);
 
-                String mapName = properties.getProperty("exported.profile" + profile.getId() + ".map");
+                String mapName = properties.getProperty("exported.profile" + profileIndex + ".map");
                 Optional<AbstractMap> mapOpt = mapList.stream().filter(m -> m.getCode().equalsIgnoreCase(mapName)).findFirst();
                 savedProfile.setMap(mapOpt.isPresent()? mapOpt.get(): null);
 
                 ProfileDao.getInstance().update(savedProfile);
 
                 savedProfileList.add(savedProfile);
+                profileIndex++;
             } catch (Exception e) {
                 logger.error("Error saving the profile " + profile.getCode() + " to database", e);
             }

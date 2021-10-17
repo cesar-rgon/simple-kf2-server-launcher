@@ -2,19 +2,12 @@ package pojos.enums;
 
 public enum EnumSortedMapsCriteria {
 
-    NOMBRE_ASC ("Ordenación por nombre ascendente"),
-    NOMBRE_DESC ("Ordenación por nombre descendente"),
-    FECHA_ASC ("Ordenación por fecha ascendente"),
-    FECHA_DESC ("Ordenación por fecha descendente");
+    NOMBRE_ASC,
+    NOMBRE_DESC,
+    FECHA_ASC,
+    FECHA_DESC;
 
-    private final String description;
-
-    private EnumSortedMapsCriteria(String description) {
-        this.description = description;
-    }
-
-    public String getDescription() {
-        return description;
+    private EnumSortedMapsCriteria() {
     }
 
 }
