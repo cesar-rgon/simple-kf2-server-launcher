@@ -712,7 +712,7 @@ public class ProfileServiceImpl implements ProfileService {
 
             AbstractMap map = null;
             if (official) {
-                map = new OfficialMap(mapName, urlInfo, urlPhoto, profileList);
+                map = new OfficialMap(mapName, urlInfo, urlPhoto, profileList, null);
                 return officialMapService.createItem(map);
             } else {
                 boolean downloaded = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".downloaded"));

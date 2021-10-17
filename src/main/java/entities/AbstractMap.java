@@ -2,6 +2,7 @@ package entities;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -23,6 +24,13 @@ public abstract class AbstractMap extends AbstractEntity {
     @Column(name="URL_PHOTO")
     private String urlPhoto;
 
+    @Column(name="IMPORTED_DATE", nullable = false)
+    private Date importedDate;
+
+    @Column(name="RELEASE_DATE")
+    private Date releaseDate;
+
+
     @ManyToMany(mappedBy = "mapList", fetch = FetchType.EAGER)
     private List<Profile> profileList;
 
@@ -35,13 +43,14 @@ public abstract class AbstractMap extends AbstractEntity {
         this.profileList = new ArrayList<Profile>();
     }
 
-    protected AbstractMap(String code, String urlInfo, String urlPhoto, List<Profile> profileList, boolean official) {
+    protected AbstractMap(String code, String urlInfo, String urlPhoto, List<Profile> profileList, boolean official, Date releaseDate) {
         super();
         this.code = code;
         this.urlInfo = urlInfo;
         this.urlPhoto = urlPhoto;
         this.profileList = profileList;
         this.official = official;
+        this.importedDate = new Date();
     }
 
     @Override
@@ -103,5 +112,21 @@ public abstract class AbstractMap extends AbstractEntity {
 
     public void setOfficial(boolean official) {
         this.official = official;
+    }
+
+    public Date getImportedDate() {
+        return importedDate;
+    }
+
+    public void setImportedDate(Date importedDate) {
+        this.importedDate = importedDate;
+    }
+
+    public Date getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(Date releaseDate) {
+        this.releaseDate = releaseDate;
     }
 }

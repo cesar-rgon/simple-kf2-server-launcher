@@ -3,12 +3,14 @@ package services;
 import daos.OfficialMapDao;
 import daos.ProfileDao;
 import entities.AbstractMap;
+import entities.CustomMapMod;
 import entities.OfficialMap;
 import entities.Profile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -95,6 +97,7 @@ public abstract class AbstractMapService implements Kf2Service<AbstractMap> {
                 logger.error("Error updating the profile " + profile.getCode() + " with the map: " + map.getCode(), e);
             }
         });
+        map.setImportedDate(new Date());
         map.getProfileList().addAll(profileList);
         return updateItem(map);
     }

@@ -79,7 +79,8 @@ public class MapsEditionController implements Initializable {
     @FXML private Label actionsLabel;
     @FXML private Menu orderMaps;
     @FXML private MenuItem orderMapsByName;
-    @FXML private MenuItem orderMapsByDate;
+    @FXML private MenuItem orderMapsByReleaseDate;
+    @FXML private MenuItem orderMapsByImportedDate;
 
     public MapsEditionController() {
         super();
@@ -154,8 +155,11 @@ public class MapsEditionController implements Initializable {
             String orderMapsByNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByName");
             orderMapsByName.setText(orderMapsByNameText);
 
-            String orderMapsByDateText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByDate");
-            orderMapsByDate.setText(orderMapsByDateText);
+            String orderMapsByReleaseDateText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByReleaseDate");
+            orderMapsByReleaseDate.setText(orderMapsByReleaseDateText);
+
+            String orderMapsByImportedDateText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByImportedDate");
+            orderMapsByImportedDate.setText(orderMapsByImportedDateText);
 
             String sliderLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.slider");
             sliderLabel.setText(sliderLabelText);
@@ -214,19 +218,8 @@ public class MapsEditionController implements Initializable {
         Double width = getWidthGridPaneByNumberOfColums();
         mapPreview.setFitWidth(width);
         mapPreview.setFitHeight(width/2);
-        if (StringUtils.isNotBlank(map.getUrlInfo())) {
-            mapPreview.setCursor(Cursor.HAND);
-            mapPreview.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    Session.getInstance().setMap(map);
-                    loadNewContent("/views/mapWebInfo.fxml");
-                    event.consume();
-                }
-            });
-        }
+
         GridPane gridpane = new GridPane();
-        //gridpane.setStyle("-fx-border-color: #c15d11;-fx-border-width:3px;-fx-border-radius: 10px;");
         gridpane.getStyleClass().add("gridPane");
         gridpane.add(mapPreview, 1, 1);
         CheckBox checkbox = new CheckBox();
@@ -241,18 +234,27 @@ public class MapsEditionController implements Initializable {
 
         Label mapNameLabel = new Label(map.getKey(), checkbox);
         mapNameLabel.setMinHeight(20);
-        mapNameLabel.setMaxWidth(mapPreview.getFitWidth() - 25);
+        mapNameLabel.setMaxWidth(Double.MAX_VALUE);
         mapNameLabel.setAlignment(Pos.BOTTOM_CENTER);
-
         gridpane.add(mapNameLabel, 1, 2);
 
-        int rowIndex = 3;
+        Label releaseDateLabel = new Label("Release: " + map.getReleaseDate());
+        releaseDateLabel.setMinHeight(20);
+        releaseDateLabel.setMaxWidth(Double.MAX_VALUE);
+        releaseDateLabel.setAlignment(Pos.BOTTOM_CENTER);
+        releaseDateLabel.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
+        gridpane.add(releaseDateLabel, 1, 3);
 
-        if (map.isOfficial() || ((CustomMapModDto) map).isDownloaded()) {
-            Node emptyNode = new Hyperlink(StringUtils.EMPTY);
-            gridpane.add(emptyNode,1, rowIndex);
-            rowIndex++;
-        } else {
+        Label importedDateText = new Label("Imported: " + map.getImportedDate());
+        importedDateText.setTextFill(Color.GRAY);
+        importedDateText.setMinHeight(20);
+        importedDateText.setMaxWidth(Double.MAX_VALUE);
+        importedDateText.setAlignment(Pos.BOTTOM_CENTER);
+        importedDateText.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
+        gridpane.add(importedDateText, 1, 4);
+
+        int rowIndex = 5;
+        if (!map.isOfficial() && !((CustomMapModDto) map).isDownloaded()) {
             String message = "";
             try {
                 message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.startServer");
@@ -314,6 +316,19 @@ public class MapsEditionController implements Initializable {
             Tooltip tooltip = new Tooltip(tooltipText.toString());
             Tooltip.install(gridpane, tooltip);
         }
+
+        if (StringUtils.isNotBlank(map.getUrlInfo())) {
+            gridpane.setCursor(Cursor.HAND);
+            gridpane.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    Session.getInstance().setMap(map);
+                    loadNewContent("/views/mapWebInfo.fxml");
+                    event.consume();
+                }
+            });
+        }
+
         return gridpane;
     }
 
@@ -344,8 +359,8 @@ public class MapsEditionController implements Initializable {
         mapPreview.setFitWidth(width);
         mapPreview.setFitHeight(width/2);
         mapNameLabel.setMaxWidth(mapPreview.getFitWidth() - 25);
-        if (gridPane.getChildren().size() > 3) {
-            Hyperlink startServerLink = (Hyperlink) gridPane.getChildren().get(3);
+        if (gridPane.getChildren().size() > 4) {
+            Hyperlink startServerLink = (Hyperlink) gridPane.getChildren().get(4);
             startServerLink.setMaxWidth(Double.MAX_VALUE);
             startServerLink.setAlignment(Pos.CENTER);
         }
@@ -991,12 +1006,12 @@ public class MapsEditionController implements Initializable {
         customMapsFlowPane.getChildren().clear();
         officialMapsFlowPane.getChildren().clear();
 
-        if (EnumSortedMapsCriteria.NOMBRE_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
+        if (EnumSortedMapsCriteria.NAME_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
             mapList = mapList.stream().sorted((m1, m2) -> m1.getKey().compareTo(m2.getKey())).collect(Collectors.toList());
-            Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.NOMBRE_ASC);
+            Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.NAME_ASC);
         } else {
             mapList = mapList.stream().sorted((m1, m2) -> m2.getKey().compareTo(m1.getKey())).collect(Collectors.toList());
-            Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.NOMBRE_DESC);
+            Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.NAME_DESC);
         }
 
         for (AbstractMapDto map : mapList) {
@@ -1032,7 +1047,49 @@ public class MapsEditionController implements Initializable {
     }
 
     @FXML
-    private void orderMapsByDateOnAction() {
-        Utils.warningDialog("Not implemented yet", "This feature will be available soon.");
+    private void orderMapsByReleaseDateOnAction() {
+        customMapsFlowPane.getChildren().clear();
+        officialMapsFlowPane.getChildren().clear();
+
+        if (EnumSortedMapsCriteria.RELEASE_DATE_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
+            mapList = mapList.stream().sorted((m1, m2) -> m1.getReleaseDate().compareTo(m2.getReleaseDate())).collect(Collectors.toList());
+            Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.RELEASE_DATE_ASC);
+        } else {
+            mapList = mapList.stream().sorted((m1, m2) -> m2.getReleaseDate().compareTo(m1.getReleaseDate())).collect(Collectors.toList());
+            Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.RELEASE_DATE_DESC);
+        }
+
+        for (AbstractMapDto map : mapList) {
+            GridPane gridpane = createMapGridPane(map);
+            if (map.isOfficial()) {
+                officialMapsFlowPane.getChildren().add(gridpane);
+            } else {
+                customMapsFlowPane.getChildren().add(gridpane);
+            }
+        }
     }
+
+    @FXML
+    private void orderMapsByImportedDateOnAction() {
+        customMapsFlowPane.getChildren().clear();
+        officialMapsFlowPane.getChildren().clear();
+
+        if (EnumSortedMapsCriteria.IMPORTED_DATE_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
+            mapList = mapList.stream().sorted((m1, m2) -> m1.getImportedDate().compareTo(m2.getImportedDate())).collect(Collectors.toList());
+            Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.IMPORTED_DATE_ASC);
+        } else {
+            mapList = mapList.stream().sorted((m1, m2) -> m2.getReleaseDate().compareTo(m1.getReleaseDate())).collect(Collectors.toList());
+            Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.IMPORTED_DATE_DESC);
+        }
+
+        for (AbstractMapDto map : mapList) {
+            GridPane gridpane = createMapGridPane(map);
+            if (map.isOfficial()) {
+                officialMapsFlowPane.getChildren().add(gridpane);
+            } else {
+                customMapsFlowPane.getChildren().add(gridpane);
+            }
+        }
+    }
+
 }

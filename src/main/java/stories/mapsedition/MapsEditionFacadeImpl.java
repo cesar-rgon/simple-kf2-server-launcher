@@ -30,6 +30,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -177,7 +178,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         if (profileList == null || profileList.isEmpty()) {
             return null;
         }
-        OfficialMap newOfficialMap = new OfficialMap(mapName, "", "/KFGame/Web/images/maps/" + mapName + ".jpg", profileList);
+        OfficialMap newOfficialMap = new OfficialMap(mapName, "", "/KFGame/Web/images/maps/" + mapName + ".jpg", profileList, null);
         OfficialMap insertedMap = (OfficialMap) officialMapService.createMap(newOfficialMap);
         return insertedMap != null ? (OfficialMapDto) mapDtoFactory.newDto(insertedMap): null;
     }
@@ -186,6 +187,8 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     public CustomMapModDto findMapOrModByIdWorkShop(Long idWorkShop) throws SQLException {
         Optional<CustomMapMod> mapOpt = CustomMapModDao.getInstance().findByIdWorkShop(idWorkShop);
         if (mapOpt.isPresent()) {
+            mapOpt.get().setImportedDate(new Date());
+            customMapModService.updateItem(mapOpt.get());
             return (CustomMapModDto) mapDtoFactory.newDto(mapOpt.get());
         }
         return null;

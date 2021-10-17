@@ -28,7 +28,7 @@ public class Session {
         console = "";
         map = null;
         processList = new ArrayList<Process>();
-        sortedMapsCriteria = EnumSortedMapsCriteria.NOMBRE_DESC;
+        sortedMapsCriteria = EnumSortedMapsCriteria.NAME_DESC;
         selectedMapTab = EnumMasTab.CUSTOM_MAPS_TAB;
     }
 

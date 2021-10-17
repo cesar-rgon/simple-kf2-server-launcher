@@ -20,7 +20,7 @@ public class CustomMapMod extends AbstractMap {
     }
 
     public CustomMapMod(String code, String urlInfo, String urlPhoto, List<Profile> profileList, Long idWorkShop, boolean downloaded) {
-        super(code, urlInfo, urlPhoto, profileList, false);
+        super(code, urlInfo, urlPhoto, profileList, false, null);
         this.idWorkShop = idWorkShop;
         this.downloaded = downloaded;
     }

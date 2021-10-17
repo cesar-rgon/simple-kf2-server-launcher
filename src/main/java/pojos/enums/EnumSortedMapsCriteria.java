@@ -2,10 +2,12 @@ package pojos.enums;
 
 public enum EnumSortedMapsCriteria {
 
-    NOMBRE_ASC,
-    NOMBRE_DESC,
-    FECHA_ASC,
-    FECHA_DESC;
+    NAME_ASC,
+    NAME_DESC,
+    RELEASE_DATE_ASC,
+    RELEASE_DATE_DESC,
+    IMPORTED_DATE_ASC,
+    IMPORTED_DATE_DESC;
 
     private EnumSortedMapsCriteria() {
     }

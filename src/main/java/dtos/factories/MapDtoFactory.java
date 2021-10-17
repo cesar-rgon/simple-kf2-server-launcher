@@ -14,6 +14,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,20 +25,36 @@ public class MapDtoFactory {
     private static final Logger logger = LogManager.getLogger(MapDtoFactory.class);
 
     private OfficialMapDto newOfficialMapDto(OfficialMap map) {
+
+        DateFormat dateHoursFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String importedDate = map.getImportedDate() != null ? dateHoursFormat.format(map.getImportedDate()): "Unknown";
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String releaseDate = map.getReleaseDate() != null ? dateFormat.format(map.getReleaseDate()): "Unknown";
+
         return new OfficialMapDto(
                 map.getCode(),
                 map.getUrlInfo(),
-                map.getUrlPhoto()
+                map.getUrlPhoto(),
+                importedDate,
+                releaseDate
         );
     }
 
     private CustomMapModDto newCustomMapModDto(CustomMapMod map) {
+
+        DateFormat dateHoursFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String importedDate = map.getImportedDate() != null ? dateHoursFormat.format(map.getImportedDate()): "Unknown";
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String releaseDate = map.getReleaseDate() != null ? dateFormat.format(map.getReleaseDate()): "Unknown";
+
         return new CustomMapModDto(
                 map.getCode(),
                 map.getUrlInfo(),
                 map.getUrlPhoto(),
                 map.getIdWorkShop(),
-                map.isDownloaded()
+                map.isDownloaded(),
+                importedDate,
+                releaseDate
         );
     }
 
