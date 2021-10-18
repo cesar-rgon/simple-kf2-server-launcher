@@ -12,6 +12,7 @@
         <class>entities.OfficialMap</class>
         <class>entities.CustomMapMod</class>
         <class>entities.Profile</class>
+        <class>entities.ProfileMap</class>
         <exclude-unlisted-classes>true</exclude-unlisted-classes>
 
         <properties>

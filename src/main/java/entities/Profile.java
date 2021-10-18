@@ -3,6 +3,7 @@ package entities;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "PROFILES")
@@ -79,13 +80,8 @@ public class Profile extends AbstractEntity {
     @Column(name="CUSTOM_PARAMETERS", length=500)
     private String customParameters;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "PROFILES_MAPS",
-            joinColumns = {@JoinColumn(name = "ID_PROFILE")},
-            inverseJoinColumns = {@JoinColumn(name = "ID_MAP")}
-    )
-    private List<AbstractMap> mapList;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "profile")
+    private List<ProfileMap> profileMapList;
 
     @Column(name="TEAM_COLLISION")
     private Boolean teamCollision;
@@ -156,12 +152,12 @@ public class Profile extends AbstractEntity {
 
     public Profile() {
         super();
-        this.mapList = new ArrayList<AbstractMap>();
+        this.profileMapList = new ArrayList<ProfileMap>();
     }
 
     public Profile(String name, Language language, GameType gametype, AbstractMap map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,
                    String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
-                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, List<AbstractMap> mapList, Boolean takeover,
+                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, List<ProfileMap> profileMapList, Boolean takeover,
                    Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting, Double mapVotingTime,
                    Boolean kickVoting, Double kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators, Boolean voip,
                    Boolean chatLogging, String chatLoggingFile, Boolean chatLoggingFileTimestamp, Double timeBetweenKicks, Double maxIdleTime, Boolean deadPlayersCanTalk,
@@ -187,7 +183,7 @@ public class Profile extends AbstractEntity {
         this.urlImageServer = urlImageServer;
         this.welcomeMessage = welcomeMessage;
         this.customParameters = customParameters;
-        this.mapList = mapList;
+        this.profileMapList = profileMapList;
         this.takeover = takeover;
         this.teamCollision = teamCollision;
         this.adminCanPause = adminCanPause;
@@ -386,14 +382,6 @@ public class Profile extends AbstractEntity {
         this.customParameters = customParameters;
     }
 
-    public List<AbstractMap> getMapList() {
-        return mapList;
-    }
-
-    public void setMapList(List<AbstractMap> mapList) {
-        this.mapList = mapList;
-    }
-
     public Boolean getTakeover() {
         return takeover;
     }
@@ -576,5 +564,28 @@ public class Profile extends AbstractEntity {
 
     public void setFriendlyFirePercentage(Double friendlyFirePercentage) {
         this.friendlyFirePercentage = friendlyFirePercentage;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<ProfileMap> getProfileMapList() {
+        return profileMapList;
+    }
+
+    public void setProfileMapList(List<ProfileMap> profileMapList) {
+        this.profileMapList = profileMapList;
+    }
+
+    public List<AbstractMap> getMapList() {
+        return profileMapList.
+                stream().
+                map(ProfileMap::getMap).
+                collect(Collectors.toList());
     }
 }

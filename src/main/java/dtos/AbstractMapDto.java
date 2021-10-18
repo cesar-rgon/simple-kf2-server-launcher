@@ -1,21 +1,25 @@
 package dtos;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 public abstract class AbstractMapDto {
 
     protected final String key;
     protected final String urlInfo;
     protected final String urlPhoto;
-    protected final String importedDate;
     protected final String releaseDate;
     private final boolean official;
+    private final List<ImportedDateByProfileDto> importedDateByProfileDtoList;
 
-    protected AbstractMapDto(String key, String urlInfo, String urlPhoto, boolean official, String importedDate, String releaseDate) {
+    protected AbstractMapDto(String key, String urlInfo, String urlPhoto, boolean official, String releaseDate, List<ImportedDateByProfileDto> importedDateByProfileList) {
         this.key = key;
         this.urlInfo = urlInfo;
         this.urlPhoto = urlPhoto;
         this.official = official;
-        this.importedDate = importedDate;
         this.releaseDate = releaseDate;
+        this.importedDateByProfileDtoList = importedDateByProfileList;
     }
 
     public String getKey() {
@@ -34,11 +38,23 @@ public abstract class AbstractMapDto {
         return official;
     }
 
-    public String getImportedDate() {
-        return importedDate;
-    }
-
     public String getReleaseDate() {
         return releaseDate;
+    }
+
+    public List<ImportedDateByProfileDto> getImportedDateByProfileDtoList() {
+        return importedDateByProfileDtoList;
+    }
+
+    public String getImportedDate(String profileName) {
+        Optional<ImportedDateByProfileDto> importedDateByProfileDtoOpt = importedDateByProfileDtoList.stream().
+                filter(importedDateByProfileDto -> importedDateByProfileDto.getProfileName().equals(profileName)).
+                findFirst();
+
+        if (importedDateByProfileDtoOpt.isPresent()) {
+            return importedDateByProfileDtoOpt.get().getImportedDate();
+        } else {
+            return "Unknown";
+        }
     }
 }

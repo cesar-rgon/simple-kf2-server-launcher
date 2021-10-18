@@ -1,12 +1,14 @@
 package dtos;
 
+import java.util.List;
+
 public class CustomMapModDto extends AbstractMapDto {
 
     private final Long idWorkShop;
     private final boolean downloaded;
 
-    public CustomMapModDto(String key, String urlInfo, String urlPhoto, Long idWorkShop, boolean downloaded, String importedDate, String releaseDate) {
-        super(key, urlInfo, urlPhoto, false, importedDate, releaseDate);
+    public CustomMapModDto(String key, String urlInfo, String urlPhoto, Long idWorkShop, boolean downloaded, String releaseDate, List<ImportedDateByProfileDto> importedDateByProfileList) {
+        super(key, urlInfo, urlPhoto, false, releaseDate, importedDateByProfileList);
         this.idWorkShop = idWorkShop;
         this.downloaded = downloaded;
     }

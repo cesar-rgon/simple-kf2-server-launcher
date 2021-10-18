@@ -4,6 +4,7 @@ import dtos.AbstractMapDto;
 import dtos.ProfileDto;
 import entities.AbstractMap;
 import entities.Profile;
+import entities.ProfileMap;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -34,7 +35,11 @@ public class ProfileDtoFactory {
 
         AbstractMapDto selectedMap = null;
         if (profile.getMap() != null) {
-            Optional<AbstractMap> mapInListOpt = profile.getMapList().stream().filter(m -> m.getId().equals(profile.getMap().getId())).findFirst();
+            Optional<AbstractMap> mapInListOpt = profile.getMapList()
+                    .stream()
+                    .filter(m -> m.getId().equals(profile.getMap().getId()))
+                    .findFirst();
+
             if (mapInListOpt.isPresent()) {
                 selectedMap = mapDtoFactory.newDto(profile.getMap());
             }

@@ -5,10 +5,7 @@ import daos.OfficialMapDao;
 import daos.ProfileDao;
 import dtos.CustomMapModDto;
 import dtos.factories.MapDtoFactory;
-import entities.AbstractMap;
-import entities.CustomMapMod;
-import entities.OfficialMap;
-import entities.Profile;
+import entities.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,6 +17,7 @@ import utils.Utils;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -89,7 +87,11 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         }
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         String urlInfo = baseUrlWorkshop + idWorkShop;
-        CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, profileList, idWorkShop, downloaded);
+        List<ProfileMap> profileMapList = new ArrayList<ProfileMap>();
+        profileList.forEach(p -> {
+            profileMapList.addAll(p.getProfileMapList());
+        });
+        CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, profileMapList, idWorkShop, downloaded);
         return (CustomMapMod) customMapModService.createMap(customMap);
     }
 

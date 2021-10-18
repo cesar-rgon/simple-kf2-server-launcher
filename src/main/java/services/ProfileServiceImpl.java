@@ -143,7 +143,7 @@ public class ProfileServiceImpl implements ProfileService {
                 profileToBeCloned.getUrlImageServer(),
                 profileToBeCloned.getWelcomeMessage(),
                 profileToBeCloned.getCustomParameters(),
-                new ArrayList<AbstractMap>(profileToBeCloned.getMapList()),
+                profileToBeCloned.getProfileMapList(),
                 profileToBeCloned.getTakeover(),
                 profileToBeCloned.getTeamCollision(),
                 profileToBeCloned.getAdminCanPause(),
@@ -577,7 +577,7 @@ public class ProfileServiceImpl implements ProfileService {
                     properties.getProperty("exported.profile" + profileIndex + ".urlImageServer"),
                     properties.getProperty("exported.profile" + profileIndex + ".welcomeMessage"),
                     properties.getProperty("exported.profile" + profileIndex + ".customParameters"),
-                    new ArrayList<AbstractMap>(),
+                    new ArrayList<ProfileMap>(),
                     StringUtils.isNotBlank(takeoverStr) ? Boolean.parseBoolean(takeoverStr): false,
                     StringUtils.isNotBlank(teamCollisionStr) ? Boolean.parseBoolean(teamCollisionStr): true,
                     StringUtils.isNotBlank(adminPauseStr) ? Boolean.parseBoolean(adminPauseStr): false,
@@ -705,18 +705,16 @@ public class ProfileServiceImpl implements ProfileService {
                 }
             }
         } else {
-            List<Profile> profileList = new ArrayList<Profile>();
-            profileList.add(profile);
             String urlInfo = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlInfo");
             String urlPhoto = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlPhoto");
 
             AbstractMap map = null;
             if (official) {
-                map = new OfficialMap(mapName, urlInfo, urlPhoto, profileList, null);
+                map = new OfficialMap(mapName, urlInfo, urlPhoto, profile.getProfileMapList(), null);
                 return officialMapService.createItem(map);
             } else {
                 boolean downloaded = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".downloaded"));
-                map = new CustomMapMod(mapName, urlInfo, urlPhoto, profileList, idWorkShop, downloaded);
+                map = new CustomMapMod(mapName, urlInfo, urlPhoto, profile.getProfileMapList(), idWorkShop, downloaded);
                 if (createNewCustomMapFromWorkshop((CustomMapMod) map)) {
                     return map;
                 }

@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "MAPS")
@@ -24,15 +25,11 @@ public abstract class AbstractMap extends AbstractEntity {
     @Column(name="URL_PHOTO")
     private String urlPhoto;
 
-    @Column(name="IMPORTED_DATE", nullable = false)
-    private Date importedDate;
-
     @Column(name="RELEASE_DATE")
     private Date releaseDate;
 
-
-    @ManyToMany(mappedBy = "mapList", fetch = FetchType.EAGER)
-    private List<Profile> profileList;
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "map")
+    private List<ProfileMap> profileMapList;
 
     // Not mapped attribute
     @Transient
@@ -40,17 +37,16 @@ public abstract class AbstractMap extends AbstractEntity {
 
     protected AbstractMap() {
         super();
-        this.profileList = new ArrayList<Profile>();
+        this.profileMapList = new ArrayList<ProfileMap>();
     }
 
-    protected AbstractMap(String code, String urlInfo, String urlPhoto, List<Profile> profileList, boolean official, Date releaseDate) {
+    protected AbstractMap(String code, String urlInfo, String urlPhoto, List<ProfileMap> profileMapList, boolean official, Date releaseDate) {
         super();
         this.code = code;
         this.urlInfo = urlInfo;
         this.urlPhoto = urlPhoto;
-        this.profileList = profileList;
+        this.profileMapList = profileMapList;
         this.official = official;
-        this.importedDate = new Date();
     }
 
     @Override
@@ -98,14 +94,6 @@ public abstract class AbstractMap extends AbstractEntity {
         this.urlPhoto = urlPhoto;
     }
 
-    public List<Profile> getProfileList() {
-        return profileList;
-    }
-
-    public void setProfileList(List<Profile> profileList) {
-        this.profileList = profileList;
-    }
-
     public boolean isOfficial() {
         return official;
     }
@@ -114,19 +102,26 @@ public abstract class AbstractMap extends AbstractEntity {
         this.official = official;
     }
 
-    public Date getImportedDate() {
-        return importedDate;
-    }
-
-    public void setImportedDate(Date importedDate) {
-        this.importedDate = importedDate;
-    }
-
     public Date getReleaseDate() {
         return releaseDate;
     }
 
     public void setReleaseDate(Date releaseDate) {
         this.releaseDate = releaseDate;
+    }
+
+    public List<ProfileMap> getProfileMapList() {
+        return profileMapList;
+    }
+
+    public void setProfileMapList(List<ProfileMap> profileMapList) {
+        this.profileMapList = profileMapList;
+    }
+
+    public List<Profile> getProfileList() {
+        return profileMapList.
+                stream().
+                map(ProfileMap::getProfile).
+                collect(Collectors.toList());
     }
 }

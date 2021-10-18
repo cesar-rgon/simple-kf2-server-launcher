@@ -19,8 +19,8 @@ public class CustomMapMod extends AbstractMap {
         super();
     }
 
-    public CustomMapMod(String code, String urlInfo, String urlPhoto, List<Profile> profileList, Long idWorkShop, boolean downloaded) {
-        super(code, urlInfo, urlPhoto, profileList, false, null);
+    public CustomMapMod(String code, String urlInfo, String urlPhoto, List<ProfileMap> profileMapList, Long idWorkShop, boolean downloaded) {
+        super(code, urlInfo, urlPhoto, profileMapList, false, null);
         this.idWorkShop = idWorkShop;
         this.downloaded = downloaded;
     }

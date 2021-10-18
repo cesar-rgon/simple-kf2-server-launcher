@@ -8,10 +8,7 @@ import dtos.OfficialMapDto;
 import dtos.ProfileDto;
 import dtos.factories.MapDtoFactory;
 import dtos.factories.ProfileDtoFactory;
-import entities.AbstractMap;
-import entities.CustomMapMod;
-import entities.OfficialMap;
-import entities.Profile;
+import entities.*;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -64,7 +61,12 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         }
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         String urlInfo = baseUrlWorkshop + idWorkShop;
-        CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, profileList, idWorkShop, downloaded);
+        List<ProfileMap> profileMapList = new ArrayList<ProfileMap>();
+        profileList.forEach(p -> {
+            profileMapList.addAll(p.getProfileMapList());
+        });
+
+        CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, profileMapList, idWorkShop, downloaded);
         return (CustomMapMod) customMapModService.createMap(customMap);
     }
 
@@ -177,18 +179,34 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         }).collect(Collectors.toList());
         if (profileList == null || profileList.isEmpty()) {
             return null;
+
         }
-        OfficialMap newOfficialMap = new OfficialMap(mapName, "", "/KFGame/Web/images/maps/" + mapName + ".jpg", profileList, null);
+        List<ProfileMap> profileMapList = new ArrayList<ProfileMap>();
+        profileList.stream().forEach(p -> {
+            profileMapList.addAll(p.getProfileMapList());
+        });
+
+        OfficialMap newOfficialMap = new OfficialMap(mapName, "", "/KFGame/Web/images/maps/" + mapName + ".jpg", profileMapList, null);
         OfficialMap insertedMap = (OfficialMap) officialMapService.createMap(newOfficialMap);
-        return insertedMap != null ? (OfficialMapDto) mapDtoFactory.newDto(insertedMap): null;
+
+        if (insertedMap != null) {
+            insertedMap.getProfileMapList().forEach(profileMap -> {
+                try {
+                    profileMap.setImportedDate(new Date());
+                    officialMapService.updateItem(insertedMap);
+                } catch (SQLException e) {
+                    logger.error("Error setting the imported date of the map " + insertedMap.getCode() + " for profile " + profileMap.getProfile().getName(), e);
+                }
+            });
+            return (OfficialMapDto) mapDtoFactory.newDto(insertedMap);
+        }
+        return null;
     }
 
     @Override
     public CustomMapModDto findMapOrModByIdWorkShop(Long idWorkShop) throws SQLException {
         Optional<CustomMapMod> mapOpt = CustomMapModDao.getInstance().findByIdWorkShop(idWorkShop);
         if (mapOpt.isPresent()) {
-            mapOpt.get().setImportedDate(new Date());
-            customMapModService.updateItem(mapOpt.get());
             return (CustomMapModDto) mapDtoFactory.newDto(mapOpt.get());
         }
         return null;
@@ -205,7 +223,9 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     public List<AbstractMapDto> getMapsFromProfile(String profileName) throws SQLException {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
-            return mapDtoFactory.newDtos(profileOpt.get().getMapList());
+            return mapDtoFactory.newDtos(
+                    profileOpt.get().getMapList()
+            );
         }
         return new ArrayList<AbstractMapDto>();
     }
@@ -229,20 +249,36 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
         Optional officialMapOptional = officialMapService.findMapByCode(mapName);
         if (officialMapOptional.isPresent()) {
-            return officialMapService.addProfilesToMap(
-                    (OfficialMap) officialMapOptional.get(),
-                    profileList.stream().filter(profile -> !profile.getMapList().contains(officialMapOptional.get())).collect(Collectors.toList())
-            );
+            OfficialMap officialMap = (OfficialMap) officialMapOptional.get();
+            List<Profile> profilesNotContainingMap =  profileList.stream().
+                    filter(profile -> !profile.getMapList().contains(officialMap)).
+                    collect(Collectors.toList());
+
+            if (officialMapService.addProfilesToMap(officialMap, profilesNotContainingMap)) {
+                officialMap.getProfileMapList().stream().
+                        filter(profileMap -> profilesNotContainingMap.contains(profileMap)).
+                        forEach(profileMap -> {
+                            try {
+                                profileMap.setImportedDate(new Date());
+                                officialMapService.updateItem(officialMap);
+                            } catch (SQLException e) {
+                                logger.error("Error setting the imported date of the map " + officialMap.getCode() + " for profile " + profileMap.getProfile().getName(), e);
+                            }
+                        });
+                return true;
+            }
+            return false;
         }
 
         Optional customMapModOptional = customMapModService.findMapByCode(mapName);
         if (customMapModOptional.isPresent()) {
-            return customMapModService.addProfilesToMap(
-                    (CustomMapMod) customMapModOptional.get(),
-                    profileList.stream().filter(profile -> !profile.getMapList().contains(customMapModOptional.get())).collect(Collectors.toList())
-            );
-        }
+            CustomMapMod customMapMod = (CustomMapMod) customMapModOptional.get();
+            List<Profile> profilesNotContainingMap =  profileList.stream().
+                    filter(profile -> !profile.getMapList().contains(customMapMod)).
+                    collect(Collectors.toList());
 
+            return customMapModService.addProfilesToMap(customMapMod,profilesNotContainingMap);
+        }
         return null;
     }
 

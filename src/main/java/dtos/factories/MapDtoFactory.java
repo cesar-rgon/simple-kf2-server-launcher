@@ -4,6 +4,7 @@ import daos.CustomMapModDao;
 import daos.OfficialMapDao;
 import dtos.AbstractMapDto;
 import dtos.CustomMapModDto;
+import dtos.ImportedDateByProfileDto;
 import dtos.OfficialMapDto;
 import entities.AbstractMap;
 import entities.CustomMapMod;
@@ -13,9 +14,11 @@ import javafx.collections.ObservableList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.sql.Array;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -26,26 +29,44 @@ public class MapDtoFactory {
 
     private OfficialMapDto newOfficialMapDto(OfficialMap map) {
 
-        DateFormat dateHoursFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        String importedDate = map.getImportedDate() != null ? dateHoursFormat.format(map.getImportedDate()): "Unknown";
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String releaseDate = map.getReleaseDate() != null ? dateFormat.format(map.getReleaseDate()): "Unknown";
+        DateFormat importedDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        List<ImportedDateByProfileDto> importedDateByProfileDtoList = new ArrayList<ImportedDateByProfileDto>();
+        map.getProfileMapList().forEach(pm -> {
+            importedDateByProfileDtoList.add(
+                new ImportedDateByProfileDto(
+                    pm.getProfile().getName(),
+                    pm.getImportedDate() != null ? importedDateFormat.format(pm.getImportedDate()): "Unknown"
+                )
+            );
+        });
+
+        DateFormat releaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String releaseDate = map.getReleaseDate() != null ? releaseDateFormat.format(map.getReleaseDate()): "Unknown";
 
         return new OfficialMapDto(
                 map.getCode(),
                 map.getUrlInfo(),
                 map.getUrlPhoto(),
-                importedDate,
-                releaseDate
+                releaseDate,
+                importedDateByProfileDtoList
         );
     }
 
     private CustomMapModDto newCustomMapModDto(CustomMapMod map) {
 
-        DateFormat dateHoursFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        String importedDate = map.getImportedDate() != null ? dateHoursFormat.format(map.getImportedDate()): "Unknown";
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String releaseDate = map.getReleaseDate() != null ? dateFormat.format(map.getReleaseDate()): "Unknown";
+        DateFormat importedDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        List<ImportedDateByProfileDto> importedDateByProfileDtoList = new ArrayList<ImportedDateByProfileDto>();
+        map.getProfileMapList().forEach(pm -> {
+            importedDateByProfileDtoList.add(
+                    new ImportedDateByProfileDto(
+                            pm.getProfile().getName(),
+                            pm.getImportedDate() != null ? importedDateFormat.format(pm.getImportedDate()): "Unknown"
+                    )
+            );
+        });
+
+        DateFormat releaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String releaseDate = map.getReleaseDate() != null ? releaseDateFormat.format(map.getReleaseDate()): "Unknown";
 
         return new CustomMapModDto(
                 map.getCode(),
@@ -53,8 +74,8 @@ public class MapDtoFactory {
                 map.getUrlPhoto(),
                 map.getIdWorkShop(),
                 map.isDownloaded(),
-                importedDate,
-                releaseDate
+                releaseDate,
+                importedDateByProfileDtoList
         );
     }
 

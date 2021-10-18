@@ -3,7 +3,6 @@ package services;
 import daos.OfficialMapDao;
 import daos.ProfileDao;
 import entities.AbstractMap;
-import entities.CustomMapMod;
 import entities.OfficialMap;
 import entities.Profile;
 import org.apache.logging.log4j.LogManager;
@@ -13,6 +12,7 @@ import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public abstract class AbstractMapService implements Kf2Service<AbstractMap> {
@@ -88,18 +88,23 @@ public abstract class AbstractMapService implements Kf2Service<AbstractMap> {
         return insertedMap;
     }
 
-    public boolean addProfilesToMap(AbstractMap map, List<Profile> profileList) throws SQLException {
+    public boolean addProfilesToMap(AbstractMap map, List<Profile> profileList) {
+        AtomicBoolean profilesAdded = new AtomicBoolean(false);
         profileList.stream().forEach(profile -> {
             try {
-                profile.getMapList().add(map);
-                ProfileDao.getInstance().update(profile);
+                if (!profile.getMapList().contains(map)) {
+                    profile.getMapList().add(map);
+                    ProfileDao.getInstance().update(profile);
+                    map.getProfileList().addAll(profileList);
+                    if (updateItem(map)) {
+                        profilesAdded.set(true);
+                    }
+                }
             } catch (SQLException e) {
                 logger.error("Error updating the profile " + profile.getCode() + " with the map: " + map.getCode(), e);
             }
         });
-        map.setImportedDate(new Date());
-        map.getProfileList().addAll(profileList);
-        return updateItem(map);
+        return profilesAdded.get();
     }
 
 
