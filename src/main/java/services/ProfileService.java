@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public interface ProfileService extends Kf2Service<Profile> {
+public interface ProfileService extends AbstractExtendedService<Profile> {
 
     Optional<Profile> findProfileByCode(String profileName) throws SQLException;
     List<Profile> listAllProfiles() throws SQLException;

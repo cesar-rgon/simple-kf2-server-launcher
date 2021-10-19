@@ -7,17 +7,9 @@ public abstract class AbstractEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public abstract Integer getId();
+    public abstract Object getId();
 
-    public abstract void setId(Integer id);
-
-    public abstract String getCode();
-
-    public abstract void setCode(String code);
-
-    public abstract String getDescription();
-
-    public abstract void setDescription(String description);
+    public abstract void setId(Object id);
 
     @Override
     public boolean equals(Object o) {

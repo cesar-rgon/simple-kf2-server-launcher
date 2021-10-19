@@ -87,7 +87,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public void updateItemDescription(Profile profile) throws Exception {
+    public void updateItemDescription(Profile entity) throws Exception {
     }
 
     @Override
@@ -614,7 +614,7 @@ public class ProfileServiceImpl implements ProfileService {
         int profileIndex = 1;
         for (Profile profile: selectedProfileList) {
             try {
-                Profile savedProfile = ProfileDao.getInstance().insert(profile);
+                Profile savedProfile = (Profile) ProfileDao.getInstance().insert(profile);
 
                 List<AbstractMap> mapList = importProfileMapsFromFile(profileIndex, savedProfile, properties);
                 savedProfile.getMapList().addAll(mapList);

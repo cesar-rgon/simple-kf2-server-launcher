@@ -3,7 +3,7 @@ package services;
 import daos.LengthDao;
 import entities.Length;
 
-public class LengthServiceImpl implements Kf2Service<Length> {
+public class LengthServiceImpl implements AbstractExtendedService<Length> {
 
     private PropertyService propertyService;
 
@@ -31,7 +31,6 @@ public class LengthServiceImpl implements Kf2Service<Length> {
         return false;
     }
 
-    @Override
     public void updateItemDescription(Length length) throws Exception {
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
         propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.length." + length.getCode(), length.getDescription());

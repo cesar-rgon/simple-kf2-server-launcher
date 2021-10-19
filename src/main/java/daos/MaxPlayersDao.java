@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class MaxPlayersDao extends AbstractDao<MaxPlayers> {
+public class MaxPlayersDao extends AbstractExtendedDao<MaxPlayers> {
 
     private static MaxPlayersDao instance = null;
 

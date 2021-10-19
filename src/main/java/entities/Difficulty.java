@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "DIFFICULTIES")
-public class Difficulty extends AbstractEntity {
+public class Difficulty extends AbstractExtendedEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -34,8 +34,8 @@ public class Difficulty extends AbstractEntity {
     }
 
     @Override
-    public void setId(Integer id) {
-        this.id = id;
+    public void setId(Object id) {
+        this.id = (Integer) id;
     }
 
     @Override
@@ -52,7 +52,6 @@ public class Difficulty extends AbstractEntity {
     public String getDescription() {
         return description;
     }
-
     @Override
     public void setDescription(String description) {
         this.description = description;

@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-public class DifficultyDao extends AbstractDao<Difficulty> {
+public class DifficultyDao extends AbstractExtendedDao<Difficulty> {
 
     private static DifficultyDao instance = null;
 

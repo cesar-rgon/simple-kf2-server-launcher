@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public class GameTypeDao extends AbstractDao<GameType> {
+public class GameTypeDao extends AbstractExtendedDao<GameType> {
 
     private static GameTypeDao instance = null;
 

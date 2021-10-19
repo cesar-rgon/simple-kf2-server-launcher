@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-public class CustomMapModDao extends AbstractDao<CustomMapMod> {
+public class CustomMapModDao extends AbstractExtendedDao<CustomMapMod> {
 
     private static CustomMapModDao instance = null;
 

@@ -3,7 +3,7 @@ package services;
 import daos.MaxPlayersDao;
 import entities.MaxPlayers;
 
-public class MaxPlayersServiceImpl implements Kf2Service<MaxPlayers> {
+public class MaxPlayersServiceImpl implements AbstractExtendedService<MaxPlayers> {
 
     private PropertyService propertyService;
 
@@ -32,7 +32,6 @@ public class MaxPlayersServiceImpl implements Kf2Service<MaxPlayers> {
         return false;
     }
 
-    @Override
     public void updateItemDescription(MaxPlayers maxPlayers) throws Exception {
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
         propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.maxplayers." + maxPlayers.getCode(), maxPlayers.getDescription());

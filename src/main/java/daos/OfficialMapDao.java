@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-public class OfficialMapDao extends AbstractDao<OfficialMap> {
+public class OfficialMapDao extends AbstractExtendedDao<OfficialMap> {
 
     private static OfficialMapDao instance = null;
 

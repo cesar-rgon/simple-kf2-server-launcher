@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-public class LengthDao extends AbstractDao<Length> {
+public class LengthDao extends AbstractExtendedDao<Length> {
 
     private static LengthDao instance = null;
 

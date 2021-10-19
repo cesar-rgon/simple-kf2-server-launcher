@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "LANGUAGES")
-public class Language extends AbstractEntity {
+public class Language extends AbstractExtendedEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -33,8 +33,8 @@ public class Language extends AbstractEntity {
     }
 
     @Override
-    public void setId(Integer id) {
-        this.id = id;
+    public void setId(Object id) {
+        this.id = (Integer) id;
     }
 
     @Override

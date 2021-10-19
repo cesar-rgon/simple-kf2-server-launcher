@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-public class LanguageDao extends AbstractDao<Language> {
+public class LanguageDao extends AbstractExtendedDao<Language> {
 
     private static LanguageDao instance = null;
 

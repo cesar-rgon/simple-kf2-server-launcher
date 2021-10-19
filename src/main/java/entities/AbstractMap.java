@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "MAPS")
 @Inheritance(strategy = InheritanceType.JOINED)
-public abstract class AbstractMap extends AbstractEntity {
+public abstract class AbstractMap extends AbstractExtendedEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -55,8 +55,8 @@ public abstract class AbstractMap extends AbstractEntity {
     }
 
     @Override
-    public void setId(Integer id) {
-        this.id = id;
+    public void setId(Object id) {
+        this.id = (Integer) id;
     }
 
     @Override

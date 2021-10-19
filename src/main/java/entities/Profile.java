@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "PROFILES")
-public class Profile extends AbstractEntity {
+public class Profile extends AbstractExtendedEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -215,8 +215,8 @@ public class Profile extends AbstractEntity {
     }
 
     @Override
-    public void setId(Integer id) {
-        this.id = id;
+    public void setId(Object id) {
+        this.id = (Integer) id;
     }
 
     @Override

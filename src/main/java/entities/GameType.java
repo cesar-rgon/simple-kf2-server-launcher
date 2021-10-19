@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "GAME_TYPES")
-public class GameType extends AbstractEntity {
+public class GameType extends AbstractExtendedEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -39,8 +39,8 @@ public class GameType extends AbstractEntity {
     }
 
     @Override
-    public void setId(Integer id) {
-        this.id = id;
+    public void setId(Object id) {
+        this.id = (Integer) id;
     }
 
     @Override

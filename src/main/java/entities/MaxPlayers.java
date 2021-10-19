@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "MAX_PLAYERS")
-public class MaxPlayers extends AbstractEntity {
+public class MaxPlayers extends AbstractExtendedEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -33,8 +33,8 @@ public class MaxPlayers extends AbstractEntity {
     }
 
     @Override
-    public void setId(Integer id) {
-        this.id = id;
+    public void setId(Object id) {
+        this.id = (Integer) id;
     }
 
     @Override

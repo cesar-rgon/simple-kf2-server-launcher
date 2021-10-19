@@ -6,8 +6,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "PROFILES_MAPS")
-public class ProfileMap implements Serializable {
-    private static final long serialVersionUID = 1L;
+public class ProfileMap extends AbstractEntity {
 
     @Embeddable
     public static class IdProfileMap implements Serializable {
@@ -87,12 +86,14 @@ public class ProfileMap implements Serializable {
 
     // Getters y Setters
 
-    public IdProfileMap getIdProfileMap() {
+    @Override
+    public Object getId() {
         return idProfileMap;
     }
 
-    public void setIdProfileMap(IdProfileMap idProfileMap) {
-        this.idProfileMap = idProfileMap;
+    @Override
+    public void setId(Object id) {
+        this.idProfileMap = (IdProfileMap) id;
     }
 
     public Profile getProfile() {

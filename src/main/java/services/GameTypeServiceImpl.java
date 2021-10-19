@@ -3,7 +3,7 @@ package services;
 import daos.GameTypeDao;
 import entities.GameType;
 
-public class GameTypeServiceImpl implements Kf2Service<GameType> {
+public class GameTypeServiceImpl implements AbstractExtendedService<GameType> {
 
     private PropertyService propertyService;
 
@@ -32,7 +32,6 @@ public class GameTypeServiceImpl implements Kf2Service<GameType> {
         return false;
     }
 
-    @Override
     public void updateItemDescription(GameType gameType) throws Exception {
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
         propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.gametype." + gameType.getCode(), gameType.getDescription());

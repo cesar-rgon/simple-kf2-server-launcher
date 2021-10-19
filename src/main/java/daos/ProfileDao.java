@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-public class ProfileDao extends AbstractDao<Profile> {
+public class ProfileDao extends AbstractExtendedDao<Profile> {
 
     private static ProfileDao instance = null;
 

@@ -21,16 +21,13 @@ public abstract class AbstractDao<T extends AbstractEntity> {
 
 	private final Class<T> entityClass;
 
-
 	protected AbstractDao(Class<T> entityClass) {
+		super();
 		this.entityClass = entityClass;
 		if (emf == null) {
 			emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT);
 		}
 	}
-
-	public abstract List<T> listAll() throws SQLException;
-	public abstract Optional<T> findByCode(String code) throws SQLException;
 
 	/**
 	 * Gets an entity by Id

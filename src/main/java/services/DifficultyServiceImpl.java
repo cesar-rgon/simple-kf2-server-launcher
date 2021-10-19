@@ -1,12 +1,9 @@
 package services;
 
 import daos.DifficultyDao;
-import daos.GameTypeDao;
-import dtos.GameTypeDto;
 import entities.Difficulty;
-import entities.GameType;
 
-public class DifficultyServiceImpl implements Kf2Service<Difficulty> {
+public class DifficultyServiceImpl implements AbstractExtendedService<Difficulty> {
 
     private PropertyService propertyService;
 
