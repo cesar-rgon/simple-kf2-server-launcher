@@ -4,8 +4,6 @@ import dtos.AbstractMapDto;
 import dtos.CustomMapModDto;
 import dtos.OfficialMapDto;
 import dtos.ProfileDto;
-import entities.CustomMapMod;
-import entities.Profile;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -15,6 +13,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.Node;
@@ -22,7 +21,10 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
@@ -215,15 +217,18 @@ public class MapsEditionController implements Initializable {
             InputStream inputStream = getClass().getClassLoader().getResourceAsStream("images/no-photo.png");
             image = new Image(inputStream);
         }
-        ImageView mapPreview = new ImageView(image);
-        mapPreview.setPreserveRatio(false);
-        Double width = getWidthGridPaneByNumberOfColums();
-        mapPreview.setFitWidth(width);
-        mapPreview.setFitHeight(width/2);
+
 
         GridPane gridpane = new GridPane();
+        gridpane.setPrefWidth(getWidthGridPaneByNumberOfColums());
         gridpane.getStyleClass().add("gridPane");
+
+        ImageView mapPreview = new ImageView(image);
+        mapPreview.setPreserveRatio(false);
+        mapPreview.setFitWidth(gridpane.getPrefWidth());
+        mapPreview.setFitHeight(gridpane.getPrefWidth()/2);
         gridpane.add(mapPreview, 1, 1);
+
         CheckBox checkbox = new CheckBox();
         checkbox.setOpacity(0.5);
         checkbox.setOnAction(e -> {
@@ -238,6 +243,7 @@ public class MapsEditionController implements Initializable {
         mapNameLabel.setMinHeight(20);
         mapNameLabel.setMaxWidth(Double.MAX_VALUE);
         mapNameLabel.setAlignment(Pos.BOTTOM_CENTER);
+        mapNameLabel.setPadding(new Insets(10,0,0,0));
         gridpane.add(mapNameLabel, 1, 2);
 
         Label releaseDateLabel = new Label("Release: " + map.getReleaseDate());
@@ -256,34 +262,54 @@ public class MapsEditionController implements Initializable {
         gridpane.add(importedDateText, 1, 4);
 
         int rowIndex = 5;
-        if (!map.isOfficial() && !((CustomMapModDto) map).isDownloaded()) {
-            String message = "";
-            try {
-                message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.startServer");
-            } catch (Exception e) {
-                message = "Start server to download it";
-            }
-
-            Hyperlink startServerLink = new Hyperlink(message);
-            startServerLink.setStyle("-fx-text-fill: yellow; -fx-underline: true;");
-            startServerLink.setMaxWidth(Double.MAX_VALUE);
-            startServerLink.setAlignment(Pos.CENTER);
-            startServerLink.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent e) {
-                    try {
-                        Session.getInstance().setConsole((StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
-                                "< " + new Date() + " - Run Server >\n" + facade.runServer(profileSelect.getValue().getName()));
-                    } catch (SQLException ex) {
-                        logger.error(ex.getMessage(), ex);
-                        Utils.errorDialog(ex.getMessage(), ex);
-                    }
+        if (map.isOfficial()) {
+            importedDateText.setPadding(new Insets(0,0,10,0));
+        } else {
+            String labelText = "";
+            if (((CustomMapModDto) map).isDownloaded()) {
+                try {
+                    labelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.downloaded");
+                } catch (Exception e) {
+                    labelText = "DOWNLOADED";
                 }
-            });
-            gridpane.add(startServerLink,1, rowIndex);
+
+                Label stateLabel = new Label(labelText);
+                stateLabel.setStyle("-fx-text-fill: gold; -fx-padding: 3; -fx-border-color: gold; -fx-border-radius: 5;");
+                HBox statePane = new HBox();
+                statePane.getChildren().addAll(stateLabel);
+                statePane.setMaxWidth(Double.MAX_VALUE);
+                statePane.setAlignment(Pos.CENTER);
+                statePane.setPadding(new Insets(10,0,10,0));
+                gridpane.add(statePane,1, rowIndex);
+
+            } else {
+                try {
+                    labelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.startServer");
+                } catch (Exception e) {
+                    labelText = "Start server to download it";
+                }
+
+                Hyperlink startServerLink = new Hyperlink(labelText);
+                startServerLink.setStyle("-fx-text-fill: #f03830; -fx-underline: true;");
+                startServerLink.setMaxWidth(Double.MAX_VALUE);
+                startServerLink.setAlignment(Pos.CENTER);
+                startServerLink.setPadding(new Insets(10,0,10,0));
+                startServerLink.setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent e) {
+                        try {
+                            Session.getInstance().setConsole((StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
+                                    "< " + new Date() + " - Run Server >\n" + facade.runServer(profileSelect.getValue().getName()));
+                        } catch (SQLException ex) {
+                            logger.error(ex.getMessage(), ex);
+                            Utils.errorDialog(ex.getMessage(), ex);
+                        }
+                    }
+                });
+                gridpane.add(startServerLink,1, rowIndex);
+            }
             rowIndex++;
         }
-
 
         StringBuffer tooltipText = new StringBuffer();
         if (!map.isOfficial()) {
@@ -351,21 +377,16 @@ public class MapsEditionController implements Initializable {
     }
 
     private Double getWidthGridPaneByNumberOfColums() {
-        return (MainApplication.getPrimaryStage().getWidth() - (50 * mapsSlider.getValue()) - 130) / mapsSlider.getValue();
+        return (MainApplication.getPrimaryStage().getWidth() - (50 * mapsSlider.getValue()) - 150) / mapsSlider.getValue();
     }
 
     private void resizeGridPane(GridPane gridPane) {
+        gridPane.setPrefWidth(getWidthGridPaneByNumberOfColums());
         ImageView mapPreview = (ImageView) gridPane.getChildren().get(0);
+        mapPreview.setFitWidth(gridPane.getPrefWidth());
+        mapPreview.setFitHeight(gridPane.getPrefWidth()/2);
         Label mapNameLabel = (Label) gridPane.getChildren().get(1);
-        Double width = getWidthGridPaneByNumberOfColums();
-        mapPreview.setFitWidth(width);
-        mapPreview.setFitHeight(width/2);
         mapNameLabel.setMaxWidth(mapPreview.getFitWidth() - 25);
-        if (gridPane.getChildren().size() > 4) {
-            Hyperlink startServerLink = (Hyperlink) gridPane.getChildren().get(4);
-            startServerLink.setMaxWidth(Double.MAX_VALUE);
-            startServerLink.setAlignment(Pos.CENTER);
-        }
     }
 
     @FXML
