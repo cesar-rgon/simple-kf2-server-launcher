@@ -26,12 +26,14 @@ public class ProfileServiceImpl implements ProfileService {
     private final PropertyService propertyService;
     private final AbstractMapService officialMapService;
     private final AbstractMapService customMapModService;
+    private final ProfileMapService profileMapService;
 
     public ProfileServiceImpl() {
         super();
         this.propertyService = new PropertyServiceImpl();
         this.officialMapService = new OfficialMapServiceImpl();
         this.customMapModService = new CustomMapModServiceImpl();
+        this.profileMapService = new ProfileMapServiceImpl();
     }
 
     @Override
@@ -71,11 +73,11 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile createItem(Profile profile) throws Exception {
         List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
-        profile.getMapList().forEach(m -> {
-            if (idsMapasOficiales.contains(m.getId())) {
-                m.setOfficial(true);
+        profile.getProfileMapList().stream().forEach(pm -> {
+            if (idsMapasOficiales.contains(pm.getMap().getId())) {
+                pm.getMap().setOfficial(true);
             } else {
-                m.setOfficial(false);
+                pm.getMap().setOfficial(false);
             }
         });
         return ProfileDao.getInstance().insert(profile);
@@ -97,28 +99,31 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public boolean deleteProfile(Profile profile, String installationFolder) throws Exception {
-        List<AbstractMap> mapList = new ArrayList<AbstractMap>(profile.getMapList());
-        profile.setMap(null);
-        profile.getMapList().clear();
-        ProfileDao.getInstance().update(profile);
-        Optional<Profile> profileOpt = findProfileByCode(profile.getCode());
-        for (AbstractMap map: mapList) {
-            map.getProfileList().remove(profileOpt.get());
-            if (map.isOfficial()) {
-                OfficialMapDao.getInstance().update((OfficialMap) map);
-            } else {
-                CustomMapModDao.getInstance().update((CustomMapMod) map);
-                if (map.getProfileList().isEmpty()) {
-                    if (CustomMapModDao.getInstance().remove((CustomMapMod) map)) {
-                        File photo = new File(installationFolder + map.getUrlPhoto());
-                        photo.delete();
-                        File cacheFolder = new File(installationFolder + "/KFGame/Cache/" + ((CustomMapMod) map).getIdWorkShop());
-                        FileUtils.deleteDirectory(cacheFolder);
+
+        List<ProfileMap> profileMapList = new ArrayList<ProfileMap>(profile.getProfileMapList());
+        profileMapList.stream().forEach(pm -> {
+            try {
+                profileMapService.deleteItem(pm);
+
+                if (!pm.getMap().isOfficial()) {
+                    Integer idMap = pm.getMap().getId();
+                    CustomMapMod customMapMod = CustomMapModDao.getInstance().get(idMap);
+                    if (customMapMod.getProfileList().isEmpty()) {
+                        if (CustomMapModDao.getInstance().remove(customMapMod)) {
+                            File photo = new File(installationFolder + customMapMod.getUrlPhoto());
+                            photo.delete();
+                            File cacheFolder = new File(installationFolder + "/KFGame/Cache/" + customMapMod.getIdWorkShop());
+                            FileUtils.deleteDirectory(cacheFolder);
+                        }
                     }
                 }
+            } catch (Exception e) {
+                logger.error("Error removing the relation between the profile: " + profile.getName() + " and the map: " + pm.getMap().getCode());
             }
-        }
-        return deleteItem(profileOpt.get());
+        });
+
+        Profile updatedProfile = ProfileDao.getInstance().get(profile.getId());
+        return deleteItem(updatedProfile);
     }
 
     @Override
@@ -143,7 +148,7 @@ public class ProfileServiceImpl implements ProfileService {
                 profileToBeCloned.getUrlImageServer(),
                 profileToBeCloned.getWelcomeMessage(),
                 profileToBeCloned.getCustomParameters(),
-                profileToBeCloned.getProfileMapList(),
+                new ArrayList<ProfileMap>(),
                 profileToBeCloned.getTakeover(),
                 profileToBeCloned.getTeamCollision(),
                 profileToBeCloned.getAdminCanPause(),
@@ -168,7 +173,20 @@ public class ProfileServiceImpl implements ProfileService {
                 profileToBeCloned.getPickupItems(),
                 profileToBeCloned.getFriendlyFirePercentage()
         );
-        return createItem(newProfile);
+
+        Profile savedProfile = createItem(newProfile);
+        profileToBeCloned.getProfileMapList().stream().forEach(pm -> {
+            try {
+                ProfileMap newProfileMap = new ProfileMap(savedProfile, pm.getMap());
+                savedProfile.getProfileMapList().add(newProfileMap);
+                profileMapService.createItem(newProfileMap);
+            } catch (Exception e) {
+                logger.error("Error creating the relation between the profile: " + savedProfile.getName() + " and the map: " + pm.getMap().getCode());
+            }
+        });
+
+
+        return savedProfile;
     }
 
     @Override
@@ -689,6 +707,14 @@ public class ProfileServiceImpl implements ProfileService {
             }
         }
 
+        mapList.stream().forEach(map -> {
+            try {
+                profileMapService.createItem(new ProfileMap(profile, map));
+            } catch (Exception e) {
+                logger.error("Error creating relation between the profile: " + profile.getName() + " and the map: " + map.getCode(), e);
+            }
+        });
+
         return mapList;
     }
 
@@ -710,11 +736,11 @@ public class ProfileServiceImpl implements ProfileService {
 
             AbstractMap map = null;
             if (official) {
-                map = new OfficialMap(mapName, urlInfo, urlPhoto, profile.getProfileMapList(), null);
+                map = new OfficialMap(mapName, urlInfo, urlPhoto, null);
                 return officialMapService.createItem(map);
             } else {
                 boolean downloaded = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".downloaded"));
-                map = new CustomMapMod(mapName, urlInfo, urlPhoto, profile.getProfileMapList(), idWorkShop, downloaded);
+                map = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop, downloaded);
                 if (createNewCustomMapFromWorkshop((CustomMapMod) map)) {
                     return map;
                 }

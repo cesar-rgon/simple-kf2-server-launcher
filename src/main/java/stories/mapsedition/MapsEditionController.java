@@ -4,6 +4,8 @@ import dtos.AbstractMapDto;
 import dtos.CustomMapModDto;
 import dtos.OfficialMapDto;
 import dtos.ProfileDto;
+import entities.CustomMapMod;
+import entities.Profile;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -439,55 +441,25 @@ public class MapsEditionController implements Initializable {
                 StringBuffer errors = new StringBuffer();
 
                 for (AddMapsToProfile addMapsToProfile: addMapsToProfileList) {
-                    if (StringUtils.isNotBlank(addMapsToProfile.getMapList())) {
-                        String[] idUrlWorkShopArray = addMapsToProfile.getMapList().replaceAll(" ", "").split(",");
 
-                        for (int i = 0; i < idUrlWorkShopArray.length; i++) {
-                            String profileNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileName");
-                            try {
-                                Long idWorkShop = null;
-                                if (idUrlWorkShopArray[i].contains("http")) {
-                                    String[] array = idUrlWorkShopArray[i].split("=");
-                                    idWorkShop = Long.parseLong(array[1]);
-                                } else {
-                                    idWorkShop = Long.parseLong(idUrlWorkShopArray[i]);
-                                }
-                                CustomMapModDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
-                                if (mapModInDataBase == null) {
-                                    // The map is not in dabatabase, create a new map for actual profile
-                                    List<String> profileNameList = new ArrayList<String>();
-                                    profileNameList.add(addMapsToProfile.getProfileName());
-                                    CustomMapModDto customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, installationFolder, false, profileNameList);
-                                    if (customMap != null) {
-                                        if (addMapsToProfile.getProfileName().equalsIgnoreCase(profileSelect.getValue().getName())) {
-                                            mapList.add(customMap);
-                                            GridPane gridpane = createMapGridPane(customMap);
-                                            customMapsFlowPane.getChildren().add(gridpane);
-                                        }
-                                        String mapNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                                        success.append(profileNameMessage + ": ").append(addMapsToProfile.getProfileName()).append(" - " + mapNameMessage + ": ").append(customMap.getKey()).append(" - id WorkShop: ").append(customMap.getIdWorkShop()).append("\n");
-                                    } else {
-                                        errors.append(profileNameMessage + ": ").append(addMapsToProfile.getProfileName()).append(" - url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
-                                    }
-                                } else {
-                                    List<String> profileList = new ArrayList<String>();
-                                    profileList.add(addMapsToProfile.getProfileName());
-                                    if (facade.addProfilesToMap(mapModInDataBase.getKey(), profileList)) {
-                                        if (addMapsToProfile.getProfileName().equalsIgnoreCase(profileSelect.getValue().getName())) {
-                                            mapList.add(mapModInDataBase);
-                                            GridPane gridpane = createMapGridPane(mapModInDataBase);
-                                            customMapsFlowPane.getChildren().add(gridpane);
-                                        }
-                                        String mapNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                                        success.append(profileNameMessage + ": ").append(addMapsToProfile.getProfileName()).append(" - " + mapNameMessage + ": ").append(mapModInDataBase.getKey()).append(" - id WorkShop: ").append(mapModInDataBase.getIdWorkShop()).append("\n");
-                                    } else {
-                                        errors.append(profileNameMessage + ": ").append(addMapsToProfile.getProfileName()).append(" - url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
-                                    }
-                                }
-                            } catch (Exception e) {
-                                errors.append(profileNameMessage + ": ").append(addMapsToProfile.getProfileName()).append(" - url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
+                    List<AbstractMapDto> mapAddedList = facade.addCustomMapsToProfile(
+                            addMapsToProfile.getProfileName(),
+                            addMapsToProfile.getMapList(),
+                            languageCode,
+                            installationFolder,
+                            profileSelect.getValue().getName(),
+                            success,
+                            errors);
+
+                    if (mapAddedList != null && !mapAddedList.isEmpty()) {
+                        mapAddedList.stream().forEach(customMapMod -> {
+                            if (addMapsToProfile.getProfileName().equals(profileSelect.getValue().getName()) &&
+                                    !mapList.stream().filter(m -> !m.isOfficial() && ((CustomMapModDto) m).getIdWorkShop().equals(((CustomMapModDto) customMapMod).getIdWorkShop())).findFirst().isPresent()) {
+                                mapList.add(customMapMod);
+                                GridPane gridpane = createMapGridPane(customMapMod);
+                                customMapsFlowPane.getChildren().add(gridpane);
                             }
-                        }
+                        });
                     }
                 }
 
@@ -761,36 +733,21 @@ public class MapsEditionController implements Initializable {
 
         for (String officialMapName: officialMapNameList) {
             try {
-                AbstractMapDto mapInDataBase = facade.findMapByName(officialMapName);
-                if (mapInDataBase == null) {
-                    OfficialMapDto insertedMap = facade.insertOfficialMap(officialMapName, selectedProfileNameList);
-                    if (insertedMap != null) {
-                        if (selectedProfileNameList.contains(profileSelect.getValue().getName()) &&
-                                !mapList.stream().filter(m -> m.isOfficial() && m.getKey().equalsIgnoreCase(mapInDataBase.getKey())).findFirst().isPresent()) {
-                            mapList.add(insertedMap);
-                            GridPane gridpane = createMapGridPane(insertedMap);
-                            officialMapsFlowPane.getChildren().add(gridpane);
-                        }
-                        success.append(mapNameLabel).append(": ").append(insertedMap.getKey()).append("\n");
-                    } else {
-                        logger.error("Error importing the official map with name: " + officialMapName);
-                        errors.append(mapNameLabel).append(": ").append(officialMapName).append("\n");
-                    }
-                } else {
-                    Boolean mapAddedToProfiles = facade.addProfilesToMap(mapInDataBase.getKey(), selectedProfileNameList);
-                    if (mapAddedToProfiles != null) {
-                        if (mapAddedToProfiles) {
-                            if (selectedProfileNameList.contains(profileSelect.getValue().getName()) &&
-                                    !mapList.stream().filter(m -> m.isOfficial() && m.getKey().equalsIgnoreCase(mapInDataBase.getKey())).findFirst().isPresent()) {
-                                mapList.add(mapInDataBase);
-                                GridPane gridpane = createMapGridPane(mapInDataBase);
-                                officialMapsFlowPane.getChildren().add(gridpane);
-                            }
-                            success.append(mapNameLabel).append(": ").append(mapInDataBase.getKey()).append("\n");
-                        } else {
-                            logger.error("Error importing the official map with name: " + officialMapName);
-                            errors.append(mapNameLabel).append(": ").append(officialMapName).append("\n");
-                        }
+                OfficialMapDto officialMapImportedDto = facade.importOfficialMapFromServer(
+                        officialMapName,
+                        selectedProfileNameList,
+                        profileSelect.getValue().getName(),
+                        success,
+                        errors,
+                        mapNameLabel
+                );
+
+                if (officialMapImportedDto != null) {
+                    if (selectedProfileNameList.contains(profileSelect.getValue().getName()) &&
+                            !mapList.stream().filter(m -> m.isOfficial() && m.getKey().equalsIgnoreCase(officialMapImportedDto.getKey())).findFirst().isPresent()) {
+                        mapList.add(officialMapImportedDto);
+                        GridPane gridpane = createMapGridPane(officialMapImportedDto);
+                        officialMapsFlowPane.getChildren().add(gridpane);
                     }
                 }
             } catch (Exception e) {
@@ -813,45 +770,29 @@ public class MapsEditionController implements Initializable {
         }
 
         for (MapToDisplay customMapModToDisplay: customMapModList) {
+
             try {
-                CustomMapModDto mapInDataBase = facade.findMapOrModByIdWorkShop(customMapModToDisplay.getIdWorkShop());
-                if (mapInDataBase == null) {
-                    CustomMapModDto customMap = facade.createNewCustomMapFromWorkshop(
-                            customMapModToDisplay.getIdWorkShop(),
-                            customMapModToDisplay.getCommentary(),
-                            installationFolder,
-                           false,
-                            selectedProfileNameList
-                    );
-                    if (customMap != null) {
-                        if (selectedProfileNameList.contains(profileSelect.getValue().getName()) &&
-                                !mapList.stream().filter(m -> !m.isOfficial() && ((CustomMapModDto) m).getIdWorkShop().equals(mapInDataBase.getIdWorkShop())).findFirst().isPresent()) {
-                            mapList.add(customMap);
-                            GridPane gridpane = createMapGridPane(customMap);
-                            customMapsFlowPane.getChildren().add(gridpane);
-                        }
-                        success.append(mapNameLabel).append(": ").append(customMap.getKey()).append(" - id WorkShop: ").append(customMapModToDisplay.getIdWorkShop()).append("\n");
-                    } else {
-                        logger.error("Error importing the custom map with idWorkShop: " + customMapModToDisplay.getIdWorkShop());
-                        errors.append(mapNameLabel).append(": ").append(customMapModToDisplay.getCommentary()).append(" - id WorkShop: ").append(customMapModToDisplay.getIdWorkShop()).append("\n");
-                    }
-                } else {
-                    Boolean mapAddedToProfiles = facade.addProfilesToMap(mapInDataBase.getKey(), selectedProfileNameList);
-                    if (mapAddedToProfiles != null) {
-                        if (mapAddedToProfiles) {
-                            if (selectedProfileNameList.contains(profileSelect.getValue().getName()) &&
-                                    !mapList.stream().filter(m -> !m.isOfficial() && ((CustomMapModDto) m).getIdWorkShop().equals(mapInDataBase.getIdWorkShop())).findFirst().isPresent()) {
-                                mapList.add(mapInDataBase);
-                                GridPane gridpane = createMapGridPane(mapInDataBase);
-                                customMapsFlowPane.getChildren().add(gridpane);
-                            }
-                            success.append(mapNameLabel).append(": ").append(mapInDataBase.getKey()).append(" - id WorkShop: ").append(customMapModToDisplay.getIdWorkShop()).append("\n");
-                        } else {
-                            logger.error("Error importing the custom map with idWorkShop: " + customMapModToDisplay.getIdWorkShop());
-                            errors.append(mapNameLabel).append(": ").append(customMapModToDisplay.getCommentary()).append(" - id WorkShop: ").append(customMapModToDisplay.getIdWorkShop()).append("\n");
-                        }
+                CustomMapModDto customMapModImportedDto = facade.importCustomMapModFromServer(
+                        mapNameLabel,
+                        customMapModToDisplay.getIdWorkShop(),
+                        customMapModToDisplay.getCommentary(),
+                        installationFolder,
+                        selectedProfileNameList,
+                        profileSelect.getValue().getName(),
+                        success,
+                        errors
+                );
+
+                if (customMapModImportedDto != null) {
+                    if (selectedProfileNameList.contains(profileSelect.getValue().getName()) &&
+                            !mapList.stream().filter(m -> !m.isOfficial() && ((CustomMapModDto) m).getIdWorkShop().equals(customMapModImportedDto.getIdWorkShop())).findFirst().isPresent()) {
+
+                        mapList.add(customMapModImportedDto);
+                        GridPane gridpane = createMapGridPane(customMapModImportedDto);
+                        customMapsFlowPane.getChildren().add(gridpane);
                     }
                 }
+
             } catch (Exception e) {
                 logger.error("Error importing the custom map: " + customMapModToDisplay.getCommentary(), e);
                 errors.append(mapNameLabel).append(": ").append(customMapModToDisplay.getCommentary()).append(" - idWorkShop: ").append(customMapModToDisplay.getIdWorkShop()).append("\n");

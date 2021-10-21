@@ -2,9 +2,11 @@ package services;
 
 import daos.OfficialMapDao;
 import daos.ProfileDao;
+import daos.ProfileMapDao;
 import entities.AbstractMap;
 import entities.OfficialMap;
 import entities.Profile;
+import entities.ProfileMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -17,9 +19,11 @@ import java.util.stream.Collectors;
 public abstract class AbstractMapService implements AbstractExtendedService<AbstractMap> {
 
     private static final Logger logger = LogManager.getLogger(AbstractMapService.class);
+    private ProfileMapService profileMapService;
 
-    public AbstractMapService() {
+    protected AbstractMapService() {
         super();
+        this.profileMapService = new ProfileMapServiceImpl();
     }
 
     @Override
@@ -66,52 +70,49 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
         return mapList;
     }
 
-    public AbstractMap createMap(AbstractMap map) throws Exception {
+    public AbstractMap createMap(AbstractMap map, List<Profile> profileList) throws Exception {
         List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
         if (idsMapasOficiales.contains(map.getId())) {
             map.setOfficial(true);
         } else {
             map.setOfficial(false);
         }
+
         AbstractMap insertedMap = createItem(map);
         if (insertedMap != null) {
-            map.getProfileList().stream().forEach(profile -> {
+            profileList.stream().forEach(profile -> {
                 try {
-                    profile.getMapList().add(insertedMap);
-                    ProfileDao.getInstance().update(profile);
-                } catch (SQLException e) {
-                    logger.error("Error updating the profile " + profile.getCode() + " with a new map: " + insertedMap.getCode(), e);
+                    ProfileMap newProfileMap = new ProfileMap(profile, map);
+                    profileMapService.createItem(newProfileMap);
+                    map.getProfileMapList().add(newProfileMap);
+                } catch (Exception e) {
+                    logger.error("Error creating the relation between the profile: " + profile.getCode() + " and the new map: " + insertedMap.getCode(), e);
                 }
             });
         }
         return insertedMap;
     }
 
-    public boolean addProfilesToMap(AbstractMap map, List<Profile> profileList) {
-        AtomicBoolean profilesAdded = new AtomicBoolean(false);
+    public AbstractMap addProfilesToMap(AbstractMap map, List<Profile> profileList) {
         profileList.stream().forEach(profile -> {
             try {
                 if (!profile.getMapList().contains(map)) {
-                    profile.getMapList().add(map);
-                    ProfileDao.getInstance().update(profile);
-                    map.getProfileList().addAll(profileList);
-                    if (updateItem(map)) {
-                        profilesAdded.set(true);
-                    }
+                    ProfileMap newProfileMap = new ProfileMap(profile, map);
+                    profileMapService.createItem(newProfileMap);
+                    map.getProfileMapList().add(newProfileMap);
                 }
-            } catch (SQLException e) {
-                logger.error("Error updating the profile " + profile.getCode() + " with the map: " + map.getCode(), e);
+            } catch (Exception e) {
+                logger.error("Error creating the relation between the profile: " + profile.getCode() + " and the new map: " + map.getCode(), e);
             }
         });
-        return profilesAdded.get();
+        return map;
     }
 
 
     protected AbstractMap deleteMap(AbstractMap map, Profile profile) throws Exception {
-        profile.getMapList().remove(map);
-        ProfileDao.getInstance().update(profile);
-        map.getProfileList().remove(profile);
-        updateItem(map);
+        ProfileMap.IdProfileMap idProfileMap = new ProfileMap.IdProfileMap(profile.getId(), map.getId());
+        ProfileMap profileMap = ProfileMapDao.getInstance().get(idProfileMap);
+        profileMapService.deleteItem(profileMap);
         return map;
     }
 

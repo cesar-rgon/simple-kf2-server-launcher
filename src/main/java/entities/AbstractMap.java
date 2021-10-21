@@ -12,7 +12,8 @@ import java.util.stream.Collectors;
 public abstract class AbstractMap extends AbstractExtendedEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="mapsSequence")
+    @SequenceGenerator(name="mapsSequence",sequenceName="MAPS_SEQUENCE", allocationSize=1)
     @Column(name="ID", updatable=false, nullable=false)
     private Integer id;
 
@@ -40,12 +41,11 @@ public abstract class AbstractMap extends AbstractExtendedEntity {
         this.profileMapList = new ArrayList<ProfileMap>();
     }
 
-    protected AbstractMap(String code, String urlInfo, String urlPhoto, List<ProfileMap> profileMapList, boolean official, Date releaseDate) {
-        super();
+    protected AbstractMap(String code, String urlInfo, String urlPhoto, boolean official, Date releaseDate) {
+        this();
         this.code = code;
         this.urlInfo = urlInfo;
         this.urlPhoto = urlPhoto;
-        this.profileMapList = profileMapList;
         this.official = official;
     }
 

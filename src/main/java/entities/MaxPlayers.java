@@ -7,7 +7,8 @@ import javax.persistence.*;
 public class MaxPlayers extends AbstractExtendedEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="maxPlayersSequence")
+    @SequenceGenerator(name="maxPlayersSequence",sequenceName="MAX_PLAYERS_SEQUENCE", allocationSize=1)
     @Column(name="ID", updatable=false, nullable=false)
     private Integer id;
 

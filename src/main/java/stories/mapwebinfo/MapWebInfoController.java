@@ -192,19 +192,14 @@ public class MapWebInfoController implements Initializable {
                         Utils.warningDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
                     }
                 } else {
-                    if (facade.addProfilesToMap(mapModInDataBase.getKey(), selectedProfileNameList)) {
-                        if (profilesWithoutMap.size() - selectedProfiles.size() == 0) {
-                            addMap.setVisible(false);
-                            alreadyInLauncher.setVisible(true);
-                        }
-                        headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
-                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                        Utils.infoDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
-                    } else {
-                        headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                        Utils.warningDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+                    facade.addProfilesToMap(mapModInDataBase.getKey(), selectedProfileNameList);
+                    if (profilesWithoutMap.size() - selectedProfiles.size() == 0) {
+                        addMap.setVisible(false);
+                        alreadyInLauncher.setVisible(true);
                     }
+                    headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                    Utils.infoDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
                 }
             }
         } catch (Exception e) {

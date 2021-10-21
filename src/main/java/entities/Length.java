@@ -7,7 +7,8 @@ import javax.persistence.*;
 public class Length extends AbstractExtendedEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="lengthSequence")
+    @SequenceGenerator(name="lengthSequence",sequenceName="LENGTH_SEQUENCE", allocationSize=1)
     @Column(name="ID", updatable=false, nullable=false)
     private Integer id;
 

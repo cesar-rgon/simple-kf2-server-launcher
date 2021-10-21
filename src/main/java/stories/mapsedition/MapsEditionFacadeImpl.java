@@ -9,7 +9,9 @@ import dtos.ProfileDto;
 import dtos.factories.MapDtoFactory;
 import dtos.factories.ProfileDtoFactory;
 import entities.*;
+import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
+import javafx.scene.layout.GridPane;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -61,17 +63,12 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         }
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         String urlInfo = baseUrlWorkshop + idWorkShop;
-        List<ProfileMap> profileMapList = new ArrayList<ProfileMap>();
-        profileList.forEach(p -> {
-            profileMapList.addAll(p.getProfileMapList());
-        });
-
-        CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, profileMapList, idWorkShop, downloaded);
-        return (CustomMapMod) customMapModService.createMap(customMap);
+        CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop, downloaded);
+        return (CustomMapMod) customMapModService.createMap(customMap, profileList);
     }
 
-    @Override
-    public CustomMapModDto createNewCustomMapFromWorkshop(Long idWorkShop, String installationFolder, boolean downloaded, List<String> profileNameList) throws Exception {
+
+    private CustomMapMod createNewCustomMapFromWorkshop(Long idWorkShop, String installationFolder, boolean downloaded, List<String> profileNameList) throws Exception {
         List<Profile> profileList = profileNameList.stream().map(pn -> {
             try {
                 return findProfileByCode(pn);
@@ -112,12 +109,10 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
 
-        CustomMapMod newCustomMapMod = createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, downloaded, profileList);
-        return (CustomMapModDto) mapDtoFactory.newDto(newCustomMapMod);
+        return createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, downloaded, profileList);
     }
 
-    @Override
-    public CustomMapModDto createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String installationFolder, boolean downloaded, List<String> profileNameList) throws Exception {
+    private CustomMapMod createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String installationFolder, boolean downloaded, List<String> profileNameList) throws Exception {
         List<Profile> profileList = profileNameList.stream().map(pn -> {
             try {
                 return findProfileByCode(pn);
@@ -150,8 +145,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
 
-        CustomMapMod newMap = createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, downloaded, profileList);
-        return (CustomMapModDto) mapDtoFactory.newDto(newMap);
+        return createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, downloaded, profileList);
     }
 
     @Override
@@ -167,8 +161,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     }
 
 
-    @Override
-    public OfficialMapDto insertOfficialMap(String mapName, List<String> profileNameList) throws Exception {
+    private OfficialMap insertOfficialMap(String mapName, List<String> profileNameList) throws Exception {
         List<Profile> profileList = profileNameList.stream().map(pn -> {
             try {
                 return findProfileByCode(pn);
@@ -181,13 +174,9 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
             return null;
 
         }
-        List<ProfileMap> profileMapList = new ArrayList<ProfileMap>();
-        profileList.stream().forEach(p -> {
-            profileMapList.addAll(p.getProfileMapList());
-        });
 
-        OfficialMap newOfficialMap = new OfficialMap(mapName, "", "/KFGame/Web/images/maps/" + mapName + ".jpg", profileMapList, null);
-        OfficialMap insertedMap = (OfficialMap) officialMapService.createMap(newOfficialMap);
+        OfficialMap newOfficialMap = new OfficialMap(mapName, "", "/KFGame/Web/images/maps/" + mapName + ".jpg", null);
+        OfficialMap insertedMap = (OfficialMap) officialMapService.createMap(newOfficialMap, profileList);
 
         if (insertedMap != null) {
             insertedMap.getProfileMapList().forEach(profileMap -> {
@@ -198,16 +187,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
                     logger.error("Error setting the imported date of the map " + insertedMap.getCode() + " for profile " + profileMap.getProfile().getName(), e);
                 }
             });
-            return (OfficialMapDto) mapDtoFactory.newDto(insertedMap);
-        }
-        return null;
-    }
-
-    @Override
-    public CustomMapModDto findMapOrModByIdWorkShop(Long idWorkShop) throws SQLException {
-        Optional<CustomMapMod> mapOpt = CustomMapModDao.getInstance().findByIdWorkShop(idWorkShop);
-        if (mapOpt.isPresent()) {
-            return (CustomMapModDto) mapDtoFactory.newDto(mapOpt.get());
+            return insertedMap;
         }
         return null;
     }
@@ -232,7 +212,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
 
     @Override
-    public Boolean addProfilesToMap(String mapName, List<String> profileNameList) throws SQLException {
+    public AbstractMapDto addProfilesToMap(String mapName, List<String> profileNameList) throws SQLException {
 
         List<Profile> profileList = profileNameList.stream().map(pn -> {
                     try {
@@ -254,20 +234,9 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
                     filter(profile -> !profile.getMapList().contains(officialMap)).
                     collect(Collectors.toList());
 
-            if (officialMapService.addProfilesToMap(officialMap, profilesNotContainingMap)) {
-                officialMap.getProfileMapList().stream().
-                        filter(profileMap -> profilesNotContainingMap.contains(profileMap)).
-                        forEach(profileMap -> {
-                            try {
-                                profileMap.setImportedDate(new Date());
-                                officialMapService.updateItem(officialMap);
-                            } catch (SQLException e) {
-                                logger.error("Error setting the imported date of the map " + officialMap.getCode() + " for profile " + profileMap.getProfile().getName(), e);
-                            }
-                        });
-                return true;
-            }
-            return false;
+            return mapDtoFactory.newDto(
+                    officialMapService.addProfilesToMap(officialMap, profilesNotContainingMap)
+            );
         }
 
         Optional customMapModOptional = customMapModService.findMapByCode(mapName);
@@ -277,7 +246,9 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
                     filter(profile -> !profile.getMapList().contains(customMapMod)).
                     collect(Collectors.toList());
 
-            return customMapModService.addProfilesToMap(customMapMod,profilesNotContainingMap);
+            return mapDtoFactory.newDto(
+                    customMapModService.addProfilesToMap(customMapMod,profilesNotContainingMap)
+            );
         }
         return null;
     }
@@ -308,18 +279,14 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         return null;
     }
 
-    @Override
-    public AbstractMapDto findMapByName(String mapName) throws SQLException {
+    private Optional<AbstractMap> findMapByName(String mapName) throws SQLException {
 
-        Optional officialMapOptional = officialMapService.findMapByCode(mapName);
+        Optional<AbstractMap> officialMapOptional = officialMapService.findMapByCode(mapName);
         if (officialMapOptional.isPresent()) {
-            return mapDtoFactory.newDto((OfficialMap) officialMapOptional.get());
+            return officialMapOptional;
         }
-        Optional customMapModOptional = customMapModService.findMapByCode(mapName);
-        if (customMapModOptional.isPresent()) {
-            return mapDtoFactory.newDto((CustomMapMod) customMapModOptional.get());
-        }
-        return null;
+        Optional<AbstractMap> customMapModOptional = customMapModService.findMapByCode(mapName);
+        return customMapModOptional;
     }
 
     @Override
@@ -355,5 +322,116 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         Kf2Common kf2Common = Kf2Factory.getInstance();
         return kf2Common.runServer(profileOpt.isPresent()? profileOpt.get(): null);
+    }
+
+    @Override
+    public List<AbstractMapDto> addCustomMapsToProfile(String profileName, String mapNameList, String languageCode, String installationFolder, String actualSelectedProfile, StringBuffer success, StringBuffer errors) {
+
+        List<AbstractMapDto> mapAddedList = new ArrayList<AbstractMapDto>();
+
+        if (StringUtils.isNotBlank(mapNameList)) {
+            String[] idUrlWorkShopArray = mapNameList.replaceAll(" ", "").split(",");
+
+            for (int i = 0; i < idUrlWorkShopArray.length; i++) {
+                String profileNameMessage = StringUtils.EMPTY;
+                try {
+                    profileNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileName");
+                    Long idWorkShop = null;
+                    if (idUrlWorkShopArray[i].contains("http")) {
+                        String[] array = idUrlWorkShopArray[i].split("=");
+                        idWorkShop = Long.parseLong(array[1]);
+                    } else {
+                        idWorkShop = Long.parseLong(idUrlWorkShopArray[i]);
+                    }
+
+                    Optional<CustomMapMod> mapModInDataBase = CustomMapModDao.getInstance().findByIdWorkShop(idWorkShop);
+                    if (!mapModInDataBase.isPresent()) {
+                        // The map is not in dabatabase, create a new map for actual profile
+                        List<String> profileNameList = new ArrayList<String>();
+                        profileNameList.add(profileName);
+
+                        CustomMapMod customMap = createNewCustomMapFromWorkshop(idWorkShop, installationFolder, false, profileNameList);
+                        if (customMap != null) {
+                            if (profileName.equalsIgnoreCase(actualSelectedProfile)) {
+                                mapAddedList.add(mapDtoFactory.newDto(customMap));
+
+                            }
+                            String mapNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                            success.append(profileNameMessage + ": ").append(profileName).append(" - " + mapNameMessage + ": ").append(customMap.getCode()).append(" - id WorkShop: ").append(customMap.getIdWorkShop()).append("\n");
+
+                        } else {
+                            errors.append(profileNameMessage + ": ").append(profileName).append(" - url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
+                        }
+                    } else {
+                        if (mapModInDataBase.get().getProfileList().stream().filter(profile -> profile.getCode().equals(profileName)).findFirst().isPresent()) {
+                            errors.append(profileNameMessage + ": ").append(profileName).append(" - url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
+
+                        } else {
+                            List<String> profileList = new ArrayList<String>();
+                            profileList.add(profileName);
+                            addProfilesToMap(mapModInDataBase.get().getCode(), profileList);
+                            mapAddedList.add(mapDtoFactory.newDto(mapModInDataBase.get()));
+                            String mapNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                            success.append(profileNameMessage + ": ").append(profileName).append(" - " + mapNameMessage + ": ").append(mapModInDataBase.get().getCode()).append(" - id WorkShop: ").append(mapModInDataBase.get().getIdWorkShop()).append("\n");
+                        }
+                    }
+
+                } catch (Exception e) {
+                    errors.append(profileNameMessage + ": ").append(profileName).append(" - url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
+                }
+            }
+        }
+        return mapAddedList;
+    }
+
+    @Override
+    public CustomMapModDto importCustomMapModFromServer(String mapNameLabel, Long idWorkShop, String commentary, String installationFolder, List<String> selectedProfileNameList, String actualSelectedProfile, StringBuffer success, StringBuffer errors) throws Exception {
+
+        Optional<CustomMapMod> mapInDataBase = CustomMapModDao.getInstance().findByIdWorkShop(idWorkShop);
+        if (!mapInDataBase.isPresent()) {
+            CustomMapMod customMap = createNewCustomMapFromWorkshop(
+                    idWorkShop,
+                    commentary,
+                    installationFolder,
+                    false,
+                    selectedProfileNameList
+            );
+
+            if (customMap != null) {
+                success.append(mapNameLabel).append(": ").append(customMap.getCode()).append(" - id WorkShop: ").append(idWorkShop).append("\n");
+                return (CustomMapModDto) mapDtoFactory.newDto(customMap);
+            } else {
+                logger.error("Error importing the custom map with idWorkShop: " + idWorkShop);
+                errors.append(mapNameLabel).append(": ").append(commentary).append(" - id WorkShop: ").append(idWorkShop).append("\n");
+                return null;
+            }
+
+        } else {
+            CustomMapModDto mapWithProfiles = (CustomMapModDto) addProfilesToMap(mapInDataBase.get().getCode(), selectedProfileNameList);
+            success.append(mapNameLabel).append(": ").append(mapWithProfiles.getKey()).append("\n");
+            return mapWithProfiles;
+        }
+    }
+
+    @Override
+    public OfficialMapDto importOfficialMapFromServer(String officialMapName, List<String> selectedProfileNameList, String actualSelectedProfile, StringBuffer success, StringBuffer errors, String mapNameLabel) throws Exception {
+
+        Optional<AbstractMap> mapInDataBase = findMapByName(officialMapName);
+        if (!mapInDataBase.isPresent()) {
+
+            OfficialMap insertedMap = insertOfficialMap(officialMapName, selectedProfileNameList);
+            if (insertedMap != null) {
+                success.append(mapNameLabel).append(": ").append(insertedMap.getCode()).append("\n");
+                return (OfficialMapDto) mapDtoFactory.newDto(insertedMap);
+            } else {
+                logger.error("Error importing the official map with name: " + officialMapName);
+                errors.append(mapNameLabel).append(": ").append(officialMapName).append("\n");
+                return null;
+            }
+         } else {
+            OfficialMapDto mapWithProfiles = (OfficialMapDto) addProfilesToMap(mapInDataBase.get().getCode(), selectedProfileNameList);
+            success.append(mapNameLabel).append(": ").append(mapWithProfiles.getKey()).append("\n");
+            return mapWithProfiles;
+        }
     }
 }

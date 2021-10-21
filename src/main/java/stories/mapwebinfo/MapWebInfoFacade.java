@@ -11,6 +11,6 @@ public interface MapWebInfoFacade {
     boolean isCorrectInstallationFolder(String installationFolder);
     CustomMapModDto createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String strUrlMapImage, String installationFolder, List<String> profileNameList) throws Exception;
     CustomMapModDto findMapOrModByIdWorkShop(Long idWorkShop) throws SQLException;
-    boolean addProfilesToMap(String mapName, List<String> profileNameList) throws SQLException;
+    void addProfilesToMap(String mapName, List<String> profileNameList) throws SQLException;
     List<ProfileToDisplay> getProfilesWithoutMap(Long idWorkShop) throws SQLException;
 }

@@ -34,7 +34,7 @@ public abstract class AbstractDao<T extends AbstractEntity> {
 	 * @param id
 	 * @return Entity
 	 */
-	public T get(Integer id) throws SQLException {
+	public T get(Object id) throws SQLException {
 		EntityManager em = null;
 		try {
 			em = emf.createEntityManager();

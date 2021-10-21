@@ -13,7 +13,7 @@ public class OfficialMap extends AbstractMap {
         super();
     }
 
-    public OfficialMap(String code, String urlInfo, String urlPhoto, List<ProfileMap> profileMapList, Date releaseDate) {
-        super(code, urlInfo, urlPhoto, profileMapList, true, releaseDate);
+    public OfficialMap(String code, String urlInfo, String urlPhoto, Date releaseDate) {
+        super(code, urlInfo, urlPhoto, true, releaseDate);
     }
 }

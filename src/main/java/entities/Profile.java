@@ -10,7 +10,8 @@ import java.util.stream.Collectors;
 public class Profile extends AbstractExtendedEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="profilesSequence")
+    @SequenceGenerator(name="profilesSequence",sequenceName="PROFILES_SEQUENCE", allocationSize=1)
     @Column(name="ID", updatable=false, nullable=false)
     private Integer id;
 

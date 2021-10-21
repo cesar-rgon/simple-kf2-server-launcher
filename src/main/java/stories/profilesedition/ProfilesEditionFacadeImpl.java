@@ -29,6 +29,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
     private final ProfileToDisplayFactory profileToDisplayFactory;
     private final ProfileService profileService;
     private final AbstractMapService officialMapService;
+    private final ProfileMapService profileMapService;
 
     public ProfilesEditionFacadeImpl() {
         profileDtoFactory = new ProfileDtoFactory();
@@ -36,6 +37,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
         profileToDisplayFactory = new ProfileToDisplayFactory();
         this.profileService = new ProfileServiceImpl();
         this.officialMapService = new OfficialMapServiceImpl();
+        this.profileMapService = new ProfileMapServiceImpl();
     }
 
 
@@ -52,13 +54,13 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
         String defaultWebPort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultWebPort");
         String defaultGamePort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultGamePort");
         String defaultQueryPort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultQueryPort");
+        Optional<MaxPlayers> defaultMaxPlayers = MaxPlayersDao.getInstance().findByCode("6");
 
-        List officialMaps = officialMapService.listAllMaps();
+        List<AbstractMap> officialMaps = officialMapService.listAllMaps();
         OfficialMap firstOfficialMap = null;
         if (officialMaps != null && !officialMaps.isEmpty()) {
             firstOfficialMap = (OfficialMap) officialMaps.get(0);
         }
-        Optional<MaxPlayers> defaultMaxPlayers = MaxPlayersDao.getInstance().findByCode("6");
 
         Profile newProfile = new Profile(
                 profileName,
@@ -80,7 +82,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
                 null,
                 null,
                 null,
-                officialMaps,
+                new ArrayList<ProfileMap>(),
                 false,
                 true,
                 false,
@@ -106,8 +108,18 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
                 0.0
         );
 
-        profileService.createItem(newProfile);
-        return profileDtoFactory.newDto(newProfile);
+
+        Profile savedProfile = profileService.createItem(newProfile);
+
+        officialMaps.stream().forEach(map -> {
+            try {
+                profileMapService.createItem(new ProfileMap(savedProfile, map));
+            } catch (Exception e) {
+                logger.error("Error creating the relation between the profile: " + savedProfile.getName() + " and the map: " + map.getCode(), e);
+            }
+        });
+
+        return profileDtoFactory.newDto(savedProfile);
     }
 
     @Override

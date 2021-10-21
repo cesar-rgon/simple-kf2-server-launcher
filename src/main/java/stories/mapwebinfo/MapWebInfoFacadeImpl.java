@@ -77,22 +77,19 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         String absoluteTargetFolder = installationFolder + customMapLocalFolder;
         File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
-        CustomMapMod insertedMap = createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, false, null, profileList);
+        CustomMapMod insertedMap = createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, false, profileList);
         return insertedMap != null ? (CustomMapModDto) mapDtoFactory.newDto(insertedMap): null;
     }
 
-    private CustomMapMod createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto, boolean downloaded, Boolean mod, List<Profile> profileList) throws Exception {
+    private CustomMapMod createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto, boolean downloaded, List<Profile> profileList) throws Exception {
         if ((StringUtils.isBlank(mapName) || idWorkShop == null)) {
             return null;
         }
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         String urlInfo = baseUrlWorkshop + idWorkShop;
-        List<ProfileMap> profileMapList = new ArrayList<ProfileMap>();
-        profileList.forEach(p -> {
-            profileMapList.addAll(p.getProfileMapList());
-        });
-        CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, profileMapList, idWorkShop, downloaded);
-        return (CustomMapMod) customMapModService.createMap(customMap);
+        CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop, downloaded);
+
+        return (CustomMapMod) customMapModService.createMap(customMap, profileList);
     }
 
     @Override
@@ -105,7 +102,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
     }
 
     @Override
-    public boolean addProfilesToMap(String mapName, List<String> profileNameList) throws SQLException {
+    public void addProfilesToMap(String mapName, List<String> profileNameList) throws SQLException {
 
         List<Profile> profileList = profileNameList.stream().map(pn -> {
             try {
@@ -116,20 +113,18 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
             }
         }).collect(Collectors.toList());
         if (profileList == null || profileList.isEmpty()) {
-            return false;
+            return;
         }
 
         Optional officialMapOptional = officialMapService.findMapByCode(mapName);
         if (officialMapOptional.isPresent()) {
-            return officialMapService.addProfilesToMap((OfficialMap) officialMapOptional.get(), profileList);
+            officialMapService.addProfilesToMap((OfficialMap) officialMapOptional.get(), profileList);
         }
 
         Optional customMapModOptional = customMapModService.findMapByCode(mapName);
         if (customMapModOptional.isPresent()) {
-            return customMapModService.addProfilesToMap((CustomMapMod) customMapModOptional.get(),profileList);
+            customMapModService.addProfilesToMap((CustomMapMod) customMapModOptional.get(),profileList);
         }
-
-        return false;
     }
 
     private boolean isMapInProfile(Long idWorkShop, Profile profile) {
