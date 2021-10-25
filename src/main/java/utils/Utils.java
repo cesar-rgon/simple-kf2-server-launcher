@@ -2,21 +2,29 @@ package utils;
 
 import dtos.ProfileDto;
 import dtos.SelectDto;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.*;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.util.Callback;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import pojos.AddMapsToProfile;
+import pojos.ImportMapResultToDisplay;
 import pojos.MapToDisplay;
 import pojos.ProfileToDisplay;
 import services.PropertyService;
@@ -34,7 +42,7 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 public class Utils {
 
@@ -743,4 +751,126 @@ public class Utils {
         FileUtils.copyURLToFile(urlImage,file);
         return file;
     }
+
+    public static Optional<VBox> importMapsResultDialog(List<ImportMapResultToDisplay> importMapResultToDisplayList, String profileName) {
+
+        Dialog<VBox> dialog = new Dialog<VBox>();
+        dialog.setTitle("Simple Killing Floor 2 Server Launcher");
+        dialog.setHeaderText("Import maps from server to launcher");
+
+        Label profileNameLabel = new Label("Profile " + profileName.toUpperCase());
+        profileNameLabel.setAlignment(Pos.CENTER);
+        profileNameLabel.setMaxWidth(Double.MAX_VALUE);
+        profileNameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px");
+
+        Label successImportationLabel = new Label("Success importation");
+        successImportationLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: green;");
+
+        TableView<ImportMapResultToDisplay> successImportationTable = new TableView<ImportMapResultToDisplay>();
+        successImportationTable.setPrefHeight(300);
+
+        TableColumn<ImportMapResultToDisplay, String> successCategory = new TableColumn<ImportMapResultToDisplay, String>();
+        successCategory.setText("Category");
+        successCategory.setCellValueFactory(cellData -> cellData.getValue().isOfficialProperty());
+        successCategory.setSortable(true);
+        successCategory.setStyle("-fx-alignment: CENTER;");
+        successCategory.setMinWidth(150);
+
+        TableColumn<ImportMapResultToDisplay, String> successMapName = new TableColumn<ImportMapResultToDisplay, String>();
+        successMapName.setText("Map name");
+        successMapName.setCellValueFactory(cellData -> cellData.getValue().mapNameProperty());
+        successMapName.setSortable(true);
+        successMapName.setMinWidth(450);
+
+        TableColumn<ImportMapResultToDisplay, String> successImportedDate = new TableColumn<ImportMapResultToDisplay, String>();
+        successImportedDate.setText("Imported date");
+        successImportedDate.setCellValueFactory(cellData -> cellData.getValue().importedDateProperty());
+        successImportedDate.setSortable(true);
+        successImportedDate.setStyle("-fx-alignment: CENTER;");
+        successImportedDate.setMinWidth(200);
+
+        successImportationTable.getColumns().add(successCategory);
+        successImportationTable.getColumns().add(successMapName);
+        successImportationTable.getColumns().add(successImportedDate);
+        successImportationTable.setItems(FXCollections.observableArrayList(
+                importMapResultToDisplayList.stream().
+                        filter(imr -> imr.getProfileName().equals(profileName)).
+                        filter(imr -> imr.getImportedDate() != null).
+                        collect(Collectors.toList())
+        ));
+        successImportationTable.setEditable(false);
+
+        Label failedImportationLabel = new Label("Failed importation");
+        failedImportationLabel.setPadding(new Insets(20,0,0,0));
+        failedImportationLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: red;");
+
+        TableView<ImportMapResultToDisplay> failedImportationTable = new TableView<ImportMapResultToDisplay>();
+        failedImportationTable.setPrefHeight(200);
+
+        TableColumn<ImportMapResultToDisplay, String> failedCategory = new TableColumn<ImportMapResultToDisplay, String>();
+        failedCategory.setText("Category");
+        failedCategory.setCellValueFactory(cellData -> cellData.getValue().isOfficialProperty());
+        failedCategory.setSortable(true);
+        failedCategory.setMinWidth(100);
+
+        TableColumn<ImportMapResultToDisplay, String> failedMapName = new TableColumn<ImportMapResultToDisplay, String>();
+        failedMapName.setText("Map name");
+        failedMapName.setCellValueFactory(cellData -> cellData.getValue().mapNameProperty());
+        failedMapName.setSortable(true);
+        failedMapName.setMinWidth(300);
+
+        TableColumn<ImportMapResultToDisplay, String> failedErrorMessage = new TableColumn<ImportMapResultToDisplay, String>();
+        failedErrorMessage.setText("Error message");
+        failedErrorMessage.setCellValueFactory(cellData -> cellData.getValue().errorMessageProperty());
+        failedErrorMessage.setSortable(true);
+        failedErrorMessage.setMinWidth(400);
+
+        failedImportationTable.getColumns().add(failedCategory);
+        failedImportationTable.getColumns().add(failedMapName);
+        failedImportationTable.getColumns().add(failedErrorMessage);
+        failedImportationTable.setItems(FXCollections.observableArrayList(
+                importMapResultToDisplayList.stream().
+                        filter(imr -> imr.getProfileName().equals(profileName)).
+                        filter(imr -> imr.getImportedDate() == null).
+                        collect(Collectors.toList())
+        ));
+        failedImportationTable.setEditable(false);
+
+        Text action = new Text(StringUtils.EMPTY);
+        action.setVisible(false);
+
+        VBox vbox = new VBox(profileNameLabel, successImportationLabel, successImportationTable, failedImportationLabel, failedImportationTable, action);
+
+        dialog.getDialogPane().setContent(vbox);
+        dialog.setResizable(true);
+        dialog.getDialogPane().setMinWidth(800);
+        dialog.getDialogPane().setMinHeight(500);
+
+        ButtonType previousButton = new ButtonType("Previous Profile", ButtonBar.ButtonData.BACK_PREVIOUS);
+        ButtonType nextButton = new ButtonType("Next Profile", ButtonBar.ButtonData.NEXT_FORWARD);
+        ButtonType closeButton = new ButtonType("Close", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        dialog.getDialogPane().getButtonTypes().addAll(previousButton, nextButton, closeButton);
+
+        dialog.setResultConverter(new Callback<ButtonType, VBox>() {
+            @Override
+            public VBox call(ButtonType b) {
+                if (b.equals(closeButton)) {
+                    return null;
+                }
+                if (b.equals(previousButton)) {
+                    action.setText("PREVIOUS");
+                    return vbox;
+                }
+                if (b.equals(nextButton)) {
+                    action.setText("NEXT");
+                    return vbox;
+                }
+                return null;
+            }
+        });
+
+        return dialog.showAndWait();
+    }
+
 }

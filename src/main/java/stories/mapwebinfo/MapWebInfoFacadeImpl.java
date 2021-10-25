@@ -89,7 +89,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         String urlInfo = baseUrlWorkshop + idWorkShop;
         CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop, downloaded);
 
-        return (CustomMapMod) customMapModService.createMap(customMap, profileList);
+        return (CustomMapMod) customMapModService.createMap(customMap, profileList, null);
     }
 
     @Override
@@ -118,12 +118,12 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
 
         Optional officialMapOptional = officialMapService.findMapByCode(mapName);
         if (officialMapOptional.isPresent()) {
-            officialMapService.addProfilesToMap((OfficialMap) officialMapOptional.get(), profileList);
+            officialMapService.addProfilesToMap((OfficialMap) officialMapOptional.get(), profileList, null);
         }
 
         Optional customMapModOptional = customMapModService.findMapByCode(mapName);
         if (customMapModOptional.isPresent()) {
-            customMapModService.addProfilesToMap((CustomMapMod) customMapModOptional.get(),profileList);
+            customMapModService.addProfilesToMap((CustomMapMod) customMapModOptional.get(),profileList, null);
         }
     }
 

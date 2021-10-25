@@ -8,6 +8,7 @@ import entities.AbstractMap;
 import entities.CustomMapMod;
 import entities.Profile;
 import javafx.collections.ObservableList;
+import pojos.ImportMapResultToDisplay;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -19,12 +20,12 @@ public interface MapsEditionFacade {
     boolean isCorrectInstallationFolder(String installationFolder);
     ObservableList<ProfileDto> listAllProfiles() throws SQLException;
     List<AbstractMapDto> getMapsFromProfile(String profileName) throws SQLException;
-    AbstractMapDto addProfilesToMap(String mapName, List<String> profileNameList) throws SQLException;
+    AbstractMapDto addProfilesToMap(String mapName, List<String> profileNameList, List<ImportMapResultToDisplay> importMapResultToDisplayList) throws SQLException;
     AbstractMapDto deleteMapFromProfile(String mapName, String profileName, String installationFolder) throws Exception;
     void unselectProfileMap(String profileName) throws SQLException;
     List<String> selectProfilesToImport(String defaultSelectedProfileName) throws Exception;
     String runServer(String profileName) throws SQLException;
     List<AbstractMapDto> addCustomMapsToProfile(String profileName, String mapNameList, String languageCode, String installationFolder, String actualSelectedProfile, StringBuffer success, StringBuffer errors);
-    CustomMapModDto importCustomMapModFromServer(String mapNameLabel, Long idWorkShop, String commentary, String installationFolder, List<String> selectedProfileNameList, String actualSelectedProfile, StringBuffer success, StringBuffer errors) throws Exception;
-    OfficialMapDto importOfficialMapFromServer(String officialMapName, List<String> selectedProfileNameList, String actualSelectedProfile, StringBuffer success, StringBuffer errors, String mapNameLabel) throws Exception;
+    CustomMapModDto importCustomMapModFromServer(String mapNameLabel, Long idWorkShop, String commentary, String installationFolder, List<String> selectedProfileNameList, String actualSelectedProfile, List<ImportMapResultToDisplay> importMapResultToDisplayList);
+    OfficialMapDto importOfficialMapFromServer(String officialMapName, List<String> selectedProfileNameList, String actualSelectedProfile, String mapNameLabel, List<ImportMapResultToDisplay> importMapResultToDisplayList);
 }

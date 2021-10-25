@@ -7,10 +7,13 @@ import entities.AbstractMap;
 import entities.OfficialMap;
 import entities.Profile;
 import entities.ProfileMap;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.ImportMapResultToDisplay;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -70,39 +73,116 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
         return mapList;
     }
 
-    public AbstractMap createMap(AbstractMap map, List<Profile> profileList) throws Exception {
-        List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
-        if (idsMapasOficiales.contains(map.getId())) {
-            map.setOfficial(true);
-        } else {
-            map.setOfficial(false);
+    public AbstractMap createMap(AbstractMap map, List<Profile> profileList, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
+        AbstractMap insertedMap = null;
+        try {
+            List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
+            if (idsMapasOficiales.contains(map.getId())) {
+                map.setOfficial(true);
+            } else {
+                map.setOfficial(false);
+            }
+            insertedMap = createItem(map);
+            if (insertedMap == null) {
+                String errorMessage = "Map to be created not found: " + map.getCode();
+                logger.error(errorMessage);
+                if (importMapResultToDisplayList != null) {
+                    profileList.stream().forEach(profile -> {
+                        importMapResultToDisplayList.add(new ImportMapResultToDisplay(
+                                profile.getName(),
+                                map.getCode(),
+                                map.isOfficial(),
+                                null,
+                                errorMessage
+                        ));
+                    });
+                }
+                return null;
+            }
+        } catch (Exception e) {
+            String errorMessage = "Error creating the map: " + map.getCode();
+            logger.error(errorMessage, e);
+            if (importMapResultToDisplayList != null) {
+                profileList.stream().forEach(profile -> {
+                    importMapResultToDisplayList.add(new ImportMapResultToDisplay(
+                            profile.getName(),
+                            map.getCode(),
+                            map.isOfficial(),
+                            null,
+                            errorMessage
+                    ));
+                });
+            }
+            return null;
         }
 
-        AbstractMap insertedMap = createItem(map);
-        if (insertedMap != null) {
-            profileList.stream().forEach(profile -> {
-                try {
-                    ProfileMap newProfileMap = new ProfileMap(profile, map);
-                    profileMapService.createItem(newProfileMap);
-                    map.getProfileMapList().add(newProfileMap);
-                } catch (Exception e) {
-                    logger.error("Error creating the relation between the profile: " + profile.getCode() + " and the new map: " + insertedMap.getCode(), e);
+        AbstractMap finalInsertedMap = insertedMap;
+        profileList.stream().forEach(profile -> {
+            try {
+                ProfileMap newProfileMap = new ProfileMap(profile, finalInsertedMap);
+                newProfileMap.setImportedDate(new Date());
+                profileMapService.createItem(newProfileMap);
+                finalInsertedMap.getProfileMapList().add(newProfileMap);
+
+                if (importMapResultToDisplayList != null) {
+                    importMapResultToDisplayList.add(new ImportMapResultToDisplay(
+                            profile.getName(),
+                            finalInsertedMap.getCode(),
+                            finalInsertedMap.isOfficial(),
+                            new Date(),
+                            StringUtils.EMPTY
+                    ));
                 }
-            });
-        }
+            } catch (Exception e) {
+                String errorMessage = "Error creating the relation between the profile: " + profile.getCode() + " and the new map: " + map.getCode();
+                logger.error(errorMessage, e);
+
+                if (importMapResultToDisplayList != null) {
+                    importMapResultToDisplayList.add(new ImportMapResultToDisplay(
+                            profile.getName(),
+                            map.getCode(),
+                            map.isOfficial(),
+                            null,
+                            errorMessage
+                    ));
+                }
+            }
+        });
+
         return insertedMap;
     }
 
-    public AbstractMap addProfilesToMap(AbstractMap map, List<Profile> profileList) {
+    public AbstractMap addProfilesToMap(AbstractMap map, List<Profile> profileList, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
         profileList.stream().forEach(profile -> {
             try {
                 if (!profile.getMapList().contains(map)) {
                     ProfileMap newProfileMap = new ProfileMap(profile, map);
                     profileMapService.createItem(newProfileMap);
                     map.getProfileMapList().add(newProfileMap);
+
+                    if (importMapResultToDisplayList != null) {
+                        importMapResultToDisplayList.add(new ImportMapResultToDisplay(
+                                profile.getName(),
+                                map.getCode(),
+                                map.isOfficial(),
+                                new Date(),
+                                StringUtils.EMPTY
+                        ));
+                    }
                 }
             } catch (Exception e) {
-                logger.error("Error creating the relation between the profile: " + profile.getCode() + " and the new map: " + map.getCode(), e);
+                String errorMessage = "Error creating the relation between the profile: " + profile.getCode() + " and the new map: " + map.getCode();
+                logger.error(errorMessage, e);
+
+                if (importMapResultToDisplayList != null) {
+                    importMapResultToDisplayList.add(new ImportMapResultToDisplay(
+                            profile.getName(),
+                            map.getCode(),
+                            map.isOfficial(),
+                            null,
+                            errorMessage
+                    ));
+                }
             }
         });
         return map;

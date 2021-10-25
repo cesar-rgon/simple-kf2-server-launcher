@@ -47,6 +47,7 @@ public abstract class AbstractMap extends AbstractExtendedEntity {
         this.urlInfo = urlInfo;
         this.urlPhoto = urlPhoto;
         this.official = official;
+        this.releaseDate = releaseDate;
     }
 
     @Override
