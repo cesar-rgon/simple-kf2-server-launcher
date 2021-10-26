@@ -8,6 +8,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -755,35 +756,68 @@ public class Utils {
     public static Optional<VBox> importMapsResultDialog(List<ImportMapResultToDisplay> importMapResultToDisplayList, String profileName) {
 
         Dialog<VBox> dialog = new Dialog<VBox>();
-        dialog.setTitle("Simple Killing Floor 2 Server Launcher");
-        dialog.setHeaderText("Import maps from server to launcher");
 
-        Label profileNameLabel = new Label("Profile " + profileName.toUpperCase());
+        String languageCode = StringUtils.EMPTY;
+        String importMapsFromServerText = StringUtils.EMPTY;
+        String profileText = StringUtils.EMPTY;
+        String importSuccessText = StringUtils.EMPTY;
+        String categoryText = StringUtils.EMPTY;
+        String mapNameText = StringUtils.EMPTY;
+        String importedDateText = StringUtils.EMPTY;
+        String failedImportText = StringUtils.EMPTY;
+        String errorMessageText = StringUtils.EMPTY;
+        String previousProfileText = StringUtils.EMPTY;
+        String nextProfileText = StringUtils.EMPTY;
+        String closeText = StringUtils.EMPTY;
+
+        try {
+            PropertyService propertyService = new PropertyServiceImpl();
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
+            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            importMapsFromServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importMaps");
+            profileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profile");
+            importSuccessText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.importSuccess");
+            categoryText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.category");
+            mapNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+            importedDateText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importedDate");
+            failedImportText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.importFailed");
+            errorMessageText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.errorMessage");
+            previousProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.nextProfile");
+            nextProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.previousProfile");
+            closeText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.close");
+
+            dialog.setTitle(applicationTitle);
+            dialog.setHeaderText(importMapsFromServerText);
+        } catch (Exception ex) {
+            dialog.setTitle("");
+        }
+
+        Label profileNameLabel = new Label(profileText + " " + profileName.toUpperCase());
         profileNameLabel.setAlignment(Pos.CENTER);
         profileNameLabel.setMaxWidth(Double.MAX_VALUE);
         profileNameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px");
 
-        Label successImportationLabel = new Label("Success importation");
+        Label successImportationLabel = new Label(importSuccessText);
         successImportationLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: green;");
 
         TableView<ImportMapResultToDisplay> successImportationTable = new TableView<ImportMapResultToDisplay>();
         successImportationTable.setPrefHeight(300);
 
         TableColumn<ImportMapResultToDisplay, String> successCategory = new TableColumn<ImportMapResultToDisplay, String>();
-        successCategory.setText("Category");
+        successCategory.setText(categoryText);
         successCategory.setCellValueFactory(cellData -> cellData.getValue().isOfficialProperty());
         successCategory.setSortable(true);
         successCategory.setStyle("-fx-alignment: CENTER;");
         successCategory.setMinWidth(150);
 
         TableColumn<ImportMapResultToDisplay, String> successMapName = new TableColumn<ImportMapResultToDisplay, String>();
-        successMapName.setText("Map name");
+        successMapName.setText(mapNameText);
         successMapName.setCellValueFactory(cellData -> cellData.getValue().mapNameProperty());
         successMapName.setSortable(true);
         successMapName.setMinWidth(450);
 
         TableColumn<ImportMapResultToDisplay, String> successImportedDate = new TableColumn<ImportMapResultToDisplay, String>();
-        successImportedDate.setText("Imported date");
+        successImportedDate.setText(importedDateText);
         successImportedDate.setCellValueFactory(cellData -> cellData.getValue().importedDateProperty());
         successImportedDate.setSortable(true);
         successImportedDate.setStyle("-fx-alignment: CENTER;");
@@ -800,7 +834,7 @@ public class Utils {
         ));
         successImportationTable.setEditable(false);
 
-        Label failedImportationLabel = new Label("Failed importation");
+        Label failedImportationLabel = new Label(failedImportText);
         failedImportationLabel.setPadding(new Insets(20,0,0,0));
         failedImportationLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: red;");
 
@@ -808,19 +842,19 @@ public class Utils {
         failedImportationTable.setPrefHeight(200);
 
         TableColumn<ImportMapResultToDisplay, String> failedCategory = new TableColumn<ImportMapResultToDisplay, String>();
-        failedCategory.setText("Category");
+        failedCategory.setText(categoryText);
         failedCategory.setCellValueFactory(cellData -> cellData.getValue().isOfficialProperty());
         failedCategory.setSortable(true);
         failedCategory.setMinWidth(100);
 
         TableColumn<ImportMapResultToDisplay, String> failedMapName = new TableColumn<ImportMapResultToDisplay, String>();
-        failedMapName.setText("Map name");
+        failedMapName.setText(mapNameText);
         failedMapName.setCellValueFactory(cellData -> cellData.getValue().mapNameProperty());
         failedMapName.setSortable(true);
         failedMapName.setMinWidth(300);
 
         TableColumn<ImportMapResultToDisplay, String> failedErrorMessage = new TableColumn<ImportMapResultToDisplay, String>();
-        failedErrorMessage.setText("Error message");
+        failedErrorMessage.setText(errorMessageText);
         failedErrorMessage.setCellValueFactory(cellData -> cellData.getValue().errorMessageProperty());
         failedErrorMessage.setSortable(true);
         failedErrorMessage.setMinWidth(400);
@@ -846,9 +880,9 @@ public class Utils {
         dialog.getDialogPane().setMinWidth(800);
         dialog.getDialogPane().setMinHeight(500);
 
-        ButtonType previousButton = new ButtonType("Previous Profile", ButtonBar.ButtonData.BACK_PREVIOUS);
-        ButtonType nextButton = new ButtonType("Next Profile", ButtonBar.ButtonData.NEXT_FORWARD);
-        ButtonType closeButton = new ButtonType("Close", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType previousButton = new ButtonType(previousProfileText, ButtonBar.ButtonData.BACK_PREVIOUS);
+        ButtonType nextButton = new ButtonType(nextProfileText, ButtonBar.ButtonData.NEXT_FORWARD);
+        ButtonType closeButton = new ButtonType(closeText, ButtonBar.ButtonData.CANCEL_CLOSE);
 
         dialog.getDialogPane().getButtonTypes().addAll(previousButton, nextButton, closeButton);
 

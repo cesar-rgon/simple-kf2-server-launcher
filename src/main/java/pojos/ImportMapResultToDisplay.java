@@ -4,6 +4,8 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -16,6 +18,8 @@ public class ImportMapResultToDisplay {
     private BooleanProperty isOfficial;
     private StringProperty importedDate;
     private StringProperty errorMessage;
+    private String officialText;
+    private String customText;
 
     public ImportMapResultToDisplay(
             String profileName,
@@ -32,6 +36,16 @@ public class ImportMapResultToDisplay {
                 importedDateFormat.format(importedDate)
         );
         this.errorMessage = new SimpleStringProperty(errorMessage);
+
+        try {
+            PropertyService propertyService = new PropertyServiceImpl();
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            this.officialText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.official");
+            this.customText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.custom");
+        } catch (Exception e) {
+            this.officialText = "OFFICIAL";
+            this.customText = "CUSTOM";
+        }
     }
 
     public String getProfileName() {
@@ -60,9 +74,9 @@ public class ImportMapResultToDisplay {
 
     public StringProperty isOfficialProperty() {
         if (isOfficial()) {
-            return new SimpleStringProperty("OFFICIAL");
+            return new SimpleStringProperty(officialText);
         } else {
-            return new SimpleStringProperty("CUSTOM");
+            return new SimpleStringProperty(customText);
         }
     }
 

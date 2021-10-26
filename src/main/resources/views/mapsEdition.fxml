@@ -106,6 +106,7 @@
                      <MenuItem fx:id="orderMapsByName" mnemonicParsing="false" onAction="#orderMapsByNameOnAction" text="By name" />
                      <MenuItem fx:id="orderMapsByReleaseDate" mnemonicParsing="false" onAction="#orderMapsByReleaseDateOnAction" text="By release date" />
                      <MenuItem fx:id="orderMapsByImportedDate" mnemonicParsing="false" onAction="#orderMapsByImportedDateOnAction" text="By release date" />
+                     <MenuItem fx:id="orderMapsByDownload" mnemonicParsing="false" onAction="#orderMapsByDownloadOnAction" text="By download" />
                   </items>
                </Menu>
             </items>

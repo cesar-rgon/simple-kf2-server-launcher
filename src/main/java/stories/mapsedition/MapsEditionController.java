@@ -4,6 +4,7 @@ import dtos.AbstractMapDto;
 import dtos.CustomMapModDto;
 import dtos.OfficialMapDto;
 import dtos.ProfileDto;
+import entities.CustomMapMod;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -83,6 +84,7 @@ public class MapsEditionController implements Initializable {
     @FXML private MenuItem orderMapsByName;
     @FXML private MenuItem orderMapsByReleaseDate;
     @FXML private MenuItem orderMapsByImportedDate;
+    @FXML private MenuItem orderMapsByDownload;
 
     public MapsEditionController() {
         super();
@@ -162,6 +164,9 @@ public class MapsEditionController implements Initializable {
 
             String orderMapsByImportedDateText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByImportedDate");
             orderMapsByImportedDate.setText(orderMapsByImportedDateText);
+
+            String orderMapsByDownloadText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByDownload");
+            orderMapsByDownload.setText(orderMapsByDownloadText);
 
             String sliderLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.slider");
             sliderLabel.setText(sliderLabelText);
@@ -698,7 +703,10 @@ public class MapsEditionController implements Initializable {
 
                 List<String> profileNameList = importMapResultToDisplayList.stream().map(ImportMapResultToDisplay::getProfileName).distinct().collect(Collectors.toList());
                 if (profileNameList == null || profileNameList.isEmpty()) {
-                    Utils.infoDialog("Import maps from server to launcher", "No new maps were found and imported");
+
+                    String importMapsFromServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importMaps");
+                    String noNewMapsFromServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.noMapsImportedWarning");
+                    Utils.infoDialog(importMapsFromServerText, noNewMapsFromServerText);
 
                 } else {
                     Optional<VBox> importDialogResult = Optional.empty();
@@ -963,4 +971,36 @@ public class MapsEditionController implements Initializable {
         }
     }
 
+    @FXML
+    private void orderMapsByDownloadOnAction() {
+        if (officialMapsTab.isSelected()) {
+            return;
+        }
+        customMapsFlowPane.getChildren().clear();
+
+        if (EnumSortedMapsCriteria.DOWNLOAD_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
+            mapList = mapList.stream().
+                    filter(m -> !m.isOfficial()).
+                    sorted((m1, m2) -> {
+                Boolean map1Downloaded = ((CustomMapModDto) m1).isDownloaded();
+                Boolean map2Downloaded = ((CustomMapModDto) m2).isDownloaded();
+                return map1Downloaded.compareTo(map2Downloaded);
+            }).collect(Collectors.toList());
+            Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.DOWNLOAD_ASC);
+        } else {
+            mapList = mapList.stream().
+                    filter(m -> !m.isOfficial()).
+                    sorted((m1, m2) -> {
+                Boolean map1Downloaded = ((CustomMapModDto) m1).isDownloaded();
+                Boolean map2Downloaded = ((CustomMapModDto) m2).isDownloaded();
+                return map2Downloaded.compareTo(map1Downloaded);
+            }).collect(Collectors.toList());
+            Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.DOWNLOAD_DESC);
+        }
+
+        for (AbstractMapDto map : mapList) {
+            GridPane gridpane = createMapGridPane(map);
+            customMapsFlowPane.getChildren().add(gridpane);
+        }
+    }
 }
