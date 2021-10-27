@@ -6,20 +6,25 @@ Under Maps/Mods page you can manage custom maps, mods and official maps present 
 
 ![Launcher screenshot](images/screenshot04.png)
 
-* _Search_: Filter to search maps and mods by name while you are writing the text.
+* _Profile combo_: It allows to select the actual profile you want to use.
 
-* _Columns_: Slider that allows change the thumbnail size of the maps by the specific number of columns.
+* _Actions menu_: It has several options to manage custom or official maps.
+  * _Add new maps by URL/Id WorkShop_: It allows to add new custom maps and mods from Steam's WorkShop by WorkShop's Id or URL. If more than one element, use comma as separator.
+  * _Search maps in WorkShop_: It allows to browse in Workshop's pages looking for new maps and mods. Then you can choose wich of them add to the launcher.
+  * _Delete selected maps_: It allows to delete all maps and mods previously selected.
+  * _Import maps from server_: It allows to import all custom maps, mods and official maps from the server to the launcher. Only the elements not present already in the launcher.
+  * _Order maps by name_: It allows to sort the maps alphabetically by name (ascendent or descendent).
+  * _Order maps by release date_: It allows to sort the maps by release date (ascendent or descendent).
+  * _Order maps by imported date_: It allows to sort the maps by imported date to the launcher (ascendent or descendent).
+  * _Order maps by download_: It allows to sort the maps by download state (ascendent or descendent).
 
-* _Add new maps/mods_: It allows to add new custom maps and mods from Steam's WorkShop by WorkShop's Id or URL. If more than one element, use comma as separator.
+* _Search filter_: It allows to filter maps and mods by name while you are writing the text.
 
-* _Select all maps/mods_: It allows to select or unselect all custom maps and mods as well as official maps.
+* _Select all_: It allows to select all maps to perform an action over them. Furthermore it allows to unselect them.
 
-* _Delete maps/mods_: It allows to delete all maps and mods previously selected.
+* _Columns slider_: It allows to change the thumbnail size of the maps by the specific number of columns.
 
-* _Import maps/mods_: It allows to import all custom maps, mods and official maps from the server to the launcher. Only the elements not present already in the launcher.
-
-* _Search in WorkShop_: It allows to browse in Workshop's pages looking for new maps and mods. Then you can choose wich of them add to the launcher.
-
+__Search in WorkShop image__
 ![Launcher screenshot](images/screenshot05.png)
 
 ---

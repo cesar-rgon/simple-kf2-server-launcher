@@ -6,20 +6,25 @@ En la página Mapas/Mods puedes gestionar mapas personalizados, mods y mapas ofi
 
 ![Launcher screenshot](../images/screenshot04.png)
 
-* _Buscador_: Filtro para buscar mapas y mods por nombre mientras vas escribiendo el texto. 
+* _Combo de perfiles_: Permite seleccionar el perfil actual a usar.
 
-* _Columnas_: Barra deslizante que permite cambiar el tamaño de las miniaturas de los mapas según un número de columnas determinado. 
+* _Menú acciones_: Tiene varias opciones para manejar mapas personalizados y oficiales.
+  * _Añadir nuevos mapas por URL/Id WorkShop_: Permite añadir nuevos mapas personalizados y mods desde el WorkShop de Steam mediante id de WorkShop o URL. Si hay más de un elemento, usa comas como separador.
+  * _Buscar mapas en WorkShop_: Permite navegar en las páginas de WorkShop buscando nuevos mapas y mods. Luego puedes seleccionar cuál de ellos añadir al lanzador.
+  * _Elimina los mapas seleccionados_: Permite eliminar todos los mapas y mods previamente seleccionados.
+  * _Importa mapas del servidor_: Permite importar todos los mapas personalizados, mods y mapas oficiales del servidor al lanzador. Sólamente los elementos que no está aún presentes en el lanzador.
+  * _Ordenar mapas por nombre_: Permite ordenar los mapas alfabéticamente por nombre (ascendente o descendente).
+  * _Ordenar mapas por fecha de lanzamiento_: Permite ordenar los mapas por fecha de lanzamiento (ascendente or descendente).
+  * _Ordenar mapas por fecha de importación_: Permite ordenar los mapas por fecha de importación al lanzador (ascendente or descendente).
+  * _Ordenar mapas por descarga_: Permite ordenar los mapas por estado de descarga (ascendente or descendente).
 
-* _Añadir nuevos mapas/mods_: Permite añadir nuevos mapas personalizados y mods desde el WorkShop de Steam mediante id de WorkShop o URL. Si hay más de un elemento, usa comas como separador. 
- 
-* _Selecciona todos los mapas/mods_: Permite seleccionar o deseleccionar todos los mapas personalizados y mods así como los mapas oficiales.
+* _Filtro buscador_: Permite filtrar mapas y mods por nombre mientras vas escribiendo el texto. 
 
-* _Elimina mapas/mods_: Permite eliminar todos los mapas y mods previamente seleccionados.
+* _Selecciona todos_: Permite seleccionar todos los mapas para realizar una acción sobre ellos. Además permite deseleccionarlos.
 
-* _Importa mapas/mods_: Permite importar todos los mapas personalizados, mods y mapas oficiales del servidor al lanzador. Sólamente los elementos que no está aún presentes en el lanzador.
+* _Barra de columnas_: Permite cambiar el tamaño de las miniaturas de los mapas según un número de columnas determinado. 
 
-* _Buscar en WorkShop_: Permite navegar en las páginas de WorkShop buscando nuevos mapas y mods. Luego puedes seleccionar cuál de ellos añadir al lanzador.
-
+__Imágen de búsqueda en WorkShop__
 ![Launcher screenshot](../images/screenshot05.png)
 
 ---
