@@ -5,24 +5,24 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<fx:root id="centerPane" fx:id="mapsEditionGridPane" prefHeight="745.0" prefWidth="1210.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapsedition.MapsEditionController">
+<fx:root id="centerPane" fx:id="mapsEditionGridPane" prefHeight="660.0" prefWidth="1004.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapsedition.MapsEditionController">
    <children>
       <ImageView fx:id="profileImg" fitHeight="30.0" fitWidth="110.0" pickOnBounds="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
          <image>
             <Image url="@../images/label.png" />
          </image>
          <GridPane.margin>
-            <Insets top="30.0" />
+            <Insets top="20.0" />
          </GridPane.margin>
       </ImageView>
       <Label fx:id="profileLabel" alignment="CENTER_RIGHT" text="PROFILE" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
          <GridPane.margin>
-            <Insets right="10.0" top="36.0" />
+            <Insets right="10.0" top="26.0" />
          </GridPane.margin>
       </Label>
       <ComboBox fx:id="profileSelect" cache="true" onAction="#profileOnAction" prefWidth="350.0" GridPane.columnIndex="2" GridPane.valignment="TOP">
          <GridPane.margin>
-            <Insets top="30.0" />
+            <Insets top="20.0" />
          </GridPane.margin></ComboBox>
 
       <TabPane fx:id="mapsModsTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnSpan="5" GridPane.rowIndex="1">
@@ -57,14 +57,14 @@
       </TabPane>
       <Slider fx:id="mapsSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" maxWidth="280.0" min="2.0" minorTickCount="0" onMouseClicked="#mapsSliderOnMouseClicked" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5.0" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER" GridPane.valignment="CENTER">
          <GridPane.margin>
-            <Insets bottom="-40.0" right="5.0" top="30.0" />
+            <Insets bottom="-40.0" right="5.0" top="20.0" />
          </GridPane.margin>
          <padding>
             <Insets left="263.0" />
          </padding></Slider>
       <Label fx:id="sliderLabel" text="Columns" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
          <GridPane.margin>
-            <Insets top="15.0" />
+            <Insets top="5.0" />
          </GridPane.margin>
       </Label>
       <TextField fx:id="searchMaps" maxWidth="200.0" onKeyReleased="#searchMapsKeyReleased" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
@@ -84,12 +84,12 @@
             <Image url="@../images/label.png" />
          </image>
          <GridPane.margin>
-            <Insets top="30.0" />
+            <Insets top="20.0" />
          </GridPane.margin>
       </ImageView>
       <Label fx:id="actionsLabel" text="ACTIONS" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
          <GridPane.margin>
-            <Insets right="10.0" top="36.0" />
+            <Insets right="10.0" top="26.0" />
          </GridPane.margin>
       </Label>
 
@@ -113,7 +113,7 @@
          </Menu>
       </menus>
          <GridPane.margin>
-            <Insets top="30.0" />
+            <Insets top="20.0" />
          </GridPane.margin>
       </MenuBar>
       <CheckBox fx:id="selectAllMaps" alignment="CENTER" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" onAction="#selectAllMapsOnAction" text="Select all" GridPane.columnIndex="4" GridPane.halignment="LEFT">
@@ -130,7 +130,7 @@
       <ColumnConstraints hgrow="ALWAYS" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
    </columnConstraints>
    <rowConstraints>
-      <RowConstraints minHeight="100.0" prefHeight="100.0" vgrow="NEVER" />
+      <RowConstraints minHeight="60.0" prefHeight="60.0" vgrow="NEVER" />
       <RowConstraints minHeight="590.0" vgrow="ALWAYS" />
    </rowConstraints>
 </fx:root>

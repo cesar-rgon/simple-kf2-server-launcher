@@ -8,7 +8,9 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -59,7 +61,6 @@ public class MainContentController implements Initializable {
     @FXML private Label profileLabel;
     @FXML private Label languageLabel;
     @FXML private Label gameTypeLabel;
-    @FXML private Label mapLabel;
     @FXML private Label difficultyLabel;
     @FXML private Label lengthLabel;
     @FXML private Label maxPlayersLabel;
@@ -294,8 +295,8 @@ public class MainContentController implements Initializable {
                 }
                 ImageView mapPreview = new ImageView(image);
                 mapPreview.setPreserveRatio(false);
-                mapPreview.setFitWidth(256);
-                mapPreview.setFitHeight(128);
+                mapPreview.setFitWidth(350);
+                mapPreview.setFitHeight(160);
                 Label mapType;
                 String languageCode = languageSelect.getValue().getKey();
                 String officialText;
@@ -307,6 +308,7 @@ public class MainContentController implements Initializable {
                     officialText = "OFFICIAL";
                     customText = "CUSTOM";
                 }
+
                 if (map.isOfficial()) {
                     mapType = new Label(officialText);
                     mapType.setStyle("-fx-text-fill: plum; -fx-padding: 3; -fx-border-color: plum; -fx-border-radius: 5;");
@@ -314,15 +316,25 @@ public class MainContentController implements Initializable {
                     mapType = new Label(customText);
                     mapType.setStyle("-fx-text-fill: gold; -fx-padding: 3; -fx-border-color: gold; -fx-border-radius: 5;");
                 }
+                mapNameLabel.setPadding(new Insets(0,0,4,0));
+
+                ImageView darkPanel = new ImageView(new Image("images/darkPanel.png"));
+                darkPanel.setPreserveRatio(false);
+                darkPanel.setFitWidth(300);
+                darkPanel.setFitHeight(25);
+                darkPanel.setOpacity(0.7);
+
                 GridPane gridpane = new GridPane();
                 gridpane.add(mapPreview, 1, 1);
-                gridpane.add(mapType, 1, 2);
-                gridpane.add(mapNameLabel, 2, 2);
-                GridPane.setColumnSpan(mapPreview, 2);
+                gridpane.add(darkPanel, 1, 1);
+                gridpane.add(mapType, 1, 1);
+                gridpane.add(mapNameLabel, 1, 1);
+                GridPane.setHalignment(darkPanel, HPos.LEFT);
+                GridPane.setValignment(darkPanel, VPos.BOTTOM);
+                GridPane.setHalignment(mapType, HPos.LEFT);
+                GridPane.setValignment(mapType, VPos.BOTTOM);
                 GridPane.setHalignment(mapNameLabel, HPos.RIGHT);
-                gridpane.setAlignment(Pos.CENTER);
-                gridpane.setHgap(15);
-                gridpane.setVgap(5);
+                GridPane.setValignment(mapNameLabel, VPos.BOTTOM);
                 return gridpane;
             }
 
@@ -832,7 +844,9 @@ public class MainContentController implements Initializable {
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, ComboBox<?> combo) throws Exception {
         Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
         Tooltip.install(img, tooltip);
-        label.setTooltip(tooltip);
+        if (label != null) {
+            label.setTooltip(tooltip);
+        }
         combo.setTooltip(tooltip);
     }
 
@@ -891,9 +905,7 @@ public class MainContentController implements Initializable {
         gameTypeLabel.setText(gameTypeLabelText);
         loadTooltip(languageCode, "prop.tooltip.gameType", gameTypeImg, gameTypeLabel, gameTypeSelect);
 
-        String mapLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.map") + "*";
-        mapLabel.setText(mapLabelText);
-        loadTooltip(languageCode, "prop.tooltip.map", mapImg, mapLabel, mapSelect);
+        loadTooltip(languageCode, "prop.tooltip.map", mapImg, null, mapSelect);
 
         String difficultyLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.difficulty") + "*";
         difficultyLabel.setText(difficultyLabelText);

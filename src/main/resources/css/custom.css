@@ -50,6 +50,10 @@
     -fx-cursor: hand;
 }
 
+#runServer, #joinServer {
+    -fx-background-color: #22573d;
+}
+
 .combo-box {
     -fx-font-family: "Ubuntu";
     -fx-font-size: 14;
@@ -196,4 +200,8 @@
 
 .gridPane:hover {
     -fx-effect: dropshadow(three-pass-box, red, 20, 0, 0, 0);
+}
+
+.width150 {
+    -fx-max-width: 160px;
 }

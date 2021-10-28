@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" stylesheets="@../css/custom.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.template.TemplateController">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="700.0" minWidth="1024.0" stylesheets="@../css/custom.css" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.template.TemplateController">
    <top>
-      <MenuBar id="topMenuBar" fx:id="menuBar" BorderPane.alignment="CENTER">
+      <MenuBar id="topMenuBar" fx:id="menuBar" prefHeight="30.0" BorderPane.alignment="CENTER">
         <menus>
           <Menu fx:id="mainPage" disable="true" mnemonicParsing="false" />
           <Menu fx:id="webAdmin" mnemonicParsing="false" />
@@ -37,12 +36,12 @@
         <GridPane id="centerGridPane" fx:id="content" alignment="CENTER" BorderPane.alignment="CENTER" />
     </center>
    <bottom>
-      <Pane id="bottomPanel" prefHeight="20.0" BorderPane.alignment="CENTER" />
+      <Pane id="bottomPanel" prefHeight="10.0" BorderPane.alignment="CENTER" />
    </bottom>
    <right>
-      <Pane id="rightPane" prefWidth="35.0" BorderPane.alignment="CENTER" />
+      <Pane id="rightPane" prefWidth="10.0" BorderPane.alignment="CENTER" />
    </right>
    <left>
-      <Pane id="leftPane" prefWidth="35.0" BorderPane.alignment="CENTER" />
+      <Pane id="leftPane" prefWidth="10.0" BorderPane.alignment="CENTER" />
    </left>
 </BorderPane>
