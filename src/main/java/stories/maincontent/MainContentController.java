@@ -302,11 +302,11 @@ public class MainContentController implements Initializable {
                 String officialText;
                 String customText;
                 try {
-                    officialText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.official");
-                    customText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.custom");
+                    officialText = "  " + propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.official") + "  ";
+                    customText = "  " + propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.custom") + "  ";
                 } catch (Exception e) {
-                    officialText = "OFFICIAL";
-                    customText = "CUSTOM";
+                    officialText = "  OFFICIAL  ";
+                    customText = "  CUSTOM  ";
                 }
 
                 if (map.isOfficial()) {
@@ -316,11 +316,11 @@ public class MainContentController implements Initializable {
                     mapType = new Label(customText);
                     mapType.setStyle("-fx-text-fill: gold; -fx-padding: 3; -fx-border-color: gold; -fx-border-radius: 5;");
                 }
-                mapNameLabel.setPadding(new Insets(0,0,4,0));
+                mapNameLabel.setPadding(new Insets(0,10,4,0));
 
                 ImageView darkPanel = new ImageView(new Image("images/darkPanel.png"));
                 darkPanel.setPreserveRatio(false);
-                darkPanel.setFitWidth(300);
+                darkPanel.setFitWidth(350);
                 darkPanel.setFitHeight(25);
                 darkPanel.setOpacity(0.7);
 
@@ -329,7 +329,7 @@ public class MainContentController implements Initializable {
                 gridpane.add(darkPanel, 1, 1);
                 gridpane.add(mapType, 1, 1);
                 gridpane.add(mapNameLabel, 1, 1);
-                GridPane.setHalignment(darkPanel, HPos.LEFT);
+                GridPane.setHalignment(darkPanel, HPos.CENTER);
                 GridPane.setValignment(darkPanel, VPos.BOTTOM);
                 GridPane.setHalignment(mapType, HPos.LEFT);
                 GridPane.setValignment(mapType, VPos.BOTTOM);
