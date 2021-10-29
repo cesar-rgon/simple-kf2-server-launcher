@@ -70,8 +70,8 @@
                         <ColumnConstraints />
                     </columnConstraints>
                     <rowConstraints>
-                      <RowConstraints minHeight="10.0" prefHeight="55.0" vgrow="ALWAYS" />
-                      <RowConstraints minHeight="10.0" prefHeight="180.0" vgrow="ALWAYS" />
+                      <RowConstraints minHeight="10.0" prefHeight="195.0" vgrow="ALWAYS" />
+                      <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
                       <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
                         <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
                         <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
@@ -90,34 +90,29 @@
                     </rowConstraints>
                      <children>
 
-                        <ImageView fx:id="languageImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+                        <ImageView fx:id="languageImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                             <image>
                                 <Image url="@../images/label.png" />
                             </image>
                         </ImageView>
-                        <Label fx:id="languageLabel" alignment="CENTER_RIGHT" styleClass="width150" text="LANGUAGE*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+                        <Label fx:id="languageLabel" alignment="CENTER_RIGHT" styleClass="width150" text="LANGUAGE*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                             <GridPane.margin>
                                 <Insets right="10.0" />
                             </GridPane.margin>
                         </Label>
-                        <ComboBox fx:id="languageSelect" onAction="#languageOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.valignment="CENTER" />
-                        <ComboBox fx:id="mapSelect" onAction="#mapOnAction" prefHeight="173.0" prefWidth="390.0" GridPane.columnSpan="2" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                        <ComboBox fx:id="languageSelect" onAction="#languageOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+                        <ComboBox fx:id="mapSelect" onAction="#mapOnAction" prefHeight="173.0" prefWidth="390.0" GridPane.columnSpan="2" GridPane.valignment="CENTER">
                            <GridPane.margin>
                               <Insets />
                            </GridPane.margin></ComboBox>
-                        <ImageView fx:id="noSelectedMapImage" fitHeight="162.0" fitWidth="358.0" pickOnBounds="true" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                        <ImageView fx:id="noSelectedMapImage" fitHeight="162.0" fitWidth="358.0" pickOnBounds="true" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
                            <image>
                               <Image url="@../images/no-photo.png" />
                            </image>
                            <GridPane.margin>
-                              <Insets right="24.0" top="5.0" />
+                              <Insets right="24.0" />
                            </GridPane.margin>
                         </ImageView>
-
-                         <Label fx:id="noSelectedMapLabel" alignment="BOTTOM_RIGHT" style="-fx-font-size: 10; -fx-text-fill: #4d0304; -fx-padding: 3; -fx-border-color: #4d0304; -fx-border-radius: 5; -fx-font-weight: bold;" text="  NO SELECTED MAP  " GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
-                           <GridPane.margin>
-                              <Insets right="33.0" top="142.0" />
-                           </GridPane.margin></Label>
 
                         <ImageView fx:id="gameTypeImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                             <image>

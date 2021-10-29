@@ -184,7 +184,6 @@ public class MainContentController implements Initializable {
     @FXML private TextField friendlyFirePercentage;
 
     @FXML private ImageView noSelectedMapImage;
-    @FXML private Label noSelectedMapLabel;
 
     public MainContentController() {
         super();
@@ -207,7 +206,6 @@ public class MainContentController implements Initializable {
                 profileSelect.setValue(null);
                 mapSelect.setItems(null);
                 noSelectedMapImage.setVisible(true);
-                noSelectedMapLabel.setVisible(true);
             }
             Session.getInstance().setActualProfile(profileSelect.getValue());
             languageSelect.setItems(facade.listAllLanguages());
@@ -349,10 +347,8 @@ public class MainContentController implements Initializable {
                     setGraphic(createMapGridPane(map));
                     setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
                     noSelectedMapImage.setVisible(false);
-                    noSelectedMapLabel.setVisible(false);
                 } else {
                     noSelectedMapImage.setVisible(true);
-                    noSelectedMapLabel.setVisible(true);
                 }
             }
         });
@@ -1121,10 +1117,8 @@ public class MainContentController implements Initializable {
         }
         if (mapSelect.getValue() != null) {
             noSelectedMapImage.setVisible(false);
-            noSelectedMapLabel.setVisible(false);
         } else {
             noSelectedMapImage.setVisible(true);
-            noSelectedMapLabel.setVisible(true);
         }
 
         difficultySelect.setValue(profile.getDifficulty());
