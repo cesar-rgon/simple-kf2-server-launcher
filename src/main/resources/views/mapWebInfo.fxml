@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
-<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.*?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.web.WebView?>
 
-<fx:root id="centerPane" fx:id="mapWebInfo" alignment="CENTER" gridLinesVisible="true" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapwebinfo.MapWebInfoController">
+<fx:root id="centerPane" fx:id="mapWebInfo" alignment="CENTER" gridLinesVisible="true" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapwebinfo.MapWebInfoController">
    <children>
       <Label id="titleConfigLabel" fx:id="mapNameLabel" alignment="CENTER" text="Map name" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
       <Label fx:id="alreadyInLauncher" text="It is already in the launcher" visible="false" GridPane.halignment="RIGHT">
@@ -29,10 +22,10 @@
       <WebView fx:id="mapInfoWebView" prefHeight="-1.0" prefWidth="-1.0" GridPane.rowIndex="1" />
    </children>
    <columnConstraints>
-      <ColumnConstraints hgrow="ALWAYS" prefWidth="1210.0" />
+      <ColumnConstraints hgrow="ALWAYS" prefWidth="1004.0" />
    </columnConstraints>
    <rowConstraints>
       <RowConstraints fillHeight="false" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" vgrow="NEVER" />
-      <RowConstraints minHeight="10.0" prefHeight="730.0" vgrow="ALWAYS" />
+      <RowConstraints minHeight="610.0" prefHeight="610.0" vgrow="ALWAYS" />
    </rowConstraints>
 </fx:root>

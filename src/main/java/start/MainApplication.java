@@ -43,14 +43,11 @@ public class MainApplication extends Application {
         String applicationVersion = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion");
         primaryStage.setTitle(applicationTitle + " " + applicationVersion);
         primaryStage.setScene(scene);
-
         primaryStage.setMinWidth(1024);
         primaryStage.setMinHeight(700);
-
         String[] resolution = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationResolution").split("x");
         primaryStage.setWidth(Double.parseDouble(resolution[0]));
         primaryStage.setHeight(Double.parseDouble(resolution[1]));
-
         Boolean applicationMaximized = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationMaximized"));
         primaryStage.setMaximized(applicationMaximized != null? applicationMaximized: false);
         primaryStage.show();

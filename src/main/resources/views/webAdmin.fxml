@@ -1,24 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
-<?import javafx.scene.web.*?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.web.WebView?>
+<?import javafx.scene.web.*?>
 
-<fx:root id="centerPane" fx:id="kf2WebAdmin" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.webadmin.WebAdminController">
+<fx:root id="centerPane" fx:id="kf2WebAdmin" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.webadmin.WebAdminController">
    <columnConstraints>
-      <ColumnConstraints minWidth="1210.0" />
+      <ColumnConstraints minWidth="1004.0" />
    </columnConstraints>
    <rowConstraints>
-      <RowConstraints minHeight="730.0" />
+      <RowConstraints minHeight="660.0" prefHeight="660.0" />
    </rowConstraints>
    <children>
-      <ImageView fitHeight="700.0" fitWidth="741.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER">
+      <ImageView fitHeight="660.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER">
          <image>
             <Image url="@../images/radiation700.png" />
          </image>

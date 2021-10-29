@@ -1,22 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<fx:root id="centerPane" fx:id="consoleContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.console.ConsoleController">
+<fx:root id="centerPane" fx:id="consoleContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.console.ConsoleController">
     <rowConstraints>
-      <RowConstraints minHeight="10.0" prefHeight="20.0" />
-        <RowConstraints minHeight="10.0" prefHeight="730.0" />
+      <RowConstraints minHeight="10.0" prefHeight="10.0" />
+        <RowConstraints minHeight="10.0" prefHeight="650.0" />
     </rowConstraints>
     <columnConstraints>
-        <ColumnConstraints minWidth="1.0" prefWidth="1210.0" />
+        <ColumnConstraints minWidth="1004.0" prefWidth="1004.0" />
     </columnConstraints>
     <children>
-        <ImageView fitHeight="700.0" fitWidth="741.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowSpan="2" GridPane.valignment="CENTER">
+        <ImageView fitHeight="660.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowSpan="2" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/radiation700.png" />
             </image>

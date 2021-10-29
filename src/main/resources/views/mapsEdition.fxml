@@ -5,7 +5,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<fx:root id="centerPane" fx:id="mapsEditionGridPane" prefHeight="660.0" prefWidth="1004.0" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapsedition.MapsEditionController">
+<fx:root id="centerPane" fx:id="mapsEditionGridPane" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapsedition.MapsEditionController">
    <children>
       <ImageView fx:id="profileImg" fitHeight="30.0" fitWidth="110.0" pickOnBounds="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
          <image>
@@ -69,14 +69,14 @@
       </Label>
       <TextField fx:id="searchMaps" maxWidth="200.0" onKeyReleased="#searchMapsKeyReleased" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
          <GridPane.margin>
-            <Insets top="130.0" />
+            <Insets top="105.0" />
          </GridPane.margin></TextField>
       <ImageView fx:id="searchImg" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
          <image>
             <Image url="@../images/find.png" />
          </image>
          <GridPane.margin>
-            <Insets top="132.0" />
+            <Insets top="105.0" />
          </GridPane.margin>
       </ImageView>
       <ImageView fx:id="actionImg" fitHeight="30.0" fitWidth="110.0" pickOnBounds="true" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
@@ -118,19 +118,19 @@
       </MenuBar>
       <CheckBox fx:id="selectAllMaps" alignment="CENTER" mnemonicParsing="false" nodeOrientation="LEFT_TO_RIGHT" onAction="#selectAllMapsOnAction" text="Select all" GridPane.columnIndex="4" GridPane.halignment="LEFT">
          <GridPane.margin>
-            <Insets left="10.0" top="130.0" />
+            <Insets left="10.0" top="104.0" />
          </GridPane.margin></CheckBox>
    </children>
    <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
-      <ColumnConstraints hgrow="ALWAYS" />
+      <ColumnConstraints hgrow="ALWAYS" prefWidth="110.0" />
       <ColumnConstraints hgrow="ALWAYS" minWidth="300.0" prefWidth="300.0" />
-      <ColumnConstraints hgrow="ALWAYS" minWidth="80.0" prefWidth="80.0" />
-      <ColumnConstraints hgrow="ALWAYS" minWidth="110.0" prefWidth="110.0" />
+      <ColumnConstraints hgrow="ALWAYS" minWidth="373.0" prefWidth="373.0" />
+      <ColumnConstraints hgrow="ALWAYS" minWidth="200.0" prefWidth="200.0" />
       <ColumnConstraints hgrow="ALWAYS" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
    </columnConstraints>
    <rowConstraints>
       <RowConstraints minHeight="60.0" prefHeight="60.0" vgrow="NEVER" />
-      <RowConstraints minHeight="590.0" vgrow="ALWAYS" />
+      <RowConstraints minHeight="600.0" prefHeight="600.0" vgrow="ALWAYS" />
    </rowConstraints>
 </fx:root>

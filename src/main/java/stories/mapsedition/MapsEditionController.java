@@ -4,7 +4,6 @@ import dtos.AbstractMapDto;
 import dtos.CustomMapModDto;
 import dtos.OfficialMapDto;
 import dtos.ProfileDto;
-import entities.CustomMapMod;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -380,7 +379,7 @@ public class MapsEditionController implements Initializable {
     }
 
     private Double getWidthGridPaneByNumberOfColums() {
-        return (MainApplication.getPrimaryStage().getWidth() - (50 * mapsSlider.getValue()) - 150) / mapsSlider.getValue();
+        return (MainApplication.getPrimaryStage().getWidth() - (50 * mapsSlider.getValue()) - 98) / mapsSlider.getValue();
     }
 
     private void resizeGridPane(GridPane gridPane) {

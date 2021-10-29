@@ -1,19 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.geometry.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.text.*?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.*?>
 
-<fx:root fx:id="lengthEdition" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.lengthedition.LengthEditionController">
+<fx:root fx:id="lengthEdition" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.lengthedition.LengthEditionController">
    <children>
-      <ImageView fitHeight="700.0" fitWidth="741.0" pickOnBounds="true" preserveRatio="true" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowSpan="4" GridPane.valignment="CENTER">
+      <ImageView fitHeight="660.0" pickOnBounds="true" preserveRatio="true" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowSpan="4" GridPane.valignment="CENTER">
          <image>
             <Image url="@../images/radiation700.png" />
          </image>
@@ -22,7 +17,7 @@
          <font>
             <Font size="20.0" />
          </font></Label>
-      <TableView fx:id="lengthTable" editable="true" maxHeight="650.0" maxWidth="900.0" opacity="0.8" prefHeight="650.0" prefWidth="900.0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2">
+      <TableView fx:id="lengthTable" editable="true" maxHeight="450.0" maxWidth="900.0" opacity="0.8" prefHeight="450.0" prefWidth="900.0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
          <columns>
             <TableColumn fx:id="lengthCodeColumn" maxWidth="450.0" onEditCommit="#lengthCodeColumnOnEditCommit" prefWidth="450.0" resizable="false">
                <graphic>
@@ -34,24 +29,24 @@
                </graphic></TableColumn>
          </columns>
       </TableView>
-      <Button fx:id="addLength" mnemonicParsing="false" onAction="#addLengthOnAction" prefWidth="200.0" text="Add a new one" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+      <Button fx:id="addLength" mnemonicParsing="false" onAction="#addLengthOnAction" prefWidth="200.0" text="Add a new one" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
          <GridPane.margin>
             <Insets right="50.0" />
          </GridPane.margin></Button>
-      <Button fx:id="removeLength" mnemonicParsing="false" onAction="#removeLengthOnAction" prefWidth="200.0" text="Remove selected one" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+      <Button fx:id="removeLength" mnemonicParsing="false" onAction="#removeLengthOnAction" prefWidth="200.0" text="Remove selected one" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP">
          <GridPane.margin>
             <Insets left="50.0" />
          </GridPane.margin></Button>
-      <Label fx:id="messageLabel" text="One click on an item to select it, double click to edit it" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM" />
+      <Label fx:id="messageLabel" text="One click on an item to select it, double click to edit it" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
    </children>
    <columnConstraints>
-      <ColumnConstraints prefWidth="1210.0" />
-      <ColumnConstraints minWidth="10.0" prefWidth="1210.0" />
+      <ColumnConstraints prefWidth="502.0" />
+      <ColumnConstraints minWidth="10.0" prefWidth="502.0" />
    </columnConstraints>
    <rowConstraints>
-      <RowConstraints minHeight="10.0" prefHeight="150.0" />
-      <RowConstraints minHeight="10.0" prefHeight="120.0" />
-      <RowConstraints prefHeight="560.0" />
-      <RowConstraints minHeight="10.0" prefHeight="120.0" />
+      <RowConstraints minHeight="80.0" prefHeight="80.0" />
+      <RowConstraints minHeight="80.0" prefHeight="80.0" />
+      <RowConstraints minHeight="480.0" prefHeight="480.0" />
+      <RowConstraints minHeight="20.0" prefHeight="20.0" />
    </rowConstraints>
 </fx:root>

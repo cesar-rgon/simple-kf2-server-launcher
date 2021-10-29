@@ -1,28 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<fx:root id="centerPane" fx:id="installUpdateServerContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.installupdateserver.InstallUpdateServerController">
+<fx:root id="centerPane" fx:id="installUpdateServerContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.installupdateserver.InstallUpdateServerController">
     <rowConstraints>
-        <RowConstraints minHeight="10.0" prefHeight="730.0" />
-        <RowConstraints minHeight="10.0" prefHeight="730.0" />
-        <RowConstraints minHeight="10.0" prefHeight="730.0" />
-        <RowConstraints minHeight="10.0" prefHeight="730.0" />
-        <RowConstraints minHeight="10.0" prefHeight="730.0" />
-        <RowConstraints minHeight="10.0" prefHeight="730.0" />
-        <RowConstraints minHeight="10.0" prefHeight="730.0" />
+        <RowConstraints minHeight="94.0" prefHeight="94.0" />
+        <RowConstraints minHeight="94.0" prefHeight="94.0" />
+        <RowConstraints minHeight="94.0" prefHeight="94.0" />
+        <RowConstraints minHeight="94.0" prefHeight="94.0" />
+        <RowConstraints minHeight="94.0" prefHeight="94.0" />
+        <RowConstraints minHeight="94.0" prefHeight="94.0" />
+        <RowConstraints minHeight="96.0" prefHeight="96.0" />
     </rowConstraints>
     <columnConstraints>
-        <ColumnConstraints minWidth="10.0" prefWidth="1210.0" />
-        <ColumnConstraints minWidth="1.0" prefWidth="1210.0" />
-        <ColumnConstraints minWidth="10.0" prefWidth="1210.0" />
+        <ColumnConstraints minWidth="334.0" prefWidth="334.0" />
+        <ColumnConstraints minWidth="1.0" prefWidth="336.0" />
+        <ColumnConstraints minWidth="10.0" prefWidth="334.0" />
     </columnConstraints>
     <children>
-        <ImageView fitHeight="700.0" fitWidth="741.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+        <ImageView fitHeight="660.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/radiation700.png" />
             </image>

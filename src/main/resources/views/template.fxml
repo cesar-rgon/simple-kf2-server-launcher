@@ -36,12 +36,12 @@
         <GridPane id="centerGridPane" fx:id="content" alignment="CENTER" BorderPane.alignment="CENTER" />
     </center>
    <bottom>
-      <Pane id="bottomPanel" prefHeight="10.0" BorderPane.alignment="CENTER" />
+      <Pane id="bottomPanel" minHeight="10.0" prefHeight="10.0" BorderPane.alignment="CENTER" />
    </bottom>
    <right>
-      <Pane id="rightPane" prefWidth="10.0" BorderPane.alignment="CENTER" />
+      <Pane id="rightPane" minWidth="10.0" prefWidth="10.0" BorderPane.alignment="CENTER" />
    </right>
    <left>
-      <Pane id="leftPane" prefWidth="10.0" BorderPane.alignment="CENTER" />
+      <Pane id="leftPane" minWidth="10.0" prefWidth="10.0" BorderPane.alignment="CENTER" />
    </left>
 </BorderPane>

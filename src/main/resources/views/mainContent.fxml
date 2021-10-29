@@ -9,10 +9,10 @@
 <fx:root id="centerPane" fx:id="mainContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maincontent.MainContentController">
     <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="10.0" />
-        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="200.0" />
-        <ColumnConstraints hgrow="ALWAYS" maxWidth="350.0" minWidth="10.0" prefWidth="270.0" />
+        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="180.0" />
+        <ColumnConstraints hgrow="ALWAYS" maxWidth="300.0" minWidth="10.0" prefWidth="300.0" />
         <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="10.0" />
-        <ColumnConstraints hgrow="ALWAYS" maxWidth="350.0" minWidth="10.0" prefWidth="324.0" />
+        <ColumnConstraints hgrow="ALWAYS" maxWidth="314.0" minWidth="10.0" prefWidth="314.0" />
         <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="180.0" />
       <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="10.0" />
       <ColumnConstraints />
@@ -25,12 +25,12 @@
     </rowConstraints>
     <children>
 
-      <ImageView fitHeight="566.0" fitWidth="600.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+      <ImageView fitHeight="566.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
         <image>
             <Image url="@../images/radiation700.png" />
         </image>
          <GridPane.margin>
-            <Insets left="100.0" top="-25.0" />
+            <Insets left="90.0" top="-25.0" />
          </GridPane.margin>
       </ImageView>
 
@@ -101,10 +101,23 @@
                             </GridPane.margin>
                         </Label>
                         <ComboBox fx:id="languageSelect" onAction="#languageOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.valignment="CENTER" />
-                        <ComboBox fx:id="mapSelect" onAction="#mapOnAction" prefHeight="160.0" prefWidth="390.0" GridPane.columnSpan="2" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                        <ComboBox fx:id="mapSelect" onAction="#mapOnAction" prefHeight="173.0" prefWidth="390.0" GridPane.columnSpan="2" GridPane.rowIndex="1" GridPane.valignment="TOP">
                            <GridPane.margin>
                               <Insets />
                            </GridPane.margin></ComboBox>
+                        <ImageView fx:id="noSelectedMapImage" fitHeight="162.0" fitWidth="358.0" pickOnBounds="true" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                           <image>
+                              <Image url="@../images/no-photo.png" />
+                           </image>
+                           <GridPane.margin>
+                              <Insets right="24.0" top="5.0" />
+                           </GridPane.margin>
+                        </ImageView>
+
+                         <Label fx:id="noSelectedMapLabel" alignment="BOTTOM_RIGHT" style="-fx-font-size: 10; -fx-text-fill: #4d0304; -fx-padding: 3; -fx-border-color: #4d0304; -fx-border-radius: 5; -fx-font-weight: bold;" text="  NO SELECTED MAP  " GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+                           <GridPane.margin>
+                              <Insets right="33.0" top="142.0" />
+                           </GridPane.margin></Label>
 
                         <ImageView fx:id="gameTypeImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                             <image>
