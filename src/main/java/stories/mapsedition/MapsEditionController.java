@@ -1002,4 +1002,55 @@ public class MapsEditionController implements Initializable {
             customMapsFlowPane.getChildren().add(gridpane);
         }
     }
+
+    @FXML
+    private void editMapsOnAction() {
+        try {
+            if (!facade.isCorrectInstallationFolder(installationFolder)) {
+                logger.warn("Installation folder can not be empty and can not contains whitespaces. Define in Install/Update section: " + installationFolder);
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
+                Utils.warningDialog(headerText, contentText);
+                return;
+            }
+            List<Node> removeList = new ArrayList<Node>();
+            StringBuffer message = new StringBuffer();
+            ObservableList<Node> officialNodes = officialMapsFlowPane.getChildren();
+            ObservableList<Node> customNodes = customMapsFlowPane.getChildren();
+
+            for (Node node : officialNodes) {
+                GridPane gridpane = (GridPane) node;
+                Label mapNameLabel = (Label) gridpane.getChildren().get(1);
+                CheckBox checkbox = (CheckBox) mapNameLabel.getGraphic();
+
+                if (checkbox.isSelected()) {
+                    removeList.add(gridpane);
+                    message.append(mapNameLabel.getText()).append("\n");
+                }
+            }
+
+            for (Node node : customNodes) {
+                GridPane gridpane = (GridPane) node;
+                Label mapNameLabel = (Label) gridpane.getChildren().get(1);
+                CheckBox checkbox = (CheckBox) mapNameLabel.getGraphic();
+
+                if (checkbox.isSelected()) {
+                    removeList.add(gridpane);
+                    message.append(mapNameLabel.getText()).append("\n");
+                }
+            }
+            if (removeList.isEmpty()) {
+                logger.warn("No selected maps/mods to edit. You must select at least one item to be editted");
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapsNotSelected");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectItems");
+                Utils.warningDialog(headerText, contentText);
+
+            } else {
+                loadNewContent("/views/mapEdition.fxml");
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
 }

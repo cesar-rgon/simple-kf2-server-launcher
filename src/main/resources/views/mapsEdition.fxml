@@ -99,7 +99,8 @@
             <items>
                <MenuItem fx:id="addNewMaps" mnemonicParsing="false" onAction="#addNewMapsOnAction" text="Add new maps" />
                <MenuItem fx:id="searchInWorkShop" mnemonicParsing="false" onAction="#searchInWorkShopOnAction" text="Search in WorkShop" />
-               <MenuItem fx:id="removeMaps" mnemonicParsing="false" onAction="#removeMapsOnAction" text="Remove maps" />
+               <MenuItem fx:id="editMaps" mnemonicParsing="false" onAction="#editMapsOnAction" text="Edit selected maps" />
+               <MenuItem fx:id="removeMaps" mnemonicParsing="false" onAction="#removeMapsOnAction" text="Delete selected maps" />
                <MenuItem fx:id="importMapsFromServer" mnemonicParsing="false" onAction="#importMapsFromServerOnAction" text="Import maps from KF2 server" />
                <Menu fx:id="orderMaps" mnemonicParsing="false" text="Order maps">
                   <items>
