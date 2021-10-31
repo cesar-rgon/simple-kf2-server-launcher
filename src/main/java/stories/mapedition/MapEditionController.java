@@ -49,7 +49,6 @@ public class MapEditionController implements Initializable {
     @FXML private Button nextMapButton;
     @FXML private Button backButton;
 
-
     public MapEditionController() {
         super();
         facade = new MapEditionFacadeImpl();
@@ -105,6 +104,58 @@ public class MapEditionController implements Initializable {
 
         try {
             installationFolder = facade.findConfigPropertyValue("prop.config.installationFolder");
+            ProfileDto actualProfile = Session.getInstance().getActualProfile();
+
+            WebEngine webEngine = mapPreviewWebView.getEngine();
+
+            if (!Session.getInstance().getMapList().isEmpty()) {
+                AbstractMapDto mapDto = Session.getInstance().getMapList().get(0);
+
+                webEngine.documentProperty().addListener(new ChangeListener<Document>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Document> observable, Document oldDoc, Document doc) {
+                        if (doc != null) {
+                            NodeList imgList = doc.getElementsByTagName("img");
+                            if (imgList != null && imgList.getLength() > 0) {
+                                Element img = (Element) imgList.item(0);
+                                img.setAttribute("width", "512");
+                                img.setAttribute("height", "256");
+                            }
+
+                        }
+                   }
+                });
+
+                mapNameValue.setText(mapDto.getKey());
+                officialValue.setText(mapDto.isOfficial()? "Yes": "No");
+                downloadedValue.setText(mapDto.isOfficial()? "Yes": ((CustomMapModDto)mapDto).isDownloaded()? "Yes": "No");
+                idWorkShopValue.setText(mapDto.isOfficial()? StringUtils.EMPTY: String.valueOf(((CustomMapModDto)mapDto).getIdWorkShop()));
+                importationDateValue.setText(
+                        StringUtils.isNotBlank(mapDto.getImportedDate(actualProfile.getName())) ? mapDto.getImportedDate(actualProfile.getName()): "Unknown"
+                );
+                releaseDateTextField.setText(
+                        StringUtils.isNotBlank(mapDto.getReleaseDate()) ? mapDto.getReleaseDate(): "Unknown"
+                );
+                infoUrlTextField.setText(
+                        StringUtils.isNotBlank(mapDto.getUrlInfo()) ? mapDto.getUrlInfo(): StringUtils.EMPTY
+                );
+
+                if (StringUtils.isNotBlank(mapDto.getUrlPhoto())) {
+                    webEngine.load("file:" + installationFolder + mapDto.getUrlPhoto());
+                    mapPreviewUrlTextField.setText(mapDto.getUrlPhoto());
+                } else {
+                    webEngine.load("file:" + getClass().getResource("/images/no-photo.png").getPath());
+                    mapPreviewUrlTextField.setText(StringUtils.EMPTY);
+                }
+
+                // Put gray color for background of the browser's page
+                Field f = webEngine.getClass().getDeclaredField("page");
+                f.setAccessible(true);
+                com.sun.webkit.WebPage page = (com.sun.webkit.WebPage) f.get(webEngine);
+                page.setBackgroundColor((new java.awt.Color(0.5019608f, 0.5019608f, 0.5019608f, 0.5f)).getRGB());
+            } else {
+                webEngine.load("file:" + getClass().getResource("/images/no-photo.png").getPath());
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
