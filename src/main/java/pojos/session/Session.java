@@ -19,6 +19,7 @@ public class Session {
     private ProfileDto mapsProfile;
     private EnumSortedMapsCriteria sortedMapsCriteria;
     private EnumMasTab selectedMapTab;
+    private List<AbstractMapDto> mapList;
 
     /**
      * Singleton constructor
@@ -30,6 +31,7 @@ public class Session {
         processList = new ArrayList<Process>();
         sortedMapsCriteria = EnumSortedMapsCriteria.NAME_DESC;
         selectedMapTab = EnumMasTab.CUSTOM_MAPS_TAB;
+        mapList = new ArrayList<AbstractMapDto>();
     }
 
     public static Session getInstance() {
@@ -105,5 +107,13 @@ public class Session {
 
     public void setSelectedMapTab(EnumMasTab selectedMapTab) {
         this.selectedMapTab = selectedMapTab;
+    }
+
+    public List<AbstractMapDto> getMapList() {
+        return mapList;
+    }
+
+    public void setMapList(List<AbstractMapDto> mapList) {
+        this.mapList = mapList;
     }
 }

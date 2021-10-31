@@ -272,7 +272,6 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     }
 
     private Optional<AbstractMap> findMapByName(String mapName) throws SQLException {
-
         Optional<AbstractMap> officialMapOptional = officialMapService.findMapByCode(mapName);
         if (officialMapOptional.isPresent()) {
             return officialMapOptional;
@@ -417,5 +416,14 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
             logger.error("Error importing the official map with name: " + officialMapName + " from server", e);
         }
         return null;
+    }
+
+    @Override
+    public Optional<AbstractMapDto> findMapDtoByName(String mapName) throws SQLException {
+        Optional<AbstractMap> abstractMapOptional = findMapByName(mapName);
+        if (abstractMapOptional.isPresent()) {
+            return Optional.ofNullable(mapDtoFactory.newDto(abstractMapOptional.get()));
+        }
+        return Optional.empty();
     }
 }

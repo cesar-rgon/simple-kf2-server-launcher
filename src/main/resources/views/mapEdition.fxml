@@ -31,7 +31,7 @@
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Text fx:id="mapNameValue" fill="WHITE" text="Map Name Value" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+        <Text fx:id="mapNameValue" fill="WHITE" style="-fx-font-weight: bold;" text="Map Name Value" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font>
@@ -68,7 +68,7 @@
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Text fx:id="officialValue" fill="WHITE" text="Yes / No" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
+        <Text fx:id="officialValue" fill="WHITE" style="-fx-font-weight: bold;" text="Yes / No" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font>
@@ -87,7 +87,7 @@
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Text fx:id="idWorkShopValue" fill="WHITE" text="Id WorkShop Value" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
+        <Text fx:id="idWorkShopValue" fill="WHITE" style="-fx-font-weight: bold;" text="Id WorkShop Value" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font>
@@ -106,7 +106,7 @@
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Text fx:id="importationDateValue" fill="WHITE" text="Date Value" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
+        <Text fx:id="importationDateValue" fill="WHITE" style="-fx-font-weight: bold;" text="Date Value" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font>
@@ -125,7 +125,7 @@
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Text fx:id="downloadedValue" fill="WHITE" text="Yes / No" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
+        <Text fx:id="downloadedValue" fill="WHITE" style="-fx-font-weight: bold;" text="Yes / No" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font>
@@ -134,9 +134,9 @@
             </GridPane.margin>
         </Text>
 
-        <WebView fx:id="mapPreviewWebView" maxHeight="256.0" maxWidth="512.0" prefHeight="-1.0" prefWidth="-1.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.rowSpan="5" GridPane.valignment="TOP">
+        <WebView fx:id="mapPreviewWebView" maxHeight="256.0" maxWidth="512.0" prefHeight="-1.0" prefWidth="-1.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.rowSpan="5" GridPane.valignment="TOP">
             <GridPane.margin>
-                <Insets left="170.0" />
+                <Insets left="152.0" />
             </GridPane.margin>
         </WebView>
 
@@ -197,7 +197,7 @@
       <ColumnConstraints />
    </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="50.0" prefHeight="50.0" />
+        <RowConstraints minHeight="80.0" prefHeight="80.0" />
         <RowConstraints minHeight="50.0" prefHeight="50.0" />
       <RowConstraints minHeight="50.0" prefHeight="50.0" />
       <RowConstraints minHeight="40.0" prefHeight="40.0" />
@@ -210,6 +210,6 @@
       <RowConstraints minHeight="40.0" prefHeight="40.0" />
       <RowConstraints minHeight="40.0" prefHeight="40.0" />
       <RowConstraints minHeight="40.0" prefHeight="40.0" />
-      <RowConstraints minHeight="53.0" prefHeight="53.0" />
+      <RowConstraints minHeight="23.0" prefHeight="23.0" />
     </rowConstraints>
 </fx:root>

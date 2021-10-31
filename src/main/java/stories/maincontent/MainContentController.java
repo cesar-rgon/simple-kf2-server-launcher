@@ -92,7 +92,6 @@ public class MainContentController implements Initializable {
     @FXML private ImageView clanImg;
     @FXML private ImageView webLinkImg;
     @FXML private ImageView customParametersImg;
-    @FXML private ImageView thumbnailImg;
     @FXML private ImageView urlImageServerImg;
     @FXML private ImageView welcomeImg;
     @FXML private Tab basicParameters;
@@ -557,10 +556,8 @@ public class MainContentController implements Initializable {
                         }
                         if (StringUtils.isNotEmpty(urlImageServer.getText())) {
                             imageWebView.getEngine().load(urlImageServer.getText());
-                            imageWebView.setVisible(true);
                         } else {
-                            imageWebView.setVisible(false);
-                            imageWebView.getEngine().load(null);
+                            imageWebView.getEngine().load("file:" + getClass().getResource("/images/photo-borders.png").getPath());
                         }
                     }
                 } catch (Exception e) {
@@ -966,7 +963,7 @@ public class MainContentController implements Initializable {
         joinServer.setText(joinServerText);
         joinServer.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.joinServer")));
 
-        Tooltip.install(thumbnailImg, new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.thumbnail")));
+        Tooltip.install(imageWebView, new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.thumbnail")));
 
         // Advanced Parameters
         String portsLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.ports");
@@ -1144,10 +1141,8 @@ public class MainContentController implements Initializable {
         try {
             if (StringUtils.isNotEmpty(urlImageServer.getText())) {
                 imageWebView.getEngine().load(urlImageServer.getText());
-                imageWebView.setVisible(true);
             } else {
-                imageWebView.setVisible(false);
-                imageWebView.getEngine().load(null);
+                imageWebView.getEngine().load("file:" + getClass().getResource("/images/photo-borders.png").getPath());
             }
             serverPassword.setText(Utils.decryptAES(profile.getServerPassword()));
             webPassword.setText(Utils.decryptAES(profile.getWebPassword()));
