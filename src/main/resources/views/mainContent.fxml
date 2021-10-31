@@ -211,16 +211,7 @@
                         </Label>
                         <CheckBox fx:id="takeover" mnemonicParsing="false" onAction="#takeoverOnAction" opacity="0.75" text="Enable takeover" GridPane.columnIndex="1" GridPane.rowIndex="9" GridPane.valignment="CENTER" />
 
-                        <ImageView fx:id="thumbnailImg" fitHeight="257.0" fitWidth="531.0" opacity="0.9" pickOnBounds="true" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowSpan="3" GridPane.valignment="CENTER">
-                            <image>
-                                <Image url="@../images/photo-borders.png" />
-                            </image>
-                            <GridPane.margin>
-                                <Insets left="-10.0" />
-                            </GridPane.margin>
-                        </ImageView>
-
-                        <WebView fx:id="imageWebView" maxHeight="256.0" maxWidth="512.0" prefHeight="-1.0" prefWidth="-1.0" visible="false" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowSpan="3" GridPane.valignment="CENTER">
+                        <WebView fx:id="imageWebView" maxHeight="256.0" maxWidth="512.0" prefHeight="-1.0" prefWidth="-1.0" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowSpan="3" GridPane.valignment="CENTER">
                            <GridPane.margin>
                               <Insets bottom="1.0" left="-2.0" />
                            </GridPane.margin></WebView>

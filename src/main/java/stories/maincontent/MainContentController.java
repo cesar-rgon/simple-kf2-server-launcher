@@ -9,7 +9,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -20,6 +19,9 @@ import javafx.util.Callback;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -33,6 +35,7 @@ import java.util.stream.Collectors;
 public class MainContentController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(MainContentController.class);
+
     private final MainContentFacade facade;
     private final PropertyService propertyService;
     private String previousSelectedLanguageCode;
@@ -92,7 +95,6 @@ public class MainContentController implements Initializable {
     @FXML private ImageView clanImg;
     @FXML private ImageView webLinkImg;
     @FXML private ImageView customParametersImg;
-    @FXML private ImageView thumbnailImg;
     @FXML private ImageView urlImageServerImg;
     @FXML private ImageView welcomeImg;
     @FXML private Tab basicParameters;
@@ -541,6 +543,22 @@ public class MainContentController implements Initializable {
             }
         });
 
+
+        imageWebView.getEngine().documentProperty().addListener(new ChangeListener<Document>() {
+            @Override
+            public void changed(ObservableValue<? extends Document> observable, Document oldDoc, Document doc) {
+                if (doc != null) {
+                    NodeList imgList = doc.getElementsByTagName("img");
+                    if (imgList != null && imgList.getLength() > 0) {
+                        Element img = (Element) imgList.item(0);
+                        img.setAttribute("width", "512");
+                        img.setAttribute("height", "256");
+                    }
+                }
+            }
+        });
+
+
         urlImageServer.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
@@ -557,10 +575,8 @@ public class MainContentController implements Initializable {
                         }
                         if (StringUtils.isNotEmpty(urlImageServer.getText())) {
                             imageWebView.getEngine().load(urlImageServer.getText());
-                            imageWebView.setVisible(true);
                         } else {
-                            imageWebView.setVisible(false);
-                            imageWebView.getEngine().load(null);
+                            imageWebView.getEngine().load("file:" + getClass().getResource("/images/photo-borders.png").getPath());
                         }
                     }
                 } catch (Exception e) {
@@ -966,7 +982,7 @@ public class MainContentController implements Initializable {
         joinServer.setText(joinServerText);
         joinServer.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.joinServer")));
 
-        Tooltip.install(thumbnailImg, new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.thumbnail")));
+        Tooltip.install(imageWebView, new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.thumbnail")));
 
         // Advanced Parameters
         String portsLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.ports");
@@ -1144,10 +1160,8 @@ public class MainContentController implements Initializable {
         try {
             if (StringUtils.isNotEmpty(urlImageServer.getText())) {
                 imageWebView.getEngine().load(urlImageServer.getText());
-                imageWebView.setVisible(true);
             } else {
-                imageWebView.setVisible(false);
-                imageWebView.getEngine().load(null);
+                imageWebView.getEngine().load("file:" + getClass().getResource("/images/photo-borders.png").getPath());
             }
             serverPassword.setText(Utils.decryptAES(profile.getServerPassword()));
             webPassword.setText(Utils.decryptAES(profile.getWebPassword()));

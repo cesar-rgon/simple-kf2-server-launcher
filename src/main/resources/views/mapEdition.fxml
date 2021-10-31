@@ -9,11 +9,17 @@
 
 <fx:root fx:id="mapEdition" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapedition.MapEditionController">
     <children>
-        <ImageView fitHeight="660.0" pickOnBounds="true" preserveRatio="true" GridPane.columnSpan="4" GridPane.halignment="CENTER" GridPane.rowSpan="14" GridPane.valignment="CENTER">
+        <ImageView fitHeight="660.0" pickOnBounds="true" preserveRatio="true" GridPane.columnSpan="4" GridPane.halignment="CENTER" GridPane.rowSpan="15" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/radiation700.png" />
             </image>
         </ImageView>
+
+        <Pane styleClass="pane" GridPane.columnSpan="4" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.rowSpan="13">
+            <GridPane.margin>
+                <Insets bottom="15.0" left="80.0" right="80.0" />
+            </GridPane.margin>
+        </Pane>
 
         <Label fx:id="titleConfigLabel" alignment="TOP_LEFT" text="Edit map" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
             <font>
@@ -21,17 +27,17 @@
             </font>
         </Label>
 
-        <ImageView fx:id="mapNameImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+        <ImageView fx:id="mapNameImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <Label fx:id="mapNameLabel" alignment="CENTER_RIGHT" styleClass="width150" text="MAP NAME" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+        <Label fx:id="mapNameLabel" alignment="CENTER_RIGHT" styleClass="width150" text="MAP NAME" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Text fx:id="mapNameValue" fill="WHITE" text="Map Name Value" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+        <Text fx:id="mapNameValue" fill="WHITE" style="-fx-font-weight: bold;" text="Map Name Value" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font>
@@ -40,7 +46,7 @@
             </GridPane.margin>
         </Text>
 
-        <ImageView fx:id="aliasImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="TOP">
+        <ImageView fx:id="aliasImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP">
             <image>
                 <Image url="@../images/label.png" />
             </image>
@@ -48,27 +54,27 @@
             <Insets top="3.0" />
          </GridPane.margin>
         </ImageView>
-        <Label fx:id="aliasLabel" alignment="CENTER_RIGHT" styleClass="width150" text="ALIAS" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="TOP">
+        <Label fx:id="aliasLabel" alignment="CENTER_RIGHT" styleClass="width150" text="ALIAS" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP">
             <GridPane.margin>
                 <Insets right="10.0" top="7.0" />
             </GridPane.margin>
         </Label>
-        <TextField fx:id="aliasTextField" maxWidth="681.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="TOP">
+        <TextField fx:id="aliasTextField" maxWidth="681.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP">
             <GridPane.margin>
                 <Insets left="170.0" />
             </GridPane.margin></TextField>
 
-        <ImageView fx:id="officialImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
+        <ImageView fx:id="officialImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <Label fx:id="officialLabel" alignment="CENTER_RIGHT" styleClass="width150" text="OFFICIAL ?" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
+        <Label fx:id="officialLabel" alignment="CENTER_RIGHT" styleClass="width150" text="OFFICIAL ?" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Text fx:id="officialValue" fill="WHITE" text="Yes / No" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
+        <Text fx:id="officialValue" fill="WHITE" style="-fx-font-weight: bold;" text="Yes / No" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font>
@@ -77,17 +83,17 @@
             </GridPane.margin>
         </Text>
 
-        <ImageView fx:id="idWorkShopImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
+        <ImageView fx:id="idWorkShopImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/label-inverted.png" />
             </image>
         </ImageView>
-        <Label fx:id="idWorkShopLabel" alignment="CENTER_RIGHT" styleClass="width150" text="ID WORKSHOP" textFill="WHITE" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
+        <Label fx:id="idWorkShopLabel" alignment="CENTER_RIGHT" styleClass="width150" text="ID WORKSHOP" textFill="WHITE" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Text fx:id="idWorkShopValue" fill="WHITE" text="Id WorkShop Value" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
+        <Text fx:id="idWorkShopValue" fill="WHITE" style="-fx-font-weight: bold;" text="Id WorkShop Value" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font>
@@ -96,17 +102,17 @@
             </GridPane.margin>
         </Text>
 
-        <ImageView fx:id="importationDateImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
+        <ImageView fx:id="importationDateImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/label-inverted.png" />
             </image>
         </ImageView>
-        <Label fx:id="importationDateLabel" alignment="CENTER_RIGHT" styleClass="width150" text="IMPORTATION DATE" textFill="WHITE" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
+        <Label fx:id="importationDateLabel" alignment="CENTER_RIGHT" styleClass="width150" text="IMPORTATION DATE" textFill="WHITE" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Text fx:id="importationDateValue" fill="WHITE" text="Date Value" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
+        <Text fx:id="importationDateValue" fill="WHITE" style="-fx-font-weight: bold;" text="Date Value" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font>
@@ -115,17 +121,17 @@
             </GridPane.margin>
         </Text>
 
-        <ImageView fx:id="downloadedImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
+        <ImageView fx:id="downloadedImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <Label fx:id="downloadedLabel" alignment="CENTER_RIGHT" styleClass="width150" text="DOWNLOADED" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
+        <Label fx:id="downloadedLabel" alignment="CENTER_RIGHT" styleClass="width150" text="DOWNLOADED" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <Text fx:id="downloadedValue" fill="WHITE" text="Yes / No" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
+        <Text fx:id="downloadedValue" fill="WHITE" style="-fx-font-weight: bold;" text="Yes / No" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font>
@@ -134,70 +140,71 @@
             </GridPane.margin>
         </Text>
 
-        <WebView fx:id="mapPreviewWebView" maxHeight="256.0" maxWidth="512.0" prefHeight="-1.0" prefWidth="-1.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.rowSpan="5" GridPane.valignment="TOP">
+        <WebView fx:id="mapPreviewWebView" maxHeight="256.0" maxWidth="512.0" prefHeight="-1.0" prefWidth="-1.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.rowSpan="5" GridPane.valignment="TOP">
             <GridPane.margin>
                 <Insets left="170.0" />
             </GridPane.margin>
         </WebView>
 
-        <ImageView fx:id="mapPreviewUrlImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="8" GridPane.valignment="CENTER">
+        <ImageView fx:id="mapPreviewUrlImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <Label fx:id="mapPreviewUrlLabel" alignment="CENTER_RIGHT" styleClass="width150" text="MAP PREVIEW URL" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="8" GridPane.valignment="CENTER">
+        <Label fx:id="mapPreviewUrlLabel" alignment="CENTER_RIGHT" styleClass="width150" text="MAP PREVIEW URL" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <TextField fx:id="mapPreviewUrlTextField" maxWidth="681.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="8" GridPane.valignment="CENTER">
+        <TextField fx:id="mapPreviewUrlTextField" maxWidth="681.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets left="170.0" />
          </GridPane.margin></TextField>
 
-        <ImageView fx:id="releaseDateImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
+        <ImageView fx:id="releaseDateImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="12" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <Label fx:id="releaseDateLabel" alignment="CENTER_RIGHT" styleClass="width150" text="RELEASE DATE" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
+        <Label fx:id="releaseDateLabel" alignment="CENTER_RIGHT" styleClass="width150" text="RELEASE DATE" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="12" GridPane.valignment="CENTER">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <TextField fx:id="releaseDateTextField" maxWidth="681.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
+        <TextField fx:id="releaseDateTextField" maxWidth="681.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="12" GridPane.valignment="CENTER">
             <GridPane.margin>
                 <Insets left="170.0" />
             </GridPane.margin></TextField>
 
-        <ImageView fx:id="infoUrlImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="12" GridPane.valignment="CENTER">
+        <ImageView fx:id="infoUrlImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="13" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <Label fx:id="infoUrlLabel" alignment="CENTER_RIGHT" styleClass="width150" text="INFO URL" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="12" GridPane.valignment="CENTER">
+        <Label fx:id="infoUrlLabel" alignment="CENTER_RIGHT" styleClass="width150" text="INFO URL" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="13" GridPane.valignment="CENTER">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <TextField fx:id="infoUrlTextField" maxWidth="681.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="12" GridPane.valignment="CENTER">
+        <TextField fx:id="infoUrlTextField" maxWidth="681.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="13" GridPane.valignment="CENTER">
             <GridPane.margin>
                 <Insets left="170.0" />
             </GridPane.margin></TextField>
 
-        <Button fx:id="previousMap" minWidth="200.0" mnemonicParsing="false" text="Previous Map" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
-        <Button fx:id="nextMap" minWidth="200.0" mnemonicParsing="false" text="Next Map" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.valignment="CENTER" />
+        <Button fx:id="previousMapButton" minWidth="170.0" mnemonicParsing="false" onAction="#previousMapButtonOnAction" text="Previous Map" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+        <Button fx:id="nextMapButton" minWidth="170.0" mnemonicParsing="false" onAction="#nextMapButtonOnAction" text="Next Map" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+        <Button fx:id="backButton" minWidth="170.0" mnemonicParsing="false" onAction="#backButtonOnAction" text="Back" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP" />
 
     </children>
    <columnConstraints>
-      <ColumnConstraints minWidth="170.0" prefWidth="170.0" />
-      <ColumnConstraints minWidth="10.0" prefWidth="332.0" />
-      <ColumnConstraints minWidth="10.0" prefWidth="332.0" />
-      <ColumnConstraints minWidth="170.0" prefWidth="170.0" />
+      <ColumnConstraints minWidth="100.0" prefWidth="100.0" />
+      <ColumnConstraints minWidth="10.0" prefWidth="402.0" />
+      <ColumnConstraints minWidth="10.0" prefWidth="402.0" />
+      <ColumnConstraints minWidth="100.0" prefWidth="100.0" />
       <ColumnConstraints />
    </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="50.0" prefHeight="50.0" />
+        <RowConstraints minHeight="40.0" prefHeight="40.0" />
         <RowConstraints minHeight="50.0" prefHeight="50.0" />
       <RowConstraints minHeight="50.0" prefHeight="50.0" />
       <RowConstraints minHeight="40.0" prefHeight="40.0" />
@@ -210,6 +217,7 @@
       <RowConstraints minHeight="40.0" prefHeight="40.0" />
       <RowConstraints minHeight="40.0" prefHeight="40.0" />
       <RowConstraints minHeight="40.0" prefHeight="40.0" />
-      <RowConstraints minHeight="53.0" prefHeight="53.0" />
+      <RowConstraints minHeight="40.0" prefHeight="40.0" />
+      <RowConstraints minHeight="23.0" prefHeight="23.0" />
     </rowConstraints>
 </fx:root>

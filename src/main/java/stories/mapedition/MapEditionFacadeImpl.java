@@ -1,5 +1,7 @@
 package stories.mapedition;
 
-public class MapEditionFacadeImpl implements MapEditionFacade {
+import stories.AbstractFacade;
+
+public class MapEditionFacadeImpl extends AbstractFacade implements MapEditionFacade {
 
 }

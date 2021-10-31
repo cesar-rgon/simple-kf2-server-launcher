@@ -211,3 +211,8 @@
     -fx-effect: dropshadow(three-pass-box, #22573d, 20, 0, 0, 0);
 }
 
+.pane {
+    -fx-border-color: #c15d11;
+    -fx-border-width:3px;
+    -fx-border-radius: 10px;
+}
