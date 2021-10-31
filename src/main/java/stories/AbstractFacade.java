@@ -1,6 +1,5 @@
 package stories;
 
-import daos.ProfileDao;
 import dtos.ProfileDto;
 import dtos.factories.ProfileDtoFactory;
 import entities.Profile;
@@ -47,4 +46,5 @@ public abstract class AbstractFacade {
         PropertyService propertyService = new PropertyServiceImpl();
         propertyService.setProperty("properties/config.properties", key, value);
     }
+
 }

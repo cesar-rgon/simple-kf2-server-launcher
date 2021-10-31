@@ -13,11 +13,15 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 
 import java.sql.Array;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -26,23 +30,38 @@ import java.util.stream.Collectors;
 public class MapDtoFactory {
 
     private static final Logger logger = LogManager.getLogger(MapDtoFactory.class);
+    private final PropertyService propertyService;
+    private String datePattern;
+    private String unknownStr;
+
+    public MapDtoFactory() {
+        super();
+        this.propertyService = new PropertyServiceImpl();
+        try {
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            this.datePattern = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.code.dateHourPattern");
+            this.unknownStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unknown");
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            this.datePattern = "yyyy-MM-dd HH:mm";
+            this.unknownStr = "Unknown";
+        }
+    }
 
     private OfficialMapDto newOfficialMapDto(OfficialMap map) {
 
-        DateFormat importedDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        DateFormat importedDateFormat = new SimpleDateFormat(datePattern);
         List<ImportedDateByProfileDto> importedDateByProfileDtoList = new ArrayList<ImportedDateByProfileDto>();
         map.getProfileMapList().forEach(pm -> {
             importedDateByProfileDtoList.add(
                 new ImportedDateByProfileDto(
                     pm.getProfile().getName(),
-                    pm.getImportedDate() != null ? importedDateFormat.format(pm.getImportedDate()): "Unknown"
+                    pm.getImportedDate() != null ? importedDateFormat.format(pm.getImportedDate()): unknownStr
                 )
             );
         });
 
-        DateFormat releaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String releaseDate = map.getReleaseDate() != null ? releaseDateFormat.format(map.getReleaseDate()): "Unknown";
-
+        LocalDate releaseDate = map.getReleaseDate() != null ? map.getReleaseDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(): null;
         return new OfficialMapDto(
                 map.getCode(),
                 map.getUrlInfo(),
@@ -54,19 +73,18 @@ public class MapDtoFactory {
 
     private CustomMapModDto newCustomMapModDto(CustomMapMod map) {
 
-        DateFormat importedDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        DateFormat importedDateFormat = new SimpleDateFormat(datePattern);
         List<ImportedDateByProfileDto> importedDateByProfileDtoList = new ArrayList<ImportedDateByProfileDto>();
         map.getProfileMapList().forEach(pm -> {
             importedDateByProfileDtoList.add(
                     new ImportedDateByProfileDto(
                             pm.getProfile().getName(),
-                            pm.getImportedDate() != null ? importedDateFormat.format(pm.getImportedDate()): "Unknown"
+                            pm.getImportedDate() != null ? importedDateFormat.format(pm.getImportedDate()): unknownStr
                     )
             );
         });
 
-        DateFormat releaseDateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String releaseDate = map.getReleaseDate() != null ? releaseDateFormat.format(map.getReleaseDate()): "Unknown";
+        LocalDate releaseDate = map.getReleaseDate() != null ? map.getReleaseDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(): null;
 
         return new CustomMapModDto(
                 map.getCode(),

@@ -28,6 +28,7 @@ import services.PropertyServiceImpl;
 import utils.Utils;
 
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -222,6 +223,11 @@ public class MainContentController implements Initializable {
 
             loadLanguageTexts(languageSelect.getValue() != null? languageSelect.getValue().getKey(): "en");
 
+            // Put gray color for background of the browser's page
+            Field f = imageWebView.getEngine().getClass().getDeclaredField("page");
+            f.setAccessible(true);
+            com.sun.webkit.WebPage page = (com.sun.webkit.WebPage) f.get(imageWebView.getEngine());
+            page.setBackgroundColor((new java.awt.Color(0.5019608f, 0.5019608f, 0.5019608f, 0.5f)).getRGB());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);

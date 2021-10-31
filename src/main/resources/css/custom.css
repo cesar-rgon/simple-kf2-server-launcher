@@ -216,3 +216,36 @@
     -fx-border-width:3px;
     -fx-border-radius: 10px;
 }
+
+.web-view {
+   -fx-effect: dropshadow(three-pass-box, red, 20, 0, 0, 0);
+}
+
+.date-picker > .text-field  {
+    -fx-alignment: center;
+}
+
+.date-picker-popup > .month-year-pane {
+    -fx-background-color: #4d0304;
+}
+
+.date-picker-popup > * > .day-cell:hover,
+.date-picker-popup > * > .selected,
+.date-picker-popup > * > .previous-month.selected,
+.date-picker-popup > * > .next-month.selected {
+    -fx-background: #fba140;
+}
+
+.date-picker-popup > * > .day-cell:focused:hover,
+.date-picker-popup > * > .today:focused:hover,
+.date-picker-popup > * > .selected,
+.date-picker-popup > * > .selected:focused,
+.date-picker-popup > * > .today.selected:focused {
+    -fx-background-color: #22573d;
+    -fx-text-fill: white;
+}
+
+.date-picker-popup > * > .week-number-cell {
+    -fx-text-fill: #22573d;
+    -fx-font-weight: bold;
+}

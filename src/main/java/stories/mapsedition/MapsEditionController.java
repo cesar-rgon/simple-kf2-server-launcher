@@ -48,6 +48,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -248,14 +249,32 @@ public class MapsEditionController implements Initializable {
         mapNameLabel.setPadding(new Insets(10,0,0,0));
         gridpane.add(mapNameLabel, 1, 2);
 
-        Label releaseDateLabel = new Label("Release: " + map.getReleaseDate());
+        String datePattern;
+        String unknownStr;
+        String releaseStr;
+        String importedStr;
+        try {
+            datePattern = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.code.datePattern");
+            unknownStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unknown");
+            releaseStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.release");
+            importedStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.imported");
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            datePattern = "yyyy/MM/dd";
+            unknownStr = "Unknown";
+            releaseStr = "Release";
+            importedStr = "Imported";
+        }
+
+        String releaseDateStr = map.getReleaseDate() != null ? map.getReleaseDate().format(DateTimeFormatter.ofPattern(datePattern)): unknownStr;
+        Label releaseDateLabel = new Label(releaseStr + ": " + releaseDateStr);
         releaseDateLabel.setMinHeight(20);
         releaseDateLabel.setMaxWidth(Double.MAX_VALUE);
         releaseDateLabel.setAlignment(Pos.BOTTOM_CENTER);
         releaseDateLabel.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
         gridpane.add(releaseDateLabel, 1, 3);
 
-        Label importedDateText = new Label("Imported: " + map.getImportedDate(profileSelect.getValue().getName()));
+        Label importedDateText = new Label(importedStr + ": " + map.getImportedDate(profileSelect.getValue().getName()));
         importedDateText.setTextFill(Color.GRAY);
         importedDateText.setMinHeight(20);
         importedDateText.setMaxWidth(Double.MAX_VALUE);

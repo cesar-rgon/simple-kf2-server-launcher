@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
@@ -21,9 +22,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import pojos.session.Session;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import start.MainApplication;
 import utils.Utils;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -33,7 +37,10 @@ public class MapEditionController implements Initializable {
     private static final Logger logger = LogManager.getLogger(MapEditionController.class);
 
     private final MapEditionFacade facade;
+    private final PropertyService propertyService;
+
     private String installationFolder;
+    private String languageCode;
     private int mapIndex;
 
     @FXML private WebView mapPreviewWebView;
@@ -43,21 +50,84 @@ public class MapEditionController implements Initializable {
     @FXML private Text downloadedValue;
     @FXML private Text idWorkShopValue;
     @FXML private Text importationDateValue;
-    @FXML private TextField releaseDateTextField;
+    @FXML private DatePicker releaseDatePicker;
     @FXML private TextField infoUrlTextField;
     @FXML private Button previousMapButton;
     @FXML private Button nextMapButton;
     @FXML private Button backButton;
 
-
     public MapEditionController() {
         super();
         facade = new MapEditionFacadeImpl();
+        this.propertyService = new PropertyServiceImpl();
     }
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        try {
+            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            installationFolder = facade.findConfigPropertyValue("prop.config.installationFolder");
+            ProfileDto actualProfile = Session.getInstance().getActualProfile();
+
+            WebEngine webEngine = mapPreviewWebView.getEngine();
+
+            if (!Session.getInstance().getMapList().isEmpty()) {
+                AbstractMapDto mapDto = Session.getInstance().getMapList().get(0);
+
+                webEngine.documentProperty().addListener(new ChangeListener<Document>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Document> observable, Document oldDoc, Document doc) {
+                        if (doc != null) {
+                            NodeList imgList = doc.getElementsByTagName("img");
+                            if (imgList != null && imgList.getLength() > 0) {
+                                Element img = (Element) imgList.item(0);
+                                img.setAttribute("width", "512");
+                                img.setAttribute("height", "256");
+                            }
+
+                        }
+                   }
+                });
+
+                mapNameValue.setText(mapDto.getKey());
+                officialValue.setText(mapDto.isOfficial()? "Yes": "No");
+                downloadedValue.setText(mapDto.isOfficial()? "Yes": ((CustomMapModDto)mapDto).isDownloaded()? "Yes": "No");
+                idWorkShopValue.setText(mapDto.isOfficial()? StringUtils.EMPTY: String.valueOf(((CustomMapModDto)mapDto).getIdWorkShop()));
+                String unknownStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unknown");
+                importationDateValue.setText(
+                        StringUtils.isNotBlank(mapDto.getImportedDate(actualProfile.getName())) ? mapDto.getImportedDate(actualProfile.getName()): unknownStr
+                );
+
+                releaseDatePicker.setValue(mapDto.getReleaseDate());
+                infoUrlTextField.setText(
+                        StringUtils.isNotBlank(mapDto.getUrlInfo()) ? mapDto.getUrlInfo(): StringUtils.EMPTY
+                );
+
+                if (StringUtils.isNotBlank(mapDto.getUrlPhoto())) {
+                    webEngine.load("file:" + installationFolder + mapDto.getUrlPhoto());
+                    mapPreviewUrlTextField.setText(mapDto.getUrlPhoto());
+                } else {
+                    webEngine.load("file:" + getClass().getResource("/images/no-photo.png").getPath());
+                    mapPreviewUrlTextField.setText(StringUtils.EMPTY);
+                }
+
+                // Put gray color for background of the browser's page
+                Field f = webEngine.getClass().getDeclaredField("page");
+                f.setAccessible(true);
+                com.sun.webkit.WebPage page = (com.sun.webkit.WebPage) f.get(webEngine);
+                page.setBackgroundColor((new java.awt.Color(0.5019608f, 0.5019608f, 0.5019608f, 0.5f)).getRGB());
+            } else {
+                webEngine.load("file:" + getClass().getResource("/images/no-photo.png").getPath());
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+
+        mapIndex = 0;
+        loadMapData(mapIndex);
 
         mapPreviewWebView.getEngine().documentProperty().addListener(new ChangeListener<Document>() {
             @Override
@@ -78,18 +148,29 @@ public class MapEditionController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
-                    if (!newPropertyValue) {
-                                /*
-                                String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                                if (!facade.updateProfileSetUrlImageServer(profileName, urlImageServer.getText())) {
-                                    logger.warn("The image server link value could not be saved!" + urlImageServer.getText());
-                                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                            "prop.message.profileNotUpdated");
-                                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                            "prop.message.imageServerLinkNotSaved");
-                                    Utils.warningDialog(headerText, contentText);
-                                }
-                                 */
+                    if (!newPropertyValue && !Session.getInstance().getMapList().isEmpty()) {
+                        AbstractMapDto edittedMapDto = Session.getInstance().getMapList().get(mapIndex);
+
+                        String relativeTargetFolder = StringUtils.EMPTY;
+                        if (mapPreviewUrlTextField.getText() != null && mapPreviewUrlTextField.getText().startsWith("http")) {
+                            String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
+                            String absoluteTargetFolder = installationFolder + customMapLocalFolder;
+                            File localfile = Utils.downloadImageFromUrlToFile(mapPreviewUrlTextField.getText(), absoluteTargetFolder, edittedMapDto.getKey());
+                            relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
+
+                        } else if (mapPreviewUrlTextField.getText() != null && mapPreviewUrlTextField.getText().startsWith("file:")) {
+                            relativeTargetFolder = mapPreviewUrlTextField.getText().replace("file:", "").replace(installationFolder, "");
+                        }
+
+                        if (!facade.updateMapSetUrlPhoto(edittedMapDto.getKey(), edittedMapDto.isOfficial(), relativeTargetFolder)) {
+                            logger.warn("The map image link value could not be saved!" + mapPreviewUrlTextField.getText());
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                                    "prop.message.mapNotSaved");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                                    "prop.message.mapImageLinkNotSaved");
+                            Utils.warningDialog(headerText, contentText);
+                        }
+
                         if (StringUtils.isNotEmpty(mapPreviewUrlTextField.getText())) {
                             mapPreviewWebView.getEngine().load(mapPreviewUrlTextField.getText());
                         } else {
@@ -103,15 +184,51 @@ public class MapEditionController implements Initializable {
             }
         });
 
-        try {
-            installationFolder = facade.findConfigPropertyValue("prop.config.installationFolder");
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), e);
-        }
+        infoUrlTextField.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                try {
+                    if (!newPropertyValue && !Session.getInstance().getMapList().isEmpty()) {
+                        AbstractMapDto edittedMapDto = Session.getInstance().getMapList().get(mapIndex);
 
-        mapIndex = 0;
-        loadMapData(mapIndex);
+                        if (!facade.updateMapSetInfoUrl(edittedMapDto.getKey(), edittedMapDto.isOfficial(), infoUrlTextField.getText())) {
+                            logger.warn("The map info link value could not be saved!" + infoUrlTextField.getText());
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                                    "prop.message.mapNotSaved");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                                    "prop.message.mapInfoLinkNotSaved");
+                            Utils.warningDialog(headerText, contentText);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    Utils.errorDialog(e.getMessage(), e);
+                }
+            }
+        });
+
+        releaseDatePicker.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                try {
+                    if (!newValue && !Session.getInstance().getMapList().isEmpty()) {
+                        AbstractMapDto edittedMapDto = Session.getInstance().getMapList().get(mapIndex);
+                        if (!facade.updateMapSetReleaseDate(edittedMapDto.getKey(), edittedMapDto.isOfficial(), releaseDatePicker.getValue())) {
+                            logger.warn("The map release date value could not be saved!" + releaseDatePicker.getValue());
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                                    "prop.message.mapNotSaved");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                                    "prop.message.mapReleaseDateNotSaved");
+                            Utils.warningDialog(headerText, contentText);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    Utils.errorDialog(e.getMessage(), e);
+                }
+            }
+        });
+
     }
 
     private void loadMapData(int mapIndex) {
@@ -127,12 +244,11 @@ public class MapEditionController implements Initializable {
                 officialValue.setText(mapDto.isOfficial() ? "Yes" : "No");
                 downloadedValue.setText(mapDto.isOfficial() ? "Yes" : ((CustomMapModDto) mapDto).isDownloaded() ? "Yes" : "No");
                 idWorkShopValue.setText(mapDto.isOfficial() ? StringUtils.EMPTY : String.valueOf(((CustomMapModDto) mapDto).getIdWorkShop()));
+                String unknownStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unknown");
                 importationDateValue.setText(
-                        StringUtils.isNotBlank(mapDto.getImportedDate(actualProfile.getName())) ? mapDto.getImportedDate(actualProfile.getName()) : "Unknown"
+                        StringUtils.isNotBlank(mapDto.getImportedDate(actualProfile.getName())) ? mapDto.getImportedDate(actualProfile.getName()) : unknownStr
                 );
-                releaseDateTextField.setText(
-                        StringUtils.isNotBlank(mapDto.getReleaseDate()) ? mapDto.getReleaseDate() : "Unknown"
-                );
+                releaseDatePicker.setValue(mapDto.getReleaseDate());
                 infoUrlTextField.setText(
                         StringUtils.isNotBlank(mapDto.getUrlInfo()) ? mapDto.getUrlInfo() : StringUtils.EMPTY
                 );

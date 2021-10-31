@@ -1,19 +1,28 @@
 package dtos;
 
+import dtos.factories.MapDtoFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import services.PropertyService;
+import services.PropertyServiceImpl;
+
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public abstract class AbstractMapDto {
 
+    private static final Logger logger = LogManager.getLogger(AbstractMapDto.class);
+
     protected final String key;
     protected final String urlInfo;
     protected final String urlPhoto;
-    protected final String releaseDate;
+    protected final LocalDate releaseDate;
     private final boolean official;
     private final List<ImportedDateByProfileDto> importedDateByProfileDtoList;
 
-    protected AbstractMapDto(String key, String urlInfo, String urlPhoto, boolean official, String releaseDate, List<ImportedDateByProfileDto> importedDateByProfileList) {
+    protected AbstractMapDto(String key, String urlInfo, String urlPhoto, boolean official, LocalDate releaseDate, List<ImportedDateByProfileDto> importedDateByProfileList) {
         this.key = key;
         this.urlInfo = urlInfo;
         this.urlPhoto = urlPhoto;
@@ -38,7 +47,7 @@ public abstract class AbstractMapDto {
         return official;
     }
 
-    public String getReleaseDate() {
+    public LocalDate getReleaseDate() {
         return releaseDate;
     }
 
@@ -54,7 +63,14 @@ public abstract class AbstractMapDto {
         if (importedDateByProfileDtoOpt.isPresent()) {
             return importedDateByProfileDtoOpt.get().getImportedDate();
         } else {
-            return "Unknown";
+            try {
+                PropertyService propertyService = new PropertyServiceImpl();
+                String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+                return propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unknown");
+            } catch (Exception e) {
+                logger.error(e.getMessage(), e);
+                return "Unknown";
+            }
         }
     }
 }

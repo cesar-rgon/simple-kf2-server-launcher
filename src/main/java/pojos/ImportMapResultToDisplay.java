@@ -28,24 +28,28 @@ public class ImportMapResultToDisplay {
             Date importedDate,
             String errorMessage) {
 
-        DateFormat importedDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
         this.profileName = profileName;
         this.mapName = new SimpleStringProperty(mapName);
         this.isOfficial = new SimpleBooleanProperty(isOfficial);
-        this.importedDate = new SimpleStringProperty(
-                importedDateFormat.format(importedDate)
-        );
         this.errorMessage = new SimpleStringProperty(errorMessage);
-
+        String datePattern;
         try {
             PropertyService propertyService = new PropertyServiceImpl();
             String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            datePattern = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.code.dateHourPattern");
             this.officialText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.official");
             this.customText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.custom");
         } catch (Exception e) {
             this.officialText = "OFFICIAL";
             this.customText = "CUSTOM";
+            datePattern = "yyyy-MM-dd HH:mm";
         }
+
+        DateFormat importedDateFormat = new SimpleDateFormat(datePattern);
+        this.importedDate = new SimpleStringProperty(
+                importedDateFormat.format(importedDate)
+        );
     }
 
     public String getProfileName() {
