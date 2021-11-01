@@ -8,4 +8,5 @@ public interface MapEditionFacade {
     boolean updateMapSetUrlPhoto(String mapName, boolean isOfficial, String mapPreviewUrl) throws SQLException;
     boolean updateMapSetInfoUrl(String mapName, boolean isOfficial, String mapInfoUrl) throws SQLException;
     boolean updateMapSetReleaseDate(String mapName, boolean isOfficial, LocalDate releaseDate) throws SQLException;
+    boolean updateMapSetAlias(String mapName, boolean isOfficial, String alias) throws SQLException;
 }

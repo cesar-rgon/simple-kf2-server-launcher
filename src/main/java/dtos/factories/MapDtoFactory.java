@@ -64,6 +64,7 @@ public class MapDtoFactory {
         LocalDate releaseDate = map.getReleaseDate() != null ? map.getReleaseDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(): null;
         return new OfficialMapDto(
                 map.getCode(),
+                map.getAlias(),
                 map.getUrlInfo(),
                 map.getUrlPhoto(),
                 releaseDate,
@@ -88,6 +89,7 @@ public class MapDtoFactory {
 
         return new CustomMapModDto(
                 map.getCode(),
+                map.getAlias(),
                 map.getUrlInfo(),
                 map.getUrlPhoto(),
                 map.getIdWorkShop(),

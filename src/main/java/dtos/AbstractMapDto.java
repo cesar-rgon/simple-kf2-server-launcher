@@ -16,14 +16,16 @@ public abstract class AbstractMapDto {
     private static final Logger logger = LogManager.getLogger(AbstractMapDto.class);
 
     protected final String key;
+    protected final String alias;
     protected final String urlInfo;
     protected final String urlPhoto;
     protected final LocalDate releaseDate;
     private final boolean official;
     private final List<ImportedDateByProfileDto> importedDateByProfileDtoList;
 
-    protected AbstractMapDto(String key, String urlInfo, String urlPhoto, boolean official, LocalDate releaseDate, List<ImportedDateByProfileDto> importedDateByProfileList) {
+    protected AbstractMapDto(String key, String alias, String urlInfo, String urlPhoto, boolean official, LocalDate releaseDate, List<ImportedDateByProfileDto> importedDateByProfileList) {
         this.key = key;
+        this.alias = alias;
         this.urlInfo = urlInfo;
         this.urlPhoto = urlPhoto;
         this.official = official;
@@ -33,6 +35,10 @@ public abstract class AbstractMapDto {
 
     public String getKey() {
         return key;
+    }
+
+    public String getAlias() {
+        return alias;
     }
 
     public String getUrlInfo() {

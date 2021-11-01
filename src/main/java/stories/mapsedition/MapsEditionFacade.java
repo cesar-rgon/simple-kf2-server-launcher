@@ -5,8 +5,6 @@ import dtos.CustomMapModDto;
 import dtos.OfficialMapDto;
 import dtos.ProfileDto;
 import entities.AbstractMap;
-import entities.CustomMapMod;
-import entities.Profile;
 import javafx.collections.ObservableList;
 import pojos.ImportMapResultToDisplay;
 
@@ -28,5 +26,5 @@ public interface MapsEditionFacade {
     List<AbstractMapDto> addCustomMapsToProfile(String profileName, String mapNameList, String languageCode, String installationFolder, String actualSelectedProfile, StringBuffer success, StringBuffer errors);
     CustomMapModDto importCustomMapModFromServer(String mapNameLabel, Long idWorkShop, String commentary, String installationFolder, List<String> selectedProfileNameList, String actualSelectedProfile, List<ImportMapResultToDisplay> importMapResultToDisplayList);
     OfficialMapDto importOfficialMapFromServer(String officialMapName, List<String> selectedProfileNameList, String actualSelectedProfile, String mapNameLabel, List<ImportMapResultToDisplay> importMapResultToDisplayList);
-    Optional<AbstractMapDto> findMapDtoByName(String mapName) throws SQLException;
+    Optional<AbstractMap> findMapByName(String mapName) throws SQLException;
 }

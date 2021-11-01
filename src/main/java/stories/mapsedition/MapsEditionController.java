@@ -4,6 +4,7 @@ import dtos.AbstractMapDto;
 import dtos.CustomMapModDto;
 import dtos.OfficialMapDto;
 import dtos.ProfileDto;
+import entities.AbstractMap;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -81,10 +82,12 @@ public class MapsEditionController implements Initializable {
     @FXML private Label profileLabel;
     @FXML private Label actionsLabel;
     @FXML private Menu orderMaps;
+    @FXML private MenuItem orderMapsByAlias;
     @FXML private MenuItem orderMapsByName;
     @FXML private MenuItem orderMapsByReleaseDate;
     @FXML private MenuItem orderMapsByImportedDate;
     @FXML private MenuItem orderMapsByDownload;
+    @FXML private MenuItem editMaps;
 
     public MapsEditionController() {
         super();
@@ -156,6 +159,9 @@ public class MapsEditionController implements Initializable {
             String orderMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMaps");
             orderMaps.setText(orderMapsText);
 
+            String orderMapsByAliasText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByAlias");
+            orderMapsByAlias.setText(orderMapsByAliasText);
+
             String orderMapsByNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByName");
             orderMapsByName.setText(orderMapsByNameText);
 
@@ -167,6 +173,9 @@ public class MapsEditionController implements Initializable {
 
             String orderMapsByDownloadText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByDownload");
             orderMapsByDownload.setText(orderMapsByDownloadText);
+
+            String editMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.editMaps");
+            editMaps.setText(editMapsText);
 
             String sliderLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.slider");
             sliderLabel.setText(sliderLabelText);
@@ -221,7 +230,6 @@ public class MapsEditionController implements Initializable {
             image = new Image(inputStream);
         }
 
-
         GridPane gridpane = new GridPane();
         gridpane.setPrefWidth(getWidthGridPaneByNumberOfColums());
         gridpane.getStyleClass().add("gridPane");
@@ -242,47 +250,61 @@ public class MapsEditionController implements Initializable {
             }
         });
 
-        Label mapNameLabel = new Label(map.getKey(), checkbox);
-        mapNameLabel.setMinHeight(20);
-        mapNameLabel.setMaxWidth(Double.MAX_VALUE);
-        mapNameLabel.setAlignment(Pos.BOTTOM_CENTER);
-        mapNameLabel.setPadding(new Insets(10,0,0,0));
-        gridpane.add(mapNameLabel, 1, 2);
+        Label aliasLabel = new Label(map.getAlias(), checkbox);
+        aliasLabel.setMinHeight(20);
+        aliasLabel.setMaxWidth(Double.MAX_VALUE);
+        aliasLabel.setAlignment(Pos.BOTTOM_CENTER);
+        aliasLabel.setPadding(new Insets(10,0,0,0));
+        gridpane.add(aliasLabel, 1, 2);
 
         String datePattern;
         String unknownStr;
         String releaseStr;
         String importedStr;
+        String mapNameText;
         try {
             datePattern = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.code.datePattern");
             unknownStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unknown");
             releaseStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.release");
             importedStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.imported");
+            mapNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.name");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             datePattern = "yyyy/MM/dd";
             unknownStr = "Unknown";
             releaseStr = "Release";
             importedStr = "Imported";
+            mapNameText = "Name";
         }
 
+        Text mapNameGraphic = new Text(mapNameText + ": ");
+        mapNameGraphic.setFill(Color.GRAY);
+        Label mapNameLabel = new Label(map.getKey(), mapNameGraphic);
+        mapNameLabel.setMaxWidth(Double.MAX_VALUE);
+        mapNameLabel.setAlignment(Pos.BOTTOM_CENTER);
+        mapNameLabel.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
+        mapNameLabel.setPadding(new Insets(10,0,0,0));
+        gridpane.add(mapNameLabel, 1, 3);
+
+
+        Text releaseDateGraphic = new Text(releaseStr + ": ");
+        releaseDateGraphic.setFill(Color.GRAY);
         String releaseDateStr = map.getReleaseDate() != null ? map.getReleaseDate().format(DateTimeFormatter.ofPattern(datePattern)): unknownStr;
-        Label releaseDateLabel = new Label(releaseStr + ": " + releaseDateStr);
-        releaseDateLabel.setMinHeight(20);
+        Label releaseDateLabel = new Label(releaseDateStr, releaseDateGraphic);
         releaseDateLabel.setMaxWidth(Double.MAX_VALUE);
         releaseDateLabel.setAlignment(Pos.BOTTOM_CENTER);
         releaseDateLabel.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
-        gridpane.add(releaseDateLabel, 1, 3);
+        gridpane.add(releaseDateLabel, 1, 4);
 
-        Label importedDateText = new Label(importedStr + ": " + map.getImportedDate(profileSelect.getValue().getName()));
-        importedDateText.setTextFill(Color.GRAY);
-        importedDateText.setMinHeight(20);
+        Text importedDateGraphic = new Text(importedStr + ": ");
+        importedDateGraphic.setFill(Color.GRAY);
+        Label importedDateText = new Label(map.getImportedDate(profileSelect.getValue().getName()), importedDateGraphic);
         importedDateText.setMaxWidth(Double.MAX_VALUE);
         importedDateText.setAlignment(Pos.BOTTOM_CENTER);
         importedDateText.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
-        gridpane.add(importedDateText, 1, 4);
+        gridpane.add(importedDateText, 1, 5);
 
-        int rowIndex = 5;
+        int rowIndex = 6;
         if (map.isOfficial()) {
             importedDateText.setPadding(new Insets(0,0,10,0));
         } else {
@@ -406,7 +428,7 @@ public class MapsEditionController implements Initializable {
         ImageView mapPreview = (ImageView) gridPane.getChildren().get(0);
         mapPreview.setFitWidth(gridPane.getPrefWidth());
         mapPreview.setFitHeight(gridPane.getPrefWidth()/2);
-        Label mapNameLabel = (Label) gridPane.getChildren().get(1);
+        Label mapNameLabel = (Label) gridPane.getChildren().get(2);
         mapNameLabel.setMaxWidth(mapPreview.getFitWidth() - 25);
     }
 
@@ -441,8 +463,9 @@ public class MapsEditionController implements Initializable {
         officialMapsFlowPane.getChildren().clear();
         customMapsFlowPane.getChildren().clear();
         for (AbstractMapDto map: mapList) {
-            String mapLabel = StringUtils.upperCase(map.getKey());
-            if (mapLabel.contains(StringUtils.upperCase(searchMaps.getText()))) {
+            String mapName = StringUtils.upperCase(map.getKey());
+            String alias = StringUtils.upperCase(map.getAlias());
+            if (mapName.contains(StringUtils.upperCase(searchMaps.getText())) || alias.contains(StringUtils.upperCase(searchMaps.getText()))) {
                 GridPane gridpane = createMapGridPane(map);
                 if (map.isOfficial()) {
                     officialMapsFlowPane.getChildren().add(gridpane);
@@ -544,8 +567,9 @@ public class MapsEditionController implements Initializable {
 
             for (Node node : officialNodes) {
                 GridPane gridpane = (GridPane) node;
-                Label mapNameLabel = (Label) gridpane.getChildren().get(1);
-                CheckBox checkbox = (CheckBox) mapNameLabel.getGraphic();
+                Label aliasLabel = (Label) gridpane.getChildren().get(1);
+                Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                CheckBox checkbox = (CheckBox) aliasLabel.getGraphic();
 
                 if (checkbox.isSelected()) {
                     removeList.add(gridpane);
@@ -555,8 +579,9 @@ public class MapsEditionController implements Initializable {
 
             for (Node node : customNodes) {
                 GridPane gridpane = (GridPane) node;
-                Label mapNameLabel = (Label) gridpane.getChildren().get(1);
-                CheckBox checkbox = (CheckBox) mapNameLabel.getGraphic();
+                Label aliasLabel = (Label) gridpane.getChildren().get(1);
+                Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                CheckBox checkbox = (CheckBox) aliasLabel.getGraphic();
 
                 if (checkbox.isSelected()) {
                     removeList.add(gridpane);
@@ -578,7 +603,7 @@ public class MapsEditionController implements Initializable {
                     for (Node node : removeList) {
                         try {
                             GridPane gridpane = (GridPane) node;
-                            Label mapNameLabel = (Label) gridpane.getChildren().get(1);
+                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
 
                             if (profileSelect.getValue().getMap() != null && mapNameLabel.getText().equalsIgnoreCase(profileSelect.getValue().getMap().getKey())) {
                                 facade.unselectProfileMap(profileSelect.getValue().getName());
@@ -845,8 +870,9 @@ public class MapsEditionController implements Initializable {
 
         for (Node node: nodes) {
             GridPane gridpane = (GridPane) node;
-            Label mapNameLabel = (Label)gridpane.getChildren().get(1);
-            CheckBox checkbox = (CheckBox) mapNameLabel.getGraphic();
+            Label aliasLabel = (Label) gridpane.getChildren().get(1);
+            Label mapNameLabel = (Label)gridpane.getChildren().get(2);
+            CheckBox checkbox = (CheckBox) aliasLabel.getGraphic();
             checkbox.setSelected(selectMaps);
             if (checkbox.isSelected()) {
                 checkbox.setOpacity(1);
@@ -895,6 +921,29 @@ public class MapsEditionController implements Initializable {
             Session.getInstance().setMapsProfile(profileSelect.getValue());
         } catch (Exception e) {
             Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void orderMapsByAliasOnAction() {
+        customMapsFlowPane.getChildren().clear();
+        officialMapsFlowPane.getChildren().clear();
+
+        if (EnumSortedMapsCriteria.ALIAS_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
+            mapList = mapList.stream().sorted((m1, m2) -> m1.getAlias().compareTo(m2.getAlias())).collect(Collectors.toList());
+            Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.ALIAS_ASC);
+        } else {
+            mapList = mapList.stream().sorted((m1, m2) -> m2.getAlias().compareTo(m1.getAlias())).collect(Collectors.toList());
+            Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.ALIAS_DESC);
+        }
+
+        for (AbstractMapDto map : mapList) {
+            GridPane gridpane = createMapGridPane(map);
+            if (map.isOfficial()) {
+                officialMapsFlowPane.getChildren().add(gridpane);
+            } else {
+                customMapsFlowPane.getChildren().add(gridpane);
+            }
         }
     }
 
@@ -949,10 +998,36 @@ public class MapsEditionController implements Initializable {
         officialMapsFlowPane.getChildren().clear();
 
         if (EnumSortedMapsCriteria.RELEASE_DATE_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
-            mapList = mapList.stream().sorted((m1, m2) -> m1.getReleaseDate().compareTo(m2.getReleaseDate())).collect(Collectors.toList());
+            List<AbstractMapDto> sortedMapList = new ArrayList<AbstractMapDto>(
+                    mapList.stream()
+                            .filter(map -> map.getReleaseDate() != null)
+                            .sorted((m1, m2) -> m1.getReleaseDate().compareTo(m2.getReleaseDate()))
+                            .collect(Collectors.toList())
+            );
+            List<AbstractMapDto> mapWithoutReleaseDateList = new ArrayList<AbstractMapDto>(
+                    mapList.stream()
+                            .filter(map -> map.getReleaseDate() == null)
+                            .collect(Collectors.toList())
+            );
+
+            sortedMapList.addAll(mapWithoutReleaseDateList);
+            mapList = sortedMapList;
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.RELEASE_DATE_ASC);
         } else {
-            mapList = mapList.stream().sorted((m1, m2) -> m2.getReleaseDate().compareTo(m1.getReleaseDate())).collect(Collectors.toList());
+            List<AbstractMapDto> sortedMapList = new ArrayList<AbstractMapDto>(
+                    mapList.stream()
+                            .filter(map -> map.getReleaseDate() != null)
+                            .sorted((m1, m2) -> m2.getReleaseDate().compareTo(m1.getReleaseDate()))
+                            .collect(Collectors.toList())
+            );
+            List<AbstractMapDto> mapWithoutReleaseDateList = new ArrayList<AbstractMapDto>(
+                    mapList.stream()
+                            .filter(map -> map.getReleaseDate() == null)
+                            .collect(Collectors.toList())
+            );
+
+            sortedMapList.addAll(mapWithoutReleaseDateList);
+            mapList = sortedMapList;
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.RELEASE_DATE_DESC);
         }
 
@@ -1034,7 +1109,7 @@ public class MapsEditionController implements Initializable {
             }
 
             ObservableList<Node> nodeList = null;
-            List<AbstractMapDto> editList = new ArrayList<AbstractMapDto>();
+            List<AbstractMap> editList = new ArrayList<AbstractMap>();
             if (officialMapsTab.isSelected()) {
                 nodeList = officialMapsFlowPane.getChildren();
             } else {
@@ -1043,14 +1118,15 @@ public class MapsEditionController implements Initializable {
 
             for (Node node : nodeList) {
                 GridPane gridpane = (GridPane) node;
-                Label mapNameLabel = (Label) gridpane.getChildren().get(1);
-                CheckBox checkbox = (CheckBox) mapNameLabel.getGraphic();
+                Label aliasLabel = (Label) gridpane.getChildren().get(1);
+                Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                CheckBox checkbox = (CheckBox) aliasLabel.getGraphic();
 
                 if (checkbox.isSelected()) {
                     String mapName = mapNameLabel.getText();
-                    Optional<AbstractMapDto> abstractMapDtoOpt = facade.findMapDtoByName(mapName);
-                    if (abstractMapDtoOpt.isPresent()) {
-                        editList.add(abstractMapDtoOpt.get());
+                    Optional<AbstractMap> abstractMapOpt = facade.findMapByName(mapName);
+                    if (abstractMapOpt.isPresent()) {
+                        editList.add(abstractMapOpt.get());
                     }
                 }
             }

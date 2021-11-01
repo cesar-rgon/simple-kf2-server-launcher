@@ -239,8 +239,8 @@ public class MainContentController implements Initializable {
                 ListCell<AbstractMapDto> listCell = new ListCell<AbstractMapDto>() {
 
                     private GridPane createMapGridPane(AbstractMapDto map) {
-                        Label mapNameLabel = new Label(map.getKey());
-                        mapNameLabel.setStyle("-fx-padding: 5;");
+                        Label aliasLabel = new Label(map.getAlias());
+                        aliasLabel.setStyle("-fx-padding: 5;");
                         Label mapType;
                         String languageCode = languageSelect.getValue().getKey();
                         String officialText;
@@ -273,7 +273,7 @@ public class MainContentController implements Initializable {
                         GridPane gridpane = new GridPane();
                         gridpane.add(mapPreview, 1, 1);
                         gridpane.add(new Label(), 2, 1);
-                        gridpane.add(mapNameLabel, 2, 2);
+                        gridpane.add(aliasLabel, 2, 2);
                         gridpane.add(mapType, 2, 3);
                         GridPane.setRowSpan(mapPreview, 3);
                         return gridpane;
@@ -294,8 +294,8 @@ public class MainContentController implements Initializable {
 
         mapSelect.setButtonCell(new ListCell<AbstractMapDto>() {
             private GridPane createMapGridPane(AbstractMapDto map) {
-                Label mapNameLabel = new Label(map.getKey());
-                mapNameLabel.setStyle("-fx-font-weight: bold;");
+                Label aliasLabel = new Label(map.getAlias());
+                aliasLabel.setStyle("-fx-font-weight: bold;");
                 Image image;
                 if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(map.getUrlPhoto())) {
                     image = new Image("file:" + installationFolder + "/" + map.getUrlPhoto());
@@ -326,7 +326,7 @@ public class MainContentController implements Initializable {
                     mapType = new Label(customText);
                     mapType.setStyle("-fx-text-fill: gold; -fx-padding: 3; -fx-border-color: gold; -fx-border-radius: 5;");
                 }
-                mapNameLabel.setPadding(new Insets(0,10,4,0));
+                aliasLabel.setPadding(new Insets(0,10,4,0));
 
                 ImageView darkPanel = new ImageView(new Image("images/darkPanel.png"));
                 darkPanel.setPreserveRatio(false);
@@ -338,13 +338,13 @@ public class MainContentController implements Initializable {
                 gridpane.add(mapPreview, 1, 1);
                 gridpane.add(darkPanel, 1, 1);
                 gridpane.add(mapType, 1, 1);
-                gridpane.add(mapNameLabel, 1, 1);
+                gridpane.add(aliasLabel, 1, 1);
                 GridPane.setHalignment(darkPanel, HPos.CENTER);
                 GridPane.setValignment(darkPanel, VPos.BOTTOM);
                 GridPane.setHalignment(mapType, HPos.LEFT);
                 GridPane.setValignment(mapType, VPos.BOTTOM);
-                GridPane.setHalignment(mapNameLabel, HPos.RIGHT);
-                GridPane.setValignment(mapNameLabel, VPos.BOTTOM);
+                GridPane.setHalignment(aliasLabel, HPos.RIGHT);
+                GridPane.setValignment(aliasLabel, VPos.BOTTOM);
                 return gridpane;
             }
 

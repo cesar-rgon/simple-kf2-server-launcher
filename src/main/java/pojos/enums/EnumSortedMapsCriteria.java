@@ -2,6 +2,8 @@ package pojos.enums;
 
 public enum EnumSortedMapsCriteria {
 
+    ALIAS_ASC,
+    ALIAS_DESC,
     NAME_ASC,
     NAME_DESC,
     RELEASE_DATE_ASC,

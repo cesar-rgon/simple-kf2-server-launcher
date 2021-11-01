@@ -90,4 +90,24 @@ public class MapEditionFacadeImpl extends AbstractFacade implements MapEditionFa
             return CustomMapModDao.getInstance().update((CustomMapMod) mapOptional.get());
         }
     }
+
+    @Override
+    public boolean updateMapSetAlias(String mapName, boolean isOfficial, String alias) throws SQLException {
+        Optional<AbstractMap> mapOptional;
+        if (isOfficial) {
+            mapOptional = officialMapService.findMapByCode(mapName);
+            if (!mapOptional.isPresent()) {
+                return false;
+            }
+            mapOptional.get().setAlias(alias);
+            return OfficialMapDao.getInstance().update((OfficialMap) mapOptional.get());
+        } else {
+            mapOptional = customMapService.findMapByCode(mapName);
+            if (!mapOptional.isPresent()) {
+                return false;
+            }
+            mapOptional.get().setAlias(alias);
+            return CustomMapModDao.getInstance().update((CustomMapMod) mapOptional.get());
+        }
+    }
 }

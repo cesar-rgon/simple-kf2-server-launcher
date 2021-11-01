@@ -3,6 +3,8 @@ package stories.mapedition;
 import dtos.AbstractMapDto;
 import dtos.CustomMapModDto;
 import dtos.ProfileDto;
+import dtos.factories.MapDtoFactory;
+import entities.AbstractMap;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -10,6 +12,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
@@ -30,6 +33,8 @@ import utils.Utils;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.ResourceBundle;
 
 public class MapEditionController implements Initializable {
@@ -55,6 +60,15 @@ public class MapEditionController implements Initializable {
     @FXML private Button previousMapButton;
     @FXML private Button nextMapButton;
     @FXML private Button backButton;
+    @FXML private Label titleConfigLabel;
+    @FXML private Label mapNameLabel;
+    @FXML private Label mapPreviewUrlLabel;
+    @FXML private Label officialLabel;
+    @FXML private Label downloadedLabel;
+    @FXML private Label importationDateLabel;
+    @FXML private Label releaseDateLabel;
+    @FXML private Label infoUrlLabel;
+    @FXML private TextField aliasTextField;
 
     public MapEditionController() {
         super();
@@ -69,58 +83,46 @@ public class MapEditionController implements Initializable {
         try {
             languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             installationFolder = facade.findConfigPropertyValue("prop.config.installationFolder");
-            ProfileDto actualProfile = Session.getInstance().getActualProfile();
 
-            WebEngine webEngine = mapPreviewWebView.getEngine();
+            String editMapText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.editMap");
+            titleConfigLabel.setText(editMapText);
 
-            if (!Session.getInstance().getMapList().isEmpty()) {
-                AbstractMapDto mapDto = Session.getInstance().getMapList().get(0);
+            String previousMapText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.previousMap");
+            previousMapButton.setText(previousMapText);
 
-                webEngine.documentProperty().addListener(new ChangeListener<Document>() {
-                    @Override
-                    public void changed(ObservableValue<? extends Document> observable, Document oldDoc, Document doc) {
-                        if (doc != null) {
-                            NodeList imgList = doc.getElementsByTagName("img");
-                            if (imgList != null && imgList.getLength() > 0) {
-                                Element img = (Element) imgList.item(0);
-                                img.setAttribute("width", "512");
-                                img.setAttribute("height", "256");
-                            }
+            String nextMapText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.nextMap");
+            nextMapButton.setText(nextMapText);
 
-                        }
-                   }
-                });
+            String backText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.backMapsPage");
+            backButton.setText(backText);
 
-                mapNameValue.setText(mapDto.getKey());
-                officialValue.setText(mapDto.isOfficial()? "Yes": "No");
-                downloadedValue.setText(mapDto.isOfficial()? "Yes": ((CustomMapModDto)mapDto).isDownloaded()? "Yes": "No");
-                idWorkShopValue.setText(mapDto.isOfficial()? StringUtils.EMPTY: String.valueOf(((CustomMapModDto)mapDto).getIdWorkShop()));
-                String unknownStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unknown");
-                importationDateValue.setText(
-                        StringUtils.isNotBlank(mapDto.getImportedDate(actualProfile.getName())) ? mapDto.getImportedDate(actualProfile.getName()): unknownStr
-                );
+            String mapNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.mapName");
+            mapNameLabel.setText(mapNameText);
 
-                releaseDatePicker.setValue(mapDto.getReleaseDate());
-                infoUrlTextField.setText(
-                        StringUtils.isNotBlank(mapDto.getUrlInfo()) ? mapDto.getUrlInfo(): StringUtils.EMPTY
-                );
+            String mapPreviewUrlText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.mapPrevireUrl");
+            mapPreviewUrlLabel.setText(mapPreviewUrlText);
 
-                if (StringUtils.isNotBlank(mapDto.getUrlPhoto())) {
-                    webEngine.load("file:" + installationFolder + mapDto.getUrlPhoto());
-                    mapPreviewUrlTextField.setText(mapDto.getUrlPhoto());
-                } else {
-                    webEngine.load("file:" + getClass().getResource("/images/no-photo.png").getPath());
-                    mapPreviewUrlTextField.setText(StringUtils.EMPTY);
-                }
+            String officialText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.official") + " ?";
+            officialLabel.setText(officialText);
 
-                // Put gray color for background of the browser's page
-                Field f = webEngine.getClass().getDeclaredField("page");
-                f.setAccessible(true);
-                com.sun.webkit.WebPage page = (com.sun.webkit.WebPage) f.get(webEngine);
-                page.setBackgroundColor((new java.awt.Color(0.5019608f, 0.5019608f, 0.5019608f, 0.5f)).getRGB());
-            } else {
-                webEngine.load("file:" + getClass().getResource("/images/no-photo.png").getPath());
-            }
+            String downloadedText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.downloaded");
+            downloadedLabel.setText(downloadedText);
+
+            String importationDateStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importationDate");
+            importationDateLabel.setText(importationDateStr);
+
+            String releaseDateStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.releaseDate");
+            releaseDateLabel.setText(releaseDateStr);
+
+            String infoUrlText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.infoUrl");
+            infoUrlLabel.setText(infoUrlText);
+
+            // Put gray color for background of the browser's page
+            Field f = mapPreviewWebView.getEngine().getClass().getDeclaredField("page");
+            f.setAccessible(true);
+            com.sun.webkit.WebPage page = (com.sun.webkit.WebPage) f.get(mapPreviewWebView.getEngine());
+            page.setBackgroundColor((new java.awt.Color(0.5019608f, 0.5019608f, 0.5019608f, 0.5f)).getRGB());
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -144,25 +146,71 @@ public class MapEditionController implements Initializable {
             }
         });
 
+        mapPreviewWebView.getEngine().documentProperty().addListener(new ChangeListener<Document>() {
+            @Override
+            public void changed(ObservableValue<? extends Document> observable, Document oldDoc, Document doc) {
+                if (doc != null) {
+                    NodeList imgList = doc.getElementsByTagName("img");
+                    if (imgList != null && imgList.getLength() > 0) {
+                        Element img = (Element) imgList.item(0);
+                        img.setAttribute("width", "512");
+                        img.setAttribute("height", "256");
+                    }
+
+                }
+            }
+        });
+
+        aliasTextField.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                try {
+                    if (!newValue && !Session.getInstance().getMapList().isEmpty()) {
+                        AbstractMap edittedMap = Session.getInstance().getMapList().get(mapIndex);
+                        if (StringUtils.isBlank(aliasTextField.getText())) {
+                            Utils.warningDialog("The alias can not be empty", "Setting the alias as map name");
+                            aliasTextField.setText(edittedMap.getCode());
+                        }
+
+                        if (facade.updateMapSetAlias(edittedMap.getCode(), edittedMap.isOfficial(), aliasTextField.getText())) {
+                            edittedMap.setAlias(aliasTextField.getText());
+                        } else {
+                            logger.warn("The alias value could not be saved!" + aliasTextField.getText());
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                                    "prop.message.mapNotSaved");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                                    "prop.message.aliasNotSaved");
+                            Utils.warningDialog(headerText, contentText);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    Utils.errorDialog(e.getMessage(), e);
+                }
+            }
+        });
+
         mapPreviewUrlTextField.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue && !Session.getInstance().getMapList().isEmpty()) {
-                        AbstractMapDto edittedMapDto = Session.getInstance().getMapList().get(mapIndex);
+                        AbstractMap edittedMap = Session.getInstance().getMapList().get(mapIndex);
 
                         String relativeTargetFolder = StringUtils.EMPTY;
                         if (mapPreviewUrlTextField.getText() != null && mapPreviewUrlTextField.getText().startsWith("http")) {
                             String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
                             String absoluteTargetFolder = installationFolder + customMapLocalFolder;
-                            File localfile = Utils.downloadImageFromUrlToFile(mapPreviewUrlTextField.getText(), absoluteTargetFolder, edittedMapDto.getKey());
+                            File localfile = Utils.downloadImageFromUrlToFile(mapPreviewUrlTextField.getText(), absoluteTargetFolder, edittedMap.getCode());
                             relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
 
                         } else if (mapPreviewUrlTextField.getText() != null && mapPreviewUrlTextField.getText().startsWith("file:")) {
                             relativeTargetFolder = mapPreviewUrlTextField.getText().replace("file:", "").replace(installationFolder, "");
                         }
 
-                        if (!facade.updateMapSetUrlPhoto(edittedMapDto.getKey(), edittedMapDto.isOfficial(), relativeTargetFolder)) {
+                        if (facade.updateMapSetUrlPhoto(edittedMap.getCode(), edittedMap.isOfficial(), relativeTargetFolder)) {
+                            edittedMap.setUrlPhoto(relativeTargetFolder);
+                        } else {
                             logger.warn("The map image link value could not be saved!" + mapPreviewUrlTextField.getText());
                             String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
                                     "prop.message.mapNotSaved");
@@ -189,9 +237,11 @@ public class MapEditionController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue && !Session.getInstance().getMapList().isEmpty()) {
-                        AbstractMapDto edittedMapDto = Session.getInstance().getMapList().get(mapIndex);
+                        AbstractMap edittedMap = Session.getInstance().getMapList().get(mapIndex);
 
-                        if (!facade.updateMapSetInfoUrl(edittedMapDto.getKey(), edittedMapDto.isOfficial(), infoUrlTextField.getText())) {
+                        if (facade.updateMapSetInfoUrl(edittedMap.getCode(), edittedMap.isOfficial(), infoUrlTextField.getText())) {
+                            edittedMap.setUrlInfo(infoUrlTextField.getText());
+                        } else {
                             logger.warn("The map info link value could not be saved!" + infoUrlTextField.getText());
                             String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
                                     "prop.message.mapNotSaved");
@@ -212,8 +262,13 @@ public class MapEditionController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 try {
                     if (!newValue && !Session.getInstance().getMapList().isEmpty()) {
-                        AbstractMapDto edittedMapDto = Session.getInstance().getMapList().get(mapIndex);
-                        if (!facade.updateMapSetReleaseDate(edittedMapDto.getKey(), edittedMapDto.isOfficial(), releaseDatePicker.getValue())) {
+                        AbstractMap edittedMap = Session.getInstance().getMapList().get(mapIndex);
+
+                        if (facade.updateMapSetReleaseDate(edittedMap.getCode(), edittedMap.isOfficial(), releaseDatePicker.getValue())) {
+                            edittedMap.setReleaseDate(
+                                    Date.from(releaseDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant())
+                            );
+                        } else {
                             logger.warn("The map release date value could not be saved!" + releaseDatePicker.getValue());
                             String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
                                     "prop.message.mapNotSaved");
@@ -238,11 +293,19 @@ public class MapEditionController implements Initializable {
             WebEngine webEngine = mapPreviewWebView.getEngine();
 
             if (!Session.getInstance().getMapList().isEmpty()) {
-                AbstractMapDto mapDto = Session.getInstance().getMapList().get(mapIndex);
+                MapDtoFactory mapDtoFactory = new MapDtoFactory();
+                AbstractMapDto mapDto = mapDtoFactory.newDto(
+                        Session.getInstance().getMapList().get(mapIndex)
+                );
 
                 mapNameValue.setText(mapDto.getKey());
-                officialValue.setText(mapDto.isOfficial() ? "Yes" : "No");
-                downloadedValue.setText(mapDto.isOfficial() ? "Yes" : ((CustomMapModDto) mapDto).isDownloaded() ? "Yes" : "No");
+                aliasTextField.setText(mapDto.getAlias());
+
+                String yesText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.yes");
+                String noText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.no");
+
+                officialValue.setText(mapDto.isOfficial() ? yesText : noText);
+                downloadedValue.setText(mapDto.isOfficial() ? yesText : ((CustomMapModDto) mapDto).isDownloaded() ? yesText : noText);
                 idWorkShopValue.setText(mapDto.isOfficial() ? StringUtils.EMPTY : String.valueOf(((CustomMapModDto) mapDto).getIdWorkShop()));
                 String unknownStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unknown");
                 importationDateValue.setText(
@@ -260,12 +323,6 @@ public class MapEditionController implements Initializable {
                     webEngine.load("file:" + getClass().getResource("/images/no-photo.png").getPath());
                     mapPreviewUrlTextField.setText(StringUtils.EMPTY);
                 }
-
-                // Put gray color for background of the browser's page
-                Field f = webEngine.getClass().getDeclaredField("page");
-                f.setAccessible(true);
-                com.sun.webkit.WebPage page = (com.sun.webkit.WebPage) f.get(webEngine);
-                page.setBackgroundColor((new java.awt.Color(0.5019608f, 0.5019608f, 0.5019608f, 0.5f)).getRGB());
             } else {
                 webEngine.load("file:" + getClass().getResource("/images/no-photo.png").getPath());
             }

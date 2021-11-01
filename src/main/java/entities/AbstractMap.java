@@ -20,6 +20,9 @@ public abstract class AbstractMap extends AbstractExtendedEntity {
     @Column(name="CODE", length=100, unique=true, nullable=false)
     private String code;
 
+    @Column(name="ALIAS", length=255, nullable=false)
+    private String alias;
+
     @Column(name="URL_INFO", length=255)
     private String urlInfo;
 
@@ -44,6 +47,7 @@ public abstract class AbstractMap extends AbstractExtendedEntity {
     protected AbstractMap(String code, String urlInfo, String urlPhoto, boolean official, Date releaseDate) {
         this();
         this.code = code;
+        this.alias = code;
         this.urlInfo = urlInfo;
         this.urlPhoto = urlPhoto;
         this.official = official;
@@ -77,6 +81,14 @@ public abstract class AbstractMap extends AbstractExtendedEntity {
 
     @Override
     public void setDescription(String description) {
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     public String getUrlInfo() {
