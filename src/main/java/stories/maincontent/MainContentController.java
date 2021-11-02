@@ -19,6 +19,8 @@ import javafx.util.Callback;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jsoup.Jsoup;
+import org.jsoup.select.Elements;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -223,11 +225,14 @@ public class MainContentController implements Initializable {
 
             loadLanguageTexts(languageSelect.getValue() != null? languageSelect.getValue().getKey(): "en");
 
+            checkApplicationUpgrade();
+
             // Put gray color for background of the browser's page
             Field f = imageWebView.getEngine().getClass().getDeclaredField("page");
             f.setAccessible(true);
             com.sun.webkit.WebPage page = (com.sun.webkit.WebPage) f.get(imageWebView.getEngine());
             page.setBackgroundColor((new java.awt.Color(0.5019608f, 0.5019608f, 0.5019608f, 0.5f)).getRGB());
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -866,6 +871,59 @@ public class MainContentController implements Initializable {
                 }
             }
         });
+    }
+
+    private void checkApplicationUpgrade() {
+        try {
+            Boolean checkForUpgrades = Boolean.parseBoolean(
+                    propertyService.getPropertyValue("properties/config.properties", "prop.config.checkForUpgrades")
+            );
+            if (checkForUpgrades != null && checkForUpgrades) {
+                String applicationVersion = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion");
+                String releasePageGithubUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.releasePageGithubUrl");
+
+                String lastPublishedVersion = getLastPublishedVersion();
+                if (applicationVersion.compareTo(lastPublishedVersion) < 0) {
+
+                    String newPublishedVersionText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.message.newPublishedVersion");
+                    String actualVersionText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.message.actualVersion");
+                    String newestPublishedVersionText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.message.publishedversion");
+                    String upgradeAppText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.message.upgradeApp");
+                    String checkLinkText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties","prop.message.checkLink");
+
+                    Utils.infoDialog(newPublishedVersionText,
+                            actualVersionText + ": " + applicationVersion +
+                                    "\n" + newestPublishedVersionText + ": " + lastPublishedVersion +
+                                    "\n\n" + upgradeAppText + "." +
+                                    "\n" + checkLinkText + ".",
+                                    releasePageGithubUrl
+                    );
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    private String getLastPublishedVersion() throws Exception {
+
+        String releasePageGithubUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.releasePageGithubUrl");
+        String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
+
+        org.jsoup.nodes.Document doc = Jsoup.connect(releasePageGithubUrl).get();
+
+        Elements linkList = doc.getElementsByTag("a");
+        if (linkList != null && linkList.size() > 0) {
+            for (int i = 0; i <= linkList.size(); i++) {
+                org.jsoup.nodes.Element link = linkList.get(i);
+                if (link.hasText() && link.text().contains(applicationTitle + " v2.")) {
+                    String nameAndVersion = link.text();
+                    String[] versionArray = nameAndVersion.split("v2.");
+                    return "2." + versionArray[1].replaceAll("_",  " ");
+                }
+            }
+        }
+        return StringUtils.EMPTY;
     }
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, ComboBox<?> combo) throws Exception {

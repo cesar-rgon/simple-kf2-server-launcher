@@ -26,6 +26,7 @@
               <MenuItem fx:id="about" mnemonicParsing="false" onAction="#aboutMenuOnAction" text="About" />
                   <MenuItem fx:id="documentation" mnemonicParsing="false" onAction="#documentationMenuOnAction" text="Documentation" />
                   <MenuItem fx:id="github" mnemonicParsing="false" onAction="#githubMenuOnAction" text="GitHub Project" />
+                  <MenuItem fx:id="releases" mnemonicParsing="false" onAction="#releasesMenuOnAction" text="Published Releases" />
                   <MenuItem fx:id="donation" mnemonicParsing="false" onAction="#donationMenuOnAction" text="Donation" />
             </items>
           </Menu>

@@ -4,9 +4,13 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import org.apache.logging.log4j.LogManager;
@@ -18,6 +22,7 @@ import start.MainApplication;
 import utils.Utils;
 
 import java.awt.*;
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -43,6 +48,7 @@ public class TemplateController implements Initializable {
     @FXML private MenuItem about;
     @FXML private MenuItem documentation;
     @FXML private MenuItem github;
+    @FXML private MenuItem releases;
     @FXML private MenuItem donation;
 
     public TemplateController() {
@@ -99,6 +105,9 @@ public class TemplateController implements Initializable {
 
             String githubTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.github");
             github.setText(githubTitle);
+
+            String releasesTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.releases");
+            releases.setText(releasesTitle);
 
             String donationTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.donation");
             donation.setText(donationTitle);
@@ -214,7 +223,42 @@ public class TemplateController implements Initializable {
             String translatedToSpanishBy = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.about.translatedSpanish");
             String translatedToFrenchBy = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.about.translatedFrench");
             String applicationVersion = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion");
-            Utils.infoDialog(versionText + ": " + applicationVersion, developedText + " cesar-rgon\n" + translatedToSpanishBy + " cesar-rgon\n" + translatedToFrenchBy + " -foG.Nox");
+
+            String headerText = versionText + ": " + applicationVersion;
+
+            InputStream cesarRgonImageInputStream = getClass().getClassLoader().getResourceAsStream("images/cesar-rgon-photo.png");
+            Image cesarRgonImage = new Image(cesarRgonImageInputStream);
+            ImageView cesarRgonImageView = new ImageView(cesarRgonImage);
+            cesarRgonImageView.setPreserveRatio(true);
+            cesarRgonImageView.setFitWidth(128);
+
+            Label developedLabel = new Label(developedText + " cesar-rgon");
+            developedLabel.setPadding(new Insets(50,0,0,0));
+            Label spanishTranslationLabel = new Label(translatedToSpanishBy + " cesar-rgon");
+            spanishTranslationLabel.setPadding(new Insets(0,0,60,0));
+
+            InputStream noxInputStream = getClass().getClassLoader().getResourceAsStream("images/-foG.Nox-photo.jpg");
+            Image noxImage = new Image(noxInputStream);
+            ImageView noxImageView = new ImageView(noxImage);
+            noxImageView.setPreserveRatio(true);
+            noxImageView.setFitWidth(128);
+
+            Label frenchTranslationLabel = new Label(translatedToFrenchBy + " -foG.Nox");
+
+            GridPane content = new GridPane();
+            content.add(cesarRgonImageView, 1, 1);
+            content.add(developedLabel, 2, 1);
+            content.add(spanishTranslationLabel, 2, 2);
+            GridPane.setRowSpan(cesarRgonImageView, 2);
+
+            content.add(noxImageView, 1, 3);
+            content.add(frenchTranslationLabel, 2, 3);
+
+            content.setPrefWidth(400);
+            content.setHgap(10);
+            content.setVgap(10);
+
+            Utils.infoDialog(headerText, content);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -237,6 +281,17 @@ public class TemplateController implements Initializable {
         try {
             String githubUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.helpGithubUrl");
             Desktop.getDesktop().browse(new URI(githubUrl));
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void releasesMenuOnAction() {
+        try {
+            String releasesUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.releasePageGithubUrl");
+            Desktop.getDesktop().browse(new URI(releasesUrl));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);

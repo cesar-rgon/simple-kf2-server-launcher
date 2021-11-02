@@ -6,8 +6,11 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
@@ -24,18 +27,22 @@ import javafx.scene.text.Text;
 import javafx.util.Callback;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pojos.AddMapsToProfile;
 import pojos.ImportMapResultToDisplay;
 import pojos.MapToDisplay;
 import pojos.ProfileToDisplay;
 import services.PropertyService;
 import services.PropertyServiceImpl;
+import stories.maincontent.MainContentController;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.awt.*;
 import java.io.*;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.Key;
@@ -46,6 +53,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Utils {
+
+    private static final Logger logger = LogManager.getLogger(Utils.class);
 
     public static void errorDialog(String headerText, Throwable e) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
@@ -213,6 +222,59 @@ public class Utils {
         alert.showAndWait();
     }
 
+    public static void infoDialog(String header, String content, String url) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        try {
+            PropertyService propertyService = new PropertyServiceImpl();
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
+            alert.setTitle(applicationTitle);
+            alert.setHeaderText(header);
+
+            TextArea area = new TextArea(content);
+            area.setWrapText(true);
+            area.setPrefHeight(100);
+            area.setEditable(false);
+
+            Hyperlink hyperlink = new Hyperlink(url);
+            hyperlink.setPadding(new Insets(5,0,15,0));
+            hyperlink.setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent e) {
+                    try {
+                        Desktop.getDesktop().browse(new URI(url));
+                    } catch (Exception ex) {
+                        logger.error(ex.getMessage(), ex);
+                    }
+                }
+            });
+
+            VBox vBox = new VBox();
+            vBox.getChildren().addAll(hyperlink, area);
+
+            alert.getDialogPane().setContent(vBox);
+            alert.setResizable(true);
+            alert.showAndWait();
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    public static void infoDialog(String header, Node content) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        try {
+            PropertyService propertyService = new PropertyServiceImpl();
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
+            alert.setTitle(applicationTitle);
+            alert.setHeaderText(header);
+            alert.getDialogPane().setContent(content);
+            alert.setResizable(true);
+            alert.showAndWait();
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
 
     public static List<AddMapsToProfile> defineCustomMapsToAddPerProfile(String headerText, ObservableList<ProfileDto> profileList) {
         Dialog<TableView<AddMapsToProfile>> dialog = new Dialog<TableView<AddMapsToProfile>>();
