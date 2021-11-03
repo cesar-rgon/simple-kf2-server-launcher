@@ -245,20 +245,20 @@ public class TemplateController implements Initializable {
 
             Label frenchTranslationLabel = new Label(translatedToFrenchBy + " -foG.Nox");
 
-            GridPane content = new GridPane();
-            content.add(cesarRgonImageView, 1, 1);
-            content.add(developedLabel, 2, 1);
-            content.add(spanishTranslationLabel, 2, 2);
+            GridPane gridPane = new GridPane();
+            gridPane.add(cesarRgonImageView, 1, 1);
+            gridPane.add(developedLabel, 2, 1);
+            gridPane.add(spanishTranslationLabel, 2, 2);
             GridPane.setRowSpan(cesarRgonImageView, 2);
 
-            content.add(noxImageView, 1, 3);
-            content.add(frenchTranslationLabel, 2, 3);
+            gridPane.add(noxImageView, 1, 3);
+            gridPane.add(frenchTranslationLabel, 2, 3);
 
-            content.setPrefWidth(400);
-            content.setHgap(10);
-            content.setVgap(10);
+            gridPane.setPrefWidth(400);
+            gridPane.setHgap(10);
+            gridPane.setVgap(10);
 
-            Utils.infoDialog(headerText, content);
+            Utils.infoDialog(headerText, gridPane);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);

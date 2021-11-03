@@ -64,7 +64,6 @@ public class ProfileDtoFactory {
                 profile.getUrlImageServer(),
                 profile.getWelcomeMessage(),
                 profile.getCustomParameters(),
-                mapDtoFactory.newDtos(profile.getMapList()),
                 profile.getTakeover(),
                 profile.getTeamCollision(),
                 profile.getAdminCanPause(),

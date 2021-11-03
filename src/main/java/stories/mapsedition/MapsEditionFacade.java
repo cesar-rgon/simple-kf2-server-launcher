@@ -1,10 +1,8 @@
 package stories.mapsedition;
 
-import dtos.AbstractMapDto;
-import dtos.CustomMapModDto;
-import dtos.OfficialMapDto;
-import dtos.ProfileDto;
+import dtos.*;
 import entities.AbstractMap;
+import entities.ProfileMap;
 import javafx.collections.ObservableList;
 import pojos.ImportMapResultToDisplay;
 
@@ -17,7 +15,6 @@ public interface MapsEditionFacade {
     void setConfigPropertyValue(String key, String value) throws Exception;
     boolean isCorrectInstallationFolder(String installationFolder);
     ObservableList<ProfileDto> listAllProfiles() throws SQLException;
-    List<AbstractMapDto> getMapsFromProfile(String profileName) throws SQLException;
     AbstractMapDto addProfilesToMap(String mapName, List<String> profileNameList, List<ImportMapResultToDisplay> importMapResultToDisplayList) throws SQLException;
     AbstractMapDto deleteMapFromProfile(String mapName, String profileName, String installationFolder) throws Exception;
     void unselectProfileMap(String profileName) throws SQLException;
@@ -27,4 +24,7 @@ public interface MapsEditionFacade {
     CustomMapModDto importCustomMapModFromServer(String mapNameLabel, Long idWorkShop, String commentary, String installationFolder, List<String> selectedProfileNameList, String actualSelectedProfile, List<ImportMapResultToDisplay> importMapResultToDisplayList);
     OfficialMapDto importOfficialMapFromServer(String officialMapName, List<String> selectedProfileNameList, String actualSelectedProfile, String mapNameLabel, List<ImportMapResultToDisplay> importMapResultToDisplayList);
     Optional<AbstractMap> findMapByName(String mapName) throws SQLException;
+    Optional<ProfileMapDto> findProfileMapDtoByNames(String profileName, String mapName) throws SQLException;
+    Optional<ProfileMap> findProfileMapByNames(String profileName, String mapName) throws SQLException;
+    List<ProfileMapDto> listProfileMaps(String profileName) throws SQLException;
 }

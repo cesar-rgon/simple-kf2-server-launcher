@@ -1,10 +1,10 @@
 package stories.mapedition;
 
-import dtos.AbstractMapDto;
 import dtos.CustomMapModDto;
 import dtos.ProfileDto;
-import dtos.factories.MapDtoFactory;
-import entities.AbstractMap;
+import dtos.ProfileMapDto;
+import dtos.factories.ProfileMapDtoFactory;
+import entities.ProfileMap;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -34,6 +34,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.ResourceBundle;
 
@@ -46,7 +47,7 @@ public class MapEditionController implements Initializable {
 
     private String installationFolder;
     private String languageCode;
-    private int mapIndex;
+    private int profileMapIndex;
 
     @FXML private WebView mapPreviewWebView;
     @FXML private Text mapNameValue;
@@ -128,8 +129,8 @@ public class MapEditionController implements Initializable {
             Utils.errorDialog(e.getMessage(), e);
         }
 
-        mapIndex = 0;
-        loadMapData(mapIndex);
+        profileMapIndex = 0;
+        loadProfileMapData(profileMapIndex);
 
         mapPreviewWebView.getEngine().documentProperty().addListener(new ChangeListener<Document>() {
             @Override
@@ -165,15 +166,15 @@ public class MapEditionController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 try {
-                    if (!newValue && !Session.getInstance().getMapList().isEmpty()) {
-                        AbstractMap edittedMap = Session.getInstance().getMapList().get(mapIndex);
+                    if (!newValue && !Session.getInstance().getProfileMapList().isEmpty()) {
+                        ProfileMap edittedProfileMap = Session.getInstance().getProfileMapList().get(profileMapIndex);
                         if (StringUtils.isBlank(aliasTextField.getText())) {
                             Utils.warningDialog("The alias can not be empty", "Setting the alias as map name");
-                            aliasTextField.setText(edittedMap.getCode());
+                            aliasTextField.setText(edittedProfileMap.getMap().getCode());
                         }
 
-                        if (facade.updateMapSetAlias(edittedMap.getCode(), edittedMap.isOfficial(), aliasTextField.getText())) {
-                            edittedMap.setAlias(aliasTextField.getText());
+                        if (facade.updateMapSetAlias(edittedProfileMap, aliasTextField.getText())) {
+                            edittedProfileMap.setAlias(aliasTextField.getText());
                         } else {
                             logger.warn("The alias value could not be saved!" + aliasTextField.getText());
                             String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
@@ -194,22 +195,22 @@ public class MapEditionController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
-                    if (!newPropertyValue && !Session.getInstance().getMapList().isEmpty()) {
-                        AbstractMap edittedMap = Session.getInstance().getMapList().get(mapIndex);
+                    if (!newPropertyValue && !Session.getInstance().getProfileMapList().isEmpty()) {
+                        ProfileMap edittedProfileMap = Session.getInstance().getProfileMapList().get(profileMapIndex);
 
                         String relativeTargetFolder = StringUtils.EMPTY;
                         if (mapPreviewUrlTextField.getText() != null && mapPreviewUrlTextField.getText().startsWith("http")) {
                             String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
                             String absoluteTargetFolder = installationFolder + customMapLocalFolder;
-                            File localfile = Utils.downloadImageFromUrlToFile(mapPreviewUrlTextField.getText(), absoluteTargetFolder, edittedMap.getCode());
+                            File localfile = Utils.downloadImageFromUrlToFile(mapPreviewUrlTextField.getText(), absoluteTargetFolder, edittedProfileMap.getMap().getCode());
                             relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
 
                         } else if (mapPreviewUrlTextField.getText() != null && mapPreviewUrlTextField.getText().startsWith("file:")) {
                             relativeTargetFolder = mapPreviewUrlTextField.getText().replace("file:", "").replace(installationFolder, "");
                         }
 
-                        if (facade.updateMapSetUrlPhoto(edittedMap.getCode(), edittedMap.isOfficial(), relativeTargetFolder)) {
-                            edittedMap.setUrlPhoto(relativeTargetFolder);
+                        if (facade.updateMapSetUrlPhoto(edittedProfileMap, relativeTargetFolder)) {
+                            edittedProfileMap.setUrlPhoto(relativeTargetFolder);
                         } else {
                             logger.warn("The map image link value could not be saved!" + mapPreviewUrlTextField.getText());
                             String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
@@ -236,11 +237,11 @@ public class MapEditionController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
-                    if (!newPropertyValue && !Session.getInstance().getMapList().isEmpty()) {
-                        AbstractMap edittedMap = Session.getInstance().getMapList().get(mapIndex);
+                    if (!newPropertyValue && !Session.getInstance().getProfileMapList().isEmpty()) {
+                        ProfileMap edittedProfileMap = Session.getInstance().getProfileMapList().get(profileMapIndex);
 
-                        if (facade.updateMapSetInfoUrl(edittedMap.getCode(), edittedMap.isOfficial(), infoUrlTextField.getText())) {
-                            edittedMap.setUrlInfo(infoUrlTextField.getText());
+                        if (facade.updateMapSetInfoUrl(edittedProfileMap, infoUrlTextField.getText())) {
+                            edittedProfileMap.setUrlInfo(infoUrlTextField.getText());
                         } else {
                             logger.warn("The map info link value could not be saved!" + infoUrlTextField.getText());
                             String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
@@ -261,11 +262,11 @@ public class MapEditionController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 try {
-                    if (!newValue && !Session.getInstance().getMapList().isEmpty()) {
-                        AbstractMap edittedMap = Session.getInstance().getMapList().get(mapIndex);
+                    if (!newValue && !Session.getInstance().getProfileMapList().isEmpty()) {
+                        ProfileMap edittedProfileMap = Session.getInstance().getProfileMapList().get(profileMapIndex);
 
-                        if (facade.updateMapSetReleaseDate(edittedMap.getCode(), edittedMap.isOfficial(), releaseDatePicker.getValue())) {
-                            edittedMap.setReleaseDate(
+                        if (facade.updateMapSetReleaseDate(edittedProfileMap, releaseDatePicker.getValue())) {
+                            edittedProfileMap.setReleaseDate(
                                     Date.from(releaseDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant())
                             );
                         } else {
@@ -286,39 +287,41 @@ public class MapEditionController implements Initializable {
 
     }
 
-    private void loadMapData(int mapIndex) {
+    private void loadProfileMapData(int mapIndex) {
         try {
             ProfileDto actualProfile = Session.getInstance().getActualProfile();
 
             WebEngine webEngine = mapPreviewWebView.getEngine();
 
-            if (!Session.getInstance().getMapList().isEmpty()) {
-                MapDtoFactory mapDtoFactory = new MapDtoFactory();
-                AbstractMapDto mapDto = mapDtoFactory.newDto(
-                        Session.getInstance().getMapList().get(mapIndex)
+            if (!Session.getInstance().getProfileMapList().isEmpty()) {
+                ProfileMapDtoFactory profileMapDtoFactory = new ProfileMapDtoFactory();
+                ProfileMapDto profileMapDto = profileMapDtoFactory.newDto(
+                        Session.getInstance().getProfileMapList().get(mapIndex)
                 );
 
-                mapNameValue.setText(mapDto.getKey());
-                aliasTextField.setText(mapDto.getAlias());
+                mapNameValue.setText(profileMapDto.getMapDto().getKey());
+                aliasTextField.setText(profileMapDto.getAlias());
 
                 String yesText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.yes");
                 String noText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.no");
 
-                officialValue.setText(mapDto.isOfficial() ? yesText : noText);
-                downloadedValue.setText(mapDto.isOfficial() ? yesText : ((CustomMapModDto) mapDto).isDownloaded() ? yesText : noText);
-                idWorkShopValue.setText(mapDto.isOfficial() ? StringUtils.EMPTY : String.valueOf(((CustomMapModDto) mapDto).getIdWorkShop()));
+                officialValue.setText(profileMapDto.getMapDto().isOfficial() ? yesText : noText);
+                downloadedValue.setText(profileMapDto.getMapDto().isOfficial() ? yesText : ((CustomMapModDto) profileMapDto.getMapDto()).isDownloaded() ? yesText : noText);
+                idWorkShopValue.setText(profileMapDto.getMapDto().isOfficial() ? StringUtils.EMPTY : String.valueOf(((CustomMapModDto) profileMapDto.getMapDto()).getIdWorkShop()));
                 String unknownStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unknown");
+                String dateHourPattern = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.code.dateHourPattern");
                 importationDateValue.setText(
-                        StringUtils.isNotBlank(mapDto.getImportedDate(actualProfile.getName())) ? mapDto.getImportedDate(actualProfile.getName()) : unknownStr
-                );
-                releaseDatePicker.setValue(mapDto.getReleaseDate());
-                infoUrlTextField.setText(
-                        StringUtils.isNotBlank(mapDto.getUrlInfo()) ? mapDto.getUrlInfo() : StringUtils.EMPTY
+                        profileMapDto.getImportedDate().format(DateTimeFormatter.ofPattern(dateHourPattern))
                 );
 
-                if (StringUtils.isNotBlank(mapDto.getUrlPhoto())) {
-                    webEngine.load("file:" + installationFolder + mapDto.getUrlPhoto());
-                    mapPreviewUrlTextField.setText("file:" + installationFolder + mapDto.getUrlPhoto());
+                releaseDatePicker.setValue(profileMapDto.getReleaseDate());
+                infoUrlTextField.setText(
+                        StringUtils.isNotBlank(profileMapDto.getUrlInfo()) ? profileMapDto.getUrlInfo() : StringUtils.EMPTY
+                );
+
+                if (StringUtils.isNotBlank(profileMapDto.getUrlPhoto())) {
+                    webEngine.load("file:" + installationFolder + profileMapDto.getUrlPhoto());
+                    mapPreviewUrlTextField.setText("file:" + installationFolder + profileMapDto.getUrlPhoto());
                 } else {
                     webEngine.load("file:" + getClass().getResource("/images/no-photo.png").getPath());
                     mapPreviewUrlTextField.setText(StringUtils.EMPTY);
@@ -354,22 +357,22 @@ public class MapEditionController implements Initializable {
 
     @FXML
     private void previousMapButtonOnAction(){
-        if (mapIndex > 0) {
-            mapIndex--;
+        if (profileMapIndex > 0) {
+            profileMapIndex--;
         } else {
-            mapIndex = Session.getInstance().getMapList().size() - 1;
+            profileMapIndex = Session.getInstance().getProfileMapList().size() - 1;
         }
-        loadMapData(mapIndex);
+        loadProfileMapData(profileMapIndex);
     }
 
     @FXML
     private void nextMapButtonOnAction(){
-        if (mapIndex < Session.getInstance().getMapList().size() - 1) {
-            mapIndex++;
+        if (profileMapIndex < Session.getInstance().getProfileMapList().size() - 1) {
+            profileMapIndex++;
         } else {
-            mapIndex = 0;
+            profileMapIndex = 0;
         }
-        loadMapData(mapIndex);
+        loadProfileMapData(profileMapIndex);
     }
 
 }

@@ -2,6 +2,7 @@ package stories.maincontent;
 
 import dtos.GameTypeDto;
 import dtos.ProfileDto;
+import dtos.ProfileMapDto;
 import dtos.SelectDto;
 import javafx.collections.ObservableList;
 
@@ -63,5 +64,7 @@ public interface MainContentFacade {
     boolean updateProfileSetMapObjetives(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetPickupItems(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetFriendlyFirePercentage(String profileName, Double friendlyFirePercentage) throws Exception;
+    List<ProfileMapDto> listProfileMaps(String profileName) throws SQLException;
     void runExecutableFile();
+
 }

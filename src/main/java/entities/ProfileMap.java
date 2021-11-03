@@ -69,8 +69,20 @@ public class ProfileMap extends AbstractEntity {
     @JoinColumn(name="ID_MAP", referencedColumnName = "ID", insertable = false, updatable = false, nullable = false)
     private AbstractMap map;
 
+    @Column(name="ALIAS", length=255, nullable=false)
+    private String alias;
+
+    @Column(name="URL_PHOTO")
+    private String urlPhoto;
+
+    @Column(name="RELEASE_DATE")
+    private Date releaseDate;
+
     @Column(name = "IMPORTED_DATE", nullable = false)
     private Date importedDate;
+
+    @Column(name="URL_INFO", length=255)
+    private String urlInfo;
 
     public ProfileMap() {
         super();
@@ -81,6 +93,7 @@ public class ProfileMap extends AbstractEntity {
         this.idProfileMap = new IdProfileMap(profile.getId(), map.getId());
         this.profile = profile;
         this.map = map;
+        this.alias = map.getCode();
         this.importedDate = new Date();
     }
 
@@ -118,6 +131,38 @@ public class ProfileMap extends AbstractEntity {
 
     public void setImportedDate(Date importedDate) {
         this.importedDate = importedDate;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
+    }
+
+    public String getUrlPhoto() {
+        return urlPhoto;
+    }
+
+    public void setUrlPhoto(String urlPhoto) {
+        this.urlPhoto = urlPhoto;
+    }
+
+    public Date getReleaseDate() {
+        return releaseDate;
+    }
+
+    public void setReleaseDate(Date releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
+    public String getUrlInfo() {
+        return urlInfo;
+    }
+
+    public void setUrlInfo(String urlInfo) {
+        this.urlInfo = urlInfo;
     }
 
     @Override

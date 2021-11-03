@@ -3,6 +3,7 @@ package stories.maincontent;
 import daos.*;
 import dtos.GameTypeDto;
 import dtos.ProfileDto;
+import dtos.ProfileMapDto;
 import org.apache.commons.lang3.StringUtils;
 import pojos.ProfileToDisplay;
 import dtos.SelectDto;
@@ -12,15 +13,13 @@ import javafx.collections.ObservableList;
 import pojos.ProfileToDisplayFactory;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
-import services.ProfileService;
-import services.ProfileServiceImpl;
-import services.PropertyService;
-import services.PropertyServiceImpl;
+import services.*;
 import stories.AbstractFacade;
 import utils.Utils;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -34,6 +33,8 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     private final LengthDtoFactory lengthDtoFactory;
     private final MaxPlayersDtoFactory maxPlayersDtoFactory;
     private final ProfileService profileService;
+    private final ProfileMapDtoFactory profileMapDtoFactory;
+    private final ProfileMapService profileMapService;
 
     public MainContentFacadeImpl() {
         super();
@@ -44,6 +45,8 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         lengthDtoFactory = new LengthDtoFactory();
         maxPlayersDtoFactory = new MaxPlayersDtoFactory();
         profileService = new ProfileServiceImpl();
+        this.profileMapDtoFactory = new ProfileMapDtoFactory();
+        this.profileMapService = new ProfileMapServiceImpl();
     }
 
     @Override
@@ -663,6 +666,17 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
             return ProfileDao.getInstance().update(profile);
         }
         return false;
+    }
+
+    @Override
+    public List<ProfileMapDto> listProfileMaps(String profileName) throws SQLException {
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            List<ProfileMap> profileMapList = profileMapService.listProfileMaps(profile);
+            return profileMapDtoFactory.newDtos(profileMapList);
+        }
+        return new ArrayList<ProfileMapDto>();
     }
 
     @Override

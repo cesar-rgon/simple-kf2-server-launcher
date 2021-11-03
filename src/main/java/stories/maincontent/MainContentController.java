@@ -32,6 +32,7 @@ import utils.Utils;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -47,7 +48,7 @@ public class MainContentController implements Initializable {
     @FXML private ComboBox<ProfileDto> profileSelect;
     @FXML private ComboBox<SelectDto> languageSelect;
     @FXML private ComboBox<GameTypeDto> gameTypeSelect;
-    @FXML private ComboBox<AbstractMapDto> mapSelect;
+    @FXML private ComboBox<ProfileMapDto> profileMapSelect;
     @FXML private ComboBox<SelectDto> difficultySelect;
     @FXML private ComboBox<SelectDto> lengthSelect;
     @FXML private ComboBox<SelectDto> maxPlayersSelect;
@@ -209,7 +210,7 @@ public class MainContentController implements Initializable {
                 profileSelect.setValue(Session.getInstance().getActualProfile() != null? Session.getInstance().getActualProfile(): facade.getLastSelectedProfile());
             } else {
                 profileSelect.setValue(null);
-                mapSelect.setItems(null);
+                profileMapSelect.setItems(null);
                 noSelectedMapImage.setVisible(true);
             }
             Session.getInstance().setActualProfile(profileSelect.getValue());
@@ -238,13 +239,13 @@ public class MainContentController implements Initializable {
             Utils.errorDialog(e.getMessage(), e);
         }
 
-        mapSelect.setCellFactory(new Callback<ListView<AbstractMapDto>, ListCell<AbstractMapDto>>() {
+        profileMapSelect.setCellFactory(new Callback<ListView<ProfileMapDto>, ListCell<ProfileMapDto>>() {
             @Override
-            public ListCell<AbstractMapDto> call(ListView<AbstractMapDto> p) {
-                ListCell<AbstractMapDto> listCell = new ListCell<AbstractMapDto>() {
+            public ListCell<ProfileMapDto> call(ListView<ProfileMapDto> p) {
+                ListCell<ProfileMapDto> listCell = new ListCell<ProfileMapDto>() {
 
-                    private GridPane createMapGridPane(AbstractMapDto map) {
-                        Label aliasLabel = new Label(map.getAlias());
+                    private GridPane createMapGridPane(ProfileMapDto profileMapDto) {
+                        Label aliasLabel = new Label(profileMapDto.getAlias());
                         aliasLabel.setStyle("-fx-padding: 5;");
                         Label mapType;
                         String languageCode = languageSelect.getValue().getKey();
@@ -257,7 +258,7 @@ public class MainContentController implements Initializable {
                             officialText = "OFFICIAL";
                             customText = "CUSTOM";
                         }
-                        if (map.isOfficial()) {
+                        if (profileMapDto.getMapDto().isOfficial()) {
                             mapType = new Label(officialText);
                             mapType.setStyle("-fx-text-fill: plum; -fx-padding: 5;");
                         } else {
@@ -265,8 +266,8 @@ public class MainContentController implements Initializable {
                             mapType.setStyle("-fx-text-fill: gold; -fx-padding: 5;");
                         }
                         Image image;
-                        if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(map.getUrlPhoto())) {
-                            image = new Image("file:" + installationFolder + "/" + map.getUrlPhoto());
+                        if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(profileMapDto.getUrlPhoto())) {
+                            image = new Image("file:" + installationFolder + "/" + profileMapDto.getUrlPhoto());
                         } else {
                             InputStream inputStream = getClass().getClassLoader().getResourceAsStream("images/no-photo.png");
                             image = new Image(inputStream);
@@ -285,10 +286,10 @@ public class MainContentController implements Initializable {
                     }
 
                     @Override
-                    protected void updateItem(AbstractMapDto map, boolean empty) {
-                        super.updateItem(map, empty);
-                        if (map != null) {
-                            setGraphic(createMapGridPane(map));
+                    protected void updateItem(ProfileMapDto profileMapDto, boolean empty) {
+                        super.updateItem(profileMapDto, empty);
+                        if (profileMapDto != null) {
+                            setGraphic(createMapGridPane(profileMapDto));
                             setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
                         }
                     }
@@ -297,13 +298,13 @@ public class MainContentController implements Initializable {
             }
         });
 
-        mapSelect.setButtonCell(new ListCell<AbstractMapDto>() {
-            private GridPane createMapGridPane(AbstractMapDto map) {
-                Label aliasLabel = new Label(map.getAlias());
+        profileMapSelect.setButtonCell(new ListCell<ProfileMapDto>() {
+            private GridPane createMapGridPane(ProfileMapDto profileMapDto) {
+                Label aliasLabel = new Label(profileMapDto.getAlias());
                 aliasLabel.setStyle("-fx-font-weight: bold;");
                 Image image;
-                if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(map.getUrlPhoto())) {
-                    image = new Image("file:" + installationFolder + "/" + map.getUrlPhoto());
+                if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(profileMapDto.getUrlPhoto())) {
+                    image = new Image("file:" + installationFolder + "/" + profileMapDto.getUrlPhoto());
                 } else {
                     InputStream inputStream = getClass().getClassLoader().getResourceAsStream("images/no-photo.png");
                     image = new Image(inputStream);
@@ -324,7 +325,7 @@ public class MainContentController implements Initializable {
                     customText = "  CUSTOM  ";
                 }
 
-                if (map.isOfficial()) {
+                if (profileMapDto.getMapDto().isOfficial()) {
                     mapType = new Label(officialText);
                     mapType.setStyle("-fx-text-fill: plum; -fx-padding: 3; -fx-border-color: plum; -fx-border-radius: 5;");
                 } else {
@@ -354,10 +355,10 @@ public class MainContentController implements Initializable {
             }
 
             @Override
-            protected void updateItem(AbstractMapDto map, boolean empty) {
-                super.updateItem(map, empty);
-                if (map != null) {
-                    setGraphic(createMapGridPane(map));
+            protected void updateItem(ProfileMapDto profileMapDto, boolean empty) {
+                super.updateItem(profileMapDto, empty);
+                if (profileMapDto != null) {
+                    setGraphic(createMapGridPane(profileMapDto));
                     setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
                     noSelectedMapImage.setVisible(false);
                 } else {
@@ -990,7 +991,7 @@ public class MainContentController implements Initializable {
         gameTypeLabel.setText(gameTypeLabelText);
         loadTooltip(languageCode, "prop.tooltip.gameType", gameTypeImg, gameTypeLabel, gameTypeSelect);
 
-        loadTooltip(languageCode, "prop.tooltip.map", mapImg, null, mapSelect);
+        loadTooltip(languageCode, "prop.tooltip.map", mapImg, null, profileMapSelect);
 
         String difficultyLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.difficulty") + "*";
         difficultyLabel.setText(difficultyLabelText);
@@ -1170,32 +1171,37 @@ public class MainContentController implements Initializable {
 
     }
 
-    private void loadActualProfile(ProfileDto profile) {
+    private void loadActualProfile(ProfileDto profile) throws SQLException {
         languageSelect.setValue(profile.getLanguage());
         previousSelectedLanguageCode = profile.getLanguage().getKey();
         gameTypeSelect.setValue(profile.getGametype());
 
-        List<AbstractMapDto> officialMaps = profile.getMapList().stream()
-                .filter(m -> m.isOfficial())
-                .sorted((o1, o2) -> o1.getKey().compareTo(o2.getKey()))
+        List<ProfileMapDto> profileMapList = facade.listProfileMaps(profile.getName());
+
+        List<ProfileMapDto> officialMaps = profileMapList.stream()
+                .sorted((pm1, pm2) -> pm1.getAlias().compareTo(pm2.getAlias()))
+                .filter(pm -> pm.getMapDto().isOfficial())
                 .collect(Collectors.toList());
 
-        List<AbstractMapDto> downloadedCustomMaps = profile.getMapList().stream()
-                .filter(m -> !m.isOfficial())
-                .filter(m -> ((CustomMapModDto) m).isDownloaded())
-                .sorted((o1, o2) -> o1.getKey().compareTo(o2.getKey()))
+        List<ProfileMapDto> downloadedCustomMaps = profileMapList.stream()
+                .sorted((pm1, pm2) -> pm1.getAlias().compareTo(pm2.getAlias()))
+                .filter(pm -> !pm.getMapDto().isOfficial())
+                .filter(pm -> ((CustomMapModDto) pm.getMapDto()).isDownloaded())
                 .collect(Collectors.toList());
 
-        List<AbstractMapDto> mapList = new ArrayList<AbstractMapDto>(officialMaps);
-        mapList.addAll(downloadedCustomMaps);
-        mapSelect.setItems(FXCollections.observableArrayList(mapList));
+        List<ProfileMapDto> filteredMapList = new ArrayList<ProfileMapDto>(officialMaps);
+        filteredMapList.addAll(downloadedCustomMaps);
+        profileMapSelect.setItems(FXCollections.observableArrayList(filteredMapList));
         if (profile.getMap() != null) {
-            Optional<AbstractMapDto> selectedMapOpt = mapList.stream().filter(m -> m.getKey().equals(profile.getMap().getKey())).findFirst();
-            if (selectedMapOpt.isPresent()) {
-                mapSelect.getSelectionModel().select(mapList.indexOf(selectedMapOpt.get()));
+            Optional<ProfileMapDto> selectedProfileMapOpt = filteredMapList.stream()
+                    .filter(pm -> pm.getMapDto().getKey().equals(profile.getMap().getKey()))
+                    .findFirst();
+
+            if (selectedProfileMapOpt.isPresent()) {
+                profileMapSelect.getSelectionModel().select(filteredMapList.indexOf(selectedProfileMapOpt.get()));
             }
         }
-        if (mapSelect.getValue() != null) {
+        if (profileMapSelect.getValue() != null) {
             noSelectedMapImage.setVisible(false);
         } else {
             noSelectedMapImage.setVisible(true);
@@ -1309,9 +1315,9 @@ public class MainContentController implements Initializable {
     @FXML
     private void mapOnAction() {
         try {
-            if (profileSelect.getValue() != null && mapSelect.getValue() != null) {
+            if (profileSelect.getValue() != null && profileMapSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
-                String mapCode = mapSelect.getValue().getKey();
+                String mapCode = profileMapSelect.getValue().getMapDto().getKey();
                 if (!facade.updateProfileSetMap(profileName, mapCode)) {
                     logger.warn("The map value could not be saved!: " + mapCode);
                     String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",

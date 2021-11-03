@@ -25,7 +25,6 @@ public class ProfileDto {
     private final String urlImageServer;
     private final String welcomeMessage;
     private final String customParameters;
-    private final ObservableList<AbstractMapDto> mapList;
     private final Boolean takeover;
     private final Boolean teamCollision;
     private final Boolean adminCanPause;
@@ -53,7 +52,7 @@ public class ProfileDto {
 
     public ProfileDto(String name, SelectDto language, GameTypeDto gametype, AbstractMapDto map, SelectDto difficulty, SelectDto length, SelectDto maxPlayers,
                       String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
-                      String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, ObservableList<AbstractMapDto> mapList,
+                      String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters,
                       Boolean takeover, Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting,
                       Double mapVotingTime, Boolean kickVoting, Double kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators,
                       Boolean voip, Boolean chatLogging, String chatLoggingFile, Boolean chatLoggingFileTimestamp, Double timeBetweenKicks, Double maxIdleTime, Boolean deadPlayersCanTalk,
@@ -79,7 +78,6 @@ public class ProfileDto {
         this.urlImageServer = urlImageServer;
         this.welcomeMessage = welcomeMessage;
         this.customParameters = customParameters;
-        this.mapList = mapList;
         this.takeover = takeover;
         this.teamCollision = teamCollision;
         this.adminCanPause = adminCanPause;
@@ -183,10 +181,6 @@ public class ProfileDto {
 
     public String getCustomParameters() {
         return customParameters;
-    }
-
-    public ObservableList<AbstractMapDto> getMapList() {
-        return mapList;
     }
 
     public Boolean getTakeover() {

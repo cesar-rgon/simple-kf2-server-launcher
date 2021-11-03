@@ -1,10 +1,7 @@
 package stories.mapsedition;
 
-import dtos.AbstractMapDto;
-import dtos.CustomMapModDto;
-import dtos.OfficialMapDto;
-import dtos.ProfileDto;
-import entities.AbstractMap;
+import dtos.*;
+import entities.ProfileMap;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -61,7 +58,7 @@ public class MapsEditionController implements Initializable {
     private final PropertyService propertyService;
     protected String languageCode;
     private String installationFolder;
-    private List<AbstractMapDto> mapList;
+    private List<ProfileMapDto> profileMapDtoList;
     private boolean selectMaps;
 
     @FXML private Slider mapsSlider;
@@ -117,11 +114,11 @@ public class MapsEditionController implements Initializable {
                                 Session.getInstance().getActualProfile():
                                 profileSelect.getItems().get(0));
 
-                mapList = facade.getMapsFromProfile(profileSelect.getValue().getName());
+                profileMapDtoList = facade.listProfileMaps(profileSelect.getValue().getName());;
                 orderMapsByNameOnAction();
             } else {
                 profileSelect.setValue(null);
-                mapList = null;
+                profileMapDtoList = null;
             }
             Session.getInstance().setMapsProfile(profileSelect.getValue());
 
@@ -220,11 +217,11 @@ public class MapsEditionController implements Initializable {
         return contentPane;
     }
 
-    private GridPane createMapGridPane(AbstractMapDto map) {
+    private GridPane createMapGridPane(ProfileMapDto profileMapDto) {
 
         Image image = null;
-        if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(map.getUrlPhoto())) {
-            image = new Image("file:" + installationFolder + "/" + map.getUrlPhoto());
+        if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(profileMapDto.getUrlPhoto())) {
+            image = new Image("file:" + installationFolder + "/" + profileMapDto.getUrlPhoto());
         } else {
             InputStream inputStream = getClass().getClassLoader().getResourceAsStream("images/no-photo.png");
             image = new Image(inputStream);
@@ -250,7 +247,7 @@ public class MapsEditionController implements Initializable {
             }
         });
 
-        Label aliasLabel = new Label(map.getAlias(), checkbox);
+        Label aliasLabel = new Label(profileMapDto.getAlias(), checkbox);
         aliasLabel.setMinHeight(20);
         aliasLabel.setMaxWidth(Double.MAX_VALUE);
         aliasLabel.setAlignment(Pos.BOTTOM_CENTER);
@@ -262,8 +259,10 @@ public class MapsEditionController implements Initializable {
         String releaseStr;
         String importedStr;
         String mapNameText;
+        String dateHourPattern;
         try {
             datePattern = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.code.datePattern");
+            dateHourPattern = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.code.dateHourPattern");
             unknownStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unknown");
             releaseStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.release");
             importedStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.imported");
@@ -271,6 +270,7 @@ public class MapsEditionController implements Initializable {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             datePattern = "yyyy/MM/dd";
+            dateHourPattern = "yyyy/MM/dd HH:mm";
             unknownStr = "Unknown";
             releaseStr = "Release";
             importedStr = "Imported";
@@ -279,7 +279,7 @@ public class MapsEditionController implements Initializable {
 
         Text mapNameGraphic = new Text(mapNameText + ": ");
         mapNameGraphic.setFill(Color.GRAY);
-        Label mapNameLabel = new Label(map.getKey(), mapNameGraphic);
+        Label mapNameLabel = new Label(profileMapDto.getMapDto().getKey(), mapNameGraphic);
         mapNameLabel.setMaxWidth(Double.MAX_VALUE);
         mapNameLabel.setAlignment(Pos.BOTTOM_CENTER);
         mapNameLabel.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
@@ -289,7 +289,7 @@ public class MapsEditionController implements Initializable {
 
         Text releaseDateGraphic = new Text(releaseStr + ": ");
         releaseDateGraphic.setFill(Color.GRAY);
-        String releaseDateStr = map.getReleaseDate() != null ? map.getReleaseDate().format(DateTimeFormatter.ofPattern(datePattern)): unknownStr;
+        String releaseDateStr = profileMapDto.getReleaseDate() != null ? profileMapDto.getReleaseDate().format(DateTimeFormatter.ofPattern(datePattern)): unknownStr;
         Label releaseDateLabel = new Label(releaseDateStr, releaseDateGraphic);
         releaseDateLabel.setMaxWidth(Double.MAX_VALUE);
         releaseDateLabel.setAlignment(Pos.BOTTOM_CENTER);
@@ -298,18 +298,19 @@ public class MapsEditionController implements Initializable {
 
         Text importedDateGraphic = new Text(importedStr + ": ");
         importedDateGraphic.setFill(Color.GRAY);
-        Label importedDateText = new Label(map.getImportedDate(profileSelect.getValue().getName()), importedDateGraphic);
+
+        Label importedDateText = new Label(profileMapDto.getImportedDate().format(DateTimeFormatter.ofPattern(dateHourPattern)), importedDateGraphic);
         importedDateText.setMaxWidth(Double.MAX_VALUE);
         importedDateText.setAlignment(Pos.BOTTOM_CENTER);
         importedDateText.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
         gridpane.add(importedDateText, 1, 5);
 
         int rowIndex = 6;
-        if (map.isOfficial()) {
+        if (profileMapDto.getMapDto().isOfficial()) {
             importedDateText.setPadding(new Insets(0,0,10,0));
         } else {
             String labelText = "";
-            if (((CustomMapModDto) map).isDownloaded()) {
+            if (((CustomMapModDto) profileMapDto.getMapDto()).isDownloaded()) {
                 try {
                     labelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.downloaded");
                 } catch (Exception e) {
@@ -355,10 +356,10 @@ public class MapsEditionController implements Initializable {
         }
 
         StringBuffer tooltipText = new StringBuffer();
-        if (!map.isOfficial()) {
-            tooltipText.append("id WorkShop: ").append(((CustomMapModDto)map).getIdWorkShop());
+        if (!profileMapDto.getMapDto().isOfficial()) {
+            tooltipText.append("id WorkShop: ").append(((CustomMapModDto)profileMapDto.getMapDto()).getIdWorkShop());
         }
-        if (StringUtils.isNotBlank(map.getUrlPhoto())) {
+        if (StringUtils.isNotBlank(profileMapDto.getUrlPhoto())) {
             if (StringUtils.isNotBlank(tooltipText)) {
                 tooltipText.append("\n");
             }
@@ -368,9 +369,9 @@ public class MapsEditionController implements Initializable {
             } catch (Exception e) {
                 message = "Url info";
             }
-            tooltipText.append(message).append(": ").append(map.getUrlInfo());
+            tooltipText.append(message).append(": ").append(profileMapDto.getUrlInfo());
         }
-        if (map.isOfficial() || ((CustomMapModDto) map).isDownloaded()) {
+        if (profileMapDto.getMapDto().isOfficial() || ((CustomMapModDto) profileMapDto.getMapDto()).isDownloaded()) {
             if (StringUtils.isNotBlank(tooltipText)) {
                 tooltipText.append("\n");
             }
@@ -380,7 +381,7 @@ public class MapsEditionController implements Initializable {
             } catch (Exception e) {
                 message = "Photo location";
             }
-            tooltipText.append(message).append(": ").append(installationFolder).append(map.getUrlPhoto());
+            tooltipText.append(message).append(": ").append(installationFolder).append(profileMapDto.getUrlPhoto());
         }
 
         if (StringUtils.isNotBlank(tooltipText)) {
@@ -388,12 +389,12 @@ public class MapsEditionController implements Initializable {
             Tooltip.install(gridpane, tooltip);
         }
 
-        if (StringUtils.isNotBlank(map.getUrlInfo())) {
+        if (StringUtils.isNotBlank(profileMapDto.getUrlInfo())) {
             gridpane.setCursor(Cursor.HAND);
             gridpane.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
-                    Session.getInstance().setMap(map);
+                    Session.getInstance().setMap(profileMapDto.getMapDto());
                     loadNewContent("/views/mapWebInfo.fxml");
                     event.consume();
                 }
@@ -462,12 +463,12 @@ public class MapsEditionController implements Initializable {
         }
         officialMapsFlowPane.getChildren().clear();
         customMapsFlowPane.getChildren().clear();
-        for (AbstractMapDto map: mapList) {
-            String mapName = StringUtils.upperCase(map.getKey());
-            String alias = StringUtils.upperCase(map.getAlias());
+        for (ProfileMapDto profileMapDto: profileMapDtoList) {
+            String mapName = StringUtils.upperCase(profileMapDto.getMapDto().getKey());
+            String alias = StringUtils.upperCase(profileMapDto.getAlias());
             if (mapName.contains(StringUtils.upperCase(searchMaps.getText())) || alias.contains(StringUtils.upperCase(searchMaps.getText()))) {
-                GridPane gridpane = createMapGridPane(map);
-                if (map.isOfficial()) {
+                GridPane gridpane = createMapGridPane(profileMapDto);
+                if (profileMapDto.getMapDto().isOfficial()) {
                     officialMapsFlowPane.getChildren().add(gridpane);
                 } else {
                     customMapsFlowPane.getChildren().add(gridpane);
@@ -519,10 +520,17 @@ public class MapsEditionController implements Initializable {
                     if (mapAddedList != null && !mapAddedList.isEmpty()) {
                         mapAddedList.stream().forEach(customMapMod -> {
                             if (addMapsToProfile.getProfileName().equals(profileSelect.getValue().getName()) &&
-                                    !mapList.stream().filter(m -> !m.isOfficial() && ((CustomMapModDto) m).getIdWorkShop().equals(((CustomMapModDto) customMapMod).getIdWorkShop())).findFirst().isPresent()) {
-                                mapList.add(customMapMod);
-                                GridPane gridpane = createMapGridPane(customMapMod);
-                                customMapsFlowPane.getChildren().add(gridpane);
+                                    !profileMapDtoList.stream().filter(pm -> !pm.getMapDto().isOfficial() && ((CustomMapModDto) pm.getMapDto()).getIdWorkShop().equals(((CustomMapModDto) customMapMod).getIdWorkShop())).findFirst().isPresent()) {
+                                try {
+                                    Optional<ProfileMapDto> profileMapDtoOptional = facade.findProfileMapDtoByNames(profileSelect.getValue().getName(), customMapMod.getKey());
+                                    if (profileMapDtoOptional.isPresent()) {
+                                        profileMapDtoList.add(profileMapDtoOptional.get());
+                                        GridPane gridpane = createMapGridPane(profileMapDtoOptional.get());
+                                        customMapsFlowPane.getChildren().add(gridpane);
+                                    }
+                                } catch (Exception e) {
+                                    logger.error(e.getMessage(), e);
+                                }
                             }
                         });
                     }
@@ -627,8 +635,8 @@ public class MapsEditionController implements Initializable {
 
                     if (!mapsToRemove.isEmpty()) {
                         try {
-                            mapList.clear();
-                            mapList = facade.getMapsFromProfile(profileSelect.getValue().getName());
+                            profileMapDtoList.clear();
+                            profileMapDtoList = facade.listProfileMaps(profileSelect.getValue().getName());;
                             String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
                             officialMapsTab.setGraphic(createTabTitle(officialMapsTabText, officialMapsFlowPane.getChildren().size()));
                             String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
@@ -807,10 +815,17 @@ public class MapsEditionController implements Initializable {
 
 
             if (selectedProfileNameList.contains(profileSelect.getValue().getName()) &&
-                    !mapList.stream().filter(m -> m.isOfficial() && m.getKey().equalsIgnoreCase(officialMapImportedDto.getKey())).findFirst().isPresent()) {
-                mapList.add(officialMapImportedDto);
-                GridPane gridpane = createMapGridPane(officialMapImportedDto);
-                officialMapsFlowPane.getChildren().add(gridpane);
+                    !profileMapDtoList.stream().filter(pm -> pm.getMapDto().isOfficial() && pm.getMapDto().getKey().equalsIgnoreCase(officialMapImportedDto.getKey())).findFirst().isPresent()) {
+                try {
+                    Optional<ProfileMapDto> profileMapDtoOptional = facade.findProfileMapDtoByNames(profileSelect.getValue().getName(), officialMapImportedDto.getKey());
+                    if (profileMapDtoOptional.isPresent()) {
+                        profileMapDtoList.add(profileMapDtoOptional.get());
+                        GridPane gridpane = createMapGridPane(profileMapDtoOptional.get());
+                        officialMapsFlowPane.getChildren().add(gridpane);
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
             }
         }
     }
@@ -838,11 +853,17 @@ public class MapsEditionController implements Initializable {
             );
 
             if (selectedProfileNameList.contains(profileSelect.getValue().getName()) &&
-                    !mapList.stream().filter(m -> !m.isOfficial() && ((CustomMapModDto) m).getIdWorkShop().equals(customMapModImportedDto.getIdWorkShop())).findFirst().isPresent()) {
-
-                mapList.add(customMapModImportedDto);
-                GridPane gridpane = createMapGridPane(customMapModImportedDto);
-                customMapsFlowPane.getChildren().add(gridpane);
+                    !profileMapDtoList.stream().filter(pm -> !pm.getMapDto().isOfficial() && ((CustomMapModDto) pm.getMapDto()).getIdWorkShop().equals(customMapModImportedDto.getIdWorkShop())).findFirst().isPresent()) {
+                try {
+                    Optional<ProfileMapDto> profileMapDtoOptional = facade.findProfileMapDtoByNames(profileSelect.getValue().getName(), customMapModImportedDto.getKey());
+                    if (profileMapDtoOptional.isPresent()) {
+                        profileMapDtoList.add(profileMapDtoOptional.get());
+                        GridPane gridpane = createMapGridPane(profileMapDtoOptional.get());
+                        customMapsFlowPane.getChildren().add(gridpane);
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                }
             }
         }
     }
@@ -899,10 +920,10 @@ public class MapsEditionController implements Initializable {
         try {
             customMapsFlowPane.getChildren().clear();
             officialMapsFlowPane.getChildren().clear();
-            mapList = facade.getMapsFromProfile(profileSelect.getValue().getName());
-            for (AbstractMapDto map : mapList) {
-                GridPane gridpane = createMapGridPane(map);
-                if (map.isOfficial()) {
+            profileMapDtoList = facade.listProfileMaps(profileSelect.getValue().getName());;
+            for (ProfileMapDto profileMapDto : profileMapDtoList) {
+                GridPane gridpane = createMapGridPane(profileMapDto);
+                if (profileMapDto.getMapDto().isOfficial()) {
                     officialMapsFlowPane.getChildren().add(gridpane);
                 } else {
                     customMapsFlowPane.getChildren().add(gridpane);
@@ -930,16 +951,16 @@ public class MapsEditionController implements Initializable {
         officialMapsFlowPane.getChildren().clear();
 
         if (EnumSortedMapsCriteria.ALIAS_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
-            mapList = mapList.stream().sorted((m1, m2) -> m1.getAlias().compareTo(m2.getAlias())).collect(Collectors.toList());
+            profileMapDtoList = profileMapDtoList.stream().sorted((pm1, pm2) -> pm1.getAlias().compareTo(pm2.getAlias())).collect(Collectors.toList());
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.ALIAS_ASC);
         } else {
-            mapList = mapList.stream().sorted((m1, m2) -> m2.getAlias().compareTo(m1.getAlias())).collect(Collectors.toList());
+            profileMapDtoList = profileMapDtoList.stream().sorted((pm1, pm2) -> pm2.getAlias().compareTo(pm1.getAlias())).collect(Collectors.toList());
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.ALIAS_DESC);
         }
 
-        for (AbstractMapDto map : mapList) {
-            GridPane gridpane = createMapGridPane(map);
-            if (map.isOfficial()) {
+        for (ProfileMapDto profileMapDto : profileMapDtoList) {
+            GridPane gridpane = createMapGridPane(profileMapDto);
+            if (profileMapDto.getMapDto().isOfficial()) {
                 officialMapsFlowPane.getChildren().add(gridpane);
             } else {
                 customMapsFlowPane.getChildren().add(gridpane);
@@ -953,16 +974,16 @@ public class MapsEditionController implements Initializable {
         officialMapsFlowPane.getChildren().clear();
 
         if (EnumSortedMapsCriteria.NAME_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
-            mapList = mapList.stream().sorted((m1, m2) -> m1.getKey().compareTo(m2.getKey())).collect(Collectors.toList());
+            profileMapDtoList = profileMapDtoList.stream().sorted((pm1, pm2) -> pm1.getMapDto().getKey().compareTo(pm2.getMapDto().getKey())).collect(Collectors.toList());
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.NAME_ASC);
         } else {
-            mapList = mapList.stream().sorted((m1, m2) -> m2.getKey().compareTo(m1.getKey())).collect(Collectors.toList());
+            profileMapDtoList = profileMapDtoList.stream().sorted((pm1, pm2) -> pm2.getMapDto().getKey().compareTo(pm1.getMapDto().getKey())).collect(Collectors.toList());
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.NAME_DESC);
         }
 
-        for (AbstractMapDto map : mapList) {
-            GridPane gridpane = createMapGridPane(map);
-            if (map.isOfficial()) {
+        for (ProfileMapDto profileMapDto : profileMapDtoList) {
+            GridPane gridpane = createMapGridPane(profileMapDto);
+            if (profileMapDto.getMapDto().isOfficial()) {
                 officialMapsFlowPane.getChildren().add(gridpane);
             } else {
                 customMapsFlowPane.getChildren().add(gridpane);
@@ -998,42 +1019,42 @@ public class MapsEditionController implements Initializable {
         officialMapsFlowPane.getChildren().clear();
 
         if (EnumSortedMapsCriteria.RELEASE_DATE_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
-            List<AbstractMapDto> sortedMapList = new ArrayList<AbstractMapDto>(
-                    mapList.stream()
-                            .filter(map -> map.getReleaseDate() != null)
-                            .sorted((m1, m2) -> m1.getReleaseDate().compareTo(m2.getReleaseDate()))
+            List<ProfileMapDto> sortedMapList = new ArrayList<ProfileMapDto>(
+                    profileMapDtoList.stream()
+                            .filter(pm -> pm.getReleaseDate() != null)
+                            .sorted((pm1, pm2) -> pm1.getReleaseDate().compareTo(pm2.getReleaseDate()))
                             .collect(Collectors.toList())
             );
-            List<AbstractMapDto> mapWithoutReleaseDateList = new ArrayList<AbstractMapDto>(
-                    mapList.stream()
-                            .filter(map -> map.getReleaseDate() == null)
+            List<ProfileMapDto> mapWithoutReleaseDateList = new ArrayList<ProfileMapDto>(
+                    profileMapDtoList.stream()
+                            .filter(pm -> pm.getReleaseDate() == null)
                             .collect(Collectors.toList())
             );
 
             sortedMapList.addAll(mapWithoutReleaseDateList);
-            mapList = sortedMapList;
+            profileMapDtoList = sortedMapList;
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.RELEASE_DATE_ASC);
         } else {
-            List<AbstractMapDto> sortedMapList = new ArrayList<AbstractMapDto>(
-                    mapList.stream()
-                            .filter(map -> map.getReleaseDate() != null)
-                            .sorted((m1, m2) -> m2.getReleaseDate().compareTo(m1.getReleaseDate()))
+            List<ProfileMapDto> sortedMapList = new ArrayList<ProfileMapDto>(
+                    profileMapDtoList.stream()
+                            .filter(pm -> pm.getReleaseDate() != null)
+                            .sorted((pm1, pm2) -> pm2.getReleaseDate().compareTo(pm1.getReleaseDate()))
                             .collect(Collectors.toList())
             );
-            List<AbstractMapDto> mapWithoutReleaseDateList = new ArrayList<AbstractMapDto>(
-                    mapList.stream()
-                            .filter(map -> map.getReleaseDate() == null)
+            List<ProfileMapDto> mapWithoutReleaseDateList = new ArrayList<ProfileMapDto>(
+                    profileMapDtoList.stream()
+                            .filter(pm -> pm.getReleaseDate() == null)
                             .collect(Collectors.toList())
             );
 
             sortedMapList.addAll(mapWithoutReleaseDateList);
-            mapList = sortedMapList;
+            profileMapDtoList = sortedMapList;
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.RELEASE_DATE_DESC);
         }
 
-        for (AbstractMapDto map : mapList) {
-            GridPane gridpane = createMapGridPane(map);
-            if (map.isOfficial()) {
+        for (ProfileMapDto profileMapDto : profileMapDtoList) {
+            GridPane gridpane = createMapGridPane(profileMapDto);
+            if (profileMapDto.getMapDto().isOfficial()) {
                 officialMapsFlowPane.getChildren().add(gridpane);
             } else {
                 customMapsFlowPane.getChildren().add(gridpane);
@@ -1047,16 +1068,16 @@ public class MapsEditionController implements Initializable {
         officialMapsFlowPane.getChildren().clear();
 
         if (EnumSortedMapsCriteria.IMPORTED_DATE_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
-            mapList = mapList.stream().sorted((m1, m2) -> m1.getImportedDate(profileSelect.getValue().getName()).compareTo(m2.getImportedDate(profileSelect.getValue().getName()))).collect(Collectors.toList());
+            profileMapDtoList = profileMapDtoList.stream().sorted((pm1, pm2) -> pm1.getImportedDate().compareTo(pm2.getImportedDate())).collect(Collectors.toList());
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.IMPORTED_DATE_ASC);
         } else {
-            mapList = mapList.stream().sorted((m1, m2) -> m2.getImportedDate(profileSelect.getValue().getName()).compareTo(m1.getImportedDate(profileSelect.getValue().getName()))).collect(Collectors.toList());
+            profileMapDtoList = profileMapDtoList.stream().sorted((pm1, pm2) -> pm2.getImportedDate().compareTo(pm1.getImportedDate())).collect(Collectors.toList());
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.IMPORTED_DATE_DESC);
         }
 
-        for (AbstractMapDto map : mapList) {
-            GridPane gridpane = createMapGridPane(map);
-            if (map.isOfficial()) {
+        for (ProfileMapDto profileMapDto : profileMapDtoList) {
+            GridPane gridpane = createMapGridPane(profileMapDto);
+            if (profileMapDto.getMapDto().isOfficial()) {
                 officialMapsFlowPane.getChildren().add(gridpane);
             } else {
                 customMapsFlowPane.getChildren().add(gridpane);
@@ -1072,27 +1093,27 @@ public class MapsEditionController implements Initializable {
         customMapsFlowPane.getChildren().clear();
 
         if (EnumSortedMapsCriteria.DOWNLOAD_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
-            mapList = mapList.stream().
-                    filter(m -> !m.isOfficial()).
-                    sorted((m1, m2) -> {
-                Boolean map1Downloaded = ((CustomMapModDto) m1).isDownloaded();
-                Boolean map2Downloaded = ((CustomMapModDto) m2).isDownloaded();
+            profileMapDtoList = profileMapDtoList.stream().
+                    filter(pm -> !pm.getMapDto().isOfficial()).
+                    sorted((pm1, pm2) -> {
+                Boolean map1Downloaded = ((CustomMapModDto) pm1.getMapDto()).isDownloaded();
+                Boolean map2Downloaded = ((CustomMapModDto) pm2.getMapDto()).isDownloaded();
                 return map1Downloaded.compareTo(map2Downloaded);
             }).collect(Collectors.toList());
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.DOWNLOAD_ASC);
         } else {
-            mapList = mapList.stream().
-                    filter(m -> !m.isOfficial()).
-                    sorted((m1, m2) -> {
-                Boolean map1Downloaded = ((CustomMapModDto) m1).isDownloaded();
-                Boolean map2Downloaded = ((CustomMapModDto) m2).isDownloaded();
+            profileMapDtoList = profileMapDtoList.stream().
+                    filter(pm -> !pm.getMapDto().isOfficial()).
+                    sorted((pm1, pm2) -> {
+                Boolean map1Downloaded = ((CustomMapModDto) pm1.getMapDto()).isDownloaded();
+                Boolean map2Downloaded = ((CustomMapModDto) pm2.getMapDto()).isDownloaded();
                 return map2Downloaded.compareTo(map1Downloaded);
             }).collect(Collectors.toList());
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.DOWNLOAD_DESC);
         }
 
-        for (AbstractMapDto map : mapList) {
-            GridPane gridpane = createMapGridPane(map);
+        for (ProfileMapDto profileMapDto : profileMapDtoList) {
+            GridPane gridpane = createMapGridPane(profileMapDto);
             customMapsFlowPane.getChildren().add(gridpane);
         }
     }
@@ -1109,7 +1130,7 @@ public class MapsEditionController implements Initializable {
             }
 
             ObservableList<Node> nodeList = null;
-            List<AbstractMap> editList = new ArrayList<AbstractMap>();
+            List<ProfileMap> editList = new ArrayList<ProfileMap>();
             if (officialMapsTab.isSelected()) {
                 nodeList = officialMapsFlowPane.getChildren();
             } else {
@@ -1124,9 +1145,9 @@ public class MapsEditionController implements Initializable {
 
                 if (checkbox.isSelected()) {
                     String mapName = mapNameLabel.getText();
-                    Optional<AbstractMap> abstractMapOpt = facade.findMapByName(mapName);
-                    if (abstractMapOpt.isPresent()) {
-                        editList.add(abstractMapOpt.get());
+                    Optional<ProfileMap> profileMapOptional = facade.findProfileMapByNames(profileSelect.getValue().getName(), mapName);
+                    if (profileMapOptional.isPresent()) {
+                        editList.add(profileMapOptional.get());
                     }
                 }
             }
@@ -1138,7 +1159,7 @@ public class MapsEditionController implements Initializable {
                 Utils.warningDialog(headerText, contentText);
 
             } else {
-                Session.getInstance().setMapList(editList);
+                Session.getInstance().setProfileMapList(editList);
                 loadNewContent("/views/mapEdition.fxml");
             }
         } catch (Exception e) {

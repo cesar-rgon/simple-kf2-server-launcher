@@ -1,10 +1,7 @@
 package stories.mapedition;
 
-import daos.CustomMapModDao;
-import daos.OfficialMapDao;
-import entities.AbstractMap;
-import entities.CustomMapMod;
-import entities.OfficialMap;
+import daos.ProfileMapDao;
+import entities.ProfileMap;
 import services.AbstractMapService;
 import services.CustomMapModServiceImpl;
 import services.OfficialMapServiceImpl;
@@ -14,7 +11,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.Optional;
 
 public class MapEditionFacadeImpl extends AbstractFacade implements MapEditionFacade {
 
@@ -28,86 +24,26 @@ public class MapEditionFacadeImpl extends AbstractFacade implements MapEditionFa
     }
 
     @Override
-    public boolean updateMapSetUrlPhoto(String mapName, boolean isOfficial, String mapPreviewUrl) throws SQLException {
-        Optional<AbstractMap> mapOptional;
-        if (isOfficial) {
-            mapOptional = officialMapService.findMapByCode(mapName);
-            if (!mapOptional.isPresent()) {
-                return false;
-            }
-            mapOptional.get().setUrlPhoto(mapPreviewUrl);
-            return OfficialMapDao.getInstance().update((OfficialMap) mapOptional.get());
-        } else {
-            mapOptional = customMapService.findMapByCode(mapName);
-            if (!mapOptional.isPresent()) {
-                return false;
-            }
-            mapOptional.get().setUrlPhoto(mapPreviewUrl);
-            return CustomMapModDao.getInstance().update((CustomMapMod) mapOptional.get());
-        }
+    public boolean updateMapSetUrlPhoto(ProfileMap profileMap, String mapPreviewUrl) throws SQLException {
+        profileMap.setUrlPhoto(mapPreviewUrl);
+        return ProfileMapDao.getInstance().update(profileMap);
     }
 
     @Override
-    public boolean updateMapSetInfoUrl(String mapName, boolean isOfficial, String mapInfoUrl) throws SQLException {
-        Optional<AbstractMap> mapOptional;
-        if (isOfficial) {
-            mapOptional = officialMapService.findMapByCode(mapName);
-            if (!mapOptional.isPresent()) {
-                return false;
-            }
-            mapOptional.get().setUrlInfo(mapInfoUrl);
-            return OfficialMapDao.getInstance().update((OfficialMap) mapOptional.get());
-        } else {
-            mapOptional = customMapService.findMapByCode(mapName);
-            if (!mapOptional.isPresent()) {
-                return false;
-            }
-            mapOptional.get().setUrlInfo(mapInfoUrl);
-            return CustomMapModDao.getInstance().update((CustomMapMod) mapOptional.get());
-        }
+    public boolean updateMapSetInfoUrl(ProfileMap profileMap, String mapInfoUrl) throws SQLException {
+        profileMap.setUrlInfo(mapInfoUrl);
+        return ProfileMapDao.getInstance().update(profileMap);
     }
 
     @Override
-    public boolean updateMapSetReleaseDate(String mapName, boolean isOfficial, LocalDate releaseDate) throws SQLException {
-        Optional<AbstractMap> mapOptional;
-        if (isOfficial) {
-            mapOptional = officialMapService.findMapByCode(mapName);
-            if (!mapOptional.isPresent()) {
-                return false;
-            }
-            mapOptional.get().setReleaseDate(
-                    Date.from(releaseDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-            );
-            return OfficialMapDao.getInstance().update((OfficialMap) mapOptional.get());
-        } else {
-            mapOptional = customMapService.findMapByCode(mapName);
-            if (!mapOptional.isPresent()) {
-                return false;
-            }
-            mapOptional.get().setReleaseDate(
-                    Date.from(releaseDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
-            );
-            return CustomMapModDao.getInstance().update((CustomMapMod) mapOptional.get());
-        }
+    public boolean updateMapSetReleaseDate(ProfileMap profileMap, LocalDate releaseDate) throws SQLException {
+        profileMap.setReleaseDate(Date.from(releaseDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        return ProfileMapDao.getInstance().update(profileMap);
     }
 
     @Override
-    public boolean updateMapSetAlias(String mapName, boolean isOfficial, String alias) throws SQLException {
-        Optional<AbstractMap> mapOptional;
-        if (isOfficial) {
-            mapOptional = officialMapService.findMapByCode(mapName);
-            if (!mapOptional.isPresent()) {
-                return false;
-            }
-            mapOptional.get().setAlias(alias);
-            return OfficialMapDao.getInstance().update((OfficialMap) mapOptional.get());
-        } else {
-            mapOptional = customMapService.findMapByCode(mapName);
-            if (!mapOptional.isPresent()) {
-                return false;
-            }
-            mapOptional.get().setAlias(alias);
-            return CustomMapModDao.getInstance().update((CustomMapMod) mapOptional.get());
-        }
+    public boolean updateMapSetAlias(ProfileMap profileMap, String alias) throws SQLException {
+        profileMap.setAlias(alias);
+        return ProfileMapDao.getInstance().update(profileMap);
     }
 }

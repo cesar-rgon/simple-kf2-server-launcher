@@ -3,6 +3,7 @@ package pojos.session;
 import dtos.AbstractMapDto;
 import dtos.ProfileDto;
 import entities.AbstractMap;
+import entities.ProfileMap;
 import pojos.enums.EnumMasTab;
 import pojos.enums.EnumSortedMapsCriteria;
 
@@ -20,7 +21,7 @@ public class Session {
     private ProfileDto mapsProfile;
     private EnumSortedMapsCriteria sortedMapsCriteria;
     private EnumMasTab selectedMapTab;
-    private List<AbstractMap> mapList;
+    private List<ProfileMap> profileMapList;
 
     /**
      * Singleton constructor
@@ -32,7 +33,7 @@ public class Session {
         processList = new ArrayList<Process>();
         sortedMapsCriteria = EnumSortedMapsCriteria.NAME_DESC;
         selectedMapTab = EnumMasTab.CUSTOM_MAPS_TAB;
-        mapList = new ArrayList<AbstractMap>();
+        profileMapList = new ArrayList<ProfileMap>();
     }
 
     public static Session getInstance() {
@@ -110,11 +111,11 @@ public class Session {
         this.selectedMapTab = selectedMapTab;
     }
 
-    public List<AbstractMap> getMapList() {
-        return mapList;
+    public List<ProfileMap> getProfileMapList() {
+        return profileMapList;
     }
 
-    public void setMapList(List<AbstractMap> mapList) {
-        this.mapList = mapList;
+    public void setProfileMapList(List<ProfileMap> profileMapList) {
+        this.profileMapList = profileMapList;
     }
 }

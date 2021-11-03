@@ -2,16 +2,12 @@ package stories.mapsedition;
 
 import daos.CustomMapModDao;
 import daos.ProfileDao;
-import dtos.AbstractMapDto;
-import dtos.CustomMapModDto;
-import dtos.OfficialMapDto;
-import dtos.ProfileDto;
+import daos.ProfileMapDao;
+import dtos.*;
 import dtos.factories.MapDtoFactory;
 import dtos.factories.ProfileDtoFactory;
-import entities.AbstractMap;
-import entities.CustomMapMod;
-import entities.OfficialMap;
-import entities.Profile;
+import dtos.factories.ProfileMapDtoFactory;
+import entities.*;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -46,6 +42,8 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     private final CustomMapModServiceImpl customMapModService;
     private final ProfileToDisplayFactory profileToDisplayFactory;
     private final ProfileService profileService;
+    private final ProfileMapDtoFactory profileMapDtoFactory;
+    private ProfileMapService profileMapService;
 
     public MapsEditionFacadeImpl() {
         super();
@@ -56,6 +54,8 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         this.customMapModService = new CustomMapModServiceImpl();
         this.profileToDisplayFactory = new ProfileToDisplayFactory();
         this.profileService = new ProfileServiceImpl();
+        this.profileMapDtoFactory = new ProfileMapDtoFactory();
+        this.profileMapService = new ProfileMapServiceImpl();
     }
 
     private CustomMapMod createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto, boolean downloaded, List<Profile> profileList, List<ImportMapResultToDisplay> importMapResultToDisplayList) throws Exception {
@@ -188,18 +188,6 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     public ObservableList<ProfileDto> listAllProfiles() throws SQLException {
         List<Profile> profiles = profileService.listAllProfiles();
         return profileDtoFactory.newDtos(profiles);
-    }
-
-
-    @Override
-    public List<AbstractMapDto> getMapsFromProfile(String profileName) throws SQLException {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
-            return mapDtoFactory.newDtos(
-                    profileOpt.get().getMapList()
-            );
-        }
-        return new ArrayList<AbstractMapDto>();
     }
 
 
@@ -419,4 +407,28 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         return null;
     }
 
+    @Override
+    public Optional<ProfileMap> findProfileMapByNames(String profileName, String mapName) throws SQLException {
+        return profileMapService.findProfileMapByNames(profileName, mapName);
+    }
+
+    @Override
+    public Optional<ProfileMapDto> findProfileMapDtoByNames(String profileName, String mapName) throws SQLException {
+        Optional<ProfileMap> profileMapOptional = findProfileMapByNames(profileName, mapName);
+        if (profileMapOptional.isPresent()) {
+            return Optional.ofNullable(profileMapDtoFactory.newDto(profileMapOptional.get()));
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public List<ProfileMapDto> listProfileMaps(String profileName) throws SQLException {
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            List<ProfileMap> profileMapList = profileMapService.listProfileMaps(profile);
+            return profileMapDtoFactory.newDtos(profileMapList);
+        }
+        return new ArrayList<ProfileMapDto>();
+    }
 }

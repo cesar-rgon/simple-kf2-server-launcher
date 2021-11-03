@@ -1,6 +1,5 @@
 package dtos.factories;
 
-import daos.CustomMapModDao;
 import daos.OfficialMapDao;
 import dtos.AbstractMapDto;
 import dtos.CustomMapModDto;
@@ -16,7 +15,6 @@ import org.apache.logging.log4j.Logger;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 
-import java.sql.Array;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -24,7 +22,6 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class MapDtoFactory {
@@ -64,7 +61,6 @@ public class MapDtoFactory {
         LocalDate releaseDate = map.getReleaseDate() != null ? map.getReleaseDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(): null;
         return new OfficialMapDto(
                 map.getCode(),
-                map.getAlias(),
                 map.getUrlInfo(),
                 map.getUrlPhoto(),
                 releaseDate,
@@ -89,7 +85,6 @@ public class MapDtoFactory {
 
         return new CustomMapModDto(
                 map.getCode(),
-                map.getAlias(),
                 map.getUrlInfo(),
                 map.getUrlPhoto(),
                 map.getIdWorkShop(),
@@ -100,11 +95,19 @@ public class MapDtoFactory {
     }
 
     public AbstractMapDto newDto(AbstractMap map) {
-        if (map.isOfficial()) {
-            return newOfficialMapDto((OfficialMap) map);
-        } else {
-            return newCustomMapModDto((CustomMapMod) map);
+        try {
+            List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
+            if (idsMapasOficiales.contains(map.getId())) {
+                map.setOfficial(true);
+                return newOfficialMapDto((OfficialMap) map);
+            } else {
+                map.setOfficial(false);
+                return newCustomMapModDto((CustomMapMod) map);
+            }
+        } catch (SQLException e) {
+            logger.error("Error getting dto of map entity " + map.getCode(), e);
         }
+        return null;
     }
 
     public ObservableList<AbstractMapDto> newDtos(List<AbstractMap> maps) {

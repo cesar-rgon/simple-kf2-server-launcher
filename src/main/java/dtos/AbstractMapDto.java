@@ -16,16 +16,14 @@ public abstract class AbstractMapDto {
     private static final Logger logger = LogManager.getLogger(AbstractMapDto.class);
 
     protected final String key;
-    protected final String alias;
     protected final String urlInfo;
     protected final String urlPhoto;
     protected final LocalDate releaseDate;
     private final boolean official;
     private final List<ImportedDateByProfileDto> importedDateByProfileDtoList;
 
-    protected AbstractMapDto(String key, String alias, String urlInfo, String urlPhoto, boolean official, LocalDate releaseDate, List<ImportedDateByProfileDto> importedDateByProfileList) {
+    protected AbstractMapDto(String key, String urlInfo, String urlPhoto, boolean official, LocalDate releaseDate, List<ImportedDateByProfileDto> importedDateByProfileList) {
         this.key = key;
-        this.alias = alias;
         this.urlInfo = urlInfo;
         this.urlPhoto = urlPhoto;
         this.official = official;
@@ -35,10 +33,6 @@ public abstract class AbstractMapDto {
 
     public String getKey() {
         return key;
-    }
-
-    public String getAlias() {
-        return alias;
     }
 
     public String getUrlInfo() {
@@ -61,22 +55,4 @@ public abstract class AbstractMapDto {
         return importedDateByProfileDtoList;
     }
 
-    public String getImportedDate(String profileName) {
-        Optional<ImportedDateByProfileDto> importedDateByProfileDtoOpt = importedDateByProfileDtoList.stream().
-                filter(importedDateByProfileDto -> importedDateByProfileDto.getProfileName().equals(profileName)).
-                findFirst();
-
-        if (importedDateByProfileDtoOpt.isPresent()) {
-            return importedDateByProfileDtoOpt.get().getImportedDate();
-        } else {
-            try {
-                PropertyService propertyService = new PropertyServiceImpl();
-                String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-                return propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unknown");
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-                return "Unknown";
-            }
-        }
-    }
 }
