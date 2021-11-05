@@ -11,10 +11,12 @@ import javafx.stage.Stage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.PopulateDatabase;
 import pojos.listener.TimeListener;
 import services.*;
 import utils.Utils;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
@@ -56,6 +58,9 @@ public class MainApplication extends Application {
         timer.schedule(timeListener, 0, 30000);
         this.primaryStage = primaryStage;
 
+        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+        Utils.checkApplicationUpgrade(languageCode);
+
         this.primaryStage.maximizedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
@@ -73,6 +78,14 @@ public class MainApplication extends Application {
 
     public static void main(String[] args) {
         try {
+            File databaseFile = new File("./kf2database.odb");
+            if (!databaseFile.exists()) {
+                logger.info("----- Starting the populate process over the application database -----");
+                PopulateDatabase populateDatabase = new PopulateDatabase();
+                populateDatabase.start();
+                logger.info("----- Ending the populate process over the application database -----");
+            }
+
             if (args == null || args.length == 0) {
                 PropertyService propertyService = new PropertyServiceImpl();
                 String applicationVersion = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion");

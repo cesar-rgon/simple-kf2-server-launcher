@@ -29,6 +29,8 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jsoup.Jsoup;
+import org.jsoup.select.Elements;
 import pojos.AddMapsToProfile;
 import pojos.ImportMapResultToDisplay;
 import pojos.MapToDisplay;
@@ -967,6 +969,61 @@ public class Utils {
         });
 
         return dialog.showAndWait();
+    }
+
+    public static void checkApplicationUpgrade(String languageCode) {
+        try {
+            PropertyService propertyService = new PropertyServiceImpl();
+            Boolean checkForUpgrades = Boolean.parseBoolean(
+                    propertyService.getPropertyValue("properties/config.properties", "prop.config.checkForUpgrades")
+            );
+            if (checkForUpgrades != null && checkForUpgrades) {
+                String applicationVersion = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion");
+                String releasePageGithubUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.releasePageGithubUrl");
+
+                String lastPublishedVersion = getLastPublishedVersion();
+                if (applicationVersion.compareTo(lastPublishedVersion) < 0) {
+
+                    String newPublishedVersionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.newPublishedVersion");
+                    String actualVersionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.actualVersion");
+                    String newestPublishedVersionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.publishedversion");
+                    String upgradeAppText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.upgradeApp");
+                    String checkLinkText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.checkLink");
+
+                    Utils.infoDialog(newPublishedVersionText,
+                            actualVersionText + ": " + applicationVersion +
+                                    "\n" + newestPublishedVersionText + ": " + lastPublishedVersion +
+                                    "\n\n" + upgradeAppText + "." +
+                                    "\n" + checkLinkText + ".",
+                            releasePageGithubUrl
+                    );
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
+
+    private static String getLastPublishedVersion() throws Exception {
+
+        PropertyService propertyService = new PropertyServiceImpl();
+        String releasePageGithubUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.releasePageGithubUrl");
+        String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
+
+        org.jsoup.nodes.Document doc = Jsoup.connect(releasePageGithubUrl).get();
+
+        Elements linkList = doc.getElementsByTag("a");
+        if (linkList != null && linkList.size() > 0) {
+            for (int i = 0; i <= linkList.size(); i++) {
+                org.jsoup.nodes.Element link = linkList.get(i);
+                if (link.hasText() && link.text().contains(applicationTitle + " v2.")) {
+                    String nameAndVersion = link.text();
+                    String[] versionArray = nameAndVersion.split("v2.");
+                    return "2." + versionArray[1].replaceAll("_",  " ");
+                }
+            }
+        }
+        return StringUtils.EMPTY;
     }
 
 }

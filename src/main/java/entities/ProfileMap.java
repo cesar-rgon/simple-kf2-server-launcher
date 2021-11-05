@@ -97,6 +97,13 @@ public class ProfileMap extends AbstractEntity {
         this.importedDate = new Date();
     }
 
+    public ProfileMap(Profile profile, AbstractMap map, Date releaseDate, String urlInfo, String urlPhoto) {
+        this(profile, map);
+        this.releaseDate = releaseDate;
+        this.urlInfo = urlInfo;
+        this.urlPhoto = urlPhoto;
+    }
+
     // Getters y Setters
 
     @Override
