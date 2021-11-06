@@ -119,8 +119,7 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
         AbstractMap finalInsertedMap = insertedMap;
         profileList.stream().forEach(profile -> {
             try {
-                ProfileMap newProfileMap = new ProfileMap(profile, finalInsertedMap);
-                newProfileMap.setImportedDate(new Date());
+                ProfileMap newProfileMap = new ProfileMap(profile, finalInsertedMap, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto());
                 profileMapService.createItem(newProfileMap);
                 finalInsertedMap.getProfileMapList().add(newProfileMap);
 
@@ -156,7 +155,7 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
         profileList.stream().forEach(profile -> {
             try {
                 if (!profile.getMapList().contains(map)) {
-                    ProfileMap newProfileMap = new ProfileMap(profile, map);
+                    ProfileMap newProfileMap = new ProfileMap(profile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto());
                     profileMapService.createItem(newProfileMap);
                     map.getProfileMapList().add(newProfileMap);
 

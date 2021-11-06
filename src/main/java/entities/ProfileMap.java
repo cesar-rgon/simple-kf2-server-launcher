@@ -88,17 +88,13 @@ public class ProfileMap extends AbstractEntity {
         super();
     }
 
-    public ProfileMap(Profile profile, AbstractMap map) {
+    public ProfileMap(Profile profile, AbstractMap map, Date releaseDate, String urlInfo, String urlPhoto) {
         super();
         this.idProfileMap = new IdProfileMap(profile.getId(), map.getId());
         this.profile = profile;
         this.map = map;
         this.alias = map.getCode();
         this.importedDate = new Date();
-    }
-
-    public ProfileMap(Profile profile, AbstractMap map, Date releaseDate, String urlInfo, String urlPhoto) {
-        this(profile, map);
         this.releaseDate = releaseDate;
         this.urlInfo = urlInfo;
         this.urlPhoto = urlPhoto;

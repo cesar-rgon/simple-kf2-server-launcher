@@ -113,7 +113,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
 
         officialMaps.stream().forEach(map -> {
             try {
-                profileMapService.createItem(new ProfileMap(savedProfile, map));
+                profileMapService.createItem(new ProfileMap(savedProfile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto()));
             } catch (Exception e) {
                 logger.error("Error creating the relation between the profile: " + savedProfile.getName() + " and the map: " + map.getCode(), e);
             }

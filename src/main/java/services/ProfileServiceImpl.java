@@ -17,6 +17,8 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -177,7 +179,8 @@ public class ProfileServiceImpl implements ProfileService {
         Profile savedProfile = createItem(newProfile);
         profileToBeCloned.getProfileMapList().stream().forEach(pm -> {
             try {
-                ProfileMap newProfileMap = new ProfileMap(savedProfile, pm.getMap());
+                ProfileMap newProfileMap = new ProfileMap(savedProfile, pm.getMap(), pm.getReleaseDate(), pm.getUrlInfo(), pm.getUrlPhoto());
+                newProfileMap.setAlias(pm.getAlias());
                 savedProfile.getProfileMapList().add(newProfileMap);
                 profileMapService.createItem(newProfileMap);
             } catch (Exception e) {
@@ -240,19 +243,30 @@ public class ProfileServiceImpl implements ProfileService {
             properties.setProperty("exported.profile" + profileIndex + ".pickupItems", profile.getPickupItems()? String.valueOf(profile.getPickupItems()): "false");
             properties.setProperty("exported.profile" + profileIndex + ".friendlyFirePercentage", profile.getFriendlyFirePercentage() != null? String.valueOf(profile.getFriendlyFirePercentage()): "");
 
-            if (profile.getMapList() != null && !profile.getMapList().isEmpty()) {
-                int mapIndex = 1;
-                for (AbstractMap map: profile.getMapList()) {
-                    properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".name", map.getCode());
-                    properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlInfo", StringUtils.isNotBlank(map.getUrlInfo())? map.getUrlInfo(): "");
-                    properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlPhoto", StringUtils.isNotBlank(map.getUrlPhoto())? map.getUrlPhoto(): "");
-                    properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".official", String.valueOf(map.isOfficial()));
-                    if (!map.isOfficial()) {
-                        properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".idWorkShop", ((CustomMapMod) map).getIdWorkShop()!=null? String.valueOf(((CustomMapMod) map).getIdWorkShop()): "");
-                        properties.setProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".downloaded", String.valueOf(((CustomMapMod) map).isDownloaded()));
+            if (profile.getProfileMapList() != null && !profile.getProfileMapList().isEmpty()) {
+                int profileMapIndex = 1;
+                for (ProfileMap profileMap: profile.getProfileMapList()) {
+                    // Save original map values
+                    properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".name", profileMap.getMap().getCode());
+                    if (profileMap.getMap().getReleaseDate() != null) {
+                        properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".releaseDate", new SimpleDateFormat("yyyy/MM/dd").format(profileMap.getMap().getReleaseDate()));
                     }
+                    properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".urlInfo", StringUtils.isNotBlank(profileMap.getMap().getUrlInfo())? profileMap.getMap().getUrlInfo(): "");
+                    properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".urlPhoto", StringUtils.isNotBlank(profileMap.getMap().getUrlPhoto())? profileMap.getMap().getUrlPhoto(): "");
+                    properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".official", String.valueOf(profileMap.getMap().isOfficial()));
+                    if (!profileMap.getMap().isOfficial()) {
+                        properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".idWorkShop", ((CustomMapMod) profileMap.getMap()).getIdWorkShop()!=null? String.valueOf(((CustomMapMod) profileMap.getMap()).getIdWorkShop()): "");
+                        properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".downloaded", String.valueOf(((CustomMapMod) profileMap.getMap()).isDownloaded()));
+                    }
+                    // Save copied map values (they could be edited and changed)
+                    properties.setProperty("exported.profile" + profileIndex + ".profilemap" + profileMapIndex + ".alias", profileMap.getAlias());
+                    if (profileMap.getReleaseDate() != null) {
+                        properties.setProperty("exported.profile" + profileIndex + ".profilemap" + profileMapIndex + ".releaseDate", new SimpleDateFormat("yyyy/MM/dd").format(profileMap.getReleaseDate()));
+                    }
+                    properties.setProperty("exported.profile" + profileIndex + ".profilemap" + profileMapIndex + ".urlInfo", profileMap.getUrlInfo());
+                    properties.setProperty("exported.profile" + profileIndex + ".profilemap" + profileMapIndex + ".urlPhoto", profileMap.getUrlPhoto());
 
-                    mapIndex++;
+                    profileMapIndex++;
                 }
             }
             profileIndex ++;
@@ -688,6 +702,7 @@ public class ProfileServiceImpl implements ProfileService {
                 AbstractMap map = getImportedMap(mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, mapName, null, true);
                 if (map != null) {
                     mapList.add(map);
+                    importProfileMap(profile, map, profileIndex, mapIndex,  properties);
                 }
             } catch (Exception e) {
                 logger.error("Error importing the official map " + mapName + " of profile index " + profileIndex + " from file", e);
@@ -701,21 +716,34 @@ public class ProfileServiceImpl implements ProfileService {
                 AbstractMap map = getImportedMap(mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, customMap.getCommentary(), customMap.getIdWorkShop(), false);
                 if (map != null) {
                     mapList.add(map);
+                    importProfileMap(profile, map, profileIndex, mapIndex,  properties);
                 }
             } catch (Exception e) {
                 logger.error("Error importing the official map " + customMap.getCommentary() + " of profile index " + profileIndex + " from file", e);
             }
         }
 
-        mapList.stream().forEach(map -> {
-            try {
-                profileMapService.createItem(new ProfileMap(profile, map));
-            } catch (Exception e) {
-                logger.error("Error creating relation between the profile: " + profile.getName() + " and the map: " + map.getCode(), e);
-            }
-        });
-
         return mapList;
+    }
+
+    private void importProfileMap(Profile profile, AbstractMap map, int profileIndex, int mapIndex,  Properties properties) throws Exception {
+        String alias = properties.getProperty("exported.profile" + profileIndex + ".profilemap" + mapIndex + ".alias");
+        alias = StringUtils.isNotBlank(alias) ? alias: map.getCode();
+
+        String releaseDateCopyStr = properties.getProperty("exported.profile" + profileIndex + ".profilemap" + mapIndex + ".releaseDate");
+        String releaseDateOriginalStr = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".releaseDate");
+        String releaseDateStr = StringUtils.isNotBlank(releaseDateCopyStr) ? releaseDateCopyStr: map.getReleaseDate() != null ? releaseDateOriginalStr: StringUtils.EMPTY;
+        Date releaseDate = StringUtils.isNotBlank(releaseDateStr) ? new SimpleDateFormat("yyyy/MM/dd").parse(releaseDateStr): null;
+
+        String urlInfo = properties.getProperty("exported.profile" + profileIndex + ".profilemap" + mapIndex + ".urlInfo");
+        urlInfo = StringUtils.isNotBlank(urlInfo) ? urlInfo: map.getUrlInfo();
+
+        String urlPhoto = properties.getProperty("exported.profile" + profileIndex + ".profilemap" + mapIndex + ".urlPhoto");
+        urlPhoto = StringUtils.isNotBlank(urlPhoto) ? urlPhoto: map.getUrlPhoto();
+
+        ProfileMap profileMap = new ProfileMap(profile, map, releaseDate, urlInfo, urlPhoto);
+        profileMap.setAlias(alias);
+        profileMapService.createItem(profileMap);
     }
 
     private AbstractMap getImportedMap(Optional<AbstractMap> mapInDataBaseOpt, Profile profile, Properties properties, int profileIndex, Integer mapIndex, String mapName, Long idWorkShop, boolean official) throws Exception {
@@ -733,10 +761,12 @@ public class ProfileServiceImpl implements ProfileService {
         } else {
             String urlInfo = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlInfo");
             String urlPhoto = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlPhoto");
+            String releaseDateStr = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".releaseDate");
+            Date releaseDate = StringUtils.isNotBlank(releaseDateStr) ? new SimpleDateFormat("yyyy/MM/dd").parse(releaseDateStr): null;
 
             AbstractMap map = null;
             if (official) {
-                map = new OfficialMap(mapName, urlInfo, urlPhoto, null);
+                map = new OfficialMap(mapName, urlInfo, urlPhoto, releaseDate);
                 return officialMapService.createItem(map);
             } else {
                 boolean downloaded = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".downloaded"));
