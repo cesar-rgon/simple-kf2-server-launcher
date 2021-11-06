@@ -171,21 +171,6 @@ public class MapEditionController implements Initializable {
             }
         });
 
-        mapPreviewWebView.getEngine().documentProperty().addListener(new ChangeListener<Document>() {
-            @Override
-            public void changed(ObservableValue<? extends Document> observable, Document oldDoc, Document doc) {
-                if (doc != null) {
-                    NodeList imgList = doc.getElementsByTagName("img");
-                    if (imgList != null && imgList.getLength() > 0) {
-                        Element img = (Element) imgList.item(0);
-                        img.setAttribute("width", "512");
-                        img.setAttribute("height", "256");
-                    }
-
-                }
-            }
-        });
-
         aliasTextField.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -247,7 +232,12 @@ public class MapEditionController implements Initializable {
                         if (StringUtils.isNotEmpty(mapPreviewUrlTextField.getText())) {
                             mapPreviewWebView.getEngine().load(mapPreviewUrlTextField.getText());
                         } else {
-                            mapPreviewWebView.getEngine().load("file:" + getClass().getResource("/images/photo-borders.png").getPath());
+                            File file = new File(System.getProperty("user.dir") + "/external-images/no-photo.png");
+                            if (file.exists()) {
+                                mapPreviewWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/no-photo.png");
+                            } else {
+                                mapPreviewWebView.getEngine().load("file:" + getClass().getResource("/images/no-photo.png").getPath());
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -368,7 +358,12 @@ public class MapEditionController implements Initializable {
                     webEngine.load("file:" + installationFolder + profileMapDto.getUrlPhoto());
                     mapPreviewUrlTextField.setText("file:" + installationFolder + profileMapDto.getUrlPhoto());
                 } else {
-                    webEngine.load("file:" + getClass().getResource("/images/no-photo.png").getPath());
+                    File file = new File(System.getProperty("user.dir") + "/external-images/no-photo.png");
+                    if (file.exists()) {
+                        webEngine.load("file:" + System.getProperty("user.dir") + "/external-images/no-photo.png");
+                    } else {
+                        webEngine.load("file:" + getClass().getResource("/images/no-photo.png").getPath());
+                    }
                     mapPreviewUrlTextField.setText(StringUtils.EMPTY);
                 }
             } else {

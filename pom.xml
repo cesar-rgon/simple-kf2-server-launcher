@@ -41,6 +41,25 @@
                 <version>3.1.0</version>
                 <executions>
                     <execution>
+                        <id>copy-resource-one</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/build/external-images</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources/images</directory>
+                                    <includes>
+                                        <include>no-photo.png</include>
+                                        <include>photo-borders.png</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>copy-resources</id>
                         <phase>validate</phase>
                         <goals>

@@ -27,6 +27,7 @@ import services.PropertyService;
 import services.PropertyServiceImpl;
 import utils.Utils;
 
+import java.io.File;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -221,7 +222,12 @@ public class MainContentController implements Initializable {
             if (profileSelect.getValue() != null) {
                 profileOnAction();
             } else {
-                imageWebView.getEngine().load("file:" + getClass().getResource("/images/photo-borders.png").getPath());
+                File file = new File(System.getProperty("user.dir") + "/external-images/photo-borders.png");
+                if (file.exists()) {
+                    imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/photo-borders.png");
+                } else {
+                    imageWebView.getEngine().load("file:" + getClass().getResource("/images/photo-borders.png").getPath());
+                }
             }
 
             loadLanguageTexts(languageSelect.getValue() != null? languageSelect.getValue().getKey(): "en");
@@ -586,7 +592,12 @@ public class MainContentController implements Initializable {
                         if (StringUtils.isNotEmpty(urlImageServer.getText())) {
                             imageWebView.getEngine().load(urlImageServer.getText());
                         } else {
-                            imageWebView.getEngine().load("file:" + getClass().getResource("/images/photo-borders.png").getPath());
+                            File file = new File(System.getProperty("user.dir") + "/external-images/photo-borders.png");
+                            if (file.exists()) {
+                                imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/photo-borders.png");
+                            } else {
+                                imageWebView.getEngine().load("file:" + getClass().getResource("/images/photo-borders.png").getPath());
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -1177,7 +1188,12 @@ public class MainContentController implements Initializable {
             if (StringUtils.isNotEmpty(urlImageServer.getText())) {
                 imageWebView.getEngine().load(urlImageServer.getText());
             } else {
-                imageWebView.getEngine().load("file:" + getClass().getResource("/images/photo-borders.png").getPath());
+                File file = new File(System.getProperty("user.dir") + "/external-images/photo-borders.png");
+                if (file.exists()) {
+                    imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/photo-borders.png");
+                } else {
+                    imageWebView.getEngine().load("file:" + getClass().getResource("/images/photo-borders.png").getPath());
+                }
             }
             serverPassword.setText(Utils.decryptAES(profile.getServerPassword()));
             webPassword.setText(Utils.decryptAES(profile.getWebPassword()));
