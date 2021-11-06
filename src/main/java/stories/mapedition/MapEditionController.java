@@ -10,12 +10,9 @@ import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.apache.commons.lang3.StringUtils;
@@ -50,26 +47,37 @@ public class MapEditionController implements Initializable {
     private int profileMapIndex;
 
     @FXML private WebView mapPreviewWebView;
-    @FXML private Text mapNameValue;
+    @FXML private Label mapNameValue;
+    @FXML private ImageView mapPreviewUrlImg;
     @FXML private TextField mapPreviewUrlTextField;
-    @FXML private Text officialValue;
-    @FXML private Text downloadedValue;
-    @FXML private Text idWorkShopValue;
-    @FXML private Text importationDateValue;
+    @FXML private Label officialValue;
+    @FXML private ImageView downloadedImg;
+    @FXML private Label downloadedValue;
+    @FXML private ImageView idWorkShopImg;
+    @FXML private Label idWorkShopLabel;
+    @FXML private Label idWorkShopValue;
+    @FXML private ImageView importationDateImg;
+    @FXML private Label importationDateValue;
     @FXML private DatePicker releaseDatePicker;
+    @FXML private ImageView infoUrlImg;
     @FXML private TextField infoUrlTextField;
     @FXML private Button previousMapButton;
     @FXML private Button nextMapButton;
     @FXML private Button backButton;
     @FXML private Label titleConfigLabel;
+    @FXML private ImageView mapNameImg;
     @FXML private Label mapNameLabel;
     @FXML private Label mapPreviewUrlLabel;
+    @FXML private ImageView officialImg;
     @FXML private Label officialLabel;
     @FXML private Label downloadedLabel;
     @FXML private Label importationDateLabel;
+    @FXML private ImageView releaseDateImg;
     @FXML private Label releaseDateLabel;
     @FXML private Label infoUrlLabel;
     @FXML private TextField aliasTextField;
+    @FXML private Label aliasLabel;
+    @FXML private ImageView aliasImg;
 
     public MapEditionController() {
         super();
@@ -90,33 +98,49 @@ public class MapEditionController implements Initializable {
 
             String previousMapText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.previousMap");
             previousMapButton.setText(previousMapText);
+            previousMapButton.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.previousMap")));
 
             String nextMapText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.nextMap");
             nextMapButton.setText(nextMapText);
+            nextMapButton.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.nextMap")));
 
             String backText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.backMapsPage");
             backButton.setText(backText);
+            backButton.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.backMapList")));
 
             String mapNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.mapName");
             mapNameLabel.setText(mapNameText);
+            loadTooltip(languageCode, "prop.tooltip.mapName", mapNameImg, mapNameLabel, mapNameValue);
+
+            loadTooltip(languageCode, "prop.tooltip.alias", aliasImg, aliasLabel, aliasTextField);
 
             String mapPreviewUrlText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.mapPrevireUrl");
             mapPreviewUrlLabel.setText(mapPreviewUrlText);
+            loadTooltip(languageCode, "prop.tooltip.mapPreviewUrl", mapPreviewUrlImg, mapPreviewUrlLabel, mapPreviewUrlTextField);
 
             String officialText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.official") + " ?";
             officialLabel.setText(officialText);
+            loadTooltip(languageCode, "prop.tooltip.isOfficial", officialImg, officialLabel, officialValue);
 
             String downloadedText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.downloaded");
             downloadedLabel.setText(downloadedText);
+            loadTooltip(languageCode, "prop.tooltip.downloaded", downloadedImg, downloadedLabel, downloadedValue);
+
+            loadTooltip(languageCode, "prop.tooltip.idWorkShop", idWorkShopImg, idWorkShopLabel, idWorkShopValue);
 
             String importationDateStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importationDate");
             importationDateLabel.setText(importationDateStr);
+            loadTooltip(languageCode, "prop.tooltip.importationDate", importationDateImg, importationDateLabel, importationDateValue);
 
             String releaseDateStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.releaseDate");
             releaseDateLabel.setText(releaseDateStr);
+            loadTooltip(languageCode, "prop.tooltip.releaseDate", releaseDateImg, releaseDateLabel, releaseDatePicker);
 
             String infoUrlText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.infoUrl");
             infoUrlLabel.setText(infoUrlText);
+            loadTooltip(languageCode, "prop.tooltip.infoUrl", infoUrlImg, infoUrlLabel, infoUrlTextField);
+
+            Tooltip.install(mapPreviewWebView, new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.mapThumbnail")));
 
             // Put gray color for background of the browser's page
             Field f = mapPreviewWebView.getEngine().getClass().getDeclaredField("page");
@@ -285,6 +309,27 @@ public class MapEditionController implements Initializable {
             }
         });
 
+    }
+
+    private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, Label textValue) throws Exception {
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        Tooltip.install(img, tooltip);
+        label.setTooltip(tooltip);
+        textValue.setTooltip(tooltip);
+    }
+
+    private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, TextField textField) throws Exception {
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        Tooltip.install(img, tooltip);
+        label.setTooltip(tooltip);
+        textField.setTooltip(tooltip);
+    }
+
+    private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, DatePicker calendar) throws Exception {
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        Tooltip.install(img, tooltip);
+        label.setTooltip(tooltip);
+        calendar.setTooltip(tooltip);
     }
 
     private void loadProfileMapData(int mapIndex) {

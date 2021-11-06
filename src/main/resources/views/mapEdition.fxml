@@ -38,14 +38,14 @@
             </GridPane.margin>
         </Label>
 
-        <Text fx:id="mapNameValue" fill="WHITE" style="-fx-font-weight: bold;" text="Map Name Value" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+        <Label fx:id="mapNameValue" style="-fx-font-weight: bold;" text="Map Name Value" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font>
             <GridPane.margin>
                 <Insets bottom="2.0" left="170.0" />
             </GridPane.margin>
-        </Text>
+        </Label>
 
         <ImageView fx:id="aliasImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP">
             <image>
@@ -76,14 +76,14 @@
             </GridPane.margin>
         </Label>
 
-        <Text fx:id="officialValue" fill="WHITE" style="-fx-font-weight: bold;" text="Yes / No" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
+        <Label fx:id="officialValue" style="-fx-font-weight: bold;" text="Yes / No" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font>
             <GridPane.margin>
                 <Insets bottom="2.0" left="170.0" />
             </GridPane.margin>
-        </Text>
+        </Label>
 
         <ImageView fx:id="idWorkShopImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
             <image>
@@ -96,14 +96,14 @@
             </GridPane.margin>
         </Label>
 
-        <Text fx:id="idWorkShopValue" fill="WHITE" style="-fx-font-weight: bold;" text="Id WorkShop Value" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
+        <Label fx:id="idWorkShopValue" style="-fx-font-weight: bold;" text="Id WorkShop Value" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font>
             <GridPane.margin>
                 <Insets bottom="2.0" right="170.0" />
             </GridPane.margin>
-        </Text>
+        </Label>
 
         <ImageView fx:id="importationDateImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
             <image>
@@ -116,14 +116,14 @@
             </GridPane.margin>
         </Label>
 
-        <Text fx:id="importationDateValue" fill="WHITE" style="-fx-font-weight: bold;" text="Date Value" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
+        <Label fx:id="importationDateValue" style="-fx-font-weight: bold;" text="Date Value" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font>
             <GridPane.margin>
                 <Insets bottom="2.0" right="170.0" />
             </GridPane.margin>
-        </Text>
+        </Label>
 
         <ImageView fx:id="downloadedImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
             <image>
@@ -136,14 +136,14 @@
             </GridPane.margin>
         </Label>
 
-        <Text fx:id="downloadedValue" fill="WHITE" style="-fx-font-weight: bold;" text="Yes / No" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
+        <Label fx:id="downloadedValue" style="-fx-font-weight: bold;" text="Yes / No" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font>
             <GridPane.margin>
                 <Insets bottom="2.0" left="170.0" />
             </GridPane.margin>
-        </Text>
+        </Label>
 
 
         <WebView fx:id="mapPreviewWebView" maxHeight="256.0" maxWidth="512.0" prefHeight="-1.0" prefWidth="-1.0" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.rowSpan="5" GridPane.valignment="TOP">
