@@ -197,7 +197,10 @@
                             </GridPane.margin>
                         </Label>
                         <CheckBox fx:id="webPage" lineSpacing="0.9" mnemonicParsing="false" onAction="#webPageOnAction" opacity="0.75" textFill="WHITE" GridPane.columnIndex="1" GridPane.rowIndex="8" GridPane.valignment="CENTER" />
-                        <PasswordField fx:id="webPassword" maxWidth="286.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="8" GridPane.valignment="CENTER" />
+                        <PasswordField fx:id="webPassword" maxWidth="286.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="8" GridPane.valignment="CENTER">
+                           <GridPane.margin>
+                              <Insets left="26.0" />
+                           </GridPane.margin></PasswordField>
 
                         <ImageView fx:id="takeoverImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
                             <image>

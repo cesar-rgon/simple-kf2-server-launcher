@@ -6,10 +6,11 @@ _[Click here to open documentation in english | Pulse aquí para abrir documenta
 Aplicación para personalizar y lanzar fácilmente un servidor de Killing Floor 2 a través de una interfaz visual en lugar de editar ficheros batch o de configuración del servidor. Ha sido desarrollado en Java y la interfaz es compatible con los S.O. Windows y Linux.
 
 ```
-Versión: 2.0.5 final
+Versión: 2.0.6 final
 S.O. soportados: Microsoft Windows y Linux (Ubuntu/Debian)
-Autor: César Rodríguez González
+Desarrollado por: César Rodríguez González
 Idiomas: Inglés, Español, Francés
+Traducción a inglés y español: César Rodríguez González
 Traducción a francés por: -foG.Nox
 ```
 
