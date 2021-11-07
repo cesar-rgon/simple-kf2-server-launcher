@@ -15,6 +15,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,7 +29,6 @@ import start.MainApplication;
 import utils.Utils;
 
 import java.io.File;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -140,13 +140,13 @@ public class MapEditionController implements Initializable {
             infoUrlLabel.setText(infoUrlText);
             loadTooltip(languageCode, "prop.tooltip.infoUrl", infoUrlImg, infoUrlLabel, infoUrlTextField);
 
-            Tooltip.install(mapPreviewWebView, new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.mapThumbnail")));
+            Double tooltipDuration = Double.parseDouble(
+                    propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+            );
 
-            // Put gray color for background of the browser's page
-            Field f = mapPreviewWebView.getEngine().getClass().getDeclaredField("page");
-            f.setAccessible(true);
-            com.sun.webkit.WebPage page = (com.sun.webkit.WebPage) f.get(mapPreviewWebView.getEngine());
-            page.setBackgroundColor((new java.awt.Color(0.5019608f, 0.5019608f, 0.5019608f, 0.5f)).getRGB());
+            Tooltip mapThumbnailTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.mapThumbnail"));
+            mapThumbnailTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            Tooltip.install(mapPreviewWebView, mapThumbnailTooltip);
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -236,7 +236,7 @@ public class MapEditionController implements Initializable {
                             if (file.exists()) {
                                 mapPreviewWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/no-photo.png");
                             } else {
-                                mapPreviewWebView.getEngine().load("file:" + getClass().getResource("/images/no-photo.png").getPath());
+                                mapPreviewWebView.getEngine().load("file:" + getClass().getResource("/external-images/no-photo.png").getPath());
                             }
                         }
                     }
@@ -302,21 +302,33 @@ public class MapEditionController implements Initializable {
     }
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, Label textValue) throws Exception {
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
         Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
         textValue.setTooltip(tooltip);
     }
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, TextField textField) throws Exception {
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
         Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
         textField.setTooltip(tooltip);
     }
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, DatePicker calendar) throws Exception {
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
         Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
         calendar.setTooltip(tooltip);
@@ -362,12 +374,12 @@ public class MapEditionController implements Initializable {
                     if (file.exists()) {
                         webEngine.load("file:" + System.getProperty("user.dir") + "/external-images/no-photo.png");
                     } else {
-                        webEngine.load("file:" + getClass().getResource("/images/no-photo.png").getPath());
+                        webEngine.load("file:" + getClass().getResource("/external-images/no-photo.png").getPath());
                     }
                     mapPreviewUrlTextField.setText(StringUtils.EMPTY);
                 }
             } else {
-                webEngine.load("file:" + getClass().getResource("/images/no-photo.png").getPath());
+                webEngine.load("file:" + getClass().getResource("/external-images/no-photo.png").getPath());
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

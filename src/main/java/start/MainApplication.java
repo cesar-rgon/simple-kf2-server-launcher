@@ -8,17 +8,19 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.PopulateDatabase;
 import pojos.listener.TimeListener;
-import services.*;
+import services.ConsoleService;
+import services.ConsoleServiceImpl;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import utils.Utils;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.List;
+import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -32,6 +34,10 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        // Fix a problem with newest JDK and JavaFX WebView. http2 support need to be disabled
+        Properties systemProperties = System.getProperties();
+        systemProperties.setProperty("com.sun.webkit.useHTTP2Loader", "false");
+
         PropertyService propertyService = new PropertyServiceImpl();
         Font.loadFont(getClass().getClassLoader().getResource("fonts/Ubuntu-R.ttf").toExternalForm(), 13);
         Font.loadFont(getClass().getClassLoader().getResource("fonts/Ubuntu-B.ttf").toExternalForm(), 13);

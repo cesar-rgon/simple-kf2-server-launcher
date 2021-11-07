@@ -25,6 +25,10 @@ import services.PropertyServiceImpl;
 import start.MainApplication;
 import utils.Utils;
 
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -60,17 +64,13 @@ public class MapWebInfoController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         try {
             languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-            WebEngine webEngine = mapInfoWebView.getEngine();
             if (Session.getInstance().getMap() != null) {
                 mapNameLabel.setText(Session.getInstance().getMap().getKey());
-                webEngine.load(Session.getInstance().getMap().getUrlInfo());
-                if (!Session.getInstance().getMap().isOfficial()) {
-                    pageLoadListener(webEngine);
-                }
+                mapInfoWebView.getEngine().load(Session.getInstance().getMap().getUrlInfo());
+                //mapInfoWebView.getEngine().loadContent(getData(Session.getInstance().getMap().getUrlInfo()));
             } else {
                 mapNameLabel.setText("");
-                webEngine.load("https://steamcommunity.com/app/232090/workshop/");
-                pageLoadListener(webEngine);
+                mapInfoWebView.getEngine().load("https://steamcommunity.com/app/232090/workshop/");
             }
 
             String backButtonText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.backMapsPage");
@@ -83,49 +83,49 @@ public class MapWebInfoController implements Initializable {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
         }
-    }
 
-    private void pageLoadListener(WebEngine webEngine) {
-        webEngine.documentProperty().addListener(new ChangeListener<Document>() {
+        mapInfoWebView.getEngine().documentProperty().addListener(new ChangeListener<Document>() {
             @Override
             public void changed(ObservableValue<? extends Document> ov, Document oldDoc, Document doc) {
-                if (doc != null) {
+                if (doc != null && Session.getInstance().getMap() != null && !Session.getInstance().getMap().isOfficial()) {
                     try {
                         NodeList titleList = doc.getElementsByTagName("title");
                         String urlWorkShop = doc.getDocumentURI();
-                        String[] array = urlWorkShop.split("=");
-                        idWorkShop = null;
-                        mapName = null;
-                        strUrlMapImage = null;
-                        if (array != null && array.length > 1) {
-                            String[] arrayTwo = array[1].split("&");
-                            idWorkShop = Long.parseLong(arrayTwo[0]);
-                        }
-                        if (titleList != null && titleList.getLength() > 0) {
-                            Node title = titleList.item(0);
-                            if (title.getTextContent().toUpperCase().startsWith("STEAM WORKSHOP")) {
-                                mapName = title.getTextContent().replace("Steam Workshop::", "");
-                                NodeList linkList = doc.getElementsByTagName("link");
-                                for (int i=0; i < linkList.getLength(); i++) {
-                                    Node link = linkList.item(i);
-                                    if (link.hasAttributes()) {
-                                        NamedNodeMap linkAttrList = link.getAttributes();
-                                        if ("image_src".equalsIgnoreCase(linkAttrList.getNamedItem("rel").getTextContent())) {
-                                            strUrlMapImage = linkAttrList.getNamedItem("href").getTextContent();
-                                            break;
+                        if (StringUtils.isNotBlank(urlWorkShop)) {
+                            String[] array = urlWorkShop.split("=");
+                            idWorkShop = null;
+                            mapName = null;
+                            strUrlMapImage = null;
+                            if (array != null && array.length > 1) {
+                                String[] arrayTwo = array[1].split("&");
+                                idWorkShop = Long.parseLong(arrayTwo[0]);
+                            }
+                            if (titleList != null && titleList.getLength() > 0) {
+                                Node title = titleList.item(0);
+                                if (title.getTextContent().toUpperCase().startsWith("STEAM WORKSHOP")) {
+                                    mapName = title.getTextContent().replace("Steam Workshop::", "");
+                                    NodeList linkList = doc.getElementsByTagName("link");
+                                    for (int i=0; i < linkList.getLength(); i++) {
+                                        Node link = linkList.item(i);
+                                        if (link.hasAttributes()) {
+                                            NamedNodeMap linkAttrList = link.getAttributes();
+                                            if ("image_src".equalsIgnoreCase(linkAttrList.getNamedItem("rel").getTextContent())) {
+                                                strUrlMapImage = linkAttrList.getNamedItem("href").getTextContent();
+                                                break;
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                        mapNameLabel.setText(mapName);
-                        List<ProfileToDisplay> profilesWithoutMap = facade.getProfilesWithoutMap(idWorkShop);
-                        if (idWorkShop != null && (profilesWithoutMap == null || profilesWithoutMap.isEmpty())) {
-                            addMap.setVisible(false);
-                            alreadyInLauncher.setVisible(true);
-                        } else {
-                            addMap.setVisible(StringUtils.isNotBlank(urlWorkShop) && StringUtils.isNotBlank(mapName) && profilesWithoutMap != null && !profilesWithoutMap.isEmpty());
-                            alreadyInLauncher.setVisible(false);
+                            mapNameLabel.setText(mapName);
+                            List<ProfileToDisplay> profilesWithoutMap = facade.getProfilesWithoutMap(idWorkShop);
+                            if (idWorkShop != null && (profilesWithoutMap == null || profilesWithoutMap.isEmpty())) {
+                                addMap.setVisible(false);
+                                alreadyInLauncher.setVisible(true);
+                            } else {
+                                addMap.setVisible(StringUtils.isNotBlank(urlWorkShop) && StringUtils.isNotBlank(mapName) && profilesWithoutMap != null && !profilesWithoutMap.isEmpty());
+                                alreadyInLauncher.setVisible(false);
+                            }
                         }
                     } catch (Exception e) {
                         logger.error("Error in loading process of new page from Steam's WorkShop\nSee stacktrace for more details", e);
@@ -137,6 +137,26 @@ public class MapWebInfoController implements Initializable {
             }
         });
     }
+
+    private static String getData(String address) throws Exception {
+        URL page = new URL(address);
+        StringBuffer text = new StringBuffer();
+        HttpURLConnection conn = (HttpURLConnection) page.openConnection();
+        conn.connect();
+        try (InputStreamReader in = new InputStreamReader(
+                (InputStream) conn.getContent())) {
+            BufferedReader buff = new BufferedReader(in);
+            String line;
+            do {
+                line = buff.readLine();
+                text.append(line + "\n");
+            } while (line != null);
+            return text.toString();
+        } finally {
+            conn.disconnect();
+        }
+    }
+
 
     @FXML
     private void backButtonOnAction(){

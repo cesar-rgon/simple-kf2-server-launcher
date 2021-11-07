@@ -13,7 +13,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.html.HTMLFormElement;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -67,10 +66,12 @@ public class WebAdminController implements Initializable {
                                     logger.error(e.getMessage(), e);
                                     Utils.errorDialog(e.getMessage(), e);
                                 }
+                                /*
                                 HTMLFormElement form = (HTMLFormElement) doc.getElementById("loginform");
                                 if (form != null) {
                                     form.submit();
                                 }
+                                 */
                             }
                         }
                     }

@@ -41,6 +41,7 @@ import start.MainApplication;
 import utils.Utils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
@@ -219,19 +220,30 @@ public class MapsEditionController implements Initializable {
 
     private GridPane createMapGridPane(ProfileMapDto profileMapDto) {
 
-        Image image = null;
-        if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(profileMapDto.getUrlPhoto())) {
-            image = new Image("file:" + installationFolder + "/" + profileMapDto.getUrlPhoto());
-        } else {
-            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("images/no-photo.png");
-            image = new Image(inputStream);
+        ImageView mapPreview = new ImageView();
+        try {
+            Image image = null;
+            if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(profileMapDto.getUrlPhoto())) {
+                image = new Image("file:" + installationFolder + "/" + profileMapDto.getUrlPhoto());
+            } else {
+                File file = new File(System.getProperty("user.dir") + "/external-images/no-photo.png");
+                InputStream inputStream;
+                if (file.exists()) {
+                    inputStream = new FileInputStream(file.getAbsolutePath());
+                } else {
+                    inputStream = getClass().getClassLoader().getResourceAsStream("external-images/no-photo.png");
+                }
+                image = new Image(inputStream);
+            }
+            mapPreview = new ImageView(image);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
         }
 
         GridPane gridpane = new GridPane();
         gridpane.setPrefWidth(getWidthGridPaneByNumberOfColums());
         gridpane.getStyleClass().add("gridPane");
 
-        ImageView mapPreview = new ImageView(image);
         mapPreview.setPreserveRatio(false);
         mapPreview.setFitWidth(gridpane.getPrefWidth());
         mapPreview.setFitHeight(gridpane.getPrefWidth()/2);
