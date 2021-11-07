@@ -107,7 +107,7 @@
                            </GridPane.margin></ComboBox>
                         <ImageView fx:id="noSelectedMapImage" fitHeight="162.0" fitWidth="358.0" pickOnBounds="true" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
                            <image>
-                              <Image url="@../images/no-photo.png" />
+                              <Image url="@../external-images/no-photo.png" />
                            </image>
                            <GridPane.margin>
                               <Insets right="24.0" />

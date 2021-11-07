@@ -51,6 +51,7 @@
             <Insets />
          </GridPane.margin>
       </Button>
+      <ProgressIndicator fx:id="progressIndicator" maxHeight="150.0" maxWidth="150.0" visible="false" GridPane.columnSpan="5" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.rowSpan="2" />
    </children>
    <columnConstraints>
       <ColumnConstraints minWidth="100.0" prefWidth="100.0" />
@@ -58,6 +59,7 @@
       <ColumnConstraints minWidth="268.0" />
       <ColumnConstraints minWidth="268.0" />
       <ColumnConstraints minWidth="100.0" prefWidth="100.0" />
+      <ColumnConstraints />
    </columnConstraints>
    <rowConstraints>
       <RowConstraints minHeight="80.0" prefHeight="80.0" />

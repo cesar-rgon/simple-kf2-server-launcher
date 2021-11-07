@@ -351,58 +351,30 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
+    public void importEntitiesFromFile() {
+
+    }
+
     @Override
-    public List<Profile> importProfilesFromFile(File file, String message, StringBuffer errorMessage) throws Exception {
-        Properties properties = propertyService.loadPropertiesFromFile(file);
+    public List<Profile> importProfilesFromFile(List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) {
+        List<Profile> savedProfileList = saveProfilesToDatabase(selectedProfileList, properties);
 
-        List<Language> languageList = LanguageDao.getInstance().listAll();
+        if (savedProfileList.size() < selectedProfileList.size()) {
+            List<String> selectedProfileNameList = selectedProfileList.stream().map(p -> p.getCode()).collect(Collectors.toList());
+            List<String> savedProfileNameList = savedProfileList.stream().map(profile -> profile.getCode()).collect(Collectors.toList());
 
-        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                "prop.message.proceed");
-        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                "prop.message.importItems");
-
-        String gameTypesText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                "prop.menu.configuration.gameTypes");
-        String difficultiesText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                "prop.menu.configuration.difficulties");
-        String lengthText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                "prop.menu.configuration.length");
-        String maxPlayersText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                "prop.menu.configuration.maxPlayers");
-
-        Optional<ButtonType> result = Utils.questionDialog(headerText, contentText + ":\n\n" + gameTypesText + "\n" + difficultiesText + "\n" + lengthText + "\n" + maxPlayersText);
-        if (result.isPresent() && result.get().equals(ButtonType.CANCEL)) {
-            return null;
-        }
-
-        importGameTypesFromFile(properties, languageList);
-        importDifficultiesFromFile(properties, languageList);
-        importLengthsFromFile(properties, languageList);
-        importMaxPlayersFromFile(properties, languageList);
-
-        List<Profile> selectedProfileList = selectProfilesToBeImported(properties, message);
-
-        List<Profile> savedProfileList = new ArrayList<Profile>();
-        if (selectedProfileList != null & !selectedProfileList.isEmpty()) {
-            savedProfileList = saveProfilesToDatabase(selectedProfileList, properties);
-
-            if (savedProfileList.size() < selectedProfileList.size()) {
-                List<String> selectedProfileNameList = selectedProfileList.stream().map(p -> p.getCode()).collect(Collectors.toList());
-                List<String> savedProfileNameList = savedProfileList.stream().map(profile -> profile.getCode()).collect(Collectors.toList());
-
-                for (String selectedProfileName : selectedProfileNameList) {
-                    if (!savedProfileNameList.contains(selectedProfileName)) {
-                        errorMessage.append(selectedProfileName + "\n");
-                    }
+            for (String selectedProfileName : selectedProfileNameList) {
+                if (!savedProfileNameList.contains(selectedProfileName)) {
+                    errorMessage.append(selectedProfileName + "\n");
                 }
             }
         }
+
         return savedProfileList;
     }
 
-    private void importGameTypesFromFile(Properties properties, List<Language> languageList) throws SQLException {
+    @Override
+    public void importGameTypesFromFile(Properties properties, List<Language> languageList) throws SQLException {
         List<GameType> gameTypeListInDataBase = GameTypeDao.getInstance().listAll();
         String strSize = properties.getProperty("exported.gameTypes.number");
         int size = StringUtils.isNotBlank(strSize) ? Integer.valueOf(strSize): 0;
@@ -434,7 +406,8 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
-    private void importDifficultiesFromFile(Properties properties, List<Language> languageList) throws SQLException {
+    @Override
+    public void importDifficultiesFromFile(Properties properties, List<Language> languageList) throws SQLException {
         List<Difficulty> difficultyListInDataBase = DifficultyDao.getInstance().listAll();
         String strSize = properties.getProperty("exported.difficulties.number");
         int size = StringUtils.isNotBlank(strSize) ? Integer.valueOf(strSize): 0;
@@ -464,7 +437,8 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
-    private void importLengthsFromFile(Properties properties, List<Language> languageList) throws SQLException {
+    @Override
+    public void importLengthsFromFile(Properties properties, List<Language> languageList) throws SQLException {
         List<Length> lengthListInDataBase = LengthDao.getInstance().listAll();
         String strSize = properties.getProperty("exported.lengths.number");
         int size = StringUtils.isNotBlank(strSize) ? Integer.valueOf(strSize): 0;
@@ -494,7 +468,8 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
-    private void importMaxPlayersFromFile(Properties properties, List<Language> languageList) throws SQLException {
+    @Override
+    public void importMaxPlayersFromFile(Properties properties, List<Language> languageList) throws SQLException {
         List<MaxPlayers> maxPlayersListInDataBase = MaxPlayersDao.getInstance().listAll();
         String strSize = properties.getProperty("exported.maxPlayers.number");
         int size = StringUtils.isNotBlank(strSize) ? Integer.valueOf(strSize): 0;
@@ -524,7 +499,8 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
-    private List<Profile> selectProfilesToBeImported(Properties properties, String message) throws Exception {
+    @Override
+    public List<Profile> selectProfilesToBeImported(Properties properties, String message) throws Exception {
         int numberOfProfiles = Integer.parseInt(properties.getProperty("exported.profiles.number"));
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
         List<ProfileToDisplay> profileToDisplayList = new ArrayList<ProfileToDisplay>();

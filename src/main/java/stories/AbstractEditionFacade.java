@@ -7,7 +7,6 @@ import entities.AbstractExtendedEntity;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import services.AbstractExtendedService;
-import services.AbstractService;
 
 import java.sql.SQLException;
 import java.util.List;

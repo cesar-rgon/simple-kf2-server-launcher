@@ -20,9 +20,15 @@
       </Button>
       <Button fx:id="backButton" alignment="CENTER" mnemonicParsing="false" onAction="#backButtonOnAction" prefWidth="200.0" text="Back to map list" GridPane.halignment="RIGHT" GridPane.valignment="CENTER" />
       <WebView fx:id="mapInfoWebView" prefHeight="-1.0" prefWidth="-1.0" GridPane.rowIndex="1" />
+      <ProgressIndicator fx:id="progressIndicator" maxHeight="150.0" maxWidth="150.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
    </children>
    <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" prefWidth="1004.0" />
+      <ColumnConstraints />
+      <ColumnConstraints />
+      <ColumnConstraints />
+      <ColumnConstraints />
+      <ColumnConstraints />
    </columnConstraints>
    <rowConstraints>
       <RowConstraints fillHeight="false" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" vgrow="NEVER" />

@@ -55,6 +55,7 @@
             </Tab>
         </tabs>
       </TabPane>
+      <ProgressIndicator fx:id="progressIndicator" maxHeight="150.0" maxWidth="150.0" visible="false" GridPane.columnSpan="6" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
       <Slider fx:id="mapsSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" maxWidth="280.0" min="2.0" minorTickCount="0" onMouseClicked="#mapsSliderOnMouseClicked" orientation="VERTICAL" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5.0" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets bottom="-40.0" right="5.0" top="20.0" />

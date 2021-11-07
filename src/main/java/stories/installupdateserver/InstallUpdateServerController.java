@@ -7,6 +7,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
+import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.kf2factory.Kf2Common;
@@ -41,6 +42,7 @@ public class InstallUpdateServerController implements Initializable {
     @FXML private ImageView validateFilesImg;
     @FXML private ImageView updateBetaImg;
     @FXML private ImageView betaBrunchImg;
+    @FXML private ProgressIndicator progressIndicator;
 
     public InstallUpdateServerController() {
         super();
@@ -128,14 +130,22 @@ public class InstallUpdateServerController implements Initializable {
     }
 
     private void loadTooltip(String propKey, javafx.scene.image.ImageView img, Label label, TextField textField) throws Exception {
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
         Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
         textField.setTooltip(tooltip);
     }
 
     private void loadTooltip(String propKey, javafx.scene.image.ImageView img, Label label, CheckBox checkBox) throws Exception {
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
         Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
         checkBox.setTooltip(tooltip);
@@ -197,7 +207,9 @@ public class InstallUpdateServerController implements Initializable {
 
     @FXML
     private void installUpdateServer() {
+        progressIndicator.setVisible(true);
         Kf2Common kf2Common = Kf2Factory.getInstance();
         kf2Common.installOrUpdateServer(installationFolder.getText(), validateFiles.isSelected(), isBeta.isSelected(), betaBrunch.getText());
+        //progressIndicator.setVisible(false);
     }
 }

@@ -8,9 +8,15 @@
 <fx:root id="centerPane" fx:id="kf2WebAdmin" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.webadmin.WebAdminController">
    <columnConstraints>
       <ColumnConstraints minWidth="1004.0" />
+      <ColumnConstraints />
+      <ColumnConstraints />
+      <ColumnConstraints />
+      <ColumnConstraints />
+      <ColumnConstraints />
    </columnConstraints>
    <rowConstraints>
       <RowConstraints minHeight="660.0" prefHeight="660.0" />
+      <RowConstraints />
    </rowConstraints>
    <children>
       <ImageView fitHeight="660.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER">
@@ -18,6 +24,7 @@
             <Image url="@../images/radiation700.png" />
          </image>
       </ImageView>
+      <ProgressIndicator fx:id="progressIndicator" maxHeight="150.0" maxWidth="150.0" visible="false" GridPane.halignment="CENTER" />
       <Label fx:id="message" text="Web page must be enabled and server must be started in order to access Webadmin page" textFill="WHITE" GridPane.halignment="CENTER" />
       <WebView fx:id="webAdmin" visible="false" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
    </children>

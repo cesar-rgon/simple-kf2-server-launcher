@@ -16,6 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
+import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,8 +29,8 @@ import services.PropertyServiceImpl;
 import utils.Utils;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.*;
@@ -226,17 +227,11 @@ public class MainContentController implements Initializable {
                 if (file.exists()) {
                     imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/photo-borders.png");
                 } else {
-                    imageWebView.getEngine().load("file:" + getClass().getResource("/images/photo-borders.png").getPath());
+                    imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/photo-borders.png").getPath());
                 }
             }
 
             loadLanguageTexts(languageSelect.getValue() != null? languageSelect.getValue().getKey(): "en");
-
-            // Put gray color for background of the browser's page
-            Field f = imageWebView.getEngine().getClass().getDeclaredField("page");
-            f.setAccessible(true);
-            com.sun.webkit.WebPage page = (com.sun.webkit.WebPage) f.get(imageWebView.getEngine());
-            page.setBackgroundColor((new java.awt.Color(0.5019608f, 0.5019608f, 0.5019608f, 0.5f)).getRGB());
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -269,17 +264,31 @@ public class MainContentController implements Initializable {
                             mapType = new Label(customText);
                             mapType.setStyle("-fx-text-fill: gold; -fx-padding: 5;");
                         }
-                        Image image;
-                        if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(profileMapDto.getUrlPhoto())) {
-                            image = new Image("file:" + installationFolder + "/" + profileMapDto.getUrlPhoto());
-                        } else {
-                            InputStream inputStream = getClass().getClassLoader().getResourceAsStream("images/no-photo.png");
-                            image = new Image(inputStream);
+
+                        ImageView mapPreview = new ImageView();
+                        try {
+                            Image image;
+                            if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(profileMapDto.getUrlPhoto())) {
+                                image = new Image("file:" + installationFolder + "/" + profileMapDto.getUrlPhoto());
+                            } else {
+                                File file = new File(System.getProperty("user.dir") + "/external-images/no-photo.png");
+                                InputStream inputStream;
+                                if (file.exists()) {
+                                    inputStream = new FileInputStream(file.getAbsolutePath());
+                                } else {
+                                    inputStream = getClass().getClassLoader().getResourceAsStream("external-images/no-photo.png");
+                                }
+                                image = new Image(inputStream);
+                            }
+
+                            mapPreview = new ImageView(image);
+                            mapPreview.setPreserveRatio(false);
+                            mapPreview.setFitWidth(128);
+                            mapPreview.setFitHeight(64);
+                        } catch (Exception e) {
+                            logger.error(e.getMessage(), e);
                         }
-                        ImageView mapPreview = new ImageView(image);
-                        mapPreview.setPreserveRatio(false);
-                        mapPreview.setFitWidth(128);
-                        mapPreview.setFitHeight(64);
+
                         GridPane gridpane = new GridPane();
                         gridpane.add(mapPreview, 1, 1);
                         gridpane.add(new Label(), 2, 1);
@@ -306,17 +315,30 @@ public class MainContentController implements Initializable {
             private GridPane createMapGridPane(ProfileMapDto profileMapDto) {
                 Label aliasLabel = new Label(profileMapDto.getAlias());
                 aliasLabel.setStyle("-fx-font-weight: bold;");
-                Image image;
-                if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(profileMapDto.getUrlPhoto())) {
-                    image = new Image("file:" + installationFolder + "/" + profileMapDto.getUrlPhoto());
-                } else {
-                    InputStream inputStream = getClass().getClassLoader().getResourceAsStream("images/no-photo.png");
-                    image = new Image(inputStream);
+
+                ImageView mapPreview = new ImageView();
+                try {
+                    Image image;
+                    if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(profileMapDto.getUrlPhoto())) {
+                        image = new Image("file:" + installationFolder + "/" + profileMapDto.getUrlPhoto());
+                    } else {
+                        File file = new File(System.getProperty("user.dir") + "/external-images/no-photo.png");
+                        InputStream inputStream;
+                        if (file.exists()) {
+                            inputStream = new FileInputStream(file.getAbsolutePath());
+                        } else {
+                            inputStream = getClass().getClassLoader().getResourceAsStream("external-images/no-photo.png");
+                        }
+                        image = new Image(inputStream);
+                    }
+                    mapPreview = new ImageView(image);
+                    mapPreview.setPreserveRatio(false);
+                    mapPreview.setFitWidth(350);
+                    mapPreview.setFitHeight(160);
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
                 }
-                ImageView mapPreview = new ImageView(image);
-                mapPreview.setPreserveRatio(false);
-                mapPreview.setFitWidth(350);
-                mapPreview.setFitHeight(160);
+
                 Label mapType;
                 String languageCode = languageSelect.getValue().getKey();
                 String officialText;
@@ -596,7 +618,7 @@ public class MainContentController implements Initializable {
                             if (file.exists()) {
                                 imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/photo-borders.png");
                             } else {
-                                imageWebView.getEngine().load("file:" + getClass().getResource("/images/photo-borders.png").getPath());
+                                imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/photo-borders.png").getPath());
                             }
                         }
                     }
@@ -885,7 +907,11 @@ public class MainContentController implements Initializable {
 
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, ComboBox<?> combo) throws Exception {
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
         Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         if (label != null) {
             label.setTooltip(tooltip);
@@ -894,14 +920,22 @@ public class MainContentController implements Initializable {
     }
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, TextField textField) throws Exception {
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
         Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
         textField.setTooltip(tooltip);
     }
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, TextField[] textFieldArray) throws Exception {
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
         Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
         for (int i=0; i<textFieldArray.length; i++) {
@@ -910,7 +944,11 @@ public class MainContentController implements Initializable {
     }
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, CheckBox checkBox, TextField textField) throws Exception {
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
         Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
         checkBox.setTooltip(tooltip);
@@ -918,14 +956,22 @@ public class MainContentController implements Initializable {
     }
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, CheckBox checkBox) throws Exception {
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
         Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
         checkBox.setTooltip(tooltip);
     }
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, TextArea textArea) throws Exception {
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
         Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
         textArea.setTooltip(tooltip);
@@ -1004,7 +1050,12 @@ public class MainContentController implements Initializable {
         joinServer.setText(joinServerText);
         joinServer.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.joinServer")));
 
-        Tooltip.install(imageWebView, new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.thumbnail")));
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
+        Tooltip thumbnailTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.thumbnail"));
+        thumbnailTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+        Tooltip.install(imageWebView,thumbnailTooltip);
 
         // Advanced Parameters
         String portsLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.ports");
@@ -1192,7 +1243,7 @@ public class MainContentController implements Initializable {
                 if (file.exists()) {
                     imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/photo-borders.png");
                 } else {
-                    imageWebView.getEngine().load("file:" + getClass().getResource("/images/photo-borders.png").getPath());
+                    imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/photo-borders.png").getPath());
                 }
             }
             serverPassword.setText(Utils.decryptAES(profile.getServerPassword()));

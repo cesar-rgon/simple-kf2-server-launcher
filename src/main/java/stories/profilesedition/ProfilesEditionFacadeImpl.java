@@ -6,6 +6,7 @@ import dtos.factories.ProfileDtoFactory;
 import entities.*;
 import entities.AbstractMap;
 import javafx.collections.ObservableList;
+import javafx.scene.control.ButtonType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -178,8 +179,44 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
     }
 
     @Override
-    public ObservableList<ProfileDto> importProfilesFromFile(File file, String message, StringBuffer errorMessage) throws Exception {
-        List<Profile> savedProfileList = profileService.importProfilesFromFile(file, message, errorMessage);
+    public Optional<ButtonType> questionToImportEntitiesFromFile() throws Exception {
+        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                "prop.message.proceed");
+        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                "prop.message.importItems");
+
+        String gameTypesText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                "prop.menu.configuration.gameTypes");
+        String difficultiesText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                "prop.menu.configuration.difficulties");
+        String lengthText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                "prop.menu.configuration.length");
+        String maxPlayersText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                "prop.menu.configuration.maxPlayers");
+
+        return Utils.questionDialog(headerText, contentText + ":\n\n" + gameTypesText + "\n" + difficultiesText + "\n" + lengthText + "\n" + maxPlayersText);
+    }
+
+    @Override
+    public Properties importEntitiesFromFile(File file) throws Exception {
+        Properties properties = propertyService.loadPropertiesFromFile(file);
+        List<Language> languageList = LanguageDao.getInstance().listAll();
+        profileService.importGameTypesFromFile(properties, languageList);
+        profileService.importDifficultiesFromFile(properties, languageList);
+        profileService.importLengthsFromFile(properties, languageList);
+        profileService.importMaxPlayersFromFile(properties, languageList);
+        return properties;
+    }
+
+    @Override
+    public List<Profile> questionToImportProfilesFromFile(Properties properties, String message) throws Exception {
+        return profileService.selectProfilesToBeImported(properties, message);
+    }
+
+    @Override
+    public ObservableList<ProfileDto> importProfilesFromFile(List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) throws Exception {
+        List<Profile> savedProfileList = profileService.importProfilesFromFile(selectedProfileList, properties, errorMessage);
         return profileDtoFactory.newDtos(savedProfileList);
     }
 

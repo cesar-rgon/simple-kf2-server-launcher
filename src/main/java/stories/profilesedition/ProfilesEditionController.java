@@ -1,6 +1,9 @@
 package stories.profilesedition;
 
+import dtos.AbstractMapDto;
 import dtos.ProfileDto;
+import entities.Profile;
+import javafx.concurrent.Task;
 import pojos.ProfileToDisplay;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -22,9 +25,7 @@ import utils.Utils;
 
 import java.io.File;
 import java.net.URL;
-import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class ProfilesEditionController implements Initializable {
 
@@ -43,6 +44,7 @@ public class ProfilesEditionController implements Initializable {
     @FXML private Button importProfile;
     @FXML private Button exportProfile;
     @FXML private Label profileNameLabel;
+    @FXML private ProgressIndicator progressIndicator;
 
     public ProfilesEditionController() {
         facade = new ProfilesEditionFacadeImpl();
@@ -278,30 +280,93 @@ public class ProfilesEditionController implements Initializable {
             if (selectedFile != null) {
                 message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfilesToImport");
                 StringBuffer errorMessage = new StringBuffer();
-                ObservableList<ProfileDto> importedProfiles = facade.importProfilesFromFile(selectedFile, message, errorMessage);
-                if (importedProfiles != null && !importedProfiles.isEmpty()) {
 
-                    for (ProfileDto importedProfile: importedProfiles) {
-                        profilesTable.getItems().add(importedProfile);
-                        Kf2Common kf2Common = Kf2Factory.getInstance();
-                        kf2Common.createConfigFolder(installationFolder, importedProfile.getName());
-                    }
-
-                    if (StringUtils.isBlank(errorMessage)) {
-                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
-                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesImported");
-                        Utils.infoDialog(headerText, contentText + ":\n" + selectedFile.getAbsolutePath());
-                    }
+                Optional<ButtonType> result = facade.questionToImportEntitiesFromFile();
+                if (!result.isPresent() || result.get().equals(ButtonType.CANCEL)) {
+                    return;
                 }
 
-                if (StringUtils.isNotBlank(errorMessage)) {
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesNotImported");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.seeLauncherLog");
-                    Utils.warningDialog(headerText + ":", errorMessage.toString() + "\n" + contentText);
-                }
+                progressIndicator.setVisible(true);
+
+                Task<Properties> entitiesTask = new Task<Properties>() {
+                    @Override
+                    protected Properties call() throws Exception {
+                        return facade.importEntitiesFromFile(selectedFile);
+                    }
+                };
+
+                String finalMessage = message;
+                entitiesTask.setOnSucceeded(entitiesWse -> {
+                    progressIndicator.setVisible(false);
+                    Properties properties = entitiesTask.getValue();
+                    List<Profile> selectedProfileList = new ArrayList<Profile>();
+                    try {
+                        selectedProfileList = facade.questionToImportProfilesFromFile(properties, finalMessage);
+                        if (selectedProfileList == null || selectedProfileList.isEmpty()) {
+                            return;
+                        }
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                    progressIndicator.setVisible(true);
+
+                    List<Profile> finalSelectedProfileList = selectedProfileList;
+                    Task<ObservableList<ProfileDto>> profilesTask = new Task<ObservableList<ProfileDto>>() {
+                        @Override
+                        protected ObservableList<ProfileDto> call() throws Exception {
+                            return facade.importProfilesFromFile(finalSelectedProfileList, properties, errorMessage);
+                        }
+                    };
+
+                    profilesTask.setOnSucceeded(profilesWse -> {
+                        ObservableList<ProfileDto> importedProfiles = profilesTask.getValue();
+
+                        if (importedProfiles == null || importedProfiles.isEmpty()) {
+                            progressIndicator.setVisible(false);
+                            return;
+                        }
+
+                        for (ProfileDto importedProfile: importedProfiles) {
+                            profilesTable.getItems().add(importedProfile);
+                            Kf2Common kf2Common = Kf2Factory.getInstance();
+                            kf2Common.createConfigFolder(installationFolder, importedProfile.getName());
+                        }
+
+                        progressIndicator.setVisible(false);
+
+                        try {
+                            if (StringUtils.isBlank(errorMessage)) {
+                                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesImported");
+                                Utils.infoDialog(headerText, contentText + ":\n" + selectedFile.getAbsolutePath());
+                            }
+
+                            if (StringUtils.isNotBlank(errorMessage)) {
+                                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesNotImported");
+                                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.seeLauncherLog");
+                                Utils.warningDialog(headerText + ":", errorMessage.toString() + "\n" + contentText);
+                            }
+                        } catch (Exception e) {
+                            logger.error(e.getMessage(), e);
+                        }
+                    });
+
+                    profilesTask.setOnFailed(profilesWse -> {
+                        progressIndicator.setVisible(false);
+                    });
+
+                    new Thread(profilesTask).start();
+                });
+
+                entitiesTask.setOnFailed(entitiesWse -> {
+                    progressIndicator.setVisible(false);
+                });
+
+                new Thread(entitiesTask).start();
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+            progressIndicator.setVisible(false);
             Utils.errorDialog(e.getMessage(), e);
         }
     }

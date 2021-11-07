@@ -249,3 +249,7 @@
     -fx-text-fill: #22573d;
     -fx-font-weight: bold;
 }
+
+.progress-indicator {
+    -fx-progress-color: #c15d11;
+}
