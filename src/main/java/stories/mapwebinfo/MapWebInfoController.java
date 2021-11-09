@@ -10,7 +10,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.layout.GridPane;
-import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -93,8 +92,6 @@ public class MapWebInfoController implements Initializable {
             Utils.errorDialog(e.getMessage(), e);
         }
 
-
-
         mapInfoWebView.getEngine().documentProperty().addListener(new ChangeListener<Document>() {
             @Override
             public void changed(ObservableValue<? extends Document> ov, Document oldDoc, Document doc) {
@@ -104,6 +101,7 @@ public class MapWebInfoController implements Initializable {
                 progressIndicator.setVisible(false);
 
                 if (!Session.getInstance().getMap().isOfficial()) {
+
                     try {
                         NodeList titleList = doc.getElementsByTagName("title");
                         String urlWorkShop = doc.getDocumentURI();
