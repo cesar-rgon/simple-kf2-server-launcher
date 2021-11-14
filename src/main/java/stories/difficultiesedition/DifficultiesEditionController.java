@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -56,21 +57,33 @@ public class DifficultiesEditionController implements Initializable {
             String messageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
             messageLabel.setText(messageLabelText);
 
+            Double tooltipDuration = Double.parseDouble(
+                    propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+            );
+
             String addDifficultyText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
             addDifficulty.setText(addDifficultyText);
-            addDifficulty.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addDifficulty")));
+            Tooltip addDifficultyTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addDifficulty"));
+            addDifficultyTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            addDifficulty.setTooltip(addDifficultyTooltip);
 
             String removeDifficultyText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
             removeDifficulty.setText(removeDifficultyText);
-            removeDifficulty.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeDifficulty")));
+            Tooltip removeDifficultyTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeDifficulty"));
+            removeDifficultyTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            removeDifficulty.setTooltip(removeDifficultyTooltip);
 
             String difficultyCodeColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultyCode");
             difficultyCodeLabel.setText(difficultyCodeColumnText);
-            difficultyCodeLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.difficultyCode")));
+            Tooltip difficultyCodeLabelTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.difficultyCode"));
+            difficultyCodeLabelTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            difficultyCodeLabel.setTooltip(difficultyCodeLabelTooltip);
 
             String difficultyDescriptionColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultyDescription");
             difficultyDescriptionLabel.setText(difficultyDescriptionColumnText);
-            difficultyDescriptionLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.difficultyDescription")));
+            Tooltip difficultyDescriptionLabelTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.difficultyDescription"));
+            difficultyDescriptionLabelTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            difficultyDescriptionLabel.setTooltip(difficultyDescriptionLabelTooltip);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -150,20 +163,25 @@ public class DifficultiesEditionController implements Initializable {
             int selectedIndex = difficultiesTable.getSelectionModel().getSelectedIndex();
             if (selectedIndex >= 0) {
                 SelectDto selectedDifficulty = difficultiesTable.getSelectionModel().getSelectedItem();
-                if (Session.getInstance().getActualProfile() != null &&
-                        Session.getInstance().getActualProfile().getDifficulty() != null &&
-                        selectedDifficulty.getKey().equals(Session.getInstance().getActualProfile().getDifficulty().getKey())) {
 
-                    Session.getInstance().setActualProfile(facade.unselectDifficultyInProfile(Session.getInstance().getActualProfile().getName()));
-                }
+                String question = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteDifficultyQuestion");
+                Optional<ButtonType> result = Utils.questionDialog(question, selectedDifficulty.getKey());
+                if (result.isPresent() && result.get().equals(ButtonType.OK)) {
+                    if (Session.getInstance().getActualProfile() != null &&
+                            Session.getInstance().getActualProfile().getDifficulty() != null &&
+                            selectedDifficulty.getKey().equals(Session.getInstance().getActualProfile().getDifficulty().getKey())) {
 
-                if (facade.deleteItem(selectedDifficulty.getKey())) {
-                    difficultiesTable.getItems().remove(selectedIndex);
-                } else {
-                    logger.warn("The difficulty can not be deleted from database: " + selectedDifficulty.getKey() + " - " + selectedDifficulty.getValue());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.difficultyNotDeleted");
-                    Utils.warningDialog(headerText, contentText);
+                        Session.getInstance().setActualProfile(facade.unselectDifficultyInProfile(Session.getInstance().getActualProfile().getName()));
+                    }
+
+                    if (facade.deleteItem(selectedDifficulty.getKey())) {
+                        difficultiesTable.getItems().remove(selectedIndex);
+                    } else {
+                        logger.warn("The difficulty can not be deleted from database: " + selectedDifficulty.getKey() + " - " + selectedDifficulty.getValue());
+                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.difficultyNotDeleted");
+                        Utils.warningDialog(headerText, contentText);
+                    }
                 }
             } else {
                 logger.warn("No selected difficulty to delete");

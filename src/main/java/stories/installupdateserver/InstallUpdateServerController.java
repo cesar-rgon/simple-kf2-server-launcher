@@ -1,7 +1,9 @@
 package stories.installupdateserver;
 
+import dtos.AbstractMapDto;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -19,6 +21,7 @@ import utils.Utils;
 
 import java.io.File;
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class InstallUpdateServerController implements Initializable {
@@ -78,13 +81,21 @@ public class InstallUpdateServerController implements Initializable {
             betaBrunchLabel.setText(betaBrunchLabelText);
             loadTooltip("prop.tooltip.betaBrunch", betaBrunchImg, betaBrunchLabel, betaBrunch);
 
+            Double tooltipDuration = Double.parseDouble(
+                    propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+            );
+
             String exploreFolderText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.exploreFolder");
             exploreFolder.setText(exploreFolderText);
-            exploreFolder.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.exploreFolder")));
+            Tooltip exploreFolderTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.exploreFolder"));
+            exploreFolderTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            exploreFolder.setTooltip(exploreFolderTooltip);
 
             String installUpdateText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.installUpdate");
             installUpdate.setText(installUpdateText);
-            installUpdate.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.installUpdate")));
+            Tooltip installUpdateTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.installUpdate"));
+            installUpdateTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            installUpdate.setTooltip(installUpdateTooltip);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -208,8 +219,23 @@ public class InstallUpdateServerController implements Initializable {
     @FXML
     private void installUpdateServer() {
         progressIndicator.setVisible(true);
-        Kf2Common kf2Common = Kf2Factory.getInstance();
-        kf2Common.installOrUpdateServer(installationFolder.getText(), validateFiles.isSelected(), isBeta.isSelected(), betaBrunch.getText());
-        //progressIndicator.setVisible(false);
+
+        Task<Void> task = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                Kf2Common kf2Common = Kf2Factory.getInstance();
+                kf2Common.installOrUpdateServer(installationFolder.getText(), validateFiles.isSelected(), isBeta.isSelected(), betaBrunch.getText());
+                return null;
+            }
+        };
+        task.setOnSucceeded(wse -> {
+            progressIndicator.setVisible(false);
+        });
+        task.setOnFailed(wse -> {
+            progressIndicator.setVisible(false);
+        });
+
+        Thread thread = new Thread(task);
+        thread.start();
     }
 }

@@ -275,7 +275,7 @@
                              </graphic>
                          </Button>
 
-                         <Button fx:id="joinServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#runServerOnAction" text="JOIN" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="9" GridPane.valignment="BOTTOM">
+                         <Button fx:id="joinServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#joinServerOnAction" text="JOIN" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="9" GridPane.valignment="BOTTOM">
                              <graphic>
                                  <ImageView>
                                      <Image url="@../images/join-server.png" />
@@ -617,5 +617,6 @@
           </Tab>
         </tabs>
       </TabPane>
+
     </children>
 </fx:root>

@@ -96,17 +96,27 @@ public class MapEditionController implements Initializable {
             String editMapText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.editMap");
             titleConfigLabel.setText(editMapText);
 
+            Double tooltipDuration = Double.parseDouble(
+                    propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+            );
+
             String previousMapText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.previousMap");
             previousMapButton.setText(previousMapText);
-            previousMapButton.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.previousMap")));
+            Tooltip previousMapButtonTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.previousMap"));
+            previousMapButtonTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            previousMapButton.setTooltip(previousMapButtonTooltip);
 
             String nextMapText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.nextMap");
             nextMapButton.setText(nextMapText);
-            nextMapButton.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.nextMap")));
+            Tooltip nextMapButtonTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.nextMap"));
+            nextMapButtonTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            nextMapButton.setTooltip(nextMapButtonTooltip);
 
             String backText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.backMapsPage");
             backButton.setText(backText);
-            backButton.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.backMapList")));
+            Tooltip backButtonTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.backMapList"));
+            backButtonTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            backButton.setTooltip(backButtonTooltip);
 
             String mapNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.mapName");
             mapNameLabel.setText(mapNameText);
@@ -139,10 +149,6 @@ public class MapEditionController implements Initializable {
             String infoUrlText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.infoUrl");
             infoUrlLabel.setText(infoUrlText);
             loadTooltip(languageCode, "prop.tooltip.infoUrl", infoUrlImg, infoUrlLabel, infoUrlTextField);
-
-            Double tooltipDuration = Double.parseDouble(
-                    propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
-            );
 
             Tooltip mapThumbnailTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.mapThumbnail"));
             mapThumbnailTooltip.setShowDuration(Duration.seconds(tooltipDuration));

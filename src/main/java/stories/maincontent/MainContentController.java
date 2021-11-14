@@ -1042,17 +1042,22 @@ public class MainContentController implements Initializable {
         welcomeLabel.setText(welcomeLabelText);
         loadTooltip(languageCode, "prop.tooltip.welcomeMessage", welcomeImg, welcomeLabel, welcomeMessage);
 
-        String runServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.runServer");
-        runServer.setText(runServerText);
-        runServer.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.runServer")));
-
-        String joinServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.joinServer");
-        joinServer.setText(joinServerText);
-        joinServer.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.joinServer")));
-
         Double tooltipDuration = Double.parseDouble(
                 propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
         );
+
+        String runServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.runServer");
+        runServer.setText(runServerText);
+        Tooltip runServerTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.runServer"));
+        runServerTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+        runServer.setTooltip(runServerTooltip);
+
+        String joinServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.joinServer");
+        joinServer.setText(joinServerText);
+        Tooltip joinServerTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.joinServer"));
+        joinServerTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+        joinServer.setTooltip(joinServerTooltip);
+
         Tooltip thumbnailTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.thumbnail"));
         thumbnailTooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(imageWebView,thumbnailTooltip);

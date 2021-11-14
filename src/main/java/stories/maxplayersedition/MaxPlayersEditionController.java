@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,21 +58,33 @@ public class MaxPlayersEditionController implements Initializable {
             String messageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
             messageLabel.setText(messageLabelText);
 
+            Double tooltipDuration = Double.parseDouble(
+                    propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+            );
+
             String addMaxPlayersText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
             addMaxPlayers.setText(addMaxPlayersText);
-            addMaxPlayers.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addMaxPlayers")));
+            Tooltip addMaxPlayersTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addMaxPlayers"));
+            addMaxPlayersTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            addMaxPlayers.setTooltip(addMaxPlayersTooltip);
 
             String removeMaxPlayersText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
             removeMaxPlayers.setText(removeMaxPlayersText);
-            removeMaxPlayers.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeMaxPlayers")));
+            Tooltip removeMaxPlayersTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeMaxPlayers"));
+            removeMaxPlayersTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            removeMaxPlayers.setTooltip(removeMaxPlayersTooltip);
 
             String maxPlayersCodeColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.maxPlayersCode");
             maxPlayersCodeLabel.setText(maxPlayersCodeColumnText);
-            maxPlayersCodeLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.maxPlayersCode")));
+            Tooltip maxPlayersCodeLabelTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.maxPlayersCode"));
+            maxPlayersCodeLabelTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            maxPlayersCodeLabel.setTooltip(maxPlayersCodeLabelTooltip);
 
             String maxPlayersDescriptionColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.maxPlayersDescription");
             maxPlayersDescriptionLabel.setText(maxPlayersDescriptionColumnText);
-            maxPlayersDescriptionLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.maxPlayersDescription")));
+            Tooltip maxPlayersDescriptionLabelTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.maxPlayersDescription"));
+            maxPlayersDescriptionLabelTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            maxPlayersDescriptionLabel.setTooltip(maxPlayersDescriptionLabelTooltip);
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -153,20 +166,25 @@ public class MaxPlayersEditionController implements Initializable {
             int selectedIndex = maxPlayersTable.getSelectionModel().getSelectedIndex();
             if (selectedIndex >= 0) {
                 SelectDto selectedMaxPlayers = maxPlayersTable.getSelectionModel().getSelectedItem();
-                if (Session.getInstance().getActualProfile() != null &&
-                        Session.getInstance().getActualProfile().getMaxPlayers() != null &&
-                        selectedMaxPlayers.getKey().equals(Session.getInstance().getActualProfile().getMaxPlayers().getKey())) {
 
-                    Session.getInstance().setActualProfile(facade.unselectMaxPlayersInProfile(Session.getInstance().getActualProfile().getName()));
-                }
+                String question = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteMaxPlayersQuestion");
+                Optional<ButtonType> result = Utils.questionDialog(question, selectedMaxPlayers.getKey());
+                if (result.isPresent() && result.get().equals(ButtonType.OK)) {
+                    if (Session.getInstance().getActualProfile() != null &&
+                            Session.getInstance().getActualProfile().getMaxPlayers() != null &&
+                            selectedMaxPlayers.getKey().equals(Session.getInstance().getActualProfile().getMaxPlayers().getKey())) {
 
-                if (facade.deleteItem(selectedMaxPlayers.getKey())) {
-                    maxPlayersTable.getItems().remove(selectedIndex);
-                } else {
-                    logger.warn("The max. players can not be deleted from database: " + selectedMaxPlayers.getKey());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.maxPlayersNotDeleted");
-                    Utils.warningDialog(headerText, contentText);
+                        Session.getInstance().setActualProfile(facade.unselectMaxPlayersInProfile(Session.getInstance().getActualProfile().getName()));
+                    }
+
+                    if (facade.deleteItem(selectedMaxPlayers.getKey())) {
+                        maxPlayersTable.getItems().remove(selectedIndex);
+                    } else {
+                        logger.warn("The max. players can not be deleted from database: " + selectedMaxPlayers.getKey());
+                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.maxPlayersNotDeleted");
+                        Utils.warningDialog(headerText, contentText);
+                    }
                 }
             } else {
                 logger.warn("No selected max. players to delete");

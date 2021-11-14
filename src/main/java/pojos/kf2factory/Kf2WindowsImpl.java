@@ -1,14 +1,12 @@
 package pojos.kf2factory;
 
-import com.github.sarxos.winreg.HKey;
-import com.github.sarxos.winreg.RegistryException;
-import com.github.sarxos.winreg.WindowsRegistry;
 import entities.Profile;
 import net.lingala.zip4j.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.WindowsRegistry;
 import pojos.session.Session;
 import utils.Utils;
 
@@ -149,17 +147,12 @@ public class Kf2WindowsImpl extends Kf2Common {
 
     @Override
     protected File getSteamExeFile() {
-        try {
-            String steamExePath = WindowsRegistry.getInstance().readString(HKey.HKCU, "Software\\Valve\\Steam", "SteamExe");
-            if (StringUtils.isNotEmpty(steamExePath)) {
-                File steamExeFile = new File(steamExePath);
-                if (steamExeFile.exists() && steamExeFile.canExecute()) {
-                    return steamExeFile;
-                }
+        String steamExePath = WindowsRegistry.readRegistry("HKCU\\Software\\Valve\\Steam", "SteamExe");
+        if (StringUtils.isNotEmpty(steamExePath)) {
+            File steamExeFile = new File(steamExePath);
+            if (steamExeFile.exists() && steamExeFile.canExecute()) {
+                return steamExeFile;
             }
-        } catch (RegistryException e) {
-            logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), e);
         }
         return null;
     }

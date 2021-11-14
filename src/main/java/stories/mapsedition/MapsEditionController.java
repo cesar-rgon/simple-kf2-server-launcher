@@ -25,6 +25,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -137,7 +138,12 @@ public class MapsEditionController implements Initializable {
             SingleSelectionModel<Tab> selectionModel = mapsModsTabPane.getSelectionModel();
             selectionModel.select(EnumMasTab.OFFICIAL_MAPS_TAB.equals(Session.getInstance().getSelectedMapTab()) ? officialMapsTab: customMapsModsTab);
 
+            Double tooltipDuration = Double.parseDouble(
+                    propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+            );
+
             Tooltip searchTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.searchMaps"));
+            searchTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             searchMaps.setTooltip(searchTooltip);
             Tooltip.install(searchImg, searchTooltip);
 
@@ -152,7 +158,9 @@ public class MapsEditionController implements Initializable {
 
             String selectAllMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.selectMaps");
             selectAllMaps.setText(selectAllMapsText);
-            selectAllMaps.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.selectAllMaps")));
+            Tooltip selectAllMapsTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.selectAllMaps"));
+            selectAllMapsTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            selectAllMaps.setTooltip(selectAllMapsTooltip);
 
             String importMapsFromServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importMaps");
             importMapsFromServer.setText(importMapsFromServerText);
@@ -181,6 +189,7 @@ public class MapsEditionController implements Initializable {
             String sliderLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.slider");
             sliderLabel.setText(sliderLabelText);
             Tooltip sliderTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.slide"));
+            sliderTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             sliderLabel.setTooltip(sliderTooltip);
             Double sliderColumns = Double.parseDouble(facade.findConfigPropertyValue("prop.config.mapSliderValue"));
             mapsSlider.setValue(sliderColumns);
@@ -275,6 +284,7 @@ public class MapsEditionController implements Initializable {
         String importedStr;
         String mapNameText;
         String dateHourPattern;
+        Double tooltipDuration = 30.0;
         try {
             datePattern = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.code.datePattern");
             dateHourPattern = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.code.dateHourPattern");
@@ -282,6 +292,9 @@ public class MapsEditionController implements Initializable {
             releaseStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.release");
             importedStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.imported");
             mapNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.name");
+            tooltipDuration = Double.parseDouble(
+                    propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+            );
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             datePattern = "yyyy/MM/dd";
@@ -401,6 +414,7 @@ public class MapsEditionController implements Initializable {
 
         if (StringUtils.isNotBlank(tooltipText)) {
             Tooltip tooltip = new Tooltip(tooltipText.toString());
+            tooltip.setShowDuration(Duration.seconds(tooltipDuration));
             Tooltip.install(gridpane, tooltip);
         }
 
@@ -652,51 +666,73 @@ public class MapsEditionController implements Initializable {
                 String question = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteMapsQuestion");
                 Optional<ButtonType> result = Utils.questionDialog(question, message.toString());
                 if (result.isPresent() && result.get().equals(ButtonType.OK)) {
-                    List<AbstractMapDto> mapsToRemove = new ArrayList<AbstractMapDto>();
-                    StringBuffer errors = new StringBuffer();
-                    for (Node node : removeList) {
-                        try {
-                            GridPane gridpane = (GridPane) node;
-                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                    progressIndicator.setVisible(true);
 
-                            if (profileSelect.getValue().getMap() != null && mapNameLabel.getText().equalsIgnoreCase(profileSelect.getValue().getMap().getKey())) {
-                                facade.unselectProfileMap(profileSelect.getValue().getName());
-                            }
-                            AbstractMapDto map = facade.deleteMapFromProfile(mapNameLabel.getText(), profileSelect.getValue().getName(), installationFolder);
-                            if (map != null) {
-                                mapsToRemove.add(map);
-                                if (map.isOfficial()) {
-                                    officialMapsFlowPane.getChildren().remove(gridpane);
-                                } else {
-                                    customMapsFlowPane.getChildren().remove(gridpane);
+                    final StringBuffer[] errors = {new StringBuffer()};
+                    Task<List<GridPane>> task = new Task<List<GridPane>>() {
+                        @Override
+                        protected List<GridPane> call() throws Exception {
+                            List<GridPane> gridpaneToRemoveList = new ArrayList<GridPane>();
+                            errors[0] = new StringBuffer();
+                            for (Node node : removeList) {
+                                try {
+                                    GridPane gridpane = (GridPane) node;
+                                    Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+
+                                    if (profileSelect.getValue().getMap() != null && mapNameLabel.getText().equalsIgnoreCase(profileSelect.getValue().getMap().getKey())) {
+                                        facade.unselectProfileMap(profileSelect.getValue().getName());
+                                    }
+                                    AbstractMapDto map = facade.deleteMapFromProfile(mapNameLabel.getText(), profileSelect.getValue().getName(), installationFolder);
+                                    if (map != null) {
+                                        gridpaneToRemoveList.add(gridpane);
+                                    } else {
+                                        errors[0].append(mapNameLabel.getText()).append("\n");
+                                    }
+                                } catch (Exception e) {
+                                    logger.error(e.getMessage(), e);
+                                    Utils.errorDialog(e.getMessage(), e);
                                 }
-                            } else {
-                                errors.append(mapNameLabel.getText()).append("\n");
+                            }
+                            return gridpaneToRemoveList;
+                        }
+                    };
+
+                    task.setOnSucceeded(wse -> {
+                        List<GridPane> gridpaneToRemoveList = task.getValue();
+                        try {
+                            if (!gridpaneToRemoveList.isEmpty()) {
+
+                                    if (officialMapsTab.isSelected()) {
+                                        officialMapsFlowPane.getChildren().removeAll(gridpaneToRemoveList);
+                                    } else {
+                                        customMapsFlowPane.getChildren().removeAll(gridpaneToRemoveList);
+                                    }
+
+                                    profileMapDtoList.clear();
+                                    profileMapDtoList = facade.listProfileMaps(profileSelect.getValue().getName());;
+                                    String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
+                                    officialMapsTab.setGraphic(createTabTitle(officialMapsTabText, officialMapsFlowPane.getChildren().size()));
+                                    String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
+                                    customMapsModsTab.setGraphic(createTabTitle(customMapsModsTabText, customMapsFlowPane.getChildren().size()));
+                            }
+                            if (StringUtils.isNotBlank(errors[0].toString())) {
+                                logger.warn("Next maps/mods could not be deleted: " + errors[0].toString());
+                                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapsNotDeleted");
+                                Utils.warningDialog(headerText, errors[0].toString());
                             }
                         } catch (Exception e) {
                             logger.error(e.getMessage(), e);
                             Utils.errorDialog(e.getMessage(), e);
                         }
-                    }
+                        progressIndicator.setVisible(false);
+                    });
 
-                    if (!mapsToRemove.isEmpty()) {
-                        try {
-                            profileMapDtoList.clear();
-                            profileMapDtoList = facade.listProfileMaps(profileSelect.getValue().getName());;
-                            String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
-                            officialMapsTab.setGraphic(createTabTitle(officialMapsTabText, officialMapsFlowPane.getChildren().size()));
-                            String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
-                            customMapsModsTab.setGraphic(createTabTitle(customMapsModsTabText, customMapsFlowPane.getChildren().size()));
-                        } catch (SQLException e) {
-                            logger.error(e.getMessage(), e);
-                            Utils.errorDialog(e.getMessage(), e);
-                        }
-                    }
-                    if (StringUtils.isNotBlank(errors.toString())) {
-                        logger.warn("Next maps/mods could not be deleted: " + errors.toString());
-                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapsNotDeleted");
-                        Utils.warningDialog(headerText, errors.toString());
-                    }
+                    task.setOnFailed(wse -> {
+                        progressIndicator.setVisible(false);
+                    });
+
+                    Thread thread = new Thread(task);
+                    thread.start();
                 }
             }
         } catch (Exception e) {

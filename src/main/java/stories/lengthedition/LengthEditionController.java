@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -57,21 +58,33 @@ public class LengthEditionController implements Initializable {
             String messageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
             messageLabel.setText(messageLabelText);
 
+            Double tooltipDuration = Double.parseDouble(
+                    propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+            );
+
             String addLengthText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
             addLength.setText(addLengthText);
-            addLength.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addLength")));
+            Tooltip addLengthTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addLength"));
+            addLengthTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            addLength.setTooltip(addLengthTooltip);
 
             String removeLengthText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
             removeLength.setText(removeLengthText);
-            removeLength.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeLength")));
+            Tooltip removeLengthTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeLength"));
+            removeLengthTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            removeLength.setTooltip(removeLengthTooltip);
 
             String lengthCodeColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthCode");
             lengthCodeLabel.setText(lengthCodeColumnText);
-            lengthCodeLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.lengthCode")));
+            Tooltip lengthCodeLabelTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.lengthCode"));
+            lengthCodeLabelTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            lengthCodeLabel.setTooltip(lengthCodeLabelTooltip);
 
             String lengthDescriptionColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthDescription");
             lengthDescriptionLabel.setText(lengthDescriptionColumnText);
-            lengthDescriptionLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.lengthDescription")));
+            Tooltip lengthDescriptionLabelTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.lengthDescription"));
+            lengthDescriptionLabelTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            lengthDescriptionLabel.setTooltip(lengthDescriptionLabelTooltip);
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -152,20 +165,25 @@ public class LengthEditionController implements Initializable {
             int selectedIndex = lengthTable.getSelectionModel().getSelectedIndex();
             if (selectedIndex >= 0) {
                 SelectDto selectedLength = lengthTable.getSelectionModel().getSelectedItem();
-                if (Session.getInstance().getActualProfile() != null &&
-                        Session.getInstance().getActualProfile().getLength() != null &&
-                        selectedLength.getKey().equals(Session.getInstance().getActualProfile().getLength().getKey())) {
 
-                    Session.getInstance().setActualProfile(facade.unselectLengthInProfile(Session.getInstance().getActualProfile().getName()));
-                }
+                String question = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteLengthQuestion");
+                Optional<ButtonType> result = Utils.questionDialog(question, selectedLength.getKey());
+                if (result.isPresent() && result.get().equals(ButtonType.OK)) {
+                    if (Session.getInstance().getActualProfile() != null &&
+                            Session.getInstance().getActualProfile().getLength() != null &&
+                            selectedLength.getKey().equals(Session.getInstance().getActualProfile().getLength().getKey())) {
 
-                if (facade.deleteItem(selectedLength.getKey())) {
-                    lengthTable.getItems().remove(selectedIndex);
-                } else {
-                    logger.warn("The length can not be deleted from database: " + selectedLength.getKey() + " - " + selectedLength.getValue());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.lengthNotDeleted");
-                    Utils.warningDialog(headerText, contentText);
+                        Session.getInstance().setActualProfile(facade.unselectLengthInProfile(Session.getInstance().getActualProfile().getName()));
+                    }
+
+                    if (facade.deleteItem(selectedLength.getKey())) {
+                        lengthTable.getItems().remove(selectedIndex);
+                    } else {
+                        logger.warn("The length can not be deleted from database: " + selectedLength.getKey() + " - " + selectedLength.getValue());
+                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.lengthNotDeleted");
+                        Utils.warningDialog(headerText, contentText);
+                    }
                 }
             } else {
                 logger.warn("No selected length to delete");

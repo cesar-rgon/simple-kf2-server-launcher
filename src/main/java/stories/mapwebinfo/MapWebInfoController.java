@@ -25,11 +25,7 @@ import services.PropertyServiceImpl;
 import start.MainApplication;
 import utils.Utils;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -95,10 +91,13 @@ public class MapWebInfoController implements Initializable {
         mapInfoWebView.getEngine().documentProperty().addListener(new ChangeListener<Document>() {
             @Override
             public void changed(ObservableValue<? extends Document> ov, Document oldDoc, Document doc) {
-                if (doc == null || Session.getInstance().getMap() == null) {
+                if (doc == null) {
                     return;
                 }
                 progressIndicator.setVisible(false);
+                if (Session.getInstance().getMap() == null) {
+                    return;
+                }
 
                 if (!Session.getInstance().getMap().isOfficial()) {
 

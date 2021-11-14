@@ -12,6 +12,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -66,29 +67,45 @@ public class GameTypesEditionController implements Initializable {
             String messageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
             messageLabel.setText(messageLabelText);
 
+            Double tooltipDuration = Double.parseDouble(
+                    propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+            );
+
             String addGameTypeText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
             addGameType.setText(addGameTypeText);
-            addGameType.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addGameType")));
+            Tooltip addGameTypeTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addGameType"));
+            addGameTypeTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            addGameType.setTooltip(addGameTypeTooltip);
 
             String removeGameTypeText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
             removeGameType.setText(removeGameTypeText);
-            removeGameType.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeGameType")));
+            Tooltip removeGameTypeTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeGameType"));
+            removeGameTypeTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            removeGameType.setTooltip(removeGameTypeTooltip);
 
             String gameTypeCodeColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.gameTypeCode");
             gameTypeCodeLabel.setText(gameTypeCodeColumnText);
-            gameTypeCodeLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.gameTypeCode")));
+            Tooltip gameTypeCodeLabelTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.gameTypeCode"));
+            gameTypeCodeLabelTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            gameTypeCodeLabel.setTooltip(gameTypeCodeLabelTooltip);
 
             String gameTypeDescriptionColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.gameTypeDescription");
             gameTypeDescriptionLabel.setText(gameTypeDescriptionColumnText);
-            gameTypeDescriptionLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.gameTypeDescription")));
+            Tooltip gameTypeDescriptionLabelTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.gameTypeDescription"));
+            gameTypeDescriptionLabelTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            gameTypeDescriptionLabel.setTooltip(gameTypeDescriptionLabelTooltip);
 
             String difficultiesEnabledColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultiesEnabled");
             difficultiesEnabledLabel.setText(difficultiesEnabledColumnText);
-            difficultiesEnabledLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.difficultiesEnabled")));
+            Tooltip difficultiesEnabledLabelTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.difficultiesEnabled"));
+            difficultiesEnabledLabelTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            difficultiesEnabledLabel.setTooltip(difficultiesEnabledLabelTooltip);
 
             String lengthsEnabledColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthsEnabled");
             lengthsEnabledLabel.setText(lengthsEnabledColumnText);
-            lengthsEnabledLabel.setTooltip(new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.lengthsEnabled")));
+            Tooltip lengthsEnabledLabelTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.lengthsEnabled"));
+            lengthsEnabledLabelTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            lengthsEnabledLabel.setTooltip(lengthsEnabledLabelTooltip);
 
             difficultiesEnabledColumn.setCellFactory(col -> {
                 CheckBoxTableCell<GameTypeDto, Boolean> cell = new CheckBoxTableCell<>(index -> {
@@ -230,20 +247,25 @@ public class GameTypesEditionController implements Initializable {
             int selectedIndex = gameTypesTable.getSelectionModel().getSelectedIndex();
             if (selectedIndex >= 0) {
                 SelectDto selectedGameType = gameTypesTable.getSelectionModel().getSelectedItem();
-                if (Session.getInstance().getActualProfile() != null &&
-                        Session.getInstance().getActualProfile().getGametype() != null &&
-                        selectedGameType.getKey().equals(Session.getInstance().getActualProfile().getGametype().getKey())) {
 
-                    Session.getInstance().setActualProfile(facade.unselectGametypeInProfile(Session.getInstance().getActualProfile().getName()));
-                }
+                String question = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteGameTypeQuestion");
+                Optional<ButtonType> result = Utils.questionDialog(question, selectedGameType.getKey());
+                if (result.isPresent() && result.get().equals(ButtonType.OK)) {
+                    if (Session.getInstance().getActualProfile() != null &&
+                            Session.getInstance().getActualProfile().getGametype() != null &&
+                            selectedGameType.getKey().equals(Session.getInstance().getActualProfile().getGametype().getKey())) {
 
-                if (facade.deleteItem(selectedGameType.getKey())) {
-                    gameTypesTable.getItems().remove(selectedIndex);
-                } else {
-                    logger.warn("The game type can not be deleted from database: " + selectedGameType.getKey() + " - " + selectedGameType.getValue());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.gameTypeNotDeleted");
-                    Utils.warningDialog(headerText, contentText);
+                        Session.getInstance().setActualProfile(facade.unselectGametypeInProfile(Session.getInstance().getActualProfile().getName()));
+                    }
+
+                    if (facade.deleteItem(selectedGameType.getKey())) {
+                        gameTypesTable.getItems().remove(selectedIndex);
+                    } else {
+                        logger.warn("The game type can not be deleted from database: " + selectedGameType.getKey() + " - " + selectedGameType.getValue());
+                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.gameTypeNotDeleted");
+                        Utils.warningDialog(headerText, contentText);
+                    }
                 }
             } else {
                 logger.warn("No selected game type to delete");
