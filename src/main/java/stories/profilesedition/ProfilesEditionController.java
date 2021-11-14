@@ -400,21 +400,7 @@ public class ProfilesEditionController implements Initializable {
                         if (selectedProfileList == null || selectedProfileList.isEmpty()) {
                             return;
                         }
-                    } catch (Exception e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                    progressIndicator.setVisible(true);
-
-                    List<Profile> finalSelectedProfileList = selectedProfileList;
-                    Task<ObservableList<ProfileDto>> profilesTask = new Task<ObservableList<ProfileDto>>() {
-                        @Override
-                        protected ObservableList<ProfileDto> call() throws Exception {
-                            return facade.importProfilesFromFile(finalSelectedProfileList, properties, errorMessage);
-                        }
-                    };
-
-                    profilesTask.setOnSucceeded(profilesWse -> {
-                        ObservableList<ProfileDto> importedProfiles = profilesTask.getValue();
+                        ObservableList<ProfileDto> importedProfiles = facade.importProfilesFromFile(selectedProfileList, properties, errorMessage);
 
                         if (importedProfiles == null || importedProfiles.isEmpty()) {
                             progressIndicator.setVisible(false);
@@ -427,30 +413,20 @@ public class ProfilesEditionController implements Initializable {
                             kf2Common.createConfigFolder(installationFolder, importedProfile.getName());
                         }
 
-                        progressIndicator.setVisible(false);
-
-                        try {
-                            if (StringUtils.isBlank(errorMessage)) {
-                                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
-                                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesImported");
-                                Utils.infoDialog(headerText, contentText + ":\n" + selectedFile.getAbsolutePath());
-                            }
-
-                            if (StringUtils.isNotBlank(errorMessage)) {
-                                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesNotImported");
-                                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.seeLauncherLog");
-                                Utils.warningDialog(headerText + ":", errorMessage.toString() + "\n" + contentText);
-                            }
-                        } catch (Exception e) {
-                            logger.error(e.getMessage(), e);
+                        if (StringUtils.isBlank(errorMessage)) {
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesImported");
+                            Utils.infoDialog(headerText, contentText + ":\n" + selectedFile.getAbsolutePath());
                         }
-                    });
 
-                    profilesTask.setOnFailed(profilesWse -> {
-                        progressIndicator.setVisible(false);
-                    });
-
-                    new Thread(profilesTask).start();
+                        if (StringUtils.isNotBlank(errorMessage)) {
+                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesNotImported");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.seeLauncherLog");
+                            Utils.warningDialog(headerText + ":", errorMessage.toString() + "\n" + contentText);
+                        }
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
                 });
 
                 entitiesTask.setOnFailed(entitiesWse -> {

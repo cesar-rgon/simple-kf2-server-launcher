@@ -548,13 +548,14 @@ public class Utils {
                                                 TableCell<MapToDisplay, Hyperlink> cell = new TableCell<MapToDisplay, Hyperlink>() {
                                                     @Override
                                                     protected void updateItem(Hyperlink item, boolean empty) {
-                                                        setGraphic(item);
+                                                        super.updateItem(item, empty);
+                                                        setGraphic(empty ? null : item);
                                                         if (!empty){
                                                             item.setOnAction(e -> {
                                                                 try {
                                                                     Desktop.getDesktop().browse(new URI(item.getText()));
                                                                 } catch (Exception ex) {
-                                                                    ex.printStackTrace();
+                                                                    logger.error(ex.getMessage(), ex);
                                                                 }
                                                             });
                                                         }
