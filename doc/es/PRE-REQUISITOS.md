@@ -12,7 +12,9 @@
   | Steam Port  | 20560       | UDP        |                                                                                           |
   | NTP Port    | 123         | UDP        | Semanal solamente - Usado para determinar el evento semanal correctamente                 |
 
-- Instalar Oracle JRE 8 (Java Runtime Environment) para poder ejecutar el lanzador. JRE puede ser descargado de [aquí](https://www.java.com/es/download/).
+- Instalar Oracle JDK 17 or más reciente (Java Development Kit) o bien OpenJDK para poder ejecutar el lanzador.
+  - JDK puede ser descargado desde [aquí](https://www.oracle.com/java/technologies/downloads/).
+  - OpenJDK puede ser descargado desde [aquí](https://openjdk.java.net/).
 
 ---
 Back to main page [here](../../LEEME.md).

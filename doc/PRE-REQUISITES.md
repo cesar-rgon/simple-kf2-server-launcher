@@ -12,7 +12,9 @@
   | Steam Port  | 20560    | UDP       |                                                                             |
   | NTP Port    | 123      | UDP       | Weekly Outbreak Only - Internet time lookup to determine correct Outbreak   |
 
-- Install Oracle JRE 8 (Java Runtime Environment) in order to be able to execute the launcher. JRE can be downloaded from [here](https://www.java.com/en/download/).
+- Install Oracle JDK 17 or later (Java Development Kit) or OpenJDK in order to be able to execute the launcher.
+  - JDK can be downloaded from [here](https://www.oracle.com/java/technologies/downloads/).
+  - OpenJDK can be downloaded from [here](https://openjdk.java.net/).
 
 ---
 Back to main page [here](../README.md).
