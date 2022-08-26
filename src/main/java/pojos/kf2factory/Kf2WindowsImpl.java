@@ -62,9 +62,9 @@ public class Kf2WindowsImpl extends Kf2Common {
         try {
             StringBuffer command = new StringBuffer("cmd /C start /wait ");
             command.append(installationFolder);
-            command.append("\\steamcmd\\steamcmd.exe +login anonymous +force_install_dir ");
+            command.append("\\steamcmd\\steamcmd.exe +force_install_dir ");
             command.append(installationFolder);
-            command.append(" +app_update 232130 ");
+            command.append(" +login anonymous +app_update 232130 ");
             if (validateFiles) {
                 command.append(" validate ");
             }

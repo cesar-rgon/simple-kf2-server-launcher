@@ -4,6 +4,7 @@ import dtos.GameTypeDto;
 import dtos.ProfileDto;
 import dtos.ProfileMapDto;
 import dtos.SelectDto;
+import pojos.enums.EnumPlatform;
 import javafx.collections.ObservableList;
 
 import java.sql.SQLException;
@@ -16,6 +17,8 @@ public interface MainContentFacade {
     ObservableList<SelectDto> listAllDifficulties() throws SQLException;
     ObservableList<SelectDto> listAllLengths() throws SQLException;
     ObservableList<SelectDto> listAllPlayers() throws SQLException;
+    ObservableList<EnumPlatform> listAllPlatforms() throws SQLException;
+
     boolean updateProfileSetGameType(String profileName, String gameTypeCode) throws SQLException;
     boolean updateProfileSetMap(String profileName, String mapCode) throws SQLException;
     boolean updateProfileSetDifficulty(String profileName, String difficultyCode) throws SQLException;
@@ -64,6 +67,7 @@ public interface MainContentFacade {
     boolean updateProfileSetMapObjetives(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetPickupItems(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetFriendlyFirePercentage(String profileName, Double friendlyFirePercentage) throws Exception;
+    boolean updateProfileSetPlatform(String profileName, EnumPlatform platform) throws SQLException;
     List<ProfileMapDto> listProfileMaps(String profileName) throws SQLException;
     void runExecutableFile();
 

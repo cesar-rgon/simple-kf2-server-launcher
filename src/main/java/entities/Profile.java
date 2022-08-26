@@ -1,5 +1,7 @@
 package entities;
 
+import pojos.enums.EnumPlatform;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -150,6 +152,9 @@ public class Profile extends AbstractExtendedEntity {
     @Column(name="FRIENDLY_FIRE_PERCENTAGE")
     private Double friendlyFirePercentage;
 
+    @Column(name="PLATFORM")
+    private EnumPlatform platform;
+
 
     public Profile() {
         super();
@@ -162,7 +167,7 @@ public class Profile extends AbstractExtendedEntity {
                    Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting, Double mapVotingTime,
                    Boolean kickVoting, Double kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators, Boolean voip,
                    Boolean chatLogging, String chatLoggingFile, Boolean chatLoggingFileTimestamp, Double timeBetweenKicks, Double maxIdleTime, Boolean deadPlayersCanTalk,
-                   Integer readyUpDelay, Integer gameStartDelay, Integer maxSpectators, Boolean mapObjetives, Boolean pickupItems, Double friendlyFirePercentage) {
+                   Integer readyUpDelay, Integer gameStartDelay, Integer maxSpectators, Boolean mapObjetives, Boolean pickupItems, Double friendlyFirePercentage, EnumPlatform platform) {
 
         super();
         this.name = name;
@@ -208,6 +213,7 @@ public class Profile extends AbstractExtendedEntity {
         this.mapObjetives = mapObjetives;
         this.pickupItems = pickupItems;
         this.friendlyFirePercentage = friendlyFirePercentage;
+        this.platform = platform;
     }
 
     @Override
@@ -577,6 +583,14 @@ public class Profile extends AbstractExtendedEntity {
 
     public List<ProfileMap> getProfileMapList() {
         return profileMapList;
+    }
+
+    public EnumPlatform getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(EnumPlatform platform) {
+        this.platform = platform;
     }
 
     public void setProfileMapList(List<ProfileMap> profileMapList) {

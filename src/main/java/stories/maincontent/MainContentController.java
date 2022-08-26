@@ -14,6 +14,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
 import javafx.util.Duration;
@@ -23,6 +24,7 @@ import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import pojos.enums.EnumPlatform;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -52,6 +54,7 @@ public class MainContentController implements Initializable {
     @FXML private ComboBox<SelectDto> difficultySelect;
     @FXML private ComboBox<SelectDto> lengthSelect;
     @FXML private ComboBox<SelectDto> maxPlayersSelect;
+    @FXML private ComboBox<EnumPlatform> platformSelect;
     @FXML private TextField serverName;
     @FXML private PasswordField serverPassword;
     @FXML private PasswordField webPassword;
@@ -82,6 +85,7 @@ public class MainContentController implements Initializable {
     @FXML private Label customParametersLabel;
     @FXML private Button runServer;
     @FXML private Button joinServer;
+    @FXML private ImageView joinServerImage;
     @FXML private ImageView profileImg;
     @FXML private ImageView languageImg;
     @FXML private ImageView gameTypeImg;
@@ -219,6 +223,7 @@ public class MainContentController implements Initializable {
             difficultySelect.setItems(facade.listAllDifficulties());
             lengthSelect.setItems(facade.listAllLengths());
             maxPlayersSelect.setItems(facade.listAllPlayers());
+            platformSelect.setItems(facade.listAllPlatforms());
 
             if (profileSelect.getValue() != null) {
                 profileOnAction();
@@ -237,6 +242,65 @@ public class MainContentController implements Initializable {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
         }
+
+        platformSelect.setCellFactory(new Callback<ListView<EnumPlatform>, ListCell<EnumPlatform>>() {
+            @Override
+            public ListCell<EnumPlatform> call(ListView<EnumPlatform> p) {
+                ListCell<EnumPlatform> listCell = new ListCell<EnumPlatform>() {
+                    private HBox createHBox(EnumPlatform enumPlatform) {
+                        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(enumPlatform.getLogoPath());
+                        Image image = new Image(inputStream);
+
+                        ImageView logo = new ImageView(image);
+
+                        Label platformDescription = new Label(enumPlatform.getDescripcion());
+                        platformDescription.setStyle("-fx-padding: 15 0 0 10; -fx-text-fill: white;");
+
+                        HBox contentPane = new HBox();
+                        contentPane.getChildren().addAll(logo, platformDescription);
+
+                        return contentPane;
+                    }
+
+                    @Override
+                    protected void updateItem(EnumPlatform enumPlatform, boolean empty) {
+                        super.updateItem(enumPlatform, empty);
+                        if (enumPlatform != null) {
+                            setGraphic(createHBox(enumPlatform));
+                            setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                        }
+                    }
+                };
+                return listCell;
+            }
+        });
+
+        platformSelect.setButtonCell(new ListCell<EnumPlatform>() {
+            private HBox createHBox(EnumPlatform enumPlatform) {
+                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(enumPlatform.getSmallLogoPath());
+                Image image = new Image(inputStream);
+
+                ImageView logo = new ImageView(image);
+
+                Label platformDescription = new Label(enumPlatform.getDescripcion());
+                platformDescription.setStyle("-fx-padding: 6 0 0 10; -fx-text-fill: white;");
+
+                HBox contentPane = new HBox();
+                contentPane.getChildren().addAll(logo, platformDescription);
+
+                return contentPane;
+            }
+
+            @Override
+            protected void updateItem(EnumPlatform enumPlatform, boolean empty) {
+                super.updateItem(enumPlatform, empty);
+                if (enumPlatform != null) {
+                    setGraphic(createHBox(enumPlatform));
+                    setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+                    noSelectedMapImage.setVisible(false);
+                }
+            }
+        });
 
         profileMapSelect.setCellFactory(new Callback<ListView<ProfileMapDto>, ListCell<ProfileMapDto>>() {
             @Override
@@ -1220,6 +1284,8 @@ public class MainContentController implements Initializable {
             noSelectedMapImage.setVisible(true);
         }
 
+        platformSelect.setValue(profile.getPlatform());
+        joinServerVisibility();
         difficultySelect.setValue(profile.getDifficulty());
         difficultySelect.setDisable(gameTypeSelect.getValue() != null ? !gameTypeSelect.getValue().isDifficultyEnabled(): false);
         lengthSelect.setValue(profile.getLength());
@@ -1822,6 +1888,39 @@ public class MainContentController implements Initializable {
             String headerText = "The pick up items value could not be saved!";
             logger.error(headerText, e);
             Utils.errorDialog(headerText, e);
+        }
+    }
+
+    @FXML
+    private void platformOnAction() {
+        joinServerVisibility();
+        try {
+            if (profileSelect.getValue() != null) {
+                String profileName = profileSelect.getValue().getName();
+                if (!facade.updateProfileSetPlatform(profileName, platformSelect.getValue())) {
+                    logger.warn("The platform value could not be saved!: " + platformSelect.getValue().getDescripcion());
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.profileNotUpdated");
+                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
+                            "prop.message.platformNotSaved");
+                    Utils.warningDialog(headerText, contentText);
+                }
+            }
+        } catch (Exception e) {
+            String headerText = "The platform value could not be saved!";
+            logger.error(headerText, e);
+            Utils.errorDialog(headerText, e);
+        }
+    }
+
+    private void joinServerVisibility() {
+        if (EnumPlatform.STEAM.equals(platformSelect.getValue())) {
+            joinServer.setVisible(true);
+            joinServerImage.setVisible(true);
+        } else {
+            // Epic game launcher
+            joinServer.setVisible(false);
+            joinServerImage.setVisible(false);
         }
     }
 }

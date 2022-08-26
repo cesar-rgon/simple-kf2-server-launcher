@@ -253,3 +253,11 @@
 .progress-indicator {
     -fx-progress-color: #c15d11;
 }
+
+#platformSelect, #platformSelect .combo-box, #platformSelect .combo-box-popup .list-view .list-cell {
+    -fx-background-color: #0f3a3f;
+}
+
+#platformSelect .combo-box:hover, #platformSelect .combo-box-popup .list-view .list-cell:hover {
+    -fx-background-color: #c15d11;
+}

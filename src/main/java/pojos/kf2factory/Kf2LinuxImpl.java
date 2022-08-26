@@ -51,9 +51,9 @@ public class Kf2LinuxImpl extends Kf2Common {
             if (!cacheFolder.exists()) {
                 cacheFolder.mkdir();
             }
-            StringBuffer command = new StringBuffer("/usr/games/steamcmd +login anonymous +force_install_dir ");
+            StringBuffer command = new StringBuffer("/usr/games/steamcmd +force_install_dir ");
             command.append(installationFolder);
-            command.append(" +app_update 232130 ");
+            command.append(" +login anonymous +app_update 232130 ");
             if (validateFiles) {
                 command.append(" validate ");
             }

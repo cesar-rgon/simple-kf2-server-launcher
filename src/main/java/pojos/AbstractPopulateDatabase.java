@@ -2,6 +2,7 @@ package pojos;
 
 import daos.*;
 import entities.*;
+import pojos.enums.EnumPlatform;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 
@@ -86,7 +87,7 @@ public abstract class AbstractPopulateDatabase {
                 teamCollision, adminCanPause, announceAdminLogin, mapVoting, mapVotingTime,
                 kickVoting, kickPercentage, publicTextChat, spectatorsOnlyChatToOtherSpectators, voip,
                 chatLogging, chatLoggingFile, chatLoggingFileTimestamp, timeBetweenKicks, maxIdleTime, deadPlayersCanTalk,
-                readyUpDelay, gameStartDelay, maxSpectators, mapObjetives, pickupItems, friendlyFirePercentage);
+                readyUpDelay, gameStartDelay, maxSpectators, mapObjetives, pickupItems, friendlyFirePercentage, EnumPlatform.STEAM);
 
         ProfileDao.getInstance().insert(profile);
     }

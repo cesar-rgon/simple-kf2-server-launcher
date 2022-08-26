@@ -4,6 +4,7 @@ import daos.*;
 import dtos.GameTypeDto;
 import dtos.ProfileDto;
 import dtos.ProfileMapDto;
+import pojos.enums.EnumPlatform;
 import org.apache.commons.lang3.StringUtils;
 import pojos.ProfileToDisplay;
 import dtos.SelectDto;
@@ -83,6 +84,10 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     public ObservableList<SelectDto> listAllPlayers() throws SQLException {
         List<MaxPlayers> playerList = MaxPlayersDao.getInstance().listAll();
         return maxPlayersDtoFactory.newDtos(playerList);
+    }
+
+    public ObservableList<EnumPlatform> listAllPlatforms() throws SQLException {
+        return EnumPlatform.listAll();
     }
 
     @Override
@@ -667,6 +672,21 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         }
         return false;
     }
+
+    @Override
+    public boolean updateProfileSetPlatform(String profileName, EnumPlatform platform) throws SQLException {
+        if (platform == null) {
+            platform = EnumPlatform.STEAM;
+        }
+        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
+        if (profileOpt.isPresent()) {
+            Profile profile = profileOpt.get();
+            profile.setPlatform(platform);
+            return ProfileDao.getInstance().update(profile);
+        }
+        return false;
+    }
+
 
     @Override
     public List<ProfileMapDto> listProfileMaps(String profileName) throws SQLException {

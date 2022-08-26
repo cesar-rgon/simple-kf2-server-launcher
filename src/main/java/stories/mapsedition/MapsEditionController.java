@@ -32,7 +32,7 @@ import org.apache.logging.log4j.Logger;
 import pojos.AddMapsToProfile;
 import pojos.ImportMapResultToDisplay;
 import pojos.MapToDisplay;
-import pojos.enums.EnumMasTab;
+import pojos.enums.EnumMapsTab;
 import pojos.enums.EnumSortedMapsCriteria;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
@@ -42,7 +42,6 @@ import services.PropertyServiceImpl;
 import start.MainApplication;
 import utils.Utils;
 
-import javax.swing.text.html.Option;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -136,7 +135,7 @@ public class MapsEditionController implements Initializable {
             customMapsModsTab.setText("");
 
             SingleSelectionModel<Tab> selectionModel = mapsModsTabPane.getSelectionModel();
-            selectionModel.select(EnumMasTab.OFFICIAL_MAPS_TAB.equals(Session.getInstance().getSelectedMapTab()) ? officialMapsTab: customMapsModsTab);
+            selectionModel.select(EnumMapsTab.OFFICIAL_MAPS_TAB.equals(Session.getInstance().getSelectedMapTab()) ? officialMapsTab: customMapsModsTab);
 
             Double tooltipDuration = Double.parseDouble(
                     propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
@@ -1108,7 +1107,7 @@ public class MapsEditionController implements Initializable {
     @FXML
     private void officialMapsTabOnSelectionChanged() {
         if (customMapsModsTab != null && !officialMapsTab.isSelected()) {
-            Session.getInstance().setSelectedMapTab(EnumMasTab.CUSTOM_MAPS_TAB);
+            Session.getInstance().setSelectedMapTab(EnumMapsTab.CUSTOM_MAPS_TAB);
         }
         if (selectAllMaps != null && selectAllMaps.isSelected()) {
             selectAllMaps.setSelected(false);
@@ -1119,7 +1118,7 @@ public class MapsEditionController implements Initializable {
     @FXML
     private void customMapsModsTabOnSelectionChanged() {
         if (officialMapsTab != null && !customMapsModsTab.isSelected()) {
-            Session.getInstance().setSelectedMapTab(EnumMasTab.OFFICIAL_MAPS_TAB);
+            Session.getInstance().setSelectedMapTab(EnumMapsTab.OFFICIAL_MAPS_TAB);
         }
         if (selectAllMaps != null && selectAllMaps.isSelected()) {
             selectAllMaps.setSelected(false);

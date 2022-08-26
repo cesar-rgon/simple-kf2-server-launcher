@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.ProfileToDisplay;
 import pojos.ProfileToDisplayFactory;
+import pojos.enums.EnumPlatform;
 import services.*;
 import stories.AbstractFacade;
 import utils.Utils;
@@ -106,7 +107,8 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
                 2,
                 true,
                 true,
-                0.0
+                0.0,
+                EnumPlatform.STEAM
         );
 
 

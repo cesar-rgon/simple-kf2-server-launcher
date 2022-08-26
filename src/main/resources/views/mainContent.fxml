@@ -267,21 +267,24 @@
                         </Label>
                         <TextArea fx:id="welcomeMessage" opacity="0.75" prefHeight="120.0" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="6" GridPane.rowSpan="2" GridPane.valignment="CENTER" />
 
-                         <Button fx:id="runServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#runServerOnAction" text="RUN" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="9" GridPane.valignment="BOTTOM">
-                             <graphic>
-                                 <ImageView>
-                                     <Image url="@../images/run-server.png" />
-                                 </ImageView>
-                             </graphic>
-                         </Button>
+                         <ComboBox fx:id="platformSelect" onAction="#platformOnAction" opacity="0.75" prefHeight="37.0" prefWidth="168.0" GridPane.columnIndex="3" GridPane.rowIndex="9" GridPane.valignment="TOP">
+                         </ComboBox>
 
-                         <Button fx:id="joinServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#joinServerOnAction" text="JOIN" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="9" GridPane.valignment="BOTTOM">
-                             <graphic>
-                                 <ImageView>
-                                     <Image url="@../images/join-server.png" />
-                                 </ImageView>
-                             </graphic>
-                         </Button>
+                         <ImageView fx:id="joinServerImage" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="9">
+                             <Image url="@../images/join-server.png" />
+                           <GridPane.margin>
+                              <Insets right="-2.0" />
+                           </GridPane.margin>
+                         </ImageView>
+                         <Button fx:id="joinServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#joinServerOnAction" text="JOIN" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
+                           <GridPane.margin>
+                              <Insets right="-2.0" />
+                           </GridPane.margin></Button>
+
+                         <ImageView GridPane.columnIndex="4" GridPane.rowIndex="9">
+                             <Image url="@../images/run-server.png" />
+                         </ImageView>
+                         <Button fx:id="runServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#runServerOnAction" text="RUN" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="9" GridPane.valignment="CENTER" />
 
                      </children>
                   </GridPane>

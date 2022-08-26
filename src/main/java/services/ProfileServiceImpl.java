@@ -10,6 +10,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.MapToDisplay;
 import pojos.ProfileToDisplay;
+import pojos.enums.EnumPlatform;
 import utils.Utils;
 
 import java.io.BufferedReader;
@@ -173,7 +174,8 @@ public class ProfileServiceImpl implements ProfileService {
                 profileToBeCloned.getMaxSpectators(),
                 profileToBeCloned.getMapObjetives(),
                 profileToBeCloned.getPickupItems(),
-                profileToBeCloned.getFriendlyFirePercentage()
+                profileToBeCloned.getFriendlyFirePercentage(),
+                profileToBeCloned.getPlatform()
         );
 
         Profile savedProfile = createItem(newProfile);
@@ -564,6 +566,7 @@ public class ProfileServiceImpl implements ProfileService {
             String deadPlayersCanTalkStr = properties.getProperty("exported.profile" + profileIndex + ".deadPlayersCanTalk");
             String mapObjetivesStr = properties.getProperty("exported.profile" + profileIndex + ".mapObjetives");
             String pickupItemsStr = properties.getProperty("exported.profile" + profileIndex + ".pickupItems");
+            String platformName = properties.getProperty("exported.profile" + profileIndex + ".platform");
 
             return new Profile(
                     profileName,
@@ -608,7 +611,8 @@ public class ProfileServiceImpl implements ProfileService {
                     StringUtils.isNotBlank(maxSpectatorsStr) ? Integer.parseInt(maxSpectatorsStr): 2,
                     StringUtils.isNotBlank(mapObjetivesStr) ? Boolean.parseBoolean(mapObjetivesStr): true,
                     StringUtils.isNotBlank(pickupItemsStr) ? Boolean.parseBoolean(pickupItemsStr): true,
-                    StringUtils.isNotBlank(friendlyFirePercentageStr) ? Double.parseDouble(friendlyFirePercentageStr): 0
+                    StringUtils.isNotBlank(friendlyFirePercentageStr) ? Double.parseDouble(friendlyFirePercentageStr): 0,
+                    StringUtils.isNotBlank(platformName) ? EnumPlatform.getByName(platformName): EnumPlatform.STEAM
             );
         } catch (SQLException e) {
             logger.error("Error getting the profile " + profileName + " from file", e);
