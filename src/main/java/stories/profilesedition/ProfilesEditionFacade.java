@@ -15,7 +15,7 @@ import java.util.Properties;
 public interface ProfilesEditionFacade {
     ObservableList<ProfileDto> listAllProfiles() throws SQLException;
     ProfileDto createNewProfile(String profileName) throws Exception;
-    boolean deleteSelectedProfile(String profileName, String installationFolder) throws Exception;
+    boolean deleteSelectedProfile(String profileName, String steamInstallationFolder, String epicInstallationFolder) throws Exception;
     ProfileDto updateChangedProfile(String oldProfileName, String newProfileName) throws SQLException;
     String findConfigPropertyValue(String key) throws Exception;
     ProfileDto cloneSelectedProfile(String profileName, String newProfileName) throws Exception;

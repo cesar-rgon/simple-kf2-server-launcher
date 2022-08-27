@@ -33,6 +33,7 @@ import pojos.AddMapsToProfile;
 import pojos.ImportMapResultToDisplay;
 import pojos.MapToDisplay;
 import pojos.enums.EnumMapsTab;
+import pojos.enums.EnumPlatform;
 import pojos.enums.EnumSortedMapsCriteria;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
@@ -101,8 +102,6 @@ public class MapsEditionController implements Initializable {
         try {
             languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             selectMaps = true;
-            installationFolder = facade.findConfigPropertyValue("prop.config.installationFolder");
-
             String profileLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profile");
             profileLabel.setText(profileLabelText);
 
@@ -119,12 +118,21 @@ public class MapsEditionController implements Initializable {
                                 profileSelect.getItems().get(0));
 
                 profileMapDtoList = facade.listProfileMaps(profileSelect.getValue().getName());;
+
+                if (profileSelect.getValue() == null || EnumPlatform.STEAM.equals(profileSelect.getValue().getPlatform())) {
+                    installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
+                } else {
+                    installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
+                }
+
                 orderMapsByNameOnAction();
             } else {
                 profileSelect.setValue(null);
                 profileMapDtoList = null;
+                installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
             }
             Session.getInstance().setMapsProfile(profileSelect.getValue());
+
 
             String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
             officialMapsTab.setGraphic(createTabTitle(officialMapsTabText, officialMapsFlowPane.getChildren().size()));
@@ -774,7 +782,9 @@ public class MapsEditionController implements Initializable {
             }
 
             // CUSTOM MAP LIST
-            Kf2Common kf2Common = Kf2Factory.getInstance();
+            Kf2Common kf2Common = Kf2Factory.getInstance(
+                    profileSelect.getValue() != null ? profileSelect.getValue().getPlatform(): null
+            );
             List<MapToDisplay> customMapModList = Files.walk(Paths.get(installationFolder + "/KFGame/Cache"))
                     .filter(Files::isRegularFile)
                     .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))

@@ -207,7 +207,6 @@ public class MainContentController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         try {
-            installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.installationFolder");
             ObservableList<ProfileDto> profileOptions = facade.listAllProfiles();
             profileSelect.setItems(profileOptions);
             if (!profileOptions.isEmpty()) {
@@ -224,6 +223,12 @@ public class MainContentController implements Initializable {
             lengthSelect.setItems(facade.listAllLengths());
             maxPlayersSelect.setItems(facade.listAllPlayers());
             platformSelect.setItems(facade.listAllPlatforms());
+
+            if (profileSelect.getValue() == null || EnumPlatform.STEAM.equals(profileSelect.getValue().getPlatform())) {
+                installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
+            } else {
+                installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
+            }
 
             if (profileSelect.getValue() != null) {
                 profileOnAction();
@@ -1268,6 +1273,7 @@ public class MainContentController implements Initializable {
 
         List<ProfileMapDto> filteredMapList = new ArrayList<ProfileMapDto>(officialMaps);
         filteredMapList.addAll(downloadedCustomMaps);
+        profileMapSelect.getItems().clear();
         profileMapSelect.setItems(FXCollections.observableArrayList(filteredMapList));
         if (profile.getMap() != null) {
             Optional<ProfileMapDto> selectedProfileMapOpt = filteredMapList.stream()
@@ -1579,7 +1585,7 @@ public class MainContentController implements Initializable {
                     selectedProfileNameList = facade.selectProfiles(message, profileSelect.getValue().getName());
             }
 
-            facade.runExecutableFile();
+            facade.runExecutableFile(platformSelect.getValue());
             for (String profileName: selectedProfileNameList) {
                 Session.getInstance().setConsole((StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
                         "< " + new Date() + " - Run Server >\n" + facade.runServer(profileName));
@@ -1897,7 +1903,20 @@ public class MainContentController implements Initializable {
         try {
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
-                if (!facade.updateProfileSetPlatform(profileName, platformSelect.getValue())) {
+                if (facade.updateProfileSetPlatform(profileName, platformSelect.getValue())) {
+                    ProfileDto databaseProfile = facade.findProfileDtoByName(profileName);
+
+                    if (EnumPlatform.STEAM.equals(databaseProfile.getPlatform())) {
+                        installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
+                    } else {
+                        installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
+                    }
+                    Session.getInstance().setActualProfile(databaseProfile);
+                    if (Session.getInstance().getMapsProfile() == null || profileName.equalsIgnoreCase(Session.getInstance().getMapsProfile().getName())) {
+                        Session.getInstance().setMapsProfile(databaseProfile);
+                    }
+                    loadActualProfile(databaseProfile);
+                } else {
                     logger.warn("The platform value could not be saved!: " + platformSelect.getValue().getDescripcion());
                     String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
                             "prop.message.profileNotUpdated");
@@ -1905,6 +1924,7 @@ public class MainContentController implements Initializable {
                             "prop.message.platformNotSaved");
                     Utils.warningDialog(headerText, contentText);
                 }
+
             }
         } catch (Exception e) {
             String headerText = "The platform value could not be saved!";

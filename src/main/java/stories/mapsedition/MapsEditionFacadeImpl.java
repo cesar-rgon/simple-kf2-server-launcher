@@ -17,6 +17,7 @@ import pojos.ProfileToDisplay;
 import pojos.ProfileToDisplayFactory;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
+import pojos.session.Session;
 import services.*;
 import stories.AbstractFacade;
 import utils.Utils;
@@ -300,7 +301,9 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     @Override
     public String runServer(String profileName) throws SQLException {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        Kf2Common kf2Common = Kf2Factory.getInstance();
+        Kf2Common kf2Common = Kf2Factory.getInstance(
+                profileOpt.isPresent() ? profileOpt.get().getPlatform(): null
+        );
         return kf2Common.runServer(profileOpt.isPresent()? profileOpt.get(): null);
     }
 

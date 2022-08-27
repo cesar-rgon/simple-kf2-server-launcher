@@ -14,6 +14,7 @@ import javafx.collections.ObservableList;
 import pojos.ProfileToDisplayFactory;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
+import pojos.kf2factory.Kf2Steam;
 import services.*;
 import stories.AbstractFacade;
 import utils.Utils;
@@ -309,7 +310,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     @Override
     public String runServer(String profileName) throws SQLException {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        Kf2Common kf2Common = Kf2Factory.getInstance();
+        Kf2Common kf2Common = Kf2Factory.getInstance(profileOpt.isPresent()? profileOpt.get().getPlatform(): null);
         return kf2Common.runServer(profileOpt.isPresent()? profileOpt.get(): null);
     }
 
@@ -317,8 +318,8 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     public String joinServer(String profileName) throws SQLException {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
-            Kf2Common kf2Common = Kf2Factory.getInstance();
-            return kf2Common.joinServer(profileOpt.get());
+            Kf2Common kf2Common = Kf2Factory.getInstance(profileOpt.isPresent()? profileOpt.get().getPlatform(): null);
+            return ((Kf2Steam)kf2Common).joinServer(profileOpt.get());
         } else {
             Utils.warningDialog("Join operation aborted!", "The profile name can not be empty");
         }
@@ -700,8 +701,8 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public void runExecutableFile() {
-        Kf2Common kf2Common = Kf2Factory.getInstance();
+    public void runExecutableFile(EnumPlatform platform) {
+        Kf2Common kf2Common = Kf2Factory.getInstance(platform);
         kf2Common.runExecutableFile();
     }
 }

@@ -19,6 +19,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import pojos.ProfileToDisplay;
+import pojos.enums.EnumPlatform;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -174,7 +175,12 @@ public class MapWebInfoController implements Initializable {
     @FXML
     private void addMapOnAction() {
         try {
-            String installationFolder = facade.findPropertyValue("prop.config.installationFolder");
+            String installationFolder;
+            if (EnumPlatform.STEAM.equals(Session.getInstance().getActualProfile().getPlatform())) {
+                installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
+            } else {
+                installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
+            }
             if (!facade.isCorrectInstallationFolder(installationFolder)) {
                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
                 String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<fx:root id="centerPane" fx:id="installUpdateServerContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.installupdateepicserver.InstallUpdateEpicServerController">
+    <rowConstraints>
+        <RowConstraints minHeight="94.0" prefHeight="94.0" />
+        <RowConstraints minHeight="470.0" prefHeight="470.0" />
+        <RowConstraints minHeight="96.0" prefHeight="96.0" />
+    </rowConstraints>
+    <columnConstraints>
+        <ColumnConstraints minWidth="334.0" prefWidth="334.0" />
+        <ColumnConstraints minWidth="1.0" prefWidth="336.0" />
+        <ColumnConstraints minWidth="10.0" prefWidth="334.0" />
+      <ColumnConstraints />
+      <ColumnConstraints />
+      <ColumnConstraints />
+    </columnConstraints>
+    <children>
+        <ImageView fitHeight="660.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+            <image>
+                <Image url="@../images/radiation700.png" />
+            </image>
+            <GridPane.margin>
+                <Insets top="2.0" />
+            </GridPane.margin>
+        </ImageView>
+        <Label fx:id="titleConfigLabel" alignment="TOP_LEFT" text="Update Epic Games's Killing Floor 2 server" textAlignment="CENTER" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+            <font>
+                <Font size="20.0" />
+            </font>
+        </Label>
+        <ImageView fx:id="installationFolderImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+            <image>
+                <Image url="@../images/label.png" />
+            </image>
+        </ImageView>
+        <Label fx:id="installationFolderLabel" text="INSTALLATION FOLDER*" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="1">
+            <GridPane.margin>
+                <Insets right="10.0" />
+            </GridPane.margin>
+        </Label>
+        <TextField fx:id="installationFolder" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <Button fx:id="exploreFolder" maxWidth="200.0" mnemonicParsing="false" onAction="#exploreFolderOnAction" text="EXPLORE" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+            <GridPane.margin>
+                <Insets left="20.0" />
+            </GridPane.margin>
+        </Button>
+        <Button fx:id="installUpdate" maxWidth="200.0" mnemonicParsing="false" onAction="#installUpdateServer" text="INSTALL / UPDATE" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="TOP">
+            <GridPane.margin>
+                <Insets left="20.0" />
+            </GridPane.margin>
+        </Button>
+        <ProgressIndicator fx:id="progressIndicator" maxHeight="150.0" maxWidth="150.0" visible="false" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowSpan="7" />
+    </children>
+</fx:root>

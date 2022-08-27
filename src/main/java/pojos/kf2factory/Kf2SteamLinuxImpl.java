@@ -12,9 +12,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
-public class Kf2LinuxImpl extends Kf2Common {
+public class Kf2SteamLinuxImpl extends Kf2Steam {
 
-    private static final Logger logger = LogManager.getLogger(Kf2LinuxImpl.class);
+    private static final Logger logger = LogManager.getLogger(Kf2SteamLinuxImpl.class);
 
     @Override
     protected boolean prepareSteamCmd(String installationFolder) {
@@ -156,7 +156,7 @@ public class Kf2LinuxImpl extends Kf2Common {
     }
 
     @Override
-    protected File getSteamExeFile() {
+    protected File getExeFile() {
         File steamExeFile = new File("/usr/games/steam");
         if (steamExeFile.exists() && steamExeFile.canExecute()) {
             return steamExeFile;

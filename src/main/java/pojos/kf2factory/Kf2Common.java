@@ -24,6 +24,7 @@ import java.util.stream.Stream;
 public abstract class Kf2Common {
 
     private static final Logger logger = LogManager.getLogger(Kf2Common.class);
+
     protected final PropertyService propertyService;
     protected String languageCode;
     protected boolean byConsole;
@@ -40,46 +41,37 @@ public abstract class Kf2Common {
         }
     }
 
-    public void installOrUpdateServer(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) {
-        if (isValid(installationFolder) && prepareSteamCmd(installationFolder)) {
-            installUpdateKf2Server(installationFolder, validateFiles, isBeta, betaBrunch);
-        }
-    }
+    protected abstract boolean prerequisitesAreValid(String installationFolder);
+    protected abstract String runKf2Server(String installationFolder, Profile profile);
+    protected abstract void executeFileBeforeRunServer(File fileToBeExecuted) throws Exception;
+    public abstract Long getIdWorkShopFromPath(Path path, String installationFolder);
+    protected abstract String getInstallationFolder() throws Exception;
 
-    private boolean isValid(String installationFolder) {
-        if (StringUtils.isBlank(installationFolder) || installationFolder.contains(" ")) {
-            try {
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
-                if (!byConsole) {
-                    Utils.warningDialog(headerText, contentText);
-                } else {
-                    System.out.println(headerText + "\n" + contentText);
-                }
-            } catch (Exception e) {
-                if (!byConsole) {
-                    logger.error(e.getMessage(), e);
-                    Utils.errorDialog(e.getMessage(), e);
-                } else {
-                    System.out.println(e);
-                }
+    protected void installationFolderNotValid() {
+        try {
+            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
+            if (!byConsole) {
+                Utils.warningDialog(headerText, contentText);
+            } else {
+                System.out.println(headerText + "\n" + contentText);
             }
-            return false;
-        } else {
-            return true;
+        } catch (Exception e) {
+            if (!byConsole) {
+                logger.error(e.getMessage(), e);
+                Utils.errorDialog(e.getMessage(), e);
+            } else {
+                System.out.println(e);
+            }
         }
     }
-
-    protected abstract boolean prepareSteamCmd(String installationFolder);
-    protected abstract void installUpdateKf2Server(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch);
 
     public String runServer(Profile profile) {
         try {
             String errorMessage = validateParameters(profile);
             if (StringUtils.isEmpty(errorMessage)) {
-                PropertyService propertyService = new PropertyServiceImpl();
-                String installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.installationFolder");
-                if (isValid(installationFolder)) {
+                String installationFolder = getInstallationFolder();;
+                if (prerequisitesAreValid(installationFolder)) {
                     createConfigFolder(installationFolder, profile.getCode());
                     return runKf2Server(installationFolder, profile);
                 }
@@ -188,7 +180,7 @@ public abstract class Kf2Common {
         }
     }
 
-    protected abstract String runKf2Server(String installationFolder, Profile profile);
+
 
     protected void replaceInFileKfWebAdminIni(String installationFolder, Profile profile) {
         try {
@@ -494,54 +486,6 @@ public abstract class Kf2Common {
         return modifiedLine;
     }
 
-    public String joinServer(Profile profile) {
-        File steamExeFile = getSteamExeFile();
-        if (steamExeFile != null) {
-            return joinToKf2Server(steamExeFile, profile);
-        } else {
-            try {
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.steamInstallDirInvalid");
-                Utils.warningDialog(headerText, contentText);
-            } catch (Exception e) {
-                logger.error(e.getMessage(), e);
-                Utils.errorDialog(e.getMessage(), e);
-            } finally {
-                return "";
-            }
-        }
-    }
-
-    protected abstract File getSteamExeFile();
-
-    protected String joinToKf2Server(File steamExeFile, Profile profile) {
-        try {
-            String serverPassword = Utils.decryptAES(profile.getServerPassword());
-            String passwordParam = "";
-            if (StringUtils.isNotEmpty(serverPassword)) {
-                passwordParam = "?password=" + serverPassword;
-            }
-            String gamePortParam = "";
-            if (profile.getGamePort() != null) {
-                gamePortParam = ":" + profile.getGamePort();
-            }
-            StringBuffer command = new StringBuffer(steamExeFile.getAbsolutePath());
-            command.append(" -applaunch 232090 ").append(Utils.getPublicIp()).append(gamePortParam).append(passwordParam).append(" -nostartupmovies");
-            Runtime.getRuntime().exec(command.toString(),null, steamExeFile.getParentFile());
-            StringBuffer consoleCommand = new StringBuffer();
-            if (StringUtils.isBlank(passwordParam)) {
-                consoleCommand = command;
-            } else {
-                consoleCommand.append(steamExeFile.getAbsolutePath()).append(" -applaunch 232090 ").append(Utils.getPublicIp()).append(gamePortParam).append("?password=*****").append(" -nostartupmovies");
-            }
-            return consoleCommand.toString();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), e);
-            return "";
-        }
-
-    }
 
     private String generateMapCycleLine(List<AbstractMap> officialMaps, List<AbstractMap> downloadedCustomMaps) {
         StringBuffer sb = new StringBuffer("GameMapCycles=(Maps=(");
@@ -572,8 +516,6 @@ public abstract class Kf2Common {
         return sb.toString();
     }
 
-    public abstract Long getIdWorkShopFromPath(Path path, String installationFolder);
-
     public void runExecutableFile() {
         try {
             String executeFileBeforeRunKF2ServerStr = propertyService.getPropertyValue("properties/config.properties", "prop.config.enableExecuteFileBeforeRunKF2Server");
@@ -596,6 +538,4 @@ public abstract class Kf2Common {
             Utils.errorDialog(e.getMessage(), e);
         }
     }
-
-    protected abstract void executeFileBeforeRunServer(File fileToBeExecuted) throws Exception;
 }

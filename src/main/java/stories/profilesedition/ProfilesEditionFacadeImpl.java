@@ -126,10 +126,10 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
     }
 
     @Override
-    public boolean deleteSelectedProfile(String profileName, String installationFolder) throws Exception {
+    public boolean deleteSelectedProfile(String profileName, String steamInstallationFolder, String epicInstallationFolder) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
-            return profileService.deleteProfile(profileOpt.get(), installationFolder);
+            return profileService.deleteProfile(profileOpt.get(), steamInstallationFolder, epicInstallationFolder);
         }
         return false;
     }

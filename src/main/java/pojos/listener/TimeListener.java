@@ -4,6 +4,8 @@ import daos.CustomMapModDao;
 import entities.CustomMapMod;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.enums.EnumPlatform;
+import pojos.session.Session;
 import services.AbstractMapService;
 import services.CustomMapModServiceImpl;
 import services.PropertyService;
@@ -34,7 +36,14 @@ public class TimeListener extends TimerTask {
             List mapList = customMapModService.listAllMaps();;
             if (mapList != null && !mapList.isEmpty()) {
                 PropertyService propertyService = new PropertyServiceImpl();
-                String installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.installationFolder");
+
+                String installationFolder;
+                if (EnumPlatform.STEAM.equals(Session.getInstance().getActualProfile().getPlatform())) {
+                    installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
+                } else {
+                    installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
+                }
+
                 for (Object item : mapList) {
                     CustomMapMod map = (CustomMapMod) item;
                     try {

@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import pojos.MapToDisplay;
 import pojos.ProfileToDisplay;
 import pojos.enums.EnumPlatform;
+import pojos.session.Session;
 import utils.Utils;
 
 import java.io.BufferedReader;
@@ -101,7 +102,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public boolean deleteProfile(Profile profile, String installationFolder) throws Exception {
+    public boolean deleteProfile(Profile profile, String steamInstallationFolder, String epicInstallationFolder) throws Exception {
 
         List<ProfileMap> profileMapList = new ArrayList<ProfileMap>(profile.getProfileMapList());
         profileMapList.stream().forEach(pm -> {
@@ -113,10 +114,23 @@ public class ProfileServiceImpl implements ProfileService {
                     CustomMapMod customMapMod = CustomMapModDao.getInstance().get(idMap);
                     if (customMapMod.getProfileList().isEmpty()) {
                         if (CustomMapModDao.getInstance().remove(customMapMod)) {
-                            File photo = new File(installationFolder + customMapMod.getUrlPhoto());
-                            photo.delete();
-                            File cacheFolder = new File(installationFolder + "/KFGame/Cache/" + customMapMod.getIdWorkShop());
-                            FileUtils.deleteDirectory(cacheFolder);
+                            File steamMapPhoto = new File(steamInstallationFolder + customMapMod.getUrlPhoto());
+                            if (steamMapPhoto.exists()) {
+                                steamMapPhoto.delete();
+                            }
+                            File steamMapCacheFolder = new File(steamInstallationFolder + "/KFGame/Cache/" + customMapMod.getIdWorkShop());
+                            if (steamMapCacheFolder.exists()) {
+                                FileUtils.deleteDirectory(steamMapCacheFolder);
+                            }
+
+                            File epicMapPhoto = new File(epicInstallationFolder + customMapMod.getUrlPhoto());
+                            if (epicMapPhoto.exists()) {
+                                epicMapPhoto.delete();
+                            }
+                            File epicMapCacheFolder = new File(epicInstallationFolder + "/KFGame/Cache/" + customMapMod.getIdWorkShop());
+                            if (epicMapCacheFolder.exists()) {
+                                FileUtils.deleteDirectory(epicMapCacheFolder);
+                            }
                         }
                     }
                 }
@@ -760,7 +774,12 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     private boolean createNewCustomMapFromWorkshop(CustomMapMod map) throws Exception {
-        String installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.installationFolder");
+        String installationFolder;
+        if (EnumPlatform.STEAM.equals(Session.getInstance().getActualProfile().getPlatform())) {
+            installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
+        } else {
+            installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
+        }
         URL urlWorkShop = new URL(map.getUrlInfo());
         BufferedReader reader = new BufferedReader(new InputStreamReader(urlWorkShop.openStream()));
         String strUrlMapImage = null;

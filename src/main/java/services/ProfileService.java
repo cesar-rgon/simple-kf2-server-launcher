@@ -13,7 +13,7 @@ public interface ProfileService extends AbstractExtendedService<Profile> {
 
     Optional<Profile> findProfileByCode(String profileName) throws SQLException;
     List<Profile> listAllProfiles() throws SQLException;
-    boolean deleteProfile(Profile profile, String installationFolder) throws Exception;
+    public boolean deleteProfile(Profile profile, String steamInstallationFolder, String epicInstallationFolder) throws Exception;
     Profile cloneProfile(Profile profileToBeCloned, String newProfileName) throws Exception;
     void exportProfilesToFile(List<Profile> profilesToExport, File file) throws Exception;
     void importGameTypesFromFile(Properties properties, List<Language> languageList) throws SQLException;

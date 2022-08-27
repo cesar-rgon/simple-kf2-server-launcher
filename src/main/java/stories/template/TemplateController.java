@@ -48,6 +48,8 @@ public class TemplateController implements Initializable {
     @FXML private MenuItem github;
     @FXML private MenuItem releases;
     @FXML private MenuItem donation;
+    @FXML private MenuItem steam;
+    @FXML private MenuItem epic;
 
     public TemplateController() {
         super();
@@ -72,7 +74,7 @@ public class TemplateController implements Initializable {
             console.setGraphic(getLabelWithHandler(consoleTitle, "/views/console.fxml"));
 
             String installUpdateTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.installUpdateServer");
-            installUpdateServer.setGraphic(getLabelWithHandler(installUpdateTitle, "/views/installUpdateServer.fxml"));
+            installUpdateServer.setText(installUpdateTitle);
 
             String configurationTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.configuration");
             configuration.setText(configurationTitle);
@@ -145,9 +147,6 @@ public class TemplateController implements Initializable {
 
             String consoleTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.console");
             console.setDisable(consoleTitle.equals(title));
-
-            String installUpdateTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.installUpdateServer");
-            installUpdateServer.setDisable(installUpdateTitle.equals(title));
 
             String mapsTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.maps");
             maps.setDisable(mapsTitle.equals(title));
@@ -301,6 +300,28 @@ public class TemplateController implements Initializable {
         try {
             String dotationUrl = "https://www.paypal.me/cesarrgon";
             Desktop.getDesktop().browse(new URI(dotationUrl));
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void steamServerInstallMenuOnAction() {
+        try {
+            String installUpdateTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.installUpdateServer");
+            loadNewContent(installUpdateTitle, "/views/installUpdateSteamServer.fxml");
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void epicServerInstallMenuOnAction() {
+        try {
+            String installUpdateTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.installUpdateServer");
+            loadNewContent(installUpdateTitle, "/views/installUpdateEpicServer.fxml");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);

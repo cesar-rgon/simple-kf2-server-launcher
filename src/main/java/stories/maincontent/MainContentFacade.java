@@ -69,6 +69,6 @@ public interface MainContentFacade {
     boolean updateProfileSetFriendlyFirePercentage(String profileName, Double friendlyFirePercentage) throws Exception;
     boolean updateProfileSetPlatform(String profileName, EnumPlatform platform) throws SQLException;
     List<ProfileMapDto> listProfileMaps(String profileName) throws SQLException;
-    void runExecutableFile();
+    void runExecutableFile(EnumPlatform platform);
 
 }

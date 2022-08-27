@@ -22,6 +22,7 @@ import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import pojos.enums.EnumPlatform;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -91,8 +92,11 @@ public class MapEditionController implements Initializable {
 
         try {
             languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-            installationFolder = facade.findConfigPropertyValue("prop.config.installationFolder");
-
+            if (EnumPlatform.STEAM.equals(Session.getInstance().getActualProfile().getPlatform())) {
+                installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
+            } else {
+                installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
+            }
             String editMapText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.editMap");
             titleConfigLabel.setText(editMapText);
 
@@ -342,8 +346,6 @@ public class MapEditionController implements Initializable {
 
     private void loadProfileMapData(int mapIndex) {
         try {
-            ProfileDto actualProfile = Session.getInstance().getActualProfile();
-
             WebEngine webEngine = mapPreviewWebView.getEngine();
 
             if (!Session.getInstance().getProfileMapList().isEmpty()) {

@@ -17,11 +17,11 @@ import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
 
 
-public class Kf2WindowsImpl extends Kf2Common {
+public class Kf2SteamWindowsImpl extends Kf2Steam {
 
-    private static final Logger logger = LogManager.getLogger(Kf2WindowsImpl.class);
+    private static final Logger logger = LogManager.getLogger(Kf2SteamWindowsImpl.class);
 
-    public Kf2WindowsImpl() {
+    public Kf2SteamWindowsImpl() {
         super();
     }
 
@@ -146,7 +146,7 @@ public class Kf2WindowsImpl extends Kf2Common {
     }
 
     @Override
-    protected File getSteamExeFile() {
+    protected File getExeFile() {
         String steamExePath = WindowsRegistry.readRegistry("HKCU\\Software\\Valve\\Steam", "SteamExe");
         if (StringUtils.isNotEmpty(steamExePath)) {
             File steamExeFile = new File(steamExePath);
