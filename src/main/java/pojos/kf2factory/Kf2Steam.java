@@ -4,32 +4,35 @@ import entities.Profile;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import services.PropertyService;
-import services.PropertyServiceImpl;
 import utils.Utils;
 
 import java.io.File;
 
-public abstract class Kf2Steam extends Kf2Common {
+public abstract class Kf2Steam extends Kf2AbstractCommon {
 
     private static final Logger logger = LogManager.getLogger(Kf2Steam.class);
 
     protected abstract boolean prepareSteamCmd(String installationFolder);
-    protected abstract File getExeFile();
-    protected abstract void installUpdateKf2Server(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch);
 
-    @Override
-    protected String getInstallationFolder() throws Exception  {
-       return propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
+    protected abstract File getExeFile();
+    protected abstract void installUpdateKf2Server(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) throws Exception;
+
+
+    public void installOrUpdateServer(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) {
+        if (prerequisitesAreValid(installationFolder)) {
+            try {
+                installUpdateKf2Server(installationFolder, validateFiles, isBeta, betaBrunch);
+            } catch (Exception e) {
+                String message = "Error installing KF2 server";
+                logger.error(message, e);
+                Utils.errorDialog(message, e);
+            }
+        }
     }
 
-    protected boolean isValid(String installationFolder) {
-        if (StringUtils.isBlank(installationFolder)) {
-            installationFolderNotValid();
-            return false;
-        } else {
-            return true;
-        }
+    @Override
+    protected String getInstallationFolder() throws Exception {
+        return propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
     }
 
     @Override
@@ -37,12 +40,7 @@ public abstract class Kf2Steam extends Kf2Common {
         return isValid(installationFolder) && prepareSteamCmd(installationFolder);
     }
 
-    public void installOrUpdateServer(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) {
-        if (prerequisitesAreValid(installationFolder)) {
-            installUpdateKf2Server(installationFolder, validateFiles, isBeta, betaBrunch);
-        }
-    }
-
+    @Override
     public String joinServer(Profile profile) {
         File steamExeFile = getExeFile();
         if (steamExeFile != null) {
@@ -61,7 +59,7 @@ public abstract class Kf2Steam extends Kf2Common {
         }
     }
 
-    protected String joinToKf2Server(File steamExeFile, Profile profile) {
+    private String joinToKf2Server(File steamExeFile, Profile profile) {
         try {
             String serverPassword = Utils.decryptAES(profile.getServerPassword());
             String passwordParam = "";
@@ -74,7 +72,7 @@ public abstract class Kf2Steam extends Kf2Common {
             }
             StringBuffer command = new StringBuffer(steamExeFile.getAbsolutePath());
             command.append(" -applaunch 232090 ").append(Utils.getPublicIp()).append(gamePortParam).append(passwordParam).append(" -nostartupmovies");
-            Runtime.getRuntime().exec(command.toString(),null, steamExeFile.getParentFile());
+            Runtime.getRuntime().exec(command.toString(), null, steamExeFile.getParentFile());
             StringBuffer consoleCommand = new StringBuffer();
             if (StringUtils.isBlank(passwordParam)) {
                 consoleCommand = command;

@@ -152,14 +152,10 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
     @Override
     public boolean isCorrectInstallationFolder(String installationFolder) {
-        if (StringUtils.isNotBlank(installationFolder)) {
-            File windowsExecutable = new File(installationFolder + "/Binaries/Win64/KFServer.exe");
-            File linuxExecutable = new File(installationFolder + "/Binaries/Win64/KFGameSteamServer.bin.x86_64");
-            if (windowsExecutable.exists() && linuxExecutable.exists()) {
-                return true;
-            }
-        }
-        return false;
+        Kf2Common kf2Common = Kf2Factory.getInstance(
+                Session.getInstance().getMapsProfile() != null ? Session.getInstance().getMapsProfile().getPlatform(): null
+        );
+        return kf2Common.isValid(installationFolder);
     }
 
 

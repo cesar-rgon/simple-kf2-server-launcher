@@ -15,6 +15,7 @@ import pojos.ProfileToDisplayFactory;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import pojos.kf2factory.Kf2Steam;
+import pojos.session.Session;
 import services.*;
 import stories.AbstractFacade;
 import utils.Utils;
@@ -379,14 +380,10 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean isCorrectInstallationFolder(String installationFolder) {
-        if (StringUtils.isNotBlank(installationFolder)) {
-            File windowsExecutable = new File(installationFolder + "/Binaries/Win64/KFServer.exe");
-            File linuxExecutable = new File(installationFolder + "/Binaries/Win64/KFGameSteamServer.bin.x86_64");
-            if (windowsExecutable.exists() && linuxExecutable.exists()) {
-                return true;
-            }
-        }
-        return false;
+        Kf2Common kf2Common = Kf2Factory.getInstance(
+                Session.getInstance().getActualProfile() != null ? Session.getInstance().getActualProfile().getPlatform(): null
+        );
+        return kf2Common.isValid(installationFolder);
     }
 
     @Override

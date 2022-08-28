@@ -1351,6 +1351,11 @@ public class MainContentController implements Initializable {
         mapObjetives.setSelected(profile.getMapObjetives() != null ? profile.getMapObjetives(): false);
         pickupItems.setSelected(profile.getPickupItems() != null ? profile.getPickupItems(): false);
         friendlyFirePercentage.setText(profile.getFriendlyFirePercentage() != null? String.valueOf(profile.getFriendlyFirePercentage()): "");
+
+        Session.getInstance().setActualProfile(profile);
+        if (Session.getInstance().getMapsProfile() == null || profile.getName().equals(Session.getInstance().getMapsProfile().getName())) {
+            Session.getInstance().setMapsProfile(profile);
+        }
     }
 
 
@@ -1910,10 +1915,6 @@ public class MainContentController implements Initializable {
                         installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
                     } else {
                         installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
-                    }
-                    Session.getInstance().setActualProfile(databaseProfile);
-                    if (Session.getInstance().getMapsProfile() == null || profileName.equalsIgnoreCase(Session.getInstance().getMapsProfile().getName())) {
-                        Session.getInstance().setMapsProfile(databaseProfile);
                     }
                     loadActualProfile(databaseProfile);
                 } else {

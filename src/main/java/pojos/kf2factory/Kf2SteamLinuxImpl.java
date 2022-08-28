@@ -9,12 +9,19 @@ import utils.Utils;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
 public class Kf2SteamLinuxImpl extends Kf2Steam {
 
     private static final Logger logger = LogManager.getLogger(Kf2SteamLinuxImpl.class);
+
+    @Override
+    public boolean isValid(String installationFolder) {
+        return !StringUtils.isBlank(installationFolder) && (Files.exists(Paths.get(installationFolder + "/Binaries/Win64/KFGameSteamServer.bin.x86_64")));
+    }
 
     @Override
     protected boolean prepareSteamCmd(String installationFolder) {
@@ -45,58 +52,52 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
     }
 
     @Override
-    protected void installUpdateKf2Server(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) {
-        try {
-            File cacheFolder = new File(installationFolder + "/KFGame/Cache");
-            if (!cacheFolder.exists()) {
-                cacheFolder.mkdir();
-            }
-            StringBuffer command = new StringBuffer("/usr/games/steamcmd +force_install_dir ");
-            command.append(installationFolder);
-            command.append(" +login anonymous +app_update 232130 ");
-            if (validateFiles) {
-                command.append(" validate ");
-            }
-            if (isBeta) {
-                command.append(" -beta \"");
-                command.append(betaBrunch);
-                command.append("\"");
-            }
-            command.append(" +exit");
+    protected void installUpdateKf2Server(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) throws Exception {
+        File cacheFolder = new File(installationFolder + "/KFGame/Cache");
+        if (!cacheFolder.exists()) {
+            cacheFolder.mkdir();
+        }
+        StringBuffer command = new StringBuffer("/usr/games/steamcmd +force_install_dir ");
+        command.append(installationFolder);
+        command.append(" +login anonymous +app_update 232130 ");
+        if (validateFiles) {
+            command.append(" validate ");
+        }
+        if (isBeta) {
+            command.append(" -beta \"");
+            command.append(betaBrunch);
+            command.append("\"");
+        }
+        command.append(" +exit");
 
-            // Execute steamcmd and install / update the kf2 server
-            Process process = Runtime.getRuntime().exec(new String[]{"xterm",
-                    "-T", "Installing/Updating the server",
-                    "-fa", "DejaVu Sans Mono",
-                    "-fs", "11",
-                    "-geometry", "120x25+0-0",
-                    "-xrm", "XTerm.vt100.allowTitleOps: false",
-                    "-e", command.toString()});
-            process.waitFor();
+        // Execute steamcmd and install / update the kf2 server
+        Process process = Runtime.getRuntime().exec(new String[]{"xterm",
+                "-T", "Installing/Updating the server",
+                "-fa", "DejaVu Sans Mono",
+                "-fs", "11",
+                "-geometry", "120x25+0-0",
+                "-xrm", "XTerm.vt100.allowTitleOps: false",
+                "-e", command.toString()});
+        process.waitFor();
 
-            // If it's the first time, run the server to create needed config files
-            File kfEngineIni = new File(installationFolder + "/KFGame/Config/LinuxServer-KFEngine.ini");
-            File kfGameIni = new File(installationFolder + "/KFGame/Config/LinuxServer-KFGame.ini");
-            if (!kfEngineIni.exists() || !kfGameIni.exists()) {
-                Process processTwo = Runtime.getRuntime().exec(new String[]{"xterm",
-                                "-T", "Wait until config files are generated",
-                                "-fa", "DejaVu Sans Mono",
-                                "-fs", "11",
-                                "-geometry", "120x25+0-0",
-                                "-xrm", "XTerm.vt100.allowTitleOps: false",
-                                "-e", installationFolder + "/Binaries/Win64/KFGameSteamServer.bin.x86_64 KF-BioticsLab"},
-                        null, new File(installationFolder));
-                while (processTwo.isAlive() && (!kfEngineIni.exists() || !kfGameIni.exists())) {
-                    processTwo.waitFor(5, TimeUnit.SECONDS);
-                }
-                if (processTwo.isAlive()) {
-                    processTwo.destroy();
-                }
+        // If it's the first time, run the server to create needed config files
+        File kfEngineIni = new File(installationFolder + "/KFGame/Config/LinuxServer-KFEngine.ini");
+        File kfGameIni = new File(installationFolder + "/KFGame/Config/LinuxServer-KFGame.ini");
+        if (!kfEngineIni.exists() || !kfGameIni.exists()) {
+            Process processTwo = Runtime.getRuntime().exec(new String[]{"xterm",
+                            "-T", "Wait until config files are generated",
+                            "-fa", "DejaVu Sans Mono",
+                            "-fs", "11",
+                            "-geometry", "120x25+0-0",
+                            "-xrm", "XTerm.vt100.allowTitleOps: false",
+                            "-e", installationFolder + "/Binaries/Win64/KFGameSteamServer.bin.x86_64 KF-BioticsLab"},
+                    null, new File(installationFolder));
+            while (processTwo.isAlive() && (!kfEngineIni.exists() || !kfGameIni.exists())) {
+                processTwo.waitFor(5, TimeUnit.SECONDS);
             }
-        } catch (Exception e) {
-            String message = "Error installing KF2 server";
-            logger.error(message, e);
-            Utils.errorDialog(message, e);
+            if (processTwo.isAlive()) {
+                processTwo.destroy();
+            }
         }
     }
 

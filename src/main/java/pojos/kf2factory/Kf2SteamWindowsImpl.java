@@ -13,7 +13,9 @@ import utils.Utils;
 import java.io.File;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.TimeUnit;
 
 
@@ -23,6 +25,11 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
 
     public Kf2SteamWindowsImpl() {
         super();
+    }
+
+    @Override
+    public boolean isValid(String installationFolder) {
+        return !StringUtils.isBlank(installationFolder) && (Files.exists(Paths.get(installationFolder + "/Binaries/Win64/KFServer.exe")));
     }
 
     @Override
@@ -58,43 +65,37 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
     }
 
     @Override
-    protected void installUpdateKf2Server(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) {
-        try {
-            StringBuffer command = new StringBuffer("cmd /C start /wait ");
-            command.append(installationFolder);
-            command.append("\\steamcmd\\steamcmd.exe +force_install_dir ");
-            command.append(installationFolder);
-            command.append(" +login anonymous +app_update 232130 ");
-            if (validateFiles) {
-                command.append(" validate ");
-            }
-            if (isBeta) {
-                command.append(" -beta \"");
-                command.append(betaBrunch);
-                command.append("\"");
-            }
-            command.append(" +exit");
+    protected void installUpdateKf2Server(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) throws Exception {
+        StringBuffer command = new StringBuffer("cmd /C start /wait ");
+        command.append(installationFolder);
+        command.append("\\steamcmd\\steamcmd.exe +force_install_dir ");
+        command.append(installationFolder);
+        command.append(" +login anonymous +app_update 232130 ");
+        if (validateFiles) {
+            command.append(" validate ");
+        }
+        if (isBeta) {
+            command.append(" -beta \"");
+            command.append(betaBrunch);
+            command.append("\"");
+        }
+        command.append(" +exit");
 
-            // Execute steamcmd and install / update the kf2 server
-            Process installUpdateProcess = Runtime.getRuntime().exec(command.toString(),null, new File(installationFolder + "\\steamcmd\\"));
-            installUpdateProcess.waitFor();
+        // Execute steamcmd and install / update the kf2 server
+        Process installUpdateProcess = Runtime.getRuntime().exec(command.toString(),null, new File(installationFolder + "\\steamcmd\\"));
+        installUpdateProcess.waitFor();
 
-            // If it's the first time, run the server to create needed config files
-            File kfEngineIni = new File(installationFolder + "\\KFGame\\Config\\PCServer-KFEngine.ini");
-            File kfGameIni = new File(installationFolder + "\\KFGame\\Config\\PCServer-KFGame.ini");
-            if (!kfEngineIni.exists() || !kfGameIni.exists()) {
-                Process runServerFirstTimeProcess = Runtime.getRuntime().exec("cmd /C start /wait " + installationFolder + "\\Binaries\\Win64\\KFServer.exe KF-BioticsLab",null, new File(installationFolder));
-                while (runServerFirstTimeProcess.isAlive() && (!kfEngineIni.exists() || !kfGameIni.exists())) {
-                    runServerFirstTimeProcess.waitFor(1, TimeUnit.SECONDS);
-                }
-                if (runServerFirstTimeProcess.isAlive()) {
-                    Utils.infoDialog("The config files have been created", "You can close the server's console right now.");
-                }
+        // If it's the first time, run the server to create needed config files
+        File kfEngineIni = new File(installationFolder + "\\KFGame\\Config\\PCServer-KFEngine.ini");
+        File kfGameIni = new File(installationFolder + "\\KFGame\\Config\\PCServer-KFGame.ini");
+        if (!kfEngineIni.exists() || !kfGameIni.exists()) {
+            Process runServerFirstTimeProcess = Runtime.getRuntime().exec("cmd /C start /wait " + installationFolder + "\\Binaries\\Win64\\KFServer.exe KF-BioticsLab",null, new File(installationFolder));
+            while (runServerFirstTimeProcess.isAlive() && (!kfEngineIni.exists() || !kfGameIni.exists())) {
+                runServerFirstTimeProcess.waitFor(1, TimeUnit.SECONDS);
             }
-        } catch (Exception e) {
-            String message = "Error installing KF2 server";
-            logger.error(message, e);
-            Utils.errorDialog(message, e);
+            if (runServerFirstTimeProcess.isAlive()) {
+                Utils.infoDialog("The config files have been created", "You can close the server's console right now.");
+            }
         }
     }
 

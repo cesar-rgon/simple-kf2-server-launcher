@@ -1,6 +1,8 @@
 package pojos.kf2factory;
 
 import entities.Profile;
+import javafx.concurrent.Task;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,6 +10,7 @@ import pojos.session.Session;
 import utils.Utils;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,13 +21,8 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
     private static final Logger logger = LogManager.getLogger(Kf2EpicWindowsImpl.class);
 
     @Override
-    protected boolean isValid(String installationFolder) {
-        if (StringUtils.isBlank(installationFolder) || (!Files.exists(Paths.get(installationFolder + "/Binaries/Win64/KFServer.exe")))) {
-            installationFolderNotValid();
-            return false;
-        } else {
-            return true;
-        }
+    public boolean isValid(String installationFolder) {
+        return !StringUtils.isBlank(installationFolder) && (Files.exists(Paths.get(installationFolder + "/Binaries/Win64/KFServer.exe")));
     }
 
     @Override
@@ -86,6 +84,11 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
     }
 
     @Override
+    public String joinServer(Profile profile) {
+        return null;
+    }
+
+    @Override
     protected void executeFileBeforeRunServer(File fileToBeExecuted) throws Exception {
         String executeFileViaConsoleStr = propertyService.getPropertyValue("properties/config.properties", "prop.config.executeFileViaConsole");
         boolean executeFileViaConsole = StringUtils.isNotBlank(executeFileViaConsoleStr) ? Boolean.parseBoolean(executeFileViaConsoleStr): false;
@@ -98,7 +101,80 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
     }
 
     @Override
-    protected void installUpdateKf2Server(String installationFolder) {
+    protected void installUpdateKf2Server(String installationFolder) throws Exception {
+        File tempFolder = new File("C:\\Kf2_Webadmin_temp_folder");
+        Task<Void> deleteFolderTask = new Task<Void>() {
+            @Override
+            protected Void call() throws Exception {
+                if (tempFolder.exists()) {
+                    FileUtils.deleteDirectory(tempFolder);
+                }
+                return null;
+            }
+        };
+        deleteFolderTask.setOnSucceeded(deleteFolderWse -> {
+            Task<Void> gitCloneTask = new Task<Void>() {
+                @Override
+                protected Void call() throws Exception {
+                    StringBuffer command = new StringBuffer();
+                    command.append("cmd /C start /wait git clone https://github.com/cesar-rgon/kf2-webadmin.git ");
+                    command.append(tempFolder.getAbsolutePath());
 
+                    Process installUpdateProcess = Runtime.getRuntime().exec(command.toString(),null, tempFolder.getParentFile());
+                    installUpdateProcess.waitFor();
+                    return null;
+                }
+            };
+            gitCloneTask.setOnSucceeded(gitCloneTaskWse -> {
+                try {
+                    File webAdminFolder = new File(tempFolder.getAbsolutePath() + "\\Web");
+                    if (!tempFolder.exists() || !webAdminFolder.exists()) {
+                        String message = "The installation of the Epic Games server could not be done!";
+                        logger.error(message);
+                        return;
+                    }
+
+                    Task<Void> moveFolderTask = new Task<Void>() {
+                        @Override
+                        protected Void call() throws Exception {
+                            File destFolder = new File(installationFolder + "\\KFGame\\Web");
+                            FileUtils.moveDirectory(webAdminFolder, destFolder );
+                            return null;
+                        }
+                    };
+                    moveFolderTask.setOnSucceeded(moveFolderTaskWse -> {
+                        try {
+                            FileUtils.deleteDirectory(tempFolder);
+                        } catch (Exception e) {
+                            String message = "Error installing KF2 server";
+                            logger.error(message, e);
+                            Utils.errorDialog(message, e);
+                        }
+                    });
+                    moveFolderTask.setOnFailed(moveFolderTaskWse -> {
+                        String message = "The installation of the Epic Games server could not be done!";
+                        logger.error(message);
+                    });
+                    Thread moveFolderThread = new Thread(moveFolderTask);
+                    moveFolderThread.start();
+                } catch (Exception e) {
+                    String message = "Error installing KF2 server";
+                    logger.error(message, e);
+                    Utils.errorDialog(message, e);
+                }
+            });
+            gitCloneTask.setOnFailed(gitCloneTaskWse -> {
+                String message = "The installation of the Epic Games server could not be done!";
+                logger.error(message);
+            });
+            Thread gitCloneThread = new Thread(gitCloneTask);
+            gitCloneThread.start();
+        });
+        deleteFolderTask.setOnFailed(deleteFolderWse -> {
+            String message = "The installation of the Epic Games server could not be done!";
+            logger.error(message);
+        });
+        Thread deleteFolderThread = new Thread(deleteFolderTask);
+        deleteFolderThread.start();
     }
 }

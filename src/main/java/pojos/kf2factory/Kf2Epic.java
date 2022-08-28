@@ -4,17 +4,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utils.Utils;
 
-public abstract class Kf2Epic extends Kf2Common {
+public abstract class Kf2Epic extends Kf2AbstractCommon {
 
     private static final Logger logger = LogManager.getLogger(Kf2Epic.class);
-
-    protected abstract boolean isValid(String installationFolder);
 
     @Override
     protected boolean prerequisitesAreValid(String installationFolder) {
         return isValid(installationFolder);
     }
-    protected abstract void installUpdateKf2Server(String installationFolder);
+    protected abstract void installUpdateKf2Server(String installationFolder) throws Exception;
 
     @Override
     protected String getInstallationFolder() throws Exception  {
@@ -24,7 +22,13 @@ public abstract class Kf2Epic extends Kf2Common {
 
     public void installOrUpdateServer(String installationFolder) {
         if (prerequisitesAreValid(installationFolder)) {
-            installUpdateKf2Server(installationFolder);
+            try {
+                installUpdateKf2Server(installationFolder);
+            } catch (Exception e) {
+                String message = "Error installing KF2 server";
+                logger.error(message, e);
+                Utils.errorDialog(message, e);
+            }
         }
     }
 

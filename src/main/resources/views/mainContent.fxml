@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.*?>
 
-<fx:root id="centerPane" fx:id="mainContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maincontent.MainContentController">
+<fx:root id="centerPane" fx:id="mainContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maincontent.MainContentController">
     <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="10.0" />
         <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="180.0" />
@@ -267,7 +267,7 @@
                         </Label>
                         <TextArea fx:id="welcomeMessage" opacity="0.75" prefHeight="120.0" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="6" GridPane.rowSpan="2" GridPane.valignment="CENTER" />
 
-                         <ComboBox fx:id="platformSelect" onAction="#platformOnAction" opacity="0.75" prefHeight="37.0" prefWidth="168.0" GridPane.columnIndex="3" GridPane.rowIndex="9" GridPane.valignment="TOP">
+                         <ComboBox fx:id="platformSelect" onAction="#platformOnAction" opacity="0.75" prefHeight="37.0" prefWidth="168.0" GridPane.columnIndex="3" GridPane.rowIndex="9">
                          </ComboBox>
 
                          <ImageView fx:id="joinServerImage" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="9">
@@ -284,7 +284,7 @@
                          <ImageView GridPane.columnIndex="4" GridPane.rowIndex="9">
                              <Image url="@../images/run-server.png" />
                          </ImageView>
-                         <Button fx:id="runServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#runServerOnAction" text="RUN" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="9" GridPane.valignment="CENTER" />
+                         <Button fx:id="runServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#runServerOnAction" text="RUN" GridPane.columnIndex="4" GridPane.rowIndex="9" GridPane.valignment="CENTER" />
 
                      </children>
                   </GridPane>
