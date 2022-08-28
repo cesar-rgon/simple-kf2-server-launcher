@@ -8,11 +8,8 @@ public abstract class Kf2Epic extends Kf2AbstractCommon {
 
     private static final Logger logger = LogManager.getLogger(Kf2Epic.class);
 
-    @Override
-    protected boolean prerequisitesAreValid(String installationFolder) {
-        return isValid(installationFolder);
-    }
     protected abstract void installUpdateKf2Server(String installationFolder) throws Exception;
+    protected abstract void applyPatchToDownloadMaps(String installationFolder) throws Exception;
 
     @Override
     protected String getInstallationFolder() throws Exception  {
@@ -24,6 +21,7 @@ public abstract class Kf2Epic extends Kf2AbstractCommon {
         if (prerequisitesAreValid(installationFolder)) {
             try {
                 installUpdateKf2Server(installationFolder);
+                applyPatchToDownloadMaps(installationFolder);
             } catch (Exception e) {
                 String message = "Error installing KF2 server";
                 logger.error(message, e);

@@ -96,12 +96,7 @@ public class MapWebInfoController implements Initializable {
                     return;
                 }
                 progressIndicator.setVisible(false);
-                if (Session.getInstance().getMap() == null) {
-                    return;
-                }
-
-                if (!Session.getInstance().getMap().isOfficial()) {
-
+                if (Session.getInstance().getMap() == null || !Session.getInstance().getMap().isOfficial()) {
                     try {
                         NodeList titleList = doc.getElementsByTagName("title");
                         String urlWorkShop = doc.getDocumentURI();

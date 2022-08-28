@@ -12,16 +12,15 @@ public abstract class Kf2Steam extends Kf2AbstractCommon {
 
     private static final Logger logger = LogManager.getLogger(Kf2Steam.class);
 
-    protected abstract boolean prepareSteamCmd(String installationFolder);
-
     protected abstract File getExeFile();
     protected abstract void installUpdateKf2Server(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) throws Exception;
-
+    protected abstract void applyPatchToDownloadMaps(String installationFolder) throws Exception;
 
     public void installOrUpdateServer(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) {
         if (prerequisitesAreValid(installationFolder)) {
             try {
                 installUpdateKf2Server(installationFolder, validateFiles, isBeta, betaBrunch);
+                applyPatchToDownloadMaps(installationFolder);
             } catch (Exception e) {
                 String message = "Error installing KF2 server";
                 logger.error(message, e);
@@ -33,11 +32,6 @@ public abstract class Kf2Steam extends Kf2AbstractCommon {
     @Override
     protected String getInstallationFolder() throws Exception {
         return propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
-    }
-
-    @Override
-    protected boolean prerequisitesAreValid(String installationFolder) {
-        return isValid(installationFolder) && prepareSteamCmd(installationFolder);
     }
 
     @Override

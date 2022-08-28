@@ -2,6 +2,7 @@ package pojos.kf2factory;
 
 import entities.Profile;
 import javafx.concurrent.Task;
+import net.lingala.zip4j.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -10,7 +11,9 @@ import pojos.session.Session;
 import utils.Utils;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,6 +26,40 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
     @Override
     public boolean isValid(String installationFolder) {
         return !StringUtils.isBlank(installationFolder) && (Files.exists(Paths.get(installationFolder + "/Binaries/Win64/KFServer.exe")));
+    }
+
+    @Override
+    protected boolean prepareSteamCmd() {
+        try {
+            String tempFolder = System.getProperty("java.io.tmpdir");
+
+            File steamcmdExeFile = new File(tempFolder + "steamcmd\\steamcmd.exe");
+            if (!steamcmdExeFile.exists()) {
+                File steamcmdZipFile = new File(tempFolder + "steamcmd.zip");
+                String urlSteamCmd = propertyService.getPropertyValue("properties/config.properties", "prop.config.urlSteamcmd");
+                String downloadConnectionTimeOut = propertyService.getPropertyValue("properties/config.properties", "prop.config.downloadConnectionTimeout");
+                String downloadReadTimeOut = propertyService.getPropertyValue("properties/config.properties", "prop.config.downloadReadTimeout");
+                // Download SteamCmd
+                FileUtils.copyURLToFile(
+                        new URL(urlSteamCmd),
+                        steamcmdZipFile,
+                        Integer.parseInt(downloadConnectionTimeOut),
+                        Integer.parseInt(downloadReadTimeOut));
+
+                // Decompress SteamCmd
+                ZipFile zipFile = new ZipFile(tempFolder + "steamcmd.zip");
+                zipFile.extractAll(tempFolder + "steamcmd");
+
+                // Remove steamcmd.zip file
+                steamcmdZipFile.delete();
+            }
+            return true;
+        } catch (Exception e) {
+            String message = "Error preparing SteamCmd to be able to install KF2 server";
+            logger.error(message, e);
+            Utils.errorDialog(message, e);
+            return false;
+        }
     }
 
     @Override
@@ -102,7 +139,9 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
 
     @Override
     protected void installUpdateKf2Server(String installationFolder) throws Exception {
-        File tempFolder = new File("C:\\Kf2_Webadmin_temp_folder");
+        String tempFolderString = System.getProperty("java.io.tmpdir") + "Kf2_Webadmin_temp_folder";
+        File tempFolder = new File(tempFolderString);
+
         Task<Void> deleteFolderTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
@@ -176,5 +215,37 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
         });
         Thread deleteFolderThread = new Thread(deleteFolderTask);
         deleteFolderThread.start();
+    }
+
+    @Override
+    protected void applyPatchToDownloadMaps(String installationFolder) throws Exception {
+        String tempFolder = System.getProperty("java.io.tmpdir");
+
+        StringBuffer command = new StringBuffer("cmd /C start /wait ");
+        command.append(tempFolder);
+        command.append("steamcmd\\steamcmd.exe +force_install_dir ");
+        command.append(tempFolder);
+        command.append("KillingFloor2_patch\\Binaries\\Win64");
+        command.append(" +login anonymous +app_update 1007 validate ");
+        command.append(" +exit");
+
+        Process applyPatch = Runtime.getRuntime().exec(command.toString(),null, new File(tempFolder + "\\steamcmd\\"));
+        applyPatch.waitFor();
+
+        File srcFolder = new File(tempFolder + "KillingFloor2_patch\\Binaries\\Win64");
+        File targetFolder = new File(installationFolder + "\\Binaries\\Win64");
+        File[] sourceDllFiles = srcFolder.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                if(name.endsWith(".dll")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+        for (File sourceDllFile: sourceDllFiles) {
+            FileUtils.copyFileToDirectory(sourceDllFile, targetFolder);
+        }
     }
 }

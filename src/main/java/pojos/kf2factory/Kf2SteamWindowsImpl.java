@@ -33,11 +33,13 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
     }
 
     @Override
-    protected boolean prepareSteamCmd(String installationFolder) {
+    protected boolean prepareSteamCmd() {
         try {
-            File steamcmdExeFile = new File(installationFolder + "\\steamcmd\\steamcmd.exe");
+            String tempFolder = System.getProperty("java.io.tmpdir");
+
+            File steamcmdExeFile = new File(tempFolder + "steamcmd\\steamcmd.exe");
             if (!steamcmdExeFile.exists()) {
-                File steamcmdZipFile = new File(installationFolder + "\\steamcmd.zip");
+                File steamcmdZipFile = new File(tempFolder + "steamcmd.zip");
                 String urlSteamCmd = propertyService.getPropertyValue("properties/config.properties", "prop.config.urlSteamcmd");
                 String downloadConnectionTimeOut = propertyService.getPropertyValue("properties/config.properties", "prop.config.downloadConnectionTimeout");
                 String downloadReadTimeOut = propertyService.getPropertyValue("properties/config.properties", "prop.config.downloadReadTimeout");
@@ -49,8 +51,8 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
                         Integer.parseInt(downloadReadTimeOut));
 
                 // Decompress SteamCmd
-                ZipFile zipFile = new ZipFile(installationFolder + "\\steamcmd.zip");
-                zipFile.extractAll(installationFolder + "\\steamcmd");
+                ZipFile zipFile = new ZipFile(tempFolder + "steamcmd.zip");
+                zipFile.extractAll(tempFolder + "steamcmd");
 
                 // Remove steamcmd.zip file
                 steamcmdZipFile.delete();
@@ -66,9 +68,11 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
 
     @Override
     protected void installUpdateKf2Server(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) throws Exception {
+        String tempFolder = System.getProperty("java.io.tmpdir");
+
         StringBuffer command = new StringBuffer("cmd /C start /wait ");
-        command.append(installationFolder);
-        command.append("\\steamcmd\\steamcmd.exe +force_install_dir ");
+        command.append(tempFolder);
+        command.append("steamcmd\\steamcmd.exe +force_install_dir ");
         command.append(installationFolder);
         command.append(" +login anonymous +app_update 232130 ");
         if (validateFiles) {
@@ -82,7 +86,7 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
         command.append(" +exit");
 
         // Execute steamcmd and install / update the kf2 server
-        Process installUpdateProcess = Runtime.getRuntime().exec(command.toString(),null, new File(installationFolder + "\\steamcmd\\"));
+        Process installUpdateProcess = Runtime.getRuntime().exec(command.toString(),null, new File(tempFolder + "\\steamcmd\\"));
         installUpdateProcess.waitFor();
 
         // If it's the first time, run the server to create needed config files
@@ -97,6 +101,22 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
                 Utils.infoDialog("The config files have been created", "You can close the server's console right now.");
             }
         }
+    }
+
+    @Override
+    protected void applyPatchToDownloadMaps(String installationFolder) throws Exception {
+        String tempFolder = System.getProperty("java.io.tmpdir");
+
+        StringBuffer command = new StringBuffer("cmd /C start /wait ");
+        command.append(tempFolder);
+        command.append("steamcmd\\steamcmd.exe +force_install_dir ");
+        command.append(installationFolder);
+        command.append("\\Binaries\\Win64 ");
+        command.append(" +login anonymous +app_update 1007 validate ");
+        command.append(" +exit");
+
+        Process applyPatch = Runtime.getRuntime().exec(command.toString(),null, new File(tempFolder + "\\steamcmd\\"));
+        applyPatch.waitFor();
     }
 
     @Override

@@ -24,7 +24,7 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
     }
 
     @Override
-    protected boolean prepareSteamCmd(String installationFolder) {
+    protected boolean prepareSteamCmd() {
         try {
             File xtermFile = new File("/usr/bin/xterm");
             if (!xtermFile.exists()) {
@@ -99,6 +99,11 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
                 processTwo.destroy();
             }
         }
+    }
+
+    @Override
+    protected void applyPatchToDownloadMaps(String installationFolder) throws Exception {
+
     }
 
     @Override

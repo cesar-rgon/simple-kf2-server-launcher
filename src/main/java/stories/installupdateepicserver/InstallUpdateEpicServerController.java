@@ -11,6 +11,7 @@ import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Epic;
 import pojos.kf2factory.Kf2Factory;
@@ -128,9 +129,7 @@ public class InstallUpdateEpicServerController implements Initializable {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                Kf2Common kf2Common = Kf2Factory.getInstance(
-                        Session.getInstance().getActualProfile() != null ? Session.getInstance().getActualProfile().getPlatform(): null
-                );
+                Kf2Common kf2Common = Kf2Factory.getInstance(EnumPlatform.EPIC);
                 ((Kf2Epic)kf2Common).installOrUpdateServer(installationFolder.getText());
                 return null;
             }
