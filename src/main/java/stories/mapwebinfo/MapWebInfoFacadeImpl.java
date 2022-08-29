@@ -60,7 +60,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
     }
 
     @Override
-    public CustomMapModDto createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String strUrlMapImage, String installationFolder, List<String> profileNameList) throws Exception {
+    public CustomMapModDto createNewCustomMapFromWorkshop(Long idWorkShop, String mapName, String strUrlMapImage, List<String> profileNameList) throws Exception {
         List<Profile> profileList = profileNameList.stream().map(pn -> {
             try {
                 return findProfileByCode(pn);
@@ -72,12 +72,24 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         if (profileList == null || profileList.isEmpty()) {
             return null;
         }
+        String steamInstallationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");;
+        String epicInstallationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");;
         String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
-        String absoluteTargetFolder = installationFolder + customMapLocalFolder;
-        File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
-        String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
-        CustomMapMod insertedMap = createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, false, profileList);
-        return insertedMap != null ? (CustomMapModDto) mapDtoFactory.newDto(insertedMap): null;
+        File localfile = null;
+        if (StringUtils.isNotBlank(steamInstallationFolder)) {
+            String absoluteTargetFolder = steamInstallationFolder + customMapLocalFolder;
+            localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
+        }
+        if (StringUtils.isNotBlank(epicInstallationFolder)) {
+            String absoluteTargetFolder = epicInstallationFolder + customMapLocalFolder;
+            localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
+        }
+        if (localfile != null) {
+            String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
+            CustomMapMod insertedMap = createNewCustomMap(mapName, idWorkShop, relativeTargetFolder, false, profileList);
+            return insertedMap != null ? (CustomMapModDto) mapDtoFactory.newDto(insertedMap): null;
+        }
+        return null;
     }
 
     private CustomMapMod createNewCustomMap(String mapName, Long idWorkShop, String urlPhoto, boolean downloaded, List<Profile> profileList) throws Exception {

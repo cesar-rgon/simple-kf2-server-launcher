@@ -9,23 +9,31 @@
 <fx:root id="centerPane" fx:id="mainContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maincontent.MainContentController">
     <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="10.0" />
-        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="180.0" />
-        <ColumnConstraints hgrow="ALWAYS" maxWidth="300.0" minWidth="10.0" prefWidth="300.0" />
-        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="10.0" />
-        <ColumnConstraints hgrow="ALWAYS" maxWidth="314.0" minWidth="10.0" prefWidth="314.0" />
-        <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="180.0" />
+        <ColumnConstraints minWidth="10.0" prefWidth="180.0" />
+        <ColumnConstraints maxWidth="300.0" minWidth="10.0" prefWidth="300.0" />
+        <ColumnConstraints minWidth="10.0" prefWidth="10.0" />
+        <ColumnConstraints maxWidth="314.0" minWidth="10.0" prefWidth="314.0" />
+        <ColumnConstraints minWidth="10.0" prefWidth="180.0" />
       <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="10.0" />
       <ColumnConstraints />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="10.0" prefHeight="50.0" vgrow="ALWAYS" />
-        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="610.0" vgrow="ALWAYS" />
+      <RowConstraints minHeight="10.0" prefHeight="10.0" vgrow="ALWAYS" />
+        <RowConstraints minHeight="10.0" prefHeight="50.0" />
+      <RowConstraints minHeight="10.0" prefHeight="50.0" />
+        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="560.0" vgrow="ALWAYS" />
+      <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" prefHeight="10.0" vgrow="ALWAYS" />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
       <RowConstraints />
       <RowConstraints />
     </rowConstraints>
     <children>
 
-      <ImageView fitHeight="566.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+      <ImageView fitHeight="566.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
         <image>
             <Image url="@../images/radiation700.png" />
         </image>
@@ -33,30 +41,64 @@
             <Insets left="90.0" top="-25.0" />
          </GridPane.margin>
       </ImageView>
-
-        <ImageView fx:id="profileImg" fitHeight="30.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+        <ImageView fx:id="platformImg" fitHeight="30.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ComboBox fx:id="profileSelect" onAction="#profileOnAction" prefWidth="315.0" GridPane.columnIndex="2" GridPane.valignment="CENTER">
-         <GridPane.margin>
-            <Insets />
-         </GridPane.margin></ComboBox>
-        <Label fx:id="profileLabel" text="PROFILE*" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+        <Label fx:id="platformLabel" text="PLATFORM*" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <ImageView fitWidth="400.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT">
+        <ComboBox fx:id="platformSelect" onAction="#platformOnAction" opacity="0.75" prefHeight="37.0" prefWidth="299.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+        </ComboBox>
+        <ImageView fx:id="profileImg" fitHeight="30.0" fitWidth="180.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+            <image>
+                <Image url="@../images/label.png" />
+            </image>
+        </ImageView>
+        <ComboBox fx:id="profileSelect" onAction="#profileOnAction" prefWidth="315.0" GridPane.columnIndex="2" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets />
+         </GridPane.margin></ComboBox>
+        <Label fx:id="profileLabel" text="PROFILE*" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+            <GridPane.margin>
+                <Insets right="10.0" />
+            </GridPane.margin>
+        </Label>
+
+        <ImageView fx:id="joinServerImage" GridPane.columnIndex="4" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+            <Image url="@../images/join-server.png" />
+            <GridPane.margin>
+                <Insets right="190.0" top="70.0" />
+            </GridPane.margin>
+        </ImageView>
+        <Button fx:id="joinServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#joinServerOnAction" text="JOIN" GridPane.columnIndex="4" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+            <GridPane.margin>
+                <Insets right="190.0" top="70.0" />
+            </GridPane.margin></Button>
+
+        <ImageView GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+            <Image url="@../images/run-server.png" />
+         <GridPane.margin>
+            <Insets top="70.0" />
+         </GridPane.margin>
+        </ImageView>
+        <Button fx:id="runServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#runServerOnAction" text="RUN" GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets top="70.0" />
+         </GridPane.margin></Button>
+        <ImageView fitHeight="87.0" fitWidth="414.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.rowSpan="2">
             <image>
                 <Image url="@../images/kf2logo.png" />
             </image>
          <GridPane.margin>
-            <Insets right="-130.0" top="55.0" />
+            <Insets right="-172.0" top="-10.0" />
          </GridPane.margin>
         </ImageView>
-      <TabPane prefHeight="200.0" prefWidth="1210.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="1" GridPane.columnSpan="5" GridPane.rowIndex="1">
+
+      <TabPane prefHeight="200.0" prefWidth="1210.0" scaleShape="false" tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="1" GridPane.columnSpan="5" GridPane.rowIndex="3">
         <tabs>
           <Tab id="titleConfigLabel" fx:id="basicParameters" text="Basic Parameters">
                <content>
@@ -64,7 +106,7 @@
                     <columnConstraints>
                       <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="170.0" prefWidth="170.0" />
                       <ColumnConstraints hgrow="SOMETIMES" maxWidth="220.0" minWidth="10.0" prefWidth="220.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" minWidth="20.0" prefWidth="20.0" />
+                        <ColumnConstraints minWidth="20.0" prefWidth="30.0" />
                         <ColumnConstraints hgrow="SOMETIMES" maxWidth="350.0" minWidth="10.0" prefWidth="350.0" />
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="170.0" />
                         <ColumnConstraints />
@@ -73,7 +115,6 @@
                       <RowConstraints minHeight="10.0" prefHeight="195.0" vgrow="ALWAYS" />
                       <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
                       <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
-                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
                         <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
                         <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
                         <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
@@ -202,17 +243,17 @@
                               <Insets left="26.0" />
                            </GridPane.margin></PasswordField>
 
-                        <ImageView fx:id="takeoverImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
+                        <ImageView fx:id="takeoverImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="8" GridPane.valignment="CENTER">
                             <image>
-                                <Image url="@../images/label.png" />
+                                <Image url="@../images/label-inverted.png" />
                             </image>
                         </ImageView>
-                        <Label fx:id="takeoverLabel" alignment="CENTER_RIGHT" styleClass="width150" text="TAKEOVER" textFill="WHITE" GridPane.halignment="RIGHT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
+                        <Label fx:id="takeoverLabel" styleClass="width150" text="TAKEOVER" textFill="WHITE" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="8" GridPane.valignment="CENTER">
                             <GridPane.margin>
-                                <Insets right="10.0" />
+                                <Insets left="10.0" />
                             </GridPane.margin>
                         </Label>
-                        <CheckBox fx:id="takeover" mnemonicParsing="false" onAction="#takeoverOnAction" opacity="0.75" text="Enable takeover" GridPane.columnIndex="1" GridPane.rowIndex="9" GridPane.valignment="CENTER" />
+                        <CheckBox fx:id="takeover" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#takeoverOnAction" opacity="0.75" text="Enable takeover" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="8" GridPane.valignment="CENTER" />
 
                         <WebView fx:id="imageWebView" maxHeight="256.0" maxWidth="512.0" prefHeight="-1.0" prefWidth="-1.0" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowSpan="3" GridPane.valignment="CENTER">
                            <GridPane.margin>
@@ -240,7 +281,7 @@
                             <GridPane.margin>
                                 <Insets left="10.0" />
                             </GridPane.margin>
-                        </Label>                        
+                        </Label>
                         <TextField fx:id="yourClan" opacity="0.75" GridPane.columnIndex="3" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
 
                         <ImageView fx:id="webLinkImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="5" GridPane.valignment="CENTER">
@@ -266,26 +307,6 @@
                             </GridPane.margin>
                         </Label>
                         <TextArea fx:id="welcomeMessage" opacity="0.75" prefHeight="120.0" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="6" GridPane.rowSpan="2" GridPane.valignment="CENTER" />
-
-                         <ComboBox fx:id="platformSelect" onAction="#platformOnAction" opacity="0.75" prefHeight="37.0" prefWidth="168.0" GridPane.columnIndex="3" GridPane.rowIndex="9">
-                         </ComboBox>
-
-                         <ImageView fx:id="joinServerImage" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="9">
-                             <Image url="@../images/join-server.png" />
-                           <GridPane.margin>
-                              <Insets right="-2.0" />
-                           </GridPane.margin>
-                         </ImageView>
-                         <Button fx:id="joinServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#joinServerOnAction" text="JOIN" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
-                           <GridPane.margin>
-                              <Insets right="-2.0" />
-                           </GridPane.margin></Button>
-
-                         <ImageView GridPane.columnIndex="4" GridPane.rowIndex="9">
-                             <Image url="@../images/run-server.png" />
-                         </ImageView>
-                         <Button fx:id="runServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#runServerOnAction" text="RUN" GridPane.columnIndex="4" GridPane.rowIndex="9" GridPane.valignment="CENTER" />
-
                      </children>
                   </GridPane>
                </content>
@@ -296,7 +317,7 @@
                     <columnConstraints>
                       <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="180.0" />
                         <ColumnConstraints hgrow="ALWAYS" maxWidth="300.0" minWidth="10.0" prefWidth="300.0" />
-                      <ColumnConstraints hgrow="ALWAYS" minWidth="20.0" prefWidth="20.0" />
+                      <ColumnConstraints minWidth="20.0" prefWidth="30.0" />
                         <ColumnConstraints hgrow="ALWAYS" maxWidth="300.0" minWidth="10.0" prefWidth="300.0" />
                         <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="180.0" />
                     </columnConstraints>
@@ -488,7 +509,7 @@
                           </GridPane.margin>
                       </Label>
                       <CheckBox fx:id="chatLoggingFileTimestamp" lineSpacing="0.9" mnemonicParsing="false" onAction="#chatLoggingFileTimestampOnAction" text="With timestamp" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="11" GridPane.valignment="CENTER" />
-                      <TextField fx:id="chatLoggingFile" maxWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="11" GridPane.valignment="CENTER" />
+                      <TextField fx:id="chatLoggingFile" maxWidth="160.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="11" GridPane.valignment="CENTER" />
 
                       <ImageView fx:id="customParametersImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="10" GridPane.valignment="TOP">
                           <image>

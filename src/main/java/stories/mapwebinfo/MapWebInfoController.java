@@ -191,7 +191,7 @@ public class MapWebInfoController implements Initializable {
                 CustomMapModDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
 
                 if (mapModInDataBase == null) {
-                    CustomMapModDto customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, mapName, strUrlMapImage,  installationFolder, selectedProfileNameList);
+                    CustomMapModDto customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, mapName, strUrlMapImage, selectedProfileNameList);
                     if (customMap != null) {
                         if (profilesWithoutMap.size() - selectedProfiles.size() == 0) {
                             addMap.setVisible(false);
