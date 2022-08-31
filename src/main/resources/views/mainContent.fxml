@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.*?>
 
-<fx:root id="centerPane" fx:id="mainContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maincontent.MainContentController">
+<fx:root id="centerPane" fx:id="mainContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maincontent.MainContentController">
     <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="10.0" />
         <ColumnConstraints minWidth="10.0" prefWidth="180.0" />
@@ -67,28 +67,6 @@
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-
-        <ImageView fx:id="joinServerImage" GridPane.columnIndex="4" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
-            <Image url="@../images/join-server.png" />
-            <GridPane.margin>
-                <Insets right="190.0" top="70.0" />
-            </GridPane.margin>
-        </ImageView>
-        <Button fx:id="joinServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#joinServerOnAction" text="JOIN" GridPane.columnIndex="4" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
-            <GridPane.margin>
-                <Insets right="190.0" top="70.0" />
-            </GridPane.margin></Button>
-
-        <ImageView GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
-            <Image url="@../images/run-server.png" />
-         <GridPane.margin>
-            <Insets top="70.0" />
-         </GridPane.margin>
-        </ImageView>
-        <Button fx:id="runServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#runServerOnAction" text="RUN" GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
-         <GridPane.margin>
-            <Insets top="70.0" />
-         </GridPane.margin></Button>
         <ImageView fitHeight="87.0" fitWidth="414.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.rowSpan="2">
             <image>
                 <Image url="@../images/kf2logo.png" />
@@ -641,6 +619,28 @@
           </Tab>
         </tabs>
       </TabPane>
+
+        <ImageView fx:id="joinServerImage" GridPane.columnIndex="4" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+            <Image url="@../images/join-server.png" />
+            <GridPane.margin>
+                <Insets right="190.0" top="70.0" />
+            </GridPane.margin>
+        </ImageView>
+        <Button fx:id="joinServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#joinServerOnAction" text="JOIN" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+            <GridPane.margin>
+                <Insets right="13.0" top="70.0" />
+            </GridPane.margin></Button>
+
+        <ImageView GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+            <Image url="@../images/run-server.png" />
+         <GridPane.margin>
+            <Insets top="70.0" />
+         </GridPane.margin>
+        </ImageView>
+        <Button fx:id="runServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#runServerOnAction" text="RUN" GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets right="5.0" top="70.0" />
+         </GridPane.margin></Button>
 
     </children>
 </fx:root>
