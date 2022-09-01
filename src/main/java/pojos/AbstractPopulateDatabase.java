@@ -28,6 +28,7 @@ public abstract class AbstractPopulateDatabase {
     protected abstract void populateOfficialMaps() throws Exception;
     protected abstract void populateProfiles() throws Exception;
     protected abstract void populateProfileMapList() throws Exception;
+    protected abstract void populatePlatforms() throws SQLException;
 
     protected void populateLanguage(String code, String description) throws SQLException {
         Language language = new Language(code, description);
@@ -95,5 +96,10 @@ public abstract class AbstractPopulateDatabase {
     protected void populateProfileMap(Profile profile, AbstractMap map, Date releaseDate, String urlInfo, String urlPhoto) throws SQLException {
         ProfileMap profileMap = new ProfileMap(profile, map, releaseDate, urlInfo, urlPhoto);
         ProfileMapDao.getInstance().insert(profileMap);
+    }
+
+    protected void populatePlatform(EnumPlatform platform) throws SQLException {
+        Platform newPlatform = new Platform(platform);
+        PlatformDao.getInstance().insert(newPlatform);
     }
 }

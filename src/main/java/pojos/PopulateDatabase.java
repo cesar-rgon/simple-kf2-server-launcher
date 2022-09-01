@@ -2,6 +2,7 @@ package pojos;
 
 import daos.*;
 import entities.*;
+import pojos.enums.EnumPlatform;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
@@ -25,6 +26,7 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
         populateOfficialMaps();
         populateProfiles();
         populateProfileMapList();
+        populatePlatforms();
     }
 
     @Override
@@ -434,6 +436,12 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-Netherhold' could not be persisted to database in populate process");
         }
 
+    }
+
+    @Override
+    protected void populatePlatforms() throws SQLException {
+        populatePlatform(EnumPlatform.STEAM);
+        populatePlatform(EnumPlatform.EPIC);
     }
 
 }
