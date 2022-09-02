@@ -14,7 +14,7 @@ import java.util.Properties;
 
 public interface ProfilesEditionFacade {
     ObservableList<ProfileDto> listAllProfiles() throws SQLException;
-    ProfileDto createNewProfile(String profileName) throws Exception;
+    ProfileDto createNewProfile(String platformName, String profileName) throws Exception;
     boolean deleteSelectedProfile(String profileName, String steamInstallationFolder, String epicInstallationFolder) throws Exception;
     ProfileDto updateChangedProfile(String oldProfileName, String newProfileName) throws SQLException;
     String findConfigPropertyValue(String key) throws Exception;
@@ -24,5 +24,5 @@ public interface ProfilesEditionFacade {
     Optional<ButtonType> questionToImportEntitiesFromFile() throws Exception;
     Properties importEntitiesFromFile(File file) throws Exception;
     List<Profile> questionToImportProfilesFromFile(Properties properties, String message) throws Exception;
-    ObservableList<ProfileDto> importProfilesFromFile(List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) throws Exception;
+    ObservableList<ProfileDto> importProfilesFromFile(String platformName, List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) throws Exception;
 }

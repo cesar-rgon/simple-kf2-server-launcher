@@ -1,8 +1,9 @@
 package entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import pojos.enums.EnumPlatform;
+
+import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -12,17 +13,28 @@ public class CustomMapMod extends AbstractMap {
     @Column(name="ID_WORKSHOP")
     private Long idWorkShop;
 
-    @Column(name="DOWNLOADED", nullable=false)
-    private boolean downloaded;
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "DOWNLOADED_MAPS",
+            joinColumns = @JoinColumn(name = "ID_WORKSHOP", nullable = false),
+            inverseJoinColumns = @JoinColumn(name="ID", nullable = false)
+    )
+    private List<Platform> downnloadedMap;
+
 
     public CustomMapMod() {
         super();
+        this.downnloadedMap = new ArrayList<Platform>();
     }
 
-    public CustomMapMod(String code, String urlInfo, String urlPhoto, Long idWorkShop, boolean downloaded) {
+    public CustomMapMod(String code, String urlInfo, String urlPhoto, Long idWorkShop, boolean steamDownloaded) {
         super(code, urlInfo, urlPhoto,false, null);
         this.idWorkShop = idWorkShop;
-        this.downloaded = downloaded;
+        this.downnloadedMap = new ArrayList<Platform>();
+        if (steamDownloaded) {
+            Platform steamPlatform = new Platform(EnumPlatform.STEAM);
+            this.downnloadedMap.add(steamPlatform);
+        }
     }
 
     public Long getIdWorkShop() {
@@ -33,11 +45,19 @@ public class CustomMapMod extends AbstractMap {
         this.idWorkShop = idWorkShop;
     }
 
-    public boolean isDownloaded() {
-        return downloaded;
+    public List<Platform> getDownnloadedMap() {
+        return downnloadedMap;
     }
 
-    public void setDownloaded(boolean downloaded) {
-        this.downloaded = downloaded;
+    public void setDownnloadedMap(List<Platform> downnloadedMap) {
+        this.downnloadedMap = downnloadedMap;
+    }
+
+    public boolean isDownnloadedMapForSteam() {
+        return !downnloadedMap.isEmpty() && downnloadedMap.contains(new Platform(EnumPlatform.STEAM));
+    }
+
+    public boolean isDownnloadedMapForEpic() {
+        return !downnloadedMap.isEmpty() && downnloadedMap.contains(new Platform(EnumPlatform.EPIC));
     }
 }

@@ -1,10 +1,7 @@
 package stories.maincontent;
 
-import dtos.GameTypeDto;
-import dtos.ProfileDto;
-import dtos.ProfileMapDto;
-import dtos.SelectDto;
-import pojos.enums.EnumPlatform;
+import dtos.*;
+import entities.Platform;
 import javafx.collections.ObservableList;
 
 import java.sql.SQLException;
@@ -17,7 +14,7 @@ public interface MainContentFacade {
     ObservableList<SelectDto> listAllDifficulties() throws SQLException;
     ObservableList<SelectDto> listAllLengths() throws SQLException;
     ObservableList<SelectDto> listAllPlayers() throws SQLException;
-    ObservableList<EnumPlatform> listAllPlatforms() throws SQLException;
+    ObservableList<PlatformDto> listAllPlatforms() throws SQLException;
 
     boolean updateProfileSetGameType(String profileName, String gameTypeCode) throws SQLException;
     boolean updateProfileSetMap(String profileName, String mapCode) throws SQLException;
@@ -38,12 +35,12 @@ public interface MainContentFacade {
     boolean updateProfileSetCustomParameters(String profileName, String customParameters) throws SQLException;
     boolean updateProfileSetWebPage(String profileName, boolean isSelected) throws SQLException;
     ProfileDto findProfileDtoByName(String name) throws SQLException;
-    String runServer(String profileName) throws SQLException;
-    String joinServer(String profileName) throws SQLException;
+    String runServer(PlatformDto platform, String profileName) throws SQLException;
+    String joinServer(PlatformDto platform, String profileName) throws SQLException;
     ProfileDto getLastSelectedProfile() throws Exception;
     List<String> selectProfiles(String message, String actualProfileName) throws SQLException;
     String selectProfile(String message, String actualProfileName) throws SQLException;
-    boolean isCorrectInstallationFolder(String installationFolder);
+    boolean isCorrectInstallationFolder(PlatformDto platform, String installationFolder);
     boolean updateProfileSetTakeover(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetMapVoting(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetKickVoting(String profileName, boolean isSelected) throws SQLException;
@@ -67,8 +64,7 @@ public interface MainContentFacade {
     boolean updateProfileSetMapObjetives(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetPickupItems(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetFriendlyFirePercentage(String profileName, Double friendlyFirePercentage) throws Exception;
-    boolean updateProfileSetPlatform(String profileName, EnumPlatform platform) throws SQLException;
-    List<ProfileMapDto> listProfileMaps(String profileName) throws SQLException;
-    void runExecutableFile(EnumPlatform platform);
+    List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws SQLException;
+    void runExecutableFile(PlatformDto platform);
 
 }

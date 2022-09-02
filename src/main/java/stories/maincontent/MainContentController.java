@@ -50,11 +50,11 @@ public class MainContentController implements Initializable {
     @FXML private ComboBox<ProfileDto> profileSelect;
     @FXML private ComboBox<SelectDto> languageSelect;
     @FXML private ComboBox<GameTypeDto> gameTypeSelect;
-    @FXML private ComboBox<ProfileMapDto> profileMapSelect;
+    @FXML private ComboBox<PlatformProfileMapDto> profileMapSelect;
     @FXML private ComboBox<SelectDto> difficultySelect;
     @FXML private ComboBox<SelectDto> lengthSelect;
     @FXML private ComboBox<SelectDto> maxPlayersSelect;
-    @FXML private ComboBox<EnumPlatform> platformSelect;
+    @FXML private ComboBox<PlatformDto> platformSelect;
     @FXML private TextField serverName;
     @FXML private PasswordField serverPassword;
     @FXML private PasswordField webPassword;
@@ -224,7 +224,7 @@ public class MainContentController implements Initializable {
             maxPlayersSelect.setItems(facade.listAllPlayers());
             platformSelect.setItems(facade.listAllPlatforms());
 
-            if (profileSelect.getValue() == null || EnumPlatform.STEAM.equals(profileSelect.getValue().getPlatform())) {
+            if (profileSelect.getValue() == null || EnumPlatform.STEAM.equals(platformSelect.getValue())) {
                 installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
             } else {
                 installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
@@ -248,17 +248,17 @@ public class MainContentController implements Initializable {
             Utils.errorDialog(e.getMessage(), e);
         }
 
-        platformSelect.setCellFactory(new Callback<ListView<EnumPlatform>, ListCell<EnumPlatform>>() {
+        platformSelect.setCellFactory(new Callback<ListView<PlatformDto>, ListCell<PlatformDto>>() {
             @Override
-            public ListCell<EnumPlatform> call(ListView<EnumPlatform> p) {
-                ListCell<EnumPlatform> listCell = new ListCell<EnumPlatform>() {
-                    private HBox createHBox(EnumPlatform enumPlatform) {
-                        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(enumPlatform.getLogoPath());
+            public ListCell<PlatformDto> call(ListView<PlatformDto> p) {
+                ListCell<PlatformDto> listCell = new ListCell<PlatformDto>() {
+                    private HBox createHBox(PlatformDto platform) {
+                        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(platform.getLogoPath());
                         Image image = new Image(inputStream);
 
                         ImageView logo = new ImageView(image);
 
-                        Label platformDescription = new Label(enumPlatform.getDescripcion());
+                        Label platformDescription = new Label(platform.getValue());
                         platformDescription.setStyle("-fx-padding: 15 0 0 10; -fx-text-fill: white;");
 
                         HBox contentPane = new HBox();
@@ -268,10 +268,10 @@ public class MainContentController implements Initializable {
                     }
 
                     @Override
-                    protected void updateItem(EnumPlatform enumPlatform, boolean empty) {
-                        super.updateItem(enumPlatform, empty);
-                        if (enumPlatform != null) {
-                            setGraphic(createHBox(enumPlatform));
+                    protected void updateItem(PlatformDto platform, boolean empty) {
+                        super.updateItem(platform, empty);
+                        if (platform != null) {
+                            setGraphic(createHBox(platform));
                             setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
                         }
                     }
@@ -280,14 +280,14 @@ public class MainContentController implements Initializable {
             }
         });
 
-        platformSelect.setButtonCell(new ListCell<EnumPlatform>() {
-            private HBox createHBox(EnumPlatform enumPlatform) {
-                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(enumPlatform.getSmallLogoPath());
+        platformSelect.setButtonCell(new ListCell<PlatformDto>() {
+            private HBox createHBox(PlatformDto platform) {
+                InputStream inputStream = getClass().getClassLoader().getResourceAsStream(platform.getSmallLogoPath());
                 Image image = new Image(inputStream);
 
                 ImageView logo = new ImageView(image);
 
-                Label platformDescription = new Label(enumPlatform.getDescripcion());
+                Label platformDescription = new Label(platform.getValue());
                 platformDescription.setStyle("-fx-padding: 6 0 0 10; -fx-text-fill: white;");
 
                 HBox contentPane = new HBox();
@@ -297,22 +297,22 @@ public class MainContentController implements Initializable {
             }
 
             @Override
-            protected void updateItem(EnumPlatform enumPlatform, boolean empty) {
-                super.updateItem(enumPlatform, empty);
-                if (enumPlatform != null) {
-                    setGraphic(createHBox(enumPlatform));
+            protected void updateItem(PlatformDto platform, boolean empty) {
+                super.updateItem(platform, empty);
+                if (platform != null) {
+                    setGraphic(createHBox(platform));
                     setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
                     noSelectedMapImage.setVisible(false);
                 }
             }
         });
 
-        profileMapSelect.setCellFactory(new Callback<ListView<ProfileMapDto>, ListCell<ProfileMapDto>>() {
+        profileMapSelect.setCellFactory(new Callback<ListView<PlatformProfileMapDto>, ListCell<PlatformProfileMapDto>>() {
             @Override
-            public ListCell<ProfileMapDto> call(ListView<ProfileMapDto> p) {
-                ListCell<ProfileMapDto> listCell = new ListCell<ProfileMapDto>() {
+            public ListCell<PlatformProfileMapDto> call(ListView<PlatformProfileMapDto> p) {
+                ListCell<PlatformProfileMapDto> listCell = new ListCell<PlatformProfileMapDto>() {
 
-                    private GridPane createMapGridPane(ProfileMapDto profileMapDto) {
+                    private GridPane createMapGridPane(PlatformProfileMapDto profileMapDto) {
                         Label aliasLabel = new Label(profileMapDto.getAlias());
                         aliasLabel.setStyle("-fx-padding: 5;");
                         Label mapType;
@@ -337,7 +337,7 @@ public class MainContentController implements Initializable {
                         ImageView mapPreview = new ImageView();
                         try {
                             Image image;
-                            if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(profileMapDto.getUrlPhoto())) {
+                            if (facade.isCorrectInstallationFolder(platformSelect.getValue(), installationFolder) && StringUtils.isNotBlank(profileMapDto.getUrlPhoto())) {
                                 image = new Image("file:" + installationFolder + "/" + profileMapDto.getUrlPhoto());
                             } else {
                                 File file = new File(System.getProperty("user.dir") + "/external-images/no-photo.png");
@@ -368,7 +368,7 @@ public class MainContentController implements Initializable {
                     }
 
                     @Override
-                    protected void updateItem(ProfileMapDto profileMapDto, boolean empty) {
+                    protected void updateItem(PlatformProfileMapDto profileMapDto, boolean empty) {
                         super.updateItem(profileMapDto, empty);
                         if (profileMapDto != null) {
                             setGraphic(createMapGridPane(profileMapDto));
@@ -380,16 +380,16 @@ public class MainContentController implements Initializable {
             }
         });
 
-        profileMapSelect.setButtonCell(new ListCell<ProfileMapDto>() {
-            private GridPane createMapGridPane(ProfileMapDto profileMapDto) {
-                Label aliasLabel = new Label(profileMapDto.getAlias());
+        profileMapSelect.setButtonCell(new ListCell<PlatformProfileMapDto>() {
+            private GridPane createMapGridPane(PlatformProfileMapDto platformProfileMapDto) {
+                Label aliasLabel = new Label(platformProfileMapDto.getAlias());
                 aliasLabel.setStyle("-fx-font-weight: bold;");
 
                 ImageView mapPreview = new ImageView();
                 try {
                     Image image;
-                    if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(profileMapDto.getUrlPhoto())) {
-                        image = new Image("file:" + installationFolder + "/" + profileMapDto.getUrlPhoto());
+                    if (facade.isCorrectInstallationFolder(platformSelect.getValue(), installationFolder) && StringUtils.isNotBlank(platformProfileMapDto.getUrlPhoto())) {
+                        image = new Image("file:" + installationFolder + "/" + platformProfileMapDto.getUrlPhoto());
                     } else {
                         File file = new File(System.getProperty("user.dir") + "/external-images/no-photo.png");
                         InputStream inputStream;
@@ -420,7 +420,7 @@ public class MainContentController implements Initializable {
                     customText = "  CUSTOM  ";
                 }
 
-                if (profileMapDto.getMapDto().isOfficial()) {
+                if (platformProfileMapDto.getMapDto().isOfficial()) {
                     mapType = new Label(officialText);
                     mapType.setStyle("-fx-text-fill: plum; -fx-padding: 3; -fx-border-color: plum; -fx-border-radius: 5;");
                 } else {
@@ -450,10 +450,10 @@ public class MainContentController implements Initializable {
             }
 
             @Override
-            protected void updateItem(ProfileMapDto profileMapDto, boolean empty) {
-                super.updateItem(profileMapDto, empty);
-                if (profileMapDto != null) {
-                    setGraphic(createMapGridPane(profileMapDto));
+            protected void updateItem(PlatformProfileMapDto platformProfileMapDto, boolean empty) {
+                super.updateItem(platformProfileMapDto, empty);
+                if (platformProfileMapDto != null) {
+                    setGraphic(createMapGridPane(platformProfileMapDto));
                     setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
                     noSelectedMapImage.setVisible(false);
                 } else {
@@ -1253,30 +1253,30 @@ public class MainContentController implements Initializable {
 
     }
 
-    private void loadActualProfile(ProfileDto profile) throws SQLException {
+    private void loadActualProfile(PlatformDto platformDto, ProfileDto profile) throws SQLException {
         languageSelect.setValue(profile.getLanguage());
         previousSelectedLanguageCode = profile.getLanguage().getKey();
         gameTypeSelect.setValue(profile.getGametype());
 
-        List<ProfileMapDto> profileMapList = facade.listProfileMaps(profile.getName());
+        List<PlatformProfileMapDto> profileMapList = facade.listPlatformProfileMaps(platformDto.getKey(), profile.getName());
 
-        List<ProfileMapDto> officialMaps = profileMapList.stream()
+        List<PlatformProfileMapDto> officialMaps = profileMapList.stream()
                 .sorted((pm1, pm2) -> pm1.getAlias().compareTo(pm2.getAlias()))
                 .filter(pm -> pm.getMapDto().isOfficial())
                 .collect(Collectors.toList());
 
-        List<ProfileMapDto> downloadedCustomMaps = profileMapList.stream()
+        List<PlatformProfileMapDto> downloadedCustomMaps = profileMapList.stream()
                 .sorted((pm1, pm2) -> pm1.getAlias().compareTo(pm2.getAlias()))
                 .filter(pm -> !pm.getMapDto().isOfficial())
                 .filter(pm -> ((CustomMapModDto) pm.getMapDto()).isDownloaded())
                 .collect(Collectors.toList());
 
-        List<ProfileMapDto> filteredMapList = new ArrayList<ProfileMapDto>(officialMaps);
+        List<PlatformProfileMapDto> filteredMapList = new ArrayList<PlatformProfileMapDto>(officialMaps);
         filteredMapList.addAll(downloadedCustomMaps);
         profileMapSelect.getItems().clear();
         profileMapSelect.setItems(FXCollections.observableArrayList(filteredMapList));
         if (profile.getMap() != null) {
-            Optional<ProfileMapDto> selectedProfileMapOpt = filteredMapList.stream()
+            Optional<PlatformProfileMapDto> selectedProfileMapOpt = filteredMapList.stream()
                     .filter(pm -> pm.getMapDto().getKey().equals(profile.getMap().getKey()))
                     .findFirst();
 
@@ -1290,7 +1290,7 @@ public class MainContentController implements Initializable {
             noSelectedMapImage.setVisible(true);
         }
 
-        platformSelect.setValue(profile.getPlatform());
+        platformSelect.setValue(platformDto);
         joinServerVisibility();
         difficultySelect.setValue(profile.getDifficulty());
         difficultySelect.setDisable(gameTypeSelect.getValue() != null ? !gameTypeSelect.getValue().isDifficultyEnabled(): false);
@@ -1363,7 +1363,7 @@ public class MainContentController implements Initializable {
     private void profileOnAction() {
         try {
             ProfileDto databaseProfile = facade.findProfileDtoByName(profileSelect.getValue().getName());
-            loadActualProfile(databaseProfile);
+            loadActualProfile(platformSelect.getValue(), databaseProfile);
             Session.getInstance().setActualProfile(profileSelect.getValue());
             propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", profileSelect.getValue().getName());
             String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
@@ -1578,7 +1578,7 @@ public class MainContentController implements Initializable {
             List<String> selectedProfileNameList = new ArrayList<String>();
             switch (allProfiles.size()) {
                 case 0:
-                    facade.runServer(null);
+                    facade.runServer(null, null);
                     return;
                 case 1:
                     selectedProfileNameList.add(allProfiles.get(0).getName());
@@ -1593,7 +1593,7 @@ public class MainContentController implements Initializable {
             facade.runExecutableFile(platformSelect.getValue());
             for (String profileName: selectedProfileNameList) {
                 Session.getInstance().setConsole((StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
-                        "< " + new Date() + " - Run Server >\n" + facade.runServer(profileName));
+                        "< " + new Date() + " - Run Server >\n" + facade.runServer(platformSelect.getValue(), profileName));
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -1608,7 +1608,7 @@ public class MainContentController implements Initializable {
             String selectedProfileName = null;
             switch (allProfiles.size()) {
                 case 0:
-                    facade.joinServer(null);
+                    facade.joinServer(null, null);
                     return;
                 case 1:
                     selectedProfileName = allProfiles.get(0).getName();
@@ -1621,7 +1621,7 @@ public class MainContentController implements Initializable {
             }
             if (StringUtils.isNotBlank(selectedProfileName)) {
                 Session.getInstance().setConsole((StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n": "") +
-                        "< " + new Date() + " - Join Server >\n" + facade.joinServer(selectedProfileName));
+                        "< " + new Date() + " - Join Server >\n" + facade.joinServer(platformSelect.getValue(), selectedProfileName));
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -1907,25 +1907,14 @@ public class MainContentController implements Initializable {
         joinServerVisibility();
         try {
             if (profileSelect.getValue() != null) {
-                String profileName = profileSelect.getValue().getName();
-                if (facade.updateProfileSetPlatform(profileName, platformSelect.getValue())) {
-                    ProfileDto databaseProfile = facade.findProfileDtoByName(profileName);
+                Session.getInstance().setPlatform(platformSelect.getValue());
 
-                    if (EnumPlatform.STEAM.equals(databaseProfile.getPlatform())) {
-                        installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
-                    } else {
-                        installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
-                    }
-                    loadActualProfile(databaseProfile);
+                if (EnumPlatform.STEAM.equals(platformSelect.getValue())) {
+                    installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
                 } else {
-                    logger.warn("The platform value could not be saved!: " + platformSelect.getValue().getDescripcion());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.platformNotSaved");
-                    Utils.warningDialog(headerText, contentText);
+                    installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
                 }
-
+                loadActualProfile(platformSelect.getValue(), profileSelect.getValue());
             }
         } catch (Exception e) {
             String headerText = "The platform value could not be saved!";

@@ -30,7 +30,7 @@ public abstract class AbstractMap extends AbstractExtendedEntity {
     private Date releaseDate;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "map")
-    private List<ProfileMap> profileMapList;
+    private List<PlatformProfileMap> platformProfileMapList;
 
     // Not mapped attribute
     @Transient
@@ -38,7 +38,7 @@ public abstract class AbstractMap extends AbstractExtendedEntity {
 
     protected AbstractMap() {
         super();
-        this.profileMapList = new ArrayList<ProfileMap>();
+        this.platformProfileMapList = new ArrayList<PlatformProfileMap>();
     }
 
     protected AbstractMap(String code, String urlInfo, String urlPhoto, boolean official, Date releaseDate) {
@@ -111,18 +111,18 @@ public abstract class AbstractMap extends AbstractExtendedEntity {
         this.releaseDate = releaseDate;
     }
 
-    public List<ProfileMap> getProfileMapList() {
-        return profileMapList;
+    public List<PlatformProfileMap> getProfileMapList() {
+        return platformProfileMapList;
     }
 
-    public void setProfileMapList(List<ProfileMap> profileMapList) {
-        this.profileMapList = profileMapList;
+    public void setProfileMapList(List<PlatformProfileMap> platformProfileMapList) {
+        this.platformProfileMapList = platformProfileMapList;
     }
 
     public List<Profile> getProfileList() {
-        return profileMapList.
+        return platformProfileMapList.
                 stream().
-                map(ProfileMap::getProfile).
+                map(PlatformProfileMap::getProfile).
                 collect(Collectors.toList());
     }
 }

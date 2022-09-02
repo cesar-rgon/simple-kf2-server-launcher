@@ -1,5 +1,6 @@
 package pojos.kf2factory;
 
+import entities.Platform;
 import org.apache.commons.lang3.StringUtils;
 import pojos.enums.EnumPlatform;
 import services.PropertyService;
@@ -8,12 +9,12 @@ import utils.Utils;
 
 public class Kf2Factory {
 
-    public static Kf2Common getInstance(EnumPlatform platform) {
-        if (platform == null) {
+    public static Kf2Common getInstance(String platformName) {
+        if (StringUtils.isBlank(platformName)) {
             showDialog(null);
             return null;
         }
-        if (EnumPlatform.EPIC.equals(platform)) {
+        if (EnumPlatform.EPIC.name().equals(platformName)) {
             return new Kf2EpicWindowsImpl();
         }
         String os = System.getProperty("os.name");

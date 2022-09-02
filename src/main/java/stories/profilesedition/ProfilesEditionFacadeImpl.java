@@ -31,7 +31,8 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
     private final ProfileToDisplayFactory profileToDisplayFactory;
     private final ProfileService profileService;
     private final AbstractMapService officialMapService;
-    private final ProfileMapService profileMapService;
+    private final PlatformProfileMapService platformProfileMapService;
+    private PlatformDao platformDao;
 
     public ProfilesEditionFacadeImpl() {
         profileDtoFactory = new ProfileDtoFactory();
@@ -39,7 +40,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
         profileToDisplayFactory = new ProfileToDisplayFactory();
         this.profileService = new ProfileServiceImpl();
         this.officialMapService = new OfficialMapServiceImpl();
-        this.profileMapService = new ProfileMapServiceImpl();
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
     }
 
 
@@ -51,7 +52,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
 
 
     @Override
-    public ProfileDto createNewProfile(String profileName) throws Exception {
+    public ProfileDto createNewProfile(String platformName, String profileName) throws Exception {
         String defaultServername = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultServername");
         String defaultWebPort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultWebPort");
         String defaultGamePort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultGamePort");
@@ -84,7 +85,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
                 null,
                 null,
                 null,
-                new ArrayList<ProfileMap>(),
+                new ArrayList<PlatformProfileMap>(),
                 false,
                 true,
                 false,
@@ -107,16 +108,16 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
                 2,
                 true,
                 true,
-                0.0,
-                EnumPlatform.STEAM
+                0.0
         );
 
-
+        Optional<Platform> platformOptional = platformDao.getInstance().findByCode(platformName);
         Profile savedProfile = profileService.createItem(newProfile);
+
 
         officialMaps.stream().forEach(map -> {
             try {
-                profileMapService.createItem(new ProfileMap(savedProfile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto()));
+                platformProfileMapService.createItem(new PlatformProfileMap(platformOptional.get(), savedProfile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto()));
             } catch (Exception e) {
                 logger.error("Error creating the relation between the profile: " + savedProfile.getName() + " and the map: " + map.getCode(), e);
             }
@@ -217,8 +218,12 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
     }
 
     @Override
-    public ObservableList<ProfileDto> importProfilesFromFile(List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) throws Exception {
-        List<Profile> savedProfileList = profileService.importProfilesFromFile(selectedProfileList, properties, errorMessage);
+    public ObservableList<ProfileDto> importProfilesFromFile(String platformName, List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) throws Exception {
+        Optional<Platform> platformOptional = platformDao.getInstance().findByCode(platformName);
+        if (!platformOptional.isPresent()) {
+            return null;
+        }
+        List<Profile> savedProfileList = profileService.importProfilesFromFile(platformOptional.get(), selectedProfileList, properties, errorMessage);
         return profileDtoFactory.newDtos(savedProfileList);
     }
 

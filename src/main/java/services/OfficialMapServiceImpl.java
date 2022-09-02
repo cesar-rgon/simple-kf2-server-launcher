@@ -3,6 +3,7 @@ package services;
 import daos.OfficialMapDao;
 import entities.AbstractMap;
 import entities.OfficialMap;
+import entities.Platform;
 import entities.Profile;
 
 import java.sql.SQLException;
@@ -40,7 +41,7 @@ public class OfficialMapServiceImpl extends AbstractMapService {
         return OfficialMapDao.getInstance().update((OfficialMap) map);
     }
 
-    public AbstractMap deleteMap(OfficialMap map, Profile profile) throws Exception {
-        return super.deleteMap(map, profile);
+    public AbstractMap deleteMap(Platform platform, OfficialMap map, Profile profile) throws Exception {
+        return super.deleteMap(platform, map, profile);
     }
 }

@@ -76,7 +76,7 @@ public abstract class AbstractPopulateDatabase {
 
     protected void populateProfile(String name, Language language, GameType gametype, AbstractMap map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,
                                    String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
-                                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, List<ProfileMap> profileMapList, Boolean takeover,
+                                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, List<PlatformProfileMap> platformProfileMapList, Boolean takeover,
                                    Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting, Double mapVotingTime,
                                    Boolean kickVoting, Double kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators, Boolean voip,
                                    Boolean chatLogging, String chatLoggingFile, Boolean chatLoggingFileTimestamp, Double timeBetweenKicks, Double maxIdleTime, Boolean deadPlayersCanTalk,
@@ -84,18 +84,18 @@ public abstract class AbstractPopulateDatabase {
 
         Profile profile = new Profile(name, language, gametype, map, difficulty, length, maxPlayers,
                 serverName, serverPassword, webPage, webPassword, webPort, gamePort, queryPort,
-                yourClan, yourWebLink, urlImageServer, welcomeMessage, customParameters, profileMapList, takeover,
+                yourClan, yourWebLink, urlImageServer, welcomeMessage, customParameters, platformProfileMapList, takeover,
                 teamCollision, adminCanPause, announceAdminLogin, mapVoting, mapVotingTime,
                 kickVoting, kickPercentage, publicTextChat, spectatorsOnlyChatToOtherSpectators, voip,
                 chatLogging, chatLoggingFile, chatLoggingFileTimestamp, timeBetweenKicks, maxIdleTime, deadPlayersCanTalk,
-                readyUpDelay, gameStartDelay, maxSpectators, mapObjetives, pickupItems, friendlyFirePercentage, EnumPlatform.STEAM);
+                readyUpDelay, gameStartDelay, maxSpectators, mapObjetives, pickupItems, friendlyFirePercentage);
 
         ProfileDao.getInstance().insert(profile);
     }
 
-    protected void populateProfileMap(Profile profile, AbstractMap map, Date releaseDate, String urlInfo, String urlPhoto) throws SQLException {
-        ProfileMap profileMap = new ProfileMap(profile, map, releaseDate, urlInfo, urlPhoto);
-        ProfileMapDao.getInstance().insert(profileMap);
+    protected void populatePlatformProfileMap(Platform platform, Profile profile, AbstractMap map, Date releaseDate, String urlInfo, String urlPhoto) throws SQLException {
+        PlatformProfileMap platformProfileMap = new PlatformProfileMap(platform, profile, map, releaseDate, urlInfo, urlPhoto);
+        PlatformProfileMapDao.getInstance().insert(platformProfileMap);
     }
 
     protected void populatePlatform(EnumPlatform platform) throws SQLException {

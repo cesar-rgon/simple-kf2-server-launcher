@@ -3,7 +3,6 @@ package services;
 import daos.*;
 import entities.*;
 import entities.AbstractMap;
-import javafx.scene.control.ButtonType;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -19,7 +18,6 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.SQLException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,14 +28,14 @@ public class ProfileServiceImpl implements ProfileService {
     private final PropertyService propertyService;
     private final AbstractMapService officialMapService;
     private final AbstractMapService customMapModService;
-    private final ProfileMapService profileMapService;
+    private final PlatformProfileMapService platformProfileMapService;
 
     public ProfileServiceImpl() {
         super();
         this.propertyService = new PropertyServiceImpl();
         this.officialMapService = new OfficialMapServiceImpl();
         this.customMapModService = new CustomMapModServiceImpl();
-        this.profileMapService = new ProfileMapServiceImpl();
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
     }
 
     @Override
@@ -104,10 +102,10 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public boolean deleteProfile(Profile profile, String steamInstallationFolder, String epicInstallationFolder) throws Exception {
 
-        List<ProfileMap> profileMapList = new ArrayList<ProfileMap>(profile.getProfileMapList());
-        profileMapList.stream().forEach(pm -> {
+        List<PlatformProfileMap> platformProfileMapList = new ArrayList<PlatformProfileMap>(profile.getProfileMapList());
+        platformProfileMapList.stream().forEach(pm -> {
             try {
-                profileMapService.deleteItem(pm);
+                platformProfileMapService.deleteItem(pm);
 
                 if (!pm.getMap().isOfficial()) {
                     Integer idMap = pm.getMap().getId();
@@ -165,7 +163,7 @@ public class ProfileServiceImpl implements ProfileService {
                 profileToBeCloned.getUrlImageServer(),
                 profileToBeCloned.getWelcomeMessage(),
                 profileToBeCloned.getCustomParameters(),
-                new ArrayList<ProfileMap>(),
+                new ArrayList<PlatformProfileMap>(),
                 profileToBeCloned.getTakeover(),
                 profileToBeCloned.getTeamCollision(),
                 profileToBeCloned.getAdminCanPause(),
@@ -188,17 +186,16 @@ public class ProfileServiceImpl implements ProfileService {
                 profileToBeCloned.getMaxSpectators(),
                 profileToBeCloned.getMapObjetives(),
                 profileToBeCloned.getPickupItems(),
-                profileToBeCloned.getFriendlyFirePercentage(),
-                profileToBeCloned.getPlatform()
+                profileToBeCloned.getFriendlyFirePercentage()
         );
 
         Profile savedProfile = createItem(newProfile);
         profileToBeCloned.getProfileMapList().stream().forEach(pm -> {
             try {
-                ProfileMap newProfileMap = new ProfileMap(savedProfile, pm.getMap(), pm.getReleaseDate(), pm.getUrlInfo(), pm.getUrlPhoto());
-                newProfileMap.setAlias(pm.getAlias());
-                savedProfile.getProfileMapList().add(newProfileMap);
-                profileMapService.createItem(newProfileMap);
+                PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(new Platform(EnumPlatform.STEAM), savedProfile, pm.getMap(), pm.getReleaseDate(), pm.getUrlInfo(), pm.getUrlPhoto());
+                newPlatformProfileMap.setAlias(pm.getAlias());
+                savedProfile.getProfileMapList().add(newPlatformProfileMap);
+                platformProfileMapService.createItem(newPlatformProfileMap);
             } catch (Exception e) {
                 logger.error("Error creating the relation between the profile: " + savedProfile.getName() + " and the map: " + pm.getMap().getCode());
             }
@@ -261,26 +258,26 @@ public class ProfileServiceImpl implements ProfileService {
 
             if (profile.getProfileMapList() != null && !profile.getProfileMapList().isEmpty()) {
                 int profileMapIndex = 1;
-                for (ProfileMap profileMap: profile.getProfileMapList()) {
+                for (PlatformProfileMap platformProfileMap : profile.getProfileMapList()) {
                     // Save original map values
-                    properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".name", profileMap.getMap().getCode());
-                    if (profileMap.getMap().getReleaseDate() != null) {
-                        properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".releaseDate", new SimpleDateFormat("yyyy/MM/dd").format(profileMap.getMap().getReleaseDate()));
+                    properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".name", platformProfileMap.getMap().getCode());
+                    if (platformProfileMap.getMap().getReleaseDate() != null) {
+                        properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".releaseDate", new SimpleDateFormat("yyyy/MM/dd").format(platformProfileMap.getMap().getReleaseDate()));
                     }
-                    properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".urlInfo", StringUtils.isNotBlank(profileMap.getMap().getUrlInfo())? profileMap.getMap().getUrlInfo(): "");
-                    properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".urlPhoto", StringUtils.isNotBlank(profileMap.getMap().getUrlPhoto())? profileMap.getMap().getUrlPhoto(): "");
-                    properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".official", String.valueOf(profileMap.getMap().isOfficial()));
-                    if (!profileMap.getMap().isOfficial()) {
-                        properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".idWorkShop", ((CustomMapMod) profileMap.getMap()).getIdWorkShop()!=null? String.valueOf(((CustomMapMod) profileMap.getMap()).getIdWorkShop()): "");
-                        properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".downloaded", String.valueOf(((CustomMapMod) profileMap.getMap()).isDownloaded()));
+                    properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".urlInfo", StringUtils.isNotBlank(platformProfileMap.getMap().getUrlInfo())? platformProfileMap.getMap().getUrlInfo(): "");
+                    properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".urlPhoto", StringUtils.isNotBlank(platformProfileMap.getMap().getUrlPhoto())? platformProfileMap.getMap().getUrlPhoto(): "");
+                    properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".official", String.valueOf(platformProfileMap.getMap().isOfficial()));
+                    if (!platformProfileMap.getMap().isOfficial()) {
+                        properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".idWorkShop", ((CustomMapMod) platformProfileMap.getMap()).getIdWorkShop()!=null? String.valueOf(((CustomMapMod) platformProfileMap.getMap()).getIdWorkShop()): "");
+                        properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".downloaded", String.valueOf(((CustomMapMod) platformProfileMap.getMap()).isDownnloadedMapForSteam()));
                     }
                     // Save copied map values (they could be edited and changed)
-                    properties.setProperty("exported.profile" + profileIndex + ".profilemap" + profileMapIndex + ".alias", profileMap.getAlias());
-                    if (profileMap.getReleaseDate() != null) {
-                        properties.setProperty("exported.profile" + profileIndex + ".profilemap" + profileMapIndex + ".releaseDate", new SimpleDateFormat("yyyy/MM/dd").format(profileMap.getReleaseDate()));
+                    properties.setProperty("exported.profile" + profileIndex + ".profilemap" + profileMapIndex + ".alias", platformProfileMap.getAlias());
+                    if (platformProfileMap.getReleaseDate() != null) {
+                        properties.setProperty("exported.profile" + profileIndex + ".profilemap" + profileMapIndex + ".releaseDate", new SimpleDateFormat("yyyy/MM/dd").format(platformProfileMap.getReleaseDate()));
                     }
-                    properties.setProperty("exported.profile" + profileIndex + ".profilemap" + profileMapIndex + ".urlInfo", profileMap.getUrlInfo());
-                    properties.setProperty("exported.profile" + profileIndex + ".profilemap" + profileMapIndex + ".urlPhoto", profileMap.getUrlPhoto());
+                    properties.setProperty("exported.profile" + profileIndex + ".profilemap" + profileMapIndex + ".urlInfo", platformProfileMap.getUrlInfo());
+                    properties.setProperty("exported.profile" + profileIndex + ".profilemap" + profileMapIndex + ".urlPhoto", platformProfileMap.getUrlPhoto());
 
                     profileMapIndex++;
                 }
@@ -372,8 +369,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public List<Profile> importProfilesFromFile(List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) {
-        List<Profile> savedProfileList = saveProfilesToDatabase(selectedProfileList, properties);
+    public List<Profile> importProfilesFromFile(Platform platform, List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) {
+        List<Profile> savedProfileList = saveProfilesToDatabase(platform, selectedProfileList, properties);
 
         if (savedProfileList.size() < selectedProfileList.size()) {
             List<String> selectedProfileNameList = selectedProfileList.stream().map(p -> p.getCode()).collect(Collectors.toList());
@@ -602,7 +599,7 @@ public class ProfileServiceImpl implements ProfileService {
                     properties.getProperty("exported.profile" + profileIndex + ".urlImageServer"),
                     properties.getProperty("exported.profile" + profileIndex + ".welcomeMessage"),
                     properties.getProperty("exported.profile" + profileIndex + ".customParameters"),
-                    new ArrayList<ProfileMap>(),
+                    new ArrayList<PlatformProfileMap>(),
                     StringUtils.isNotBlank(takeoverStr) ? Boolean.parseBoolean(takeoverStr): false,
                     StringUtils.isNotBlank(teamCollisionStr) ? Boolean.parseBoolean(teamCollisionStr): true,
                     StringUtils.isNotBlank(adminPauseStr) ? Boolean.parseBoolean(adminPauseStr): false,
@@ -625,8 +622,7 @@ public class ProfileServiceImpl implements ProfileService {
                     StringUtils.isNotBlank(maxSpectatorsStr) ? Integer.parseInt(maxSpectatorsStr): 2,
                     StringUtils.isNotBlank(mapObjetivesStr) ? Boolean.parseBoolean(mapObjetivesStr): true,
                     StringUtils.isNotBlank(pickupItemsStr) ? Boolean.parseBoolean(pickupItemsStr): true,
-                    StringUtils.isNotBlank(friendlyFirePercentageStr) ? Double.parseDouble(friendlyFirePercentageStr): 0,
-                    StringUtils.isNotBlank(platformName) ? EnumPlatform.getByName(platformName): EnumPlatform.STEAM
+                    StringUtils.isNotBlank(friendlyFirePercentageStr) ? Double.parseDouble(friendlyFirePercentageStr): 0
             );
         } catch (SQLException e) {
             logger.error("Error getting the profile " + profileName + " from file", e);
@@ -634,7 +630,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
-    private List<Profile> saveProfilesToDatabase(List<Profile> selectedProfileList, Properties properties) {
+    private List<Profile> saveProfilesToDatabase(Platform platform, List<Profile> selectedProfileList, Properties properties) {
         List<Profile> savedProfileList = new ArrayList<Profile>();
 
         int profileIndex = 1;
@@ -642,7 +638,7 @@ public class ProfileServiceImpl implements ProfileService {
             try {
                 Profile savedProfile = (Profile) ProfileDao.getInstance().insert(profile);
 
-                List<AbstractMap> mapList = importProfileMapsFromFile(profileIndex, savedProfile, properties);
+                List<AbstractMap> mapList = importPlatformProfileMapsFromFile(platform, profileIndex, savedProfile, properties);
                 savedProfile.getMapList().addAll(mapList);
 
                 String mapName = properties.getProperty("exported.profile" + profileIndex + ".map");
@@ -660,7 +656,7 @@ public class ProfileServiceImpl implements ProfileService {
         return savedProfileList;
     }
 
-    private List<AbstractMap> importProfileMapsFromFile(int profileIndex, Profile profile, Properties properties) throws Exception {
+    private List<AbstractMap> importPlatformProfileMapsFromFile(Platform platform, int profileIndex, Profile profile, Properties properties) throws Exception {
         List<AbstractMap> mapList = new ArrayList<AbstractMap>();
         java.util.Map<String,Integer> officialMapsIndex = new HashMap<String, Integer>();
         List<MapToDisplay> customMapListToDisplay = new ArrayList<MapToDisplay>();
@@ -696,7 +692,7 @@ public class ProfileServiceImpl implements ProfileService {
                 AbstractMap map = getImportedMap(mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, mapName, null, true);
                 if (map != null) {
                     mapList.add(map);
-                    importProfileMap(profile, map, profileIndex, mapIndex,  properties);
+                    importPlatformProfileMap(platform, profile, map, profileIndex, mapIndex,  properties);
                 }
             } catch (Exception e) {
                 logger.error("Error importing the official map " + mapName + " of profile index " + profileIndex + " from file", e);
@@ -710,7 +706,7 @@ public class ProfileServiceImpl implements ProfileService {
                 AbstractMap map = getImportedMap(mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, customMap.getCommentary(), customMap.getIdWorkShop(), false);
                 if (map != null) {
                     mapList.add(map);
-                    importProfileMap(profile, map, profileIndex, mapIndex,  properties);
+                    importPlatformProfileMap(platform, profile, map, profileIndex, mapIndex,  properties);
                 }
             } catch (Exception e) {
                 logger.error("Error importing the official map " + customMap.getCommentary() + " of profile index " + profileIndex + " from file", e);
@@ -720,7 +716,7 @@ public class ProfileServiceImpl implements ProfileService {
         return mapList;
     }
 
-    private void importProfileMap(Profile profile, AbstractMap map, int profileIndex, int mapIndex,  Properties properties) throws Exception {
+    private void importPlatformProfileMap(Platform platform, Profile profile, AbstractMap map, int profileIndex, int mapIndex, Properties properties) throws Exception {
         String alias = properties.getProperty("exported.profile" + profileIndex + ".profilemap" + mapIndex + ".alias");
         alias = StringUtils.isNotBlank(alias) ? alias: map.getCode();
 
@@ -735,9 +731,9 @@ public class ProfileServiceImpl implements ProfileService {
         String urlPhoto = properties.getProperty("exported.profile" + profileIndex + ".profilemap" + mapIndex + ".urlPhoto");
         urlPhoto = StringUtils.isNotBlank(urlPhoto) ? urlPhoto: map.getUrlPhoto();
 
-        ProfileMap profileMap = new ProfileMap(profile, map, releaseDate, urlInfo, urlPhoto);
-        profileMap.setAlias(alias);
-        profileMapService.createItem(profileMap);
+        PlatformProfileMap platformProfileMap = new PlatformProfileMap(platform, profile, map, releaseDate, urlInfo, urlPhoto);
+        platformProfileMap.setAlias(alias);
+        platformProfileMapService.createItem(platformProfileMap);
     }
 
     private AbstractMap getImportedMap(Optional<AbstractMap> mapInDataBaseOpt, Profile profile, Properties properties, int profileIndex, Integer mapIndex, String mapName, Long idWorkShop, boolean official) throws Exception {
@@ -775,7 +771,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     private boolean createNewCustomMapFromWorkshop(CustomMapMod map) throws Exception {
         String installationFolder;
-        if (EnumPlatform.STEAM.equals(Session.getInstance().getActualProfile().getPlatform())) {
+        if (EnumPlatform.STEAM.equals(Session.getInstance().getPlatform())) {
             installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
         } else {
             installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
@@ -793,7 +789,6 @@ public class ProfileServiceImpl implements ProfileService {
         }
         reader.close();
         Utils.downloadImageFromUrlToFile(strUrlMapImage, installationFolder + map.getUrlPhoto());
-        map.setDownloaded(false);
         AbstractMap insertedMap = customMapModService.createItem(map);;
         return (insertedMap != null);
     }

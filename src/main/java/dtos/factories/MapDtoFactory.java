@@ -88,7 +88,7 @@ public class MapDtoFactory {
                 map.getUrlInfo(),
                 map.getUrlPhoto(),
                 map.getIdWorkShop(),
-                map.isDownloaded(),
+                map.isDownnloadedMapForSteam(),
                 releaseDate,
                 importedDateByProfileDtoList
         );

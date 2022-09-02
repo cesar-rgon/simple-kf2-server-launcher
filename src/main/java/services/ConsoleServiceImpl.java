@@ -26,7 +26,7 @@ public class ConsoleServiceImpl implements ConsoleService {
                     Optional<Profile> profileOpt = profileService.findProfileByCode(parameter);
                     if (profileOpt.isPresent()) {
                         Kf2Common kf2Common = Kf2Factory.getInstance(
-                                Session.getInstance().getActualProfile() != null ? Session.getInstance().getActualProfile().getPlatform(): null
+                                Session.getInstance().getPlatform().getKey()
                         );
                         kf2Common.runServerByConsole(profileOpt.get());
                     } else {

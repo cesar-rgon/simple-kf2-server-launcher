@@ -84,7 +84,7 @@ public class Profile extends AbstractExtendedEntity {
     private String customParameters;
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "profile")
-    private List<ProfileMap> profileMapList;
+    private List<PlatformProfileMap> platformProfileMapList;
 
     @Column(name="TEAM_COLLISION")
     private Boolean teamCollision;
@@ -152,22 +152,19 @@ public class Profile extends AbstractExtendedEntity {
     @Column(name="FRIENDLY_FIRE_PERCENTAGE")
     private Double friendlyFirePercentage;
 
-    @Column(name="PLATFORM")
-    private EnumPlatform platform;
-
 
     public Profile() {
         super();
-        this.profileMapList = new ArrayList<ProfileMap>();
+        this.platformProfileMapList = new ArrayList<PlatformProfileMap>();
     }
 
     public Profile(String name, Language language, GameType gametype, AbstractMap map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,
                    String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
-                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, List<ProfileMap> profileMapList, Boolean takeover,
+                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, List<PlatformProfileMap> platformProfileMapList, Boolean takeover,
                    Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting, Double mapVotingTime,
                    Boolean kickVoting, Double kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators, Boolean voip,
                    Boolean chatLogging, String chatLoggingFile, Boolean chatLoggingFileTimestamp, Double timeBetweenKicks, Double maxIdleTime, Boolean deadPlayersCanTalk,
-                   Integer readyUpDelay, Integer gameStartDelay, Integer maxSpectators, Boolean mapObjetives, Boolean pickupItems, Double friendlyFirePercentage, EnumPlatform platform) {
+                   Integer readyUpDelay, Integer gameStartDelay, Integer maxSpectators, Boolean mapObjetives, Boolean pickupItems, Double friendlyFirePercentage) {
 
         super();
         this.name = name;
@@ -189,7 +186,7 @@ public class Profile extends AbstractExtendedEntity {
         this.urlImageServer = urlImageServer;
         this.welcomeMessage = welcomeMessage;
         this.customParameters = customParameters;
-        this.profileMapList = profileMapList;
+        this.platformProfileMapList = platformProfileMapList;
         this.takeover = takeover;
         this.teamCollision = teamCollision;
         this.adminCanPause = adminCanPause;
@@ -213,7 +210,6 @@ public class Profile extends AbstractExtendedEntity {
         this.mapObjetives = mapObjetives;
         this.pickupItems = pickupItems;
         this.friendlyFirePercentage = friendlyFirePercentage;
-        this.platform = platform;
     }
 
     @Override
@@ -581,26 +577,18 @@ public class Profile extends AbstractExtendedEntity {
         this.name = name;
     }
 
-    public List<ProfileMap> getProfileMapList() {
-        return profileMapList;
+    public List<PlatformProfileMap> getProfileMapList() {
+        return platformProfileMapList;
     }
 
-    public EnumPlatform getPlatform() {
-        return platform;
-    }
-
-    public void setPlatform(EnumPlatform platform) {
-        this.platform = platform;
-    }
-
-    public void setProfileMapList(List<ProfileMap> profileMapList) {
-        this.profileMapList = profileMapList;
+    public void setProfileMapList(List<PlatformProfileMap> platformProfileMapList) {
+        this.platformProfileMapList = platformProfileMapList;
     }
 
     public List<AbstractMap> getMapList() {
-        return profileMapList.
+        return platformProfileMapList.
                 stream().
-                map(ProfileMap::getMap).
+                map(PlatformProfileMap::getMap).
                 collect(Collectors.toList());
     }
 }

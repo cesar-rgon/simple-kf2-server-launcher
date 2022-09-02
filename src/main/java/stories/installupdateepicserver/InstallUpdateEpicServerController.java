@@ -129,7 +129,7 @@ public class InstallUpdateEpicServerController implements Initializable {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                Kf2Common kf2Common = Kf2Factory.getInstance(EnumPlatform.EPIC);
+                Kf2Common kf2Common = Kf2Factory.getInstance(EnumPlatform.STEAM.name());
                 ((Kf2Epic)kf2Common).installOrUpdateServer(installationFolder.getText());
                 return null;
             }

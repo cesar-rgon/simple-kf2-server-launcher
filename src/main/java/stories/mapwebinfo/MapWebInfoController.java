@@ -171,7 +171,7 @@ public class MapWebInfoController implements Initializable {
     private void addMapOnAction() {
         try {
             String installationFolder;
-            if (EnumPlatform.STEAM.equals(Session.getInstance().getActualProfile().getPlatform())) {
+            if (EnumPlatform.STEAM.name().equalsIgnoreCase(Session.getInstance().getPlatform().getKey())) {
                 installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
             } else {
                 installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
@@ -191,7 +191,13 @@ public class MapWebInfoController implements Initializable {
                 CustomMapModDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
 
                 if (mapModInDataBase == null) {
-                    CustomMapModDto customMap = facade.createNewCustomMapFromWorkshop(idWorkShop, mapName, strUrlMapImage, selectedProfileNameList);
+                    CustomMapModDto customMap = facade.createNewCustomMapFromWorkshop(
+                            Session.getInstance().getPlatform().getKey(),
+                            idWorkShop,
+                            mapName,
+                            strUrlMapImage,
+                            selectedProfileNameList
+                    );
                     if (customMap != null) {
                         if (profilesWithoutMap.size() - selectedProfiles.size() == 0) {
                             addMap.setVisible(false);
@@ -206,7 +212,11 @@ public class MapWebInfoController implements Initializable {
                         Utils.warningDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
                     }
                 } else {
-                    facade.addProfilesToMap(mapModInDataBase.getKey(), selectedProfileNameList);
+                    facade.addProfilesToMap(
+                            Session.getInstance().getPlatform().getKey(),
+                            mapModInDataBase.getKey(),
+                            selectedProfileNameList
+                    );
                     if (profilesWithoutMap.size() - selectedProfiles.size() == 0) {
                         addMap.setVisible(false);
                         alreadyInLauncher.setVisible(true);

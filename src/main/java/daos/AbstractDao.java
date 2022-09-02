@@ -2,8 +2,6 @@ package daos;
 
 
 import entities.AbstractEntity;
-import entities.Profile;
-import entities.ProfileMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

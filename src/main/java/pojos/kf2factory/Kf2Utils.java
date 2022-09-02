@@ -339,7 +339,7 @@ public class Kf2Utils {
 
             List<AbstractMap> downloadedCustomMaps = profile.getMapList().stream()
                     .filter(m -> !m.isOfficial())
-                    .filter(m -> ((CustomMapMod) m).isDownloaded())
+                    .filter(m -> ((CustomMapMod) m).isDownnloadedMapForSteam())
                     .sorted((o1, o2) -> o1.getCode().compareTo(o2.getCode()))
                     .collect(Collectors.toList());
 

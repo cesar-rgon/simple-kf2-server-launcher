@@ -1,26 +1,19 @@
 package stories.maincontent;
 
 import daos.*;
-import dtos.GameTypeDto;
-import dtos.ProfileDto;
-import dtos.ProfileMapDto;
-import pojos.enums.EnumPlatform;
-import org.apache.commons.lang3.StringUtils;
-import pojos.ProfileToDisplay;
-import dtos.SelectDto;
+import dtos.*;
 import dtos.factories.*;
 import entities.*;
 import javafx.collections.ObservableList;
+import pojos.ProfileToDisplay;
 import pojos.ProfileToDisplayFactory;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import pojos.kf2factory.Kf2Steam;
-import pojos.session.Session;
 import services.*;
 import stories.AbstractFacade;
 import utils.Utils;
 
-import java.io.File;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +29,10 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     private final LengthDtoFactory lengthDtoFactory;
     private final MaxPlayersDtoFactory maxPlayersDtoFactory;
     private final ProfileService profileService;
-    private final ProfileMapDtoFactory profileMapDtoFactory;
-    private final ProfileMapService profileMapService;
+    private final PlatformProfileMapDtoFactory platformProfileMapDtoFactory;
+    private final PlatformProfileMapService platformProfileMapService;
+    private final PlatformDtoFactory platformDtoFactory;
+    private PlatformDao platformDao;
 
     public MainContentFacadeImpl() {
         super();
@@ -48,8 +43,9 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         lengthDtoFactory = new LengthDtoFactory();
         maxPlayersDtoFactory = new MaxPlayersDtoFactory();
         profileService = new ProfileServiceImpl();
-        this.profileMapDtoFactory = new ProfileMapDtoFactory();
-        this.profileMapService = new ProfileMapServiceImpl();
+        platformProfileMapDtoFactory = new PlatformProfileMapDtoFactory();
+        platformProfileMapService = new PlatformProfileMapServiceImpl();
+        platformDtoFactory = new PlatformDtoFactory();
     }
 
     @Override
@@ -88,8 +84,9 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         return maxPlayersDtoFactory.newDtos(playerList);
     }
 
-    public ObservableList<EnumPlatform> listAllPlatforms() throws SQLException {
-        return EnumPlatform.listAll();
+    public ObservableList<PlatformDto> listAllPlatforms() throws SQLException {
+        List<Platform> platformList = PlatformDao.getInstance().listAll();
+        return platformDtoFactory.newDtos(platformList);
     }
 
     @Override
@@ -309,17 +306,17 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public String runServer(String profileName) throws SQLException {
+    public String runServer(PlatformDto platform, String profileName) throws SQLException {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        Kf2Common kf2Common = Kf2Factory.getInstance(profileOpt.isPresent()? profileOpt.get().getPlatform(): null);
+        Kf2Common kf2Common = Kf2Factory.getInstance(platform.getKey());
         return kf2Common.runServer(profileOpt.isPresent()? profileOpt.get(): null);
     }
 
     @Override
-    public String joinServer(String profileName) throws SQLException {
+    public String joinServer(PlatformDto platform, String profileName) throws SQLException {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
-            Kf2Common kf2Common = Kf2Factory.getInstance(profileOpt.isPresent()? profileOpt.get().getPlatform(): null);
+            Kf2Common kf2Common = Kf2Factory.getInstance(platform.getKey());
             return ((Kf2Steam)kf2Common).joinServer(profileOpt.get());
         } else {
             Utils.warningDialog("Join operation aborted!", "The profile name can not be empty");
@@ -379,10 +376,8 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean isCorrectInstallationFolder(String installationFolder) {
-        Kf2Common kf2Common = Kf2Factory.getInstance(
-                Session.getInstance().getActualProfile() != null ? Session.getInstance().getActualProfile().getPlatform(): null
-        );
+    public boolean isCorrectInstallationFolder(PlatformDto platform, String installationFolder) {
+        Kf2Common kf2Common = Kf2Factory.getInstance(platform.getKey());
         return kf2Common.isValid(installationFolder);
     }
 
@@ -672,34 +667,20 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetPlatform(String profileName, EnumPlatform platform) throws SQLException {
-        if (platform == null) {
-            platform = EnumPlatform.STEAM;
-        }
+    public List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws SQLException {
+        Optional<Platform> platformOpt = platformDao.getInstance().findByCode(platformName);
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
+        if (platformOpt.isPresent() && profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
-            profile.setPlatform(platform);
-            return ProfileDao.getInstance().update(profile);
+            List<PlatformProfileMap> platformProfileMapList = platformProfileMapService.listPlatformProfileMaps(platformOpt.get(), profile);
+            return platformProfileMapDtoFactory.newDtos(platformProfileMapList);
         }
-        return false;
-    }
-
-
-    @Override
-    public List<ProfileMapDto> listProfileMaps(String profileName) throws SQLException {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            List<ProfileMap> profileMapList = profileMapService.listProfileMaps(profile);
-            return profileMapDtoFactory.newDtos(profileMapList);
-        }
-        return new ArrayList<ProfileMapDto>();
+        return new ArrayList<PlatformProfileMapDto>();
     }
 
     @Override
-    public void runExecutableFile(EnumPlatform platform) {
-        Kf2Common kf2Common = Kf2Factory.getInstance(platform);
+    public void runExecutableFile(PlatformDto platform) {
+        Kf2Common kf2Common = Kf2Factory.getInstance(platform.getKey());
         kf2Common.runExecutableFile();
     }
 }

@@ -1,8 +1,9 @@
 package pojos.session;
 
 import dtos.AbstractMapDto;
+import dtos.PlatformDto;
 import dtos.ProfileDto;
-import entities.ProfileMap;
+import entities.PlatformProfileMap;
 import pojos.enums.EnumMapsTab;
 import pojos.enums.EnumSortedMapsCriteria;
 
@@ -20,7 +21,8 @@ public class Session {
     private ProfileDto mapsProfile;
     private EnumSortedMapsCriteria sortedMapsCriteria;
     private EnumMapsTab selectedMapTab;
-    private List<ProfileMap> profileMapList;
+    private List<PlatformProfileMap> platformProfileMapList;
+    private PlatformDto platform;
 
     /**
      * Singleton constructor
@@ -32,7 +34,7 @@ public class Session {
         processList = new ArrayList<Process>();
         sortedMapsCriteria = EnumSortedMapsCriteria.NAME_DESC;
         selectedMapTab = EnumMapsTab.CUSTOM_MAPS_TAB;
-        profileMapList = new ArrayList<ProfileMap>();
+        platformProfileMapList = new ArrayList<PlatformProfileMap>();
     }
 
     public static Session getInstance() {
@@ -110,11 +112,27 @@ public class Session {
         this.selectedMapTab = selectedMapTab;
     }
 
-    public List<ProfileMap> getProfileMapList() {
-        return profileMapList;
+    public List<PlatformProfileMap> getProfileMapList() {
+        return platformProfileMapList;
     }
 
-    public void setProfileMapList(List<ProfileMap> profileMapList) {
-        this.profileMapList = profileMapList;
+    public void setProfileMapList(List<PlatformProfileMap> platformProfileMapList) {
+        this.platformProfileMapList = platformProfileMapList;
+    }
+
+    public List<PlatformProfileMap> getPlatformProfileMapList() {
+        return platformProfileMapList;
+    }
+
+    public void setPlatformProfileMapList(List<PlatformProfileMap> platformProfileMapList) {
+        this.platformProfileMapList = platformProfileMapList;
+    }
+
+    public PlatformDto getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(PlatformDto platform) {
+        this.platform = platform;
     }
 }

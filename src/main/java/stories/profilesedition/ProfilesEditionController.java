@@ -126,7 +126,10 @@ public class ProfilesEditionController implements Initializable {
                     @Override
                     protected ProfileDto call() throws Exception {
                         String profileName = profileNameOpt.get().replaceAll(" ", "_");
-                        return facade.createNewProfile(profileName);
+                        return facade.createNewProfile(
+                                Session.getInstance().getPlatform().getKey(),
+                                profileName
+                        );
                     }
                 };
 
@@ -140,7 +143,7 @@ public class ProfilesEditionController implements Initializable {
                         }
 
                         Kf2Common kf2Common = Kf2Factory.getInstance(
-                                Session.getInstance().getActualProfile() != null ? Session.getInstance().getActualProfile().getPlatform(): null
+                                Session.getInstance().getPlatform().getKey()
                         );
                         if (StringUtils.isNotBlank(steamInstallationFolder)) {
                             kf2Common.createConfigFolder(steamInstallationFolder, newProfile.getName());
@@ -197,7 +200,7 @@ public class ProfilesEditionController implements Initializable {
                             if (clonedProfile != null) {
                                 profilesTable.getItems().add(clonedProfile);
                                 Kf2Common kf2Common = Kf2Factory.getInstance(
-                                        Session.getInstance().getActualProfile() != null ? Session.getInstance().getActualProfile().getPlatform(): null
+                                        Session.getInstance().getPlatform().getKey()
                                 );
                                 if (StringUtils.isNotBlank(steamInstallationFolder)) {
                                     kf2Common.createConfigFolder(steamInstallationFolder, clonedProfile.getName());
@@ -397,7 +400,11 @@ public class ProfilesEditionController implements Initializable {
                         if (selectedProfileList == null || selectedProfileList.isEmpty()) {
                             return;
                         }
-                        ObservableList<ProfileDto> importedProfiles = facade.importProfilesFromFile(selectedProfileList, properties, errorMessage);
+                        ObservableList<ProfileDto> importedProfiles = facade.importProfilesFromFile(
+                                Session.getInstance().getPlatform().getKey(),
+                                selectedProfileList,
+                                properties, errorMessage
+                        );
 
                         if (importedProfiles == null || importedProfiles.isEmpty()) {
                             progressIndicator.setVisible(false);
@@ -407,7 +414,7 @@ public class ProfilesEditionController implements Initializable {
                         for (ProfileDto importedProfile: importedProfiles) {
                             profilesTable.getItems().add(importedProfile);
                             Kf2Common kf2Common = Kf2Factory.getInstance(
-                                    Session.getInstance().getActualProfile() != null ? Session.getInstance().getActualProfile().getPlatform(): null
+                                    Session.getInstance().getPlatform().getKey()
                             );
                             if (StringUtils.isNotBlank(steamInstallationFolder)) {
                                 kf2Common.createConfigFolder(steamInstallationFolder, importedProfile.getName());

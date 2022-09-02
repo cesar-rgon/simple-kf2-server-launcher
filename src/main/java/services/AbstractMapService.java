@@ -1,32 +1,29 @@
 package services;
 
 import daos.OfficialMapDao;
-import daos.ProfileDao;
-import daos.ProfileMapDao;
-import entities.AbstractMap;
-import entities.OfficialMap;
-import entities.Profile;
-import entities.ProfileMap;
+import daos.PlatformDao;
+import daos.PlatformProfileMapDao;
+import entities.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.ImportMapResultToDisplay;
+import pojos.enums.EnumPlatform;
 
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public abstract class AbstractMapService implements AbstractExtendedService<AbstractMap> {
 
     private static final Logger logger = LogManager.getLogger(AbstractMapService.class);
-    private ProfileMapService profileMapService;
+    private PlatformProfileMapService platformProfileMapService;
 
     protected AbstractMapService() {
         super();
-        this.profileMapService = new ProfileMapServiceImpl();
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
     }
 
     @Override
@@ -73,7 +70,7 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
         return mapList;
     }
 
-    public AbstractMap createMap(AbstractMap map, List<Profile> profileList, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
+    public AbstractMap createMap(Platform platform, AbstractMap map, List<Profile> profileList, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
         AbstractMap insertedMap = null;
         try {
             List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
@@ -119,9 +116,9 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
         AbstractMap finalInsertedMap = insertedMap;
         profileList.stream().forEach(profile -> {
             try {
-                ProfileMap newProfileMap = new ProfileMap(profile, finalInsertedMap, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto());
-                profileMapService.createItem(newProfileMap);
-                finalInsertedMap.getProfileMapList().add(newProfileMap);
+                PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(platform, profile, finalInsertedMap, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto());
+                platformProfileMapService.createItem(newPlatformProfileMap);
+                finalInsertedMap.getProfileMapList().add(newPlatformProfileMap);
 
                 if (importMapResultToDisplayList != null) {
                     importMapResultToDisplayList.add(new ImportMapResultToDisplay(
@@ -151,13 +148,13 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
         return insertedMap;
     }
 
-    public AbstractMap addProfilesToMap(AbstractMap map, List<Profile> profileList, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
+    public AbstractMap addProfilesToMap(Platform platform, AbstractMap map, List<Profile> profileList, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
         profileList.stream().forEach(profile -> {
             try {
                 if (!profile.getMapList().contains(map)) {
-                    ProfileMap newProfileMap = new ProfileMap(profile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto());
-                    profileMapService.createItem(newProfileMap);
-                    map.getProfileMapList().add(newProfileMap);
+                    PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(platform, profile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto());
+                    platformProfileMapService.createItem(newPlatformProfileMap);
+                    map.getProfileMapList().add(newPlatformProfileMap);
 
                     if (importMapResultToDisplayList != null) {
                         importMapResultToDisplayList.add(new ImportMapResultToDisplay(
@@ -188,10 +185,10 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
     }
 
 
-    protected AbstractMap deleteMap(AbstractMap map, Profile profile) throws Exception {
-        ProfileMap.IdProfileMap idProfileMap = new ProfileMap.IdProfileMap(profile.getId(), map.getId());
-        ProfileMap profileMap = ProfileMapDao.getInstance().get(idProfileMap);
-        profileMapService.deleteItem(profileMap);
+    protected AbstractMap deleteMap(Platform platform, AbstractMap map, Profile profile) throws Exception {
+        PlatformProfileMap.IdPlatformProfileMap idPlatformProfileMap = new PlatformProfileMap.IdPlatformProfileMap(platform.getId(), profile.getId(), map.getId());
+        PlatformProfileMap platformProfileMap = PlatformProfileMapDao.getInstance().get(idPlatformProfileMap);
+        platformProfileMapService.deleteItem(platformProfileMap);
         return map;
     }
 

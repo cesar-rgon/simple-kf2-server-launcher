@@ -7,7 +7,6 @@ import pojos.enums.EnumPlatform;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Optional;
 
 public class PopulateDatabase extends AbstractPopulateDatabase {
@@ -149,7 +148,7 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
                     null,
                     null,
                     null,
-                    new ArrayList<ProfileMap>(),
+                    new ArrayList<PlatformProfileMap>(),
                     false,
                     true,
                     false,
@@ -183,255 +182,293 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
     @Override
     protected void populateProfileMapList() throws Exception {
         Optional<Profile> profileOptional = ProfileDao.getInstance().findByCode("Default");
+        Optional<Platform> steamPlatformOptional = PlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
+        Optional<Platform> epicPlatformOptional = PlatformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
 
         Optional<OfficialMap> officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-BurningParis");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-BurningParis' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-BioticsLab");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-BioticsLab' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Outpost");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-Outpost' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-VolterManor");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-VolterManor' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Catacombs");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-Catacombs' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-EvacuationPoint");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-EvacuationPoint' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Farmhouse");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-Farmhouse' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-BlackForest");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-BlackForest' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Prison");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-Prison' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-ContainmentStation");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-ContainmentStation' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-HostileGrounds");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-HostileGrounds' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-InfernalRealm");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-InfernalRealm' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-ZedLanding");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-ZedLanding' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Nuked");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-Nuked' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-TheDescent");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-TheDescent' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-TragicKingdom");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-TragicKingdom' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Nightmare");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-Nightmare' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-KrampusLair");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-KrampusLair' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-DieSector");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-DieSector' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-PowerCore_Holdout");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-PowerCore_Holdout' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Airship");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-Airship' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Lockdown");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-Lockdown' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-MonsterBall");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-MonsterBall' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-SantasWorkshop");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-SantasWorkshop' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-ShoppingSpree");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-ShoppingSpree' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Spillway");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-Spillway' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-SteamFortress");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-SteamFortress' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-AshwoodAsylum");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-AshwoodAsylum' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Sanitarium");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-Sanitarium' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Biolapse");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-Biolapse' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Desolation");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-Desolation' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-HellmarkStation");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-HellmarkStation' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Elysium");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-Elysium' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Dystopia2029");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-Dystopia2029' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Moonbase");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-Moonbase' could not be persisted to database in populate process");
         }
 
         officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Netherhold");
-        if (profileOptional.isPresent() && officialMapOptional.isPresent()) {
-            populateProfileMap(profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+        if (steamPlatformOptional.isPresent() && profileOptional.isPresent() && officialMapOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
+            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
         } else {
             throw new RuntimeException("The relation between the profile 'Default' and the map 'KF-Netherhold' could not be persisted to database in populate process");
         }

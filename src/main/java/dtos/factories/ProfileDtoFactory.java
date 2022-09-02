@@ -4,7 +4,6 @@ import dtos.AbstractMapDto;
 import dtos.ProfileDto;
 import entities.AbstractMap;
 import entities.Profile;
-import entities.ProfileMap;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -86,8 +85,7 @@ public class ProfileDtoFactory {
                 profile.getMaxSpectators(),
                 profile.getMapObjetives(),
                 profile.getPickupItems(),
-                profile.getFriendlyFirePercentage(),
-                profile.getPlatform()
+                profile.getFriendlyFirePercentage()
         );
     }
 

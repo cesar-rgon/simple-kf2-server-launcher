@@ -5,12 +5,15 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name = "PROFILES_MAPS")
-public class ProfileMap extends AbstractEntity {
+@Table(name = "PLATFORMS_PROFILES_MAPS")
+public class PlatformProfileMap extends AbstractEntity {
 
     @Embeddable
-    public static class IdProfileMap implements Serializable {
+    public static class IdPlatformProfileMap implements Serializable {
         private static final long serialVersionUID = 1L;
+
+        @Column(name="ID_PLATFORM", nullable = false)
+        private Integer idPlatform;
 
         @Column(name="ID_PROFILE", nullable = false)
         private Integer idProfile;
@@ -18,12 +21,21 @@ public class ProfileMap extends AbstractEntity {
         @Column(name = "ID_MAP", nullable = false)
         private Integer idMap;
 
-        public IdProfileMap() {}
+        public IdPlatformProfileMap() {}
 
-        public IdProfileMap(Integer idProfile, Integer idMap) {
+        public IdPlatformProfileMap(Integer idPlatform, Integer idProfile, Integer idMap) {
             super();
+            this.idPlatform = idPlatform;
             this.idProfile = idProfile;
             this.idMap = idMap;
+        }
+
+        public Integer getIdPlatform() {
+            return idPlatform;
+        }
+
+        public void setIdPlatform(Integer idPlatform) {
+            this.idPlatform = idPlatform;
         }
 
         public Integer getIdProfile() {
@@ -44,9 +56,9 @@ public class ProfileMap extends AbstractEntity {
 
         @Override
         public boolean equals(Object o) {
-            if (o != null && o instanceof IdProfileMap) {
-                IdProfileMap that = (IdProfileMap)o;
-                return this.idProfile.equals(that.idProfile) && this.idMap.equals(that.idMap);
+            if (o != null && o instanceof IdPlatformProfileMap) {
+                IdPlatformProfileMap that = (IdPlatformProfileMap)o;
+                return this.idPlatform.equals(that.idPlatform) && this.idProfile.equals(that.idProfile) && this.idMap.equals(that.idMap);
             } else {
                 return false;
             }
@@ -54,12 +66,16 @@ public class ProfileMap extends AbstractEntity {
 
         @Override
         public int hashCode() {
-            return idProfile.hashCode() + idMap.hashCode();
+            return idPlatform.hashCode() + idProfile.hashCode() + idMap.hashCode();
         }
     }
 
     @EmbeddedId
-    private IdProfileMap idProfileMap;
+    private IdPlatformProfileMap idPlatformProfileMap;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name="ID_PLATFORM", referencedColumnName = "ID", insertable = false, updatable = false, nullable = false)
+    private Platform platform;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="ID_PROFILE", referencedColumnName = "ID", insertable = false, updatable = false, nullable = false)
@@ -84,13 +100,14 @@ public class ProfileMap extends AbstractEntity {
     @Column(name="URL_INFO", length=255)
     private String urlInfo;
 
-    public ProfileMap() {
+    public PlatformProfileMap() {
         super();
     }
 
-    public ProfileMap(Profile profile, AbstractMap map, Date releaseDate, String urlInfo, String urlPhoto) {
+    public PlatformProfileMap(Platform platform, Profile profile, AbstractMap map, Date releaseDate, String urlInfo, String urlPhoto) {
         super();
-        this.idProfileMap = new IdProfileMap(profile.getId(), map.getId());
+        this.idPlatformProfileMap = new IdPlatformProfileMap(platform.getId(), profile.getId(), map.getId());
+        this.platform = platform;
         this.profile = profile;
         this.map = map;
         this.alias = map.getCode();
@@ -104,12 +121,20 @@ public class ProfileMap extends AbstractEntity {
 
     @Override
     public Object getId() {
-        return idProfileMap;
+        return idPlatformProfileMap;
     }
 
     @Override
     public void setId(Object id) {
-        this.idProfileMap = (IdProfileMap) id;
+        this.idPlatformProfileMap = (IdPlatformProfileMap) id;
+    }
+
+    public Platform getPlatform() {
+        return platform;
+    }
+
+    public void setPlatform(Platform platform) {
+        this.platform = platform;
     }
 
     public Profile getProfile() {
@@ -170,9 +195,9 @@ public class ProfileMap extends AbstractEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (o != null && o instanceof ProfileMap) {
-            ProfileMap that = (ProfileMap)o;
-            return this.idProfileMap.equals(that.idProfileMap);
+        if (o != null && o instanceof PlatformProfileMap) {
+            PlatformProfileMap that = (PlatformProfileMap)o;
+            return this.idPlatformProfileMap.equals(that.idPlatformProfileMap);
         } else {
             return false;
         }
@@ -180,7 +205,7 @@ public class ProfileMap extends AbstractEntity {
 
     @Override
     public int hashCode() {
-        return idProfileMap.hashCode();
+        return idPlatformProfileMap.hashCode();
     }
 
 }

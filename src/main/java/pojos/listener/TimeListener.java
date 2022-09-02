@@ -2,6 +2,7 @@ package pojos.listener;
 
 import daos.CustomMapModDao;
 import entities.CustomMapMod;
+import entities.Platform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.enums.EnumPlatform;
@@ -38,7 +39,7 @@ public class TimeListener extends TimerTask {
                 PropertyService propertyService = new PropertyServiceImpl();
 
                 String installationFolder;
-                if (EnumPlatform.STEAM.equals(Session.getInstance().getActualProfile().getPlatform())) {
+                if (EnumPlatform.STEAM.equals(Session.getInstance().getPlatform())) {
                     installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
                 } else {
                     installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
@@ -58,12 +59,12 @@ public class TimeListener extends TimerTask {
                             String[] array = filenameWithExtension.split("\\.");
                             String filenameWithoutExtension = array[0];
                             map.setCode(filenameWithoutExtension);
-                            map.setDownloaded(true);
+                            map.getDownnloadedMap().add(new Platform(EnumPlatform.STEAM));
                             CustomMapModDao.getInstance().update(map);
                         } else {
                             File folder = new File(installationFolder + "/KFGame/Cache/" + map.getIdWorkShop());
                             if (folder.exists()) {
-                                map.setDownloaded(true);
+                                map.getDownnloadedMap().add(new Platform(EnumPlatform.STEAM));
                                 CustomMapModDao.getInstance().update(map);
                             }
                         }

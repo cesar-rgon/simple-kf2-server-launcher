@@ -1,7 +1,7 @@
 package stories.mapedition;
 
-import daos.ProfileMapDao;
-import entities.ProfileMap;
+import daos.PlatformProfileMapDao;
+import entities.PlatformProfileMap;
 import services.AbstractMapService;
 import services.CustomMapModServiceImpl;
 import services.OfficialMapServiceImpl;
@@ -24,26 +24,26 @@ public class MapEditionFacadeImpl extends AbstractFacade implements MapEditionFa
     }
 
     @Override
-    public boolean updateMapSetUrlPhoto(ProfileMap profileMap, String mapPreviewUrl) throws SQLException {
-        profileMap.setUrlPhoto(mapPreviewUrl);
-        return ProfileMapDao.getInstance().update(profileMap);
+    public boolean updateMapSetUrlPhoto(PlatformProfileMap platformProfileMap, String mapPreviewUrl) throws SQLException {
+        platformProfileMap.setUrlPhoto(mapPreviewUrl);
+        return PlatformProfileMapDao.getInstance().update(platformProfileMap);
     }
 
     @Override
-    public boolean updateMapSetInfoUrl(ProfileMap profileMap, String mapInfoUrl) throws SQLException {
-        profileMap.setUrlInfo(mapInfoUrl);
-        return ProfileMapDao.getInstance().update(profileMap);
+    public boolean updateMapSetInfoUrl(PlatformProfileMap platformProfileMap, String mapInfoUrl) throws SQLException {
+        platformProfileMap.setUrlInfo(mapInfoUrl);
+        return PlatformProfileMapDao.getInstance().update(platformProfileMap);
     }
 
     @Override
-    public boolean updateMapSetReleaseDate(ProfileMap profileMap, LocalDate releaseDate) throws SQLException {
-        profileMap.setReleaseDate(Date.from(releaseDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        return ProfileMapDao.getInstance().update(profileMap);
+    public boolean updateMapSetReleaseDate(PlatformProfileMap platformProfileMap, LocalDate releaseDate) throws SQLException {
+        platformProfileMap.setReleaseDate(Date.from(releaseDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+        return PlatformProfileMapDao.getInstance().update(platformProfileMap);
     }
 
     @Override
-    public boolean updateMapSetAlias(ProfileMap profileMap, String alias) throws SQLException {
-        profileMap.setAlias(alias);
-        return ProfileMapDao.getInstance().update(profileMap);
+    public boolean updateMapSetAlias(PlatformProfileMap platformProfileMap, String alias) throws SQLException {
+        platformProfileMap.setAlias(alias);
+        return PlatformProfileMapDao.getInstance().update(platformProfileMap);
     }
 }

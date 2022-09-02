@@ -230,7 +230,7 @@ public class InstallUpdateSteamServerController implements Initializable {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                Kf2Common kf2Common = Kf2Factory.getInstance(EnumPlatform.STEAM);
+                Kf2Common kf2Common = Kf2Factory.getInstance(EnumPlatform.STEAM.name());
                 if (StringUtils.isNotBlank(installationFolder.getText())) {
                     installationFolder.setText(installationFolder.getText().replaceAll(" ", "_"));
                 }
