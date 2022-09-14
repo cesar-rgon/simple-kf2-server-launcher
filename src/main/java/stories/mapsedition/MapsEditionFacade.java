@@ -5,7 +5,6 @@ import entities.AbstractMap;
 import entities.PlatformProfileMap;
 import javafx.collections.ObservableList;
 import pojos.ImportMapResultToDisplay;
-import pojos.enums.EnumPlatform;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -27,5 +26,5 @@ public interface MapsEditionFacade {
     Optional<AbstractMap> findMapByName(String mapName) throws SQLException;
     Optional<PlatformProfileMapDto> findPlatformProfileMapDtoByNames(String platformName, String profileName, String mapName) throws SQLException;
     Optional<PlatformProfileMap> findPlatformProfileMapByNames(String platformName, String profileName, String mapName) throws SQLException;
-    List<PlatformProfileMapDto> listProfileMaps(String platformName, String profileName) throws SQLException;
+    List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws SQLException;
 }

@@ -7,6 +7,7 @@ import entities.*;
 import javafx.collections.ObservableList;
 import pojos.ProfileToDisplay;
 import pojos.ProfileToDisplayFactory;
+import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import pojos.kf2factory.Kf2Steam;
@@ -682,5 +683,11 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     public void runExecutableFile(PlatformDto platform) {
         Kf2Common kf2Common = Kf2Factory.getInstance(platform.getKey());
         kf2Common.runExecutableFile();
+    }
+
+    @Override
+    public PlatformDto getPlatform(EnumPlatform enumPlatform) throws SQLException {
+        Optional<Platform> platformOptional = PlatformDao.getInstance().findByCode(enumPlatform.name());
+        return platformOptional.isPresent() ? platformDtoFactory.newDto(platformOptional.get()): null;
     }
 }

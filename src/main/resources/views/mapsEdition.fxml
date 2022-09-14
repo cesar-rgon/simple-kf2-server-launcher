@@ -25,9 +25,22 @@
             <Insets right="10.0" top="20.0" />
          </GridPane.margin></ComboBox>
 
-      <TabPane fx:id="steamCustomMapsTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnSpan="5" GridPane.rowIndex="1">
+      <TabPane fx:id="mapsTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnSpan="5" GridPane.rowIndex="1">
         <tabs>
-          <Tab id="titleConfigLabel" fx:id="steamCustomMapsTab" onSelectionChanged="#customMapsModsTabOnSelectionChanged" text="Custom Maps for Steam">
+           <Tab id="titleConfigLabel" fx:id="steamOfficialMapsTab" text="Steam. Official Maps">
+              <content>
+                 <ScrollPane fx:id="steamOfficialMapsScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS">
+                    <content>
+                       <FlowPane fx:id="steamOfficialMapsFlowPane" hgap="50.0" style="-fx-background-color: black;" vgap="50.0">
+                          <padding>
+                             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                          </padding>
+                       </FlowPane>
+                    </content>
+                 </ScrollPane>
+              </content>
+           </Tab>
+          <Tab id="titleConfigLabel" fx:id="steamCustomMapsTab" text="Steam. Custom Maps">
                <content>
                   <ScrollPane fx:id="steamCustomMapsScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS">
                      <content>
@@ -40,7 +53,20 @@
                   </ScrollPane>
                </content>
             </Tab>
-           <Tab id="titleConfigLabel" fx:id="epicCustomMapsTab" onSelectionChanged="#customMapsModsTabOnSelectionChanged" text="Custom Maps for Epic Games">
+           <Tab id="titleConfigLabel" fx:id="epicOfficialMapsTab" text="Epic. Official Maps">
+              <content>
+                 <ScrollPane fx:id="epicOfficialMapsScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS">
+                    <content>
+                       <FlowPane fx:id="epicOfficialMapsFlowPane" hgap="50.0" style="-fx-background-color: black;" vgap="50.0">
+                          <padding>
+                             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                          </padding>
+                       </FlowPane>
+                    </content>
+                 </ScrollPane>
+              </content>
+           </Tab>
+           <Tab id="titleConfigLabel" fx:id="epicCustomMapsTab" text="Epic. Custom Maps">
               <content>
                  <ScrollPane fx:id="epicCustomMapsScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS">
                     <content>
@@ -53,19 +79,6 @@
                  </ScrollPane>
               </content>
            </Tab>
-          <Tab id="titleConfigLabel" fx:id="officialMapsTab" onSelectionChanged="#officialMapsTabOnSelectionChanged" text="Official Maps">
-               <content>
-                  <ScrollPane fx:id="officialMapsScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS">
-                     <content>
-                        <FlowPane fx:id="officialMapsFlowPane" hgap="50.0" style="-fx-background-color: black;" vgap="50.0">
-                           <padding>
-                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                           </padding>
-                        </FlowPane>
-                     </content>
-                  </ScrollPane>
-               </content>
-            </Tab>
         </tabs>
       </TabPane>
       <ProgressIndicator fx:id="progressIndicator" maxHeight="150.0" maxWidth="150.0" visible="false" GridPane.columnSpan="6" GridPane.halignment="CENTER" GridPane.rowIndex="1" />

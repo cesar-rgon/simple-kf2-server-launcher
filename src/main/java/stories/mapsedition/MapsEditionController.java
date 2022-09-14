@@ -62,21 +62,26 @@ public class MapsEditionController implements Initializable {
     private final PropertyService propertyService;
     protected String languageCode;
     private String installationFolder;
-    private List<PlatformProfileMapDto> platformProfileMapDtoList;
+    private List<PlatformProfileMapDto> steamPlatformProfileMapDtoList;
+    private List<PlatformProfileMapDto> epicPlatformProfileMapDtoList;
     private boolean selectMaps;
 
     @FXML private Slider mapsSlider;
-    @FXML private FlowPane officialMapsFlowPane;
+    @FXML private FlowPane steamOfficialMapsFlowPane;
     @FXML private FlowPane steamCustomMapsFlowPane;
+    @FXML private FlowPane epicOfficialMapsFlowPane;
+    @FXML private FlowPane epicCustomMapsFlowPane;
     @FXML private TextField searchMaps;
     @FXML private MenuItem addNewMaps;
     @FXML private MenuItem searchInWorkShop;
     @FXML private MenuItem removeMaps;
     @FXML private CheckBox selectAllMaps;
     @FXML private MenuItem importMapsFromServer;
-    @FXML private TabPane steamCustomMapsTabPane;
+    @FXML private TabPane mapsTabPane;
+    @FXML private Tab steamOfficialMapsTab;
     @FXML private Tab steamCustomMapsTab;
-    @FXML private Tab officialMapsTab;
+    @FXML private Tab epicOfficialMapsTab;
+    @FXML private Tab epicCustomMapsTab;
     @FXML private Label sliderLabel;
     @FXML private ImageView searchImg;
     @FXML private ComboBox<ProfileDto> profileSelect;
@@ -117,10 +122,15 @@ public class MapsEditionController implements Initializable {
                                 Session.getInstance().getActualProfile():
                                 profileSelect.getItems().get(0));
 
-                platformProfileMapDtoList = facade.listProfileMaps(
-                        Session.getInstance().getPlatform().getKey(),
+                steamPlatformProfileMapDtoList = facade.listPlatformProfileMaps(
+                        EnumPlatform.STEAM.name(),
                         profileSelect.getValue().getName()
-                );;
+                );
+
+                epicPlatformProfileMapDtoList = facade.listPlatformProfileMaps(
+                        EnumPlatform.EPIC.name(),
+                        profileSelect.getValue().getName()
+                );
 
                 if (profileSelect.getValue() == null || EnumPlatform.STEAM.equals(Session.getInstance().getPlatform())) {
                     installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
@@ -131,22 +141,48 @@ public class MapsEditionController implements Initializable {
                 orderMapsByNameOnAction();
             } else {
                 profileSelect.setValue(null);
-                platformProfileMapDtoList = null;
+                steamPlatformProfileMapDtoList = null;
+                epicPlatformProfileMapDtoList = null;
                 installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
             }
             Session.getInstance().setMapsProfile(profileSelect.getValue());
 
 
-            String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
-            officialMapsTab.setGraphic(createTabTitle(officialMapsTabText, officialMapsFlowPane.getChildren().size()));
-            officialMapsTab.setText("");
+            String steamOfficialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamOfficiaslMaps");
+            steamOfficialMapsTab.setGraphic(createTabTitle(steamOfficialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
+            steamOfficialMapsTab.setText("");
 
-            String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamCustomMaps");
-            steamCustomMapsTab.setGraphic(createTabTitle(customMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
+            String steamCustomMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamCustomMaps");
+            steamCustomMapsTab.setGraphic(createTabTitle(steamCustomMapsTabText, steamCustomMapsFlowPane.getChildren().size()));
             steamCustomMapsTab.setText("");
 
-            SingleSelectionModel<Tab> selectionModel = steamCustomMapsTabPane.getSelectionModel();
-            selectionModel.select(EnumMapsTab.OFFICIAL_MAPS_TAB.equals(Session.getInstance().getSelectedMapTab()) ? officialMapsTab: steamCustomMapsTab);
+            String epicOfficialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.epicOfficiaslMaps");
+            epicOfficialMapsTab.setGraphic(createTabTitle(epicOfficialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
+            epicOfficialMapsTab.setText("");
+
+            String epicCustomMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.epicCustomMaps");
+            epicCustomMapsTab.setGraphic(createTabTitle(epicCustomMapsTabText, steamCustomMapsFlowPane.getChildren().size()));
+            epicCustomMapsTab.setText("");
+
+            SingleSelectionModel<Tab> selectionModel = mapsTabPane.getSelectionModel();
+            switch (Session.getInstance().getSelectedMapTab()) {
+                case STEAM_OFFICIAL_MAPS_TAB:
+                    selectionModel.select(steamOfficialMapsTab);
+                    break;
+
+                case STEAM_CUSTOM_MAPS_TAB:
+                    selectionModel.select(steamCustomMapsTab);
+                    break;
+
+                case EPIC_OFFICIAL_MAPS_TAB:
+                    selectionModel.select(epicOfficialMapsTab);
+                    break;
+
+                case EPIC_CUSTOM_MAPS_TAB:
+                    selectionModel.select(epicCustomMapsTab);
+                    break;
+            }
+
 
             Double tooltipDuration = Double.parseDouble(
                     propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
@@ -217,6 +253,33 @@ public class MapsEditionController implements Initializable {
             logger.error(message, e);
             Utils.errorDialog(message, e);
         }
+
+
+        mapsTabPane.getSelectionModel().selectedItemProperty().addListener(
+                new ChangeListener<Tab>() {
+                    @Override
+                    public void changed(ObservableValue<? extends Tab> ov, Tab oldTab, Tab newTab) {
+
+                        if (newTab.equals(steamOfficialMapsTab)) {
+                            Session.getInstance().setSelectedMapTab(EnumMapsTab.STEAM_OFFICIAL_MAPS_TAB);
+                        }
+                        if (newTab.equals(steamCustomMapsTab)) {
+                            Session.getInstance().setSelectedMapTab(EnumMapsTab.STEAM_CUSTOM_MAPS_TAB);
+                        }
+                        if (newTab.equals(epicOfficialMapsTab)) {
+                            Session.getInstance().setSelectedMapTab(EnumMapsTab.EPIC_OFFICIAL_MAPS_TAB);
+                        }
+                        if (newTab.equals(epicCustomMapsTab)) {
+                            Session.getInstance().setSelectedMapTab(EnumMapsTab.EPIC_CUSTOM_MAPS_TAB);
+                        }
+
+                        if (selectAllMaps != null && selectAllMaps.isSelected()) {
+                            selectAllMaps.setSelected(false);
+                            selectAllMapsOnAction();
+                        }
+                    }
+                }
+        );
     }
 
 
@@ -474,8 +537,8 @@ public class MapsEditionController implements Initializable {
 
     @FXML
     private void mapsSliderOnMouseClicked() {
-        for (int index = 0; index < officialMapsFlowPane.getChildren().size(); index++) {
-            GridPane gridPane = (GridPane)officialMapsFlowPane.getChildren().get(index);
+        for (int index = 0; index < steamOfficialMapsFlowPane.getChildren().size(); index++) {
+            GridPane gridPane = (GridPane) steamOfficialMapsFlowPane.getChildren().get(index);
             resizeGridPane(gridPane);
         }
         for (int index = 0; index < steamCustomMapsFlowPane.getChildren().size(); index++) {
@@ -500,15 +563,15 @@ public class MapsEditionController implements Initializable {
         } else {
             selectAllMaps.setVisible(true);
         }
-        officialMapsFlowPane.getChildren().clear();
+        steamOfficialMapsFlowPane.getChildren().clear();
         steamCustomMapsFlowPane.getChildren().clear();
-        for (PlatformProfileMapDto platformProfileMapDto : platformProfileMapDtoList) {
+        for (PlatformProfileMapDto platformProfileMapDto : steamPlatformProfileMapDtoList) {
             String mapName = StringUtils.upperCase(platformProfileMapDto.getMapDto().getKey());
             String alias = StringUtils.upperCase(platformProfileMapDto.getAlias());
             if (mapName.contains(StringUtils.upperCase(searchMaps.getText())) || alias.contains(StringUtils.upperCase(searchMaps.getText()))) {
                 GridPane gridpane = createMapGridPane(platformProfileMapDto);
                 if (platformProfileMapDto.getMapDto().isOfficial()) {
-                    officialMapsFlowPane.getChildren().add(gridpane);
+                    steamOfficialMapsFlowPane.getChildren().add(gridpane);
                 } else {
                     steamCustomMapsFlowPane.getChildren().add(gridpane);
                 }
@@ -536,8 +599,8 @@ public class MapsEditionController implements Initializable {
                 return;
             }
 
-            if (officialMapsTab.isSelected()) {
-                SingleSelectionModel<Tab> selectionModel = steamCustomMapsTabPane.getSelectionModel();
+            if (steamOfficialMapsTab.isSelected()) {
+                SingleSelectionModel<Tab> selectionModel = mapsTabPane.getSelectionModel();
                 selectionModel.select(steamCustomMapsTab);
             }
             String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.addCustomMaps");
@@ -583,11 +646,11 @@ public class MapsEditionController implements Initializable {
                 List<AbstractMapDto> mapAddedListToActualProfile = task.getValue();
                 if (mapAddedListToActualProfile != null && !mapAddedListToActualProfile.isEmpty()) {
                     mapAddedListToActualProfile.stream().forEach(customMapMod -> {
-                        if (!platformProfileMapDtoList.stream().filter(pm -> !pm.getMapDto().isOfficial() && ((CustomMapModDto) pm.getMapDto()).getIdWorkShop().equals(((CustomMapModDto) customMapMod).getIdWorkShop())).findFirst().isPresent()) {
+                        if (!steamPlatformProfileMapDtoList.stream().filter(pm -> !pm.getMapDto().isOfficial() && ((CustomMapModDto) pm.getMapDto()).getIdWorkShop().equals(((CustomMapModDto) customMapMod).getIdWorkShop())).findFirst().isPresent()) {
                             try {
                                 Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByNames(Session.getInstance().getPlatform().getKey(), profileSelect.getValue().getName(), customMapMod.getKey());
                                 if (profileMapDtoOptional.isPresent()) {
-                                    platformProfileMapDtoList.add(profileMapDtoOptional.get());
+                                    steamPlatformProfileMapDtoList.add(profileMapDtoOptional.get());
                                     GridPane gridpane = createMapGridPane(profileMapDtoOptional.get());
                                     steamCustomMapsFlowPane.getChildren().add(gridpane);
                                 }
@@ -641,7 +704,7 @@ public class MapsEditionController implements Initializable {
             }
             List<Node> removeList = new ArrayList<Node>();
             StringBuffer message = new StringBuffer();
-            ObservableList<Node> officialNodes = officialMapsFlowPane.getChildren();
+            ObservableList<Node> officialNodes = steamOfficialMapsFlowPane.getChildren();
             ObservableList<Node> customNodes = steamCustomMapsFlowPane.getChildren();
 
             for (Node node : officialNodes) {
@@ -713,16 +776,16 @@ public class MapsEditionController implements Initializable {
                         try {
                             if (!gridpaneToRemoveList.isEmpty()) {
 
-                                    if (officialMapsTab.isSelected()) {
-                                        officialMapsFlowPane.getChildren().removeAll(gridpaneToRemoveList);
+                                    if (steamOfficialMapsTab.isSelected()) {
+                                        steamOfficialMapsFlowPane.getChildren().removeAll(gridpaneToRemoveList);
                                     } else {
                                         steamCustomMapsFlowPane.getChildren().removeAll(gridpaneToRemoveList);
                                     }
 
-                                    platformProfileMapDtoList.clear();
-                                    platformProfileMapDtoList = facade.listProfileMaps(Session.getInstance().getPlatform().getKey(), profileSelect.getValue().getName());;
+                                    steamPlatformProfileMapDtoList.clear();
+                                    steamPlatformProfileMapDtoList = facade.listPlatformProfileMaps(Session.getInstance().getPlatform().getKey(), profileSelect.getValue().getName());;
                                     String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
-                                    officialMapsTab.setGraphic(createTabTitle(officialMapsTabText, officialMapsFlowPane.getChildren().size()));
+                                    steamOfficialMapsTab.setGraphic(createTabTitle(officialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
                                     String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamCustomMaps");
                                     steamCustomMapsTab.setGraphic(createTabTitle(customMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
                             }
@@ -862,19 +925,19 @@ public class MapsEditionController implements Initializable {
             };
             task.setOnSucceeded(wse -> {
                 try {
-                    officialMapsFlowPane.getChildren().clear();
+                    steamOfficialMapsFlowPane.getChildren().clear();
                     steamCustomMapsFlowPane.getChildren().clear();
-                    platformProfileMapDtoList.stream().forEach(profileMapDto -> {
+                    steamPlatformProfileMapDtoList.stream().forEach(profileMapDto -> {
                         GridPane gridpane = createMapGridPane(profileMapDto);
                         if (profileMapDto.getMapDto().isOfficial()) {
-                            officialMapsFlowPane.getChildren().add(gridpane);
+                            steamOfficialMapsFlowPane.getChildren().add(gridpane);
                         } else {
                             steamCustomMapsFlowPane.getChildren().add(gridpane);
                         }
                     });
 
                     String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
-                    officialMapsTab.setGraphic(createTabTitle(officialMapsTabText, officialMapsFlowPane.getChildren().size()));
+                    steamOfficialMapsTab.setGraphic(createTabTitle(officialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
                     String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamCustomMaps");
                     steamCustomMapsTab.setGraphic(createTabTitle(customMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
 
@@ -948,7 +1011,7 @@ public class MapsEditionController implements Initializable {
 
 
             if (selectedProfileNameList.contains(profileSelect.getValue().getName()) &&
-                    !platformProfileMapDtoList.stream().filter(pm -> pm.getMapDto().isOfficial() && pm.getMapDto().getKey().equalsIgnoreCase(officialMapImportedDto.getKey())).findFirst().isPresent()) {
+                    !steamPlatformProfileMapDtoList.stream().filter(pm -> pm.getMapDto().isOfficial() && pm.getMapDto().getKey().equalsIgnoreCase(officialMapImportedDto.getKey())).findFirst().isPresent()) {
                 try {
                     Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByNames(
                             Session.getInstance().getPlatform().getKey(),
@@ -956,7 +1019,7 @@ public class MapsEditionController implements Initializable {
                             officialMapImportedDto.getKey()
                     );
                     if (profileMapDtoOptional.isPresent()) {
-                        platformProfileMapDtoList.add(profileMapDtoOptional.get());
+                        steamPlatformProfileMapDtoList.add(profileMapDtoOptional.get());
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -989,7 +1052,7 @@ public class MapsEditionController implements Initializable {
             );
 
             if (selectedProfileNameList.contains(profileSelect.getValue().getName()) &&
-                    !platformProfileMapDtoList.stream().filter(pm -> !pm.getMapDto().isOfficial() && ((CustomMapModDto) pm.getMapDto()).getIdWorkShop().equals(customMapModImportedDto.getIdWorkShop())).findFirst().isPresent()) {
+                    !steamPlatformProfileMapDtoList.stream().filter(pm -> !pm.getMapDto().isOfficial() && ((CustomMapModDto) pm.getMapDto()).getIdWorkShop().equals(customMapModImportedDto.getIdWorkShop())).findFirst().isPresent()) {
                 try {
                     Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByNames(
                             Session.getInstance().getPlatform().getKey(),
@@ -997,7 +1060,7 @@ public class MapsEditionController implements Initializable {
                             customMapModImportedDto.getKey()
                     );
                     if (profileMapDtoOptional.isPresent()) {
-                        platformProfileMapDtoList.add(profileMapDtoOptional.get());
+                        steamPlatformProfileMapDtoList.add(profileMapDtoOptional.get());
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -1018,13 +1081,13 @@ public class MapsEditionController implements Initializable {
     private void selectAllMapsOnAction() {
         ObservableList<Node> nodes = null;
         if (selectAllMaps.isSelected()) {
-            if (officialMapsTab.isSelected()) {
-                nodes = officialMapsFlowPane.getChildren();
+            if (steamOfficialMapsTab.isSelected()) {
+                nodes = steamOfficialMapsFlowPane.getChildren();
             } else {
                 nodes = steamCustomMapsFlowPane.getChildren();
             }
         } else {
-            nodes = FXCollections.concat(officialMapsFlowPane.getChildren(), steamCustomMapsFlowPane.getChildren());
+            nodes = FXCollections.concat(steamOfficialMapsFlowPane.getChildren(), steamCustomMapsFlowPane.getChildren());
         }
 
         for (Node node: nodes) {
@@ -1056,22 +1119,22 @@ public class MapsEditionController implements Initializable {
     private void profileOnAction() {
         try {
             steamCustomMapsFlowPane.getChildren().clear();
-            officialMapsFlowPane.getChildren().clear();
-            platformProfileMapDtoList = facade.listProfileMaps(
+            steamOfficialMapsFlowPane.getChildren().clear();
+            steamPlatformProfileMapDtoList = facade.listPlatformProfileMaps(
                     Session.getInstance().getPlatform().getKey(),
                     profileSelect.getValue().getName()
             );
-            for (PlatformProfileMapDto platformProfileMapDto : platformProfileMapDtoList) {
+            for (PlatformProfileMapDto platformProfileMapDto : steamPlatformProfileMapDtoList) {
                 GridPane gridpane = createMapGridPane(platformProfileMapDto);
                 if (platformProfileMapDto.getMapDto().isOfficial()) {
-                    officialMapsFlowPane.getChildren().add(gridpane);
+                    steamOfficialMapsFlowPane.getChildren().add(gridpane);
                 } else {
                     steamCustomMapsFlowPane.getChildren().add(gridpane);
                 }
             }
 
             String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
-            officialMapsTab.setGraphic(createTabTitle(officialMapsTabText, officialMapsFlowPane.getChildren().size()));
+            steamOfficialMapsTab.setGraphic(createTabTitle(officialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
             String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamCustomMaps");
             steamCustomMapsTab.setGraphic(createTabTitle(customMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
 
@@ -1088,20 +1151,20 @@ public class MapsEditionController implements Initializable {
     @FXML
     private void orderMapsByAliasOnAction() {
         steamCustomMapsFlowPane.getChildren().clear();
-        officialMapsFlowPane.getChildren().clear();
+        steamOfficialMapsFlowPane.getChildren().clear();
 
         if (EnumSortedMapsCriteria.ALIAS_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
-            platformProfileMapDtoList = platformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm1.getAlias().compareTo(pm2.getAlias())).collect(Collectors.toList());
+            steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm1.getAlias().compareTo(pm2.getAlias())).collect(Collectors.toList());
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.ALIAS_ASC);
         } else {
-            platformProfileMapDtoList = platformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm2.getAlias().compareTo(pm1.getAlias())).collect(Collectors.toList());
+            steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm2.getAlias().compareTo(pm1.getAlias())).collect(Collectors.toList());
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.ALIAS_DESC);
         }
 
-        for (PlatformProfileMapDto platformProfileMapDto : platformProfileMapDtoList) {
+        for (PlatformProfileMapDto platformProfileMapDto : steamPlatformProfileMapDtoList) {
             GridPane gridpane = createMapGridPane(platformProfileMapDto);
             if (platformProfileMapDto.getMapDto().isOfficial()) {
-                officialMapsFlowPane.getChildren().add(gridpane);
+                steamOfficialMapsFlowPane.getChildren().add(gridpane);
             } else {
                 steamCustomMapsFlowPane.getChildren().add(gridpane);
             }
@@ -1110,92 +1173,83 @@ public class MapsEditionController implements Initializable {
 
     @FXML
     private void orderMapsByNameOnAction() {
+        steamOfficialMapsFlowPane.getChildren().clear();
         steamCustomMapsFlowPane.getChildren().clear();
-        officialMapsFlowPane.getChildren().clear();
+        epicOfficialMapsFlowPane.getChildren().clear();
+        epicCustomMapsFlowPane.getChildren().clear();
 
         if (EnumSortedMapsCriteria.NAME_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
-            platformProfileMapDtoList = platformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm1.getMapDto().getKey().compareTo(pm2.getMapDto().getKey())).collect(Collectors.toList());
+            steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm1.getMapDto().getKey().compareTo(pm2.getMapDto().getKey())).collect(Collectors.toList());
+            epicPlatformProfileMapDtoList = epicPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm1.getMapDto().getKey().compareTo(pm2.getMapDto().getKey())).collect(Collectors.toList());
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.NAME_ASC);
         } else {
-            platformProfileMapDtoList = platformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm2.getMapDto().getKey().compareTo(pm1.getMapDto().getKey())).collect(Collectors.toList());
+            steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm2.getMapDto().getKey().compareTo(pm1.getMapDto().getKey())).collect(Collectors.toList());
+            epicPlatformProfileMapDtoList = epicPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm2.getMapDto().getKey().compareTo(pm1.getMapDto().getKey())).collect(Collectors.toList());
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.NAME_DESC);
         }
 
-        for (PlatformProfileMapDto platformProfileMapDto : platformProfileMapDtoList) {
+        for (PlatformProfileMapDto platformProfileMapDto : steamPlatformProfileMapDtoList) {
             GridPane gridpane = createMapGridPane(platformProfileMapDto);
             if (platformProfileMapDto.getMapDto().isOfficial()) {
-                officialMapsFlowPane.getChildren().add(gridpane);
+                steamOfficialMapsFlowPane.getChildren().add(gridpane);
             } else {
                 steamCustomMapsFlowPane.getChildren().add(gridpane);
             }
         }
-    }
 
-    @FXML
-    private void officialMapsTabOnSelectionChanged() {
-        if (steamCustomMapsTab != null && !officialMapsTab.isSelected()) {
-            Session.getInstance().setSelectedMapTab(EnumMapsTab.CUSTOM_MAPS_TAB);
-        }
-        if (selectAllMaps != null && selectAllMaps.isSelected()) {
-            selectAllMaps.setSelected(false);
-            selectAllMapsOnAction();
-        }
-    }
-
-    @FXML
-    private void customMapsModsTabOnSelectionChanged() {
-        if (officialMapsTab != null && !steamCustomMapsTab.isSelected()) {
-            Session.getInstance().setSelectedMapTab(EnumMapsTab.OFFICIAL_MAPS_TAB);
-        }
-        if (selectAllMaps != null && selectAllMaps.isSelected()) {
-            selectAllMaps.setSelected(false);
-            selectAllMapsOnAction();
+        for (PlatformProfileMapDto platformProfileMapDto : epicPlatformProfileMapDtoList) {
+            GridPane gridpane = createMapGridPane(platformProfileMapDto);
+            if (platformProfileMapDto.getMapDto().isOfficial()) {
+                epicOfficialMapsFlowPane.getChildren().add(gridpane);
+            } else {
+                epicCustomMapsFlowPane.getChildren().add(gridpane);
+            }
         }
     }
 
-    @FXML
+     @FXML
     private void orderMapsByReleaseDateOnAction() {
         steamCustomMapsFlowPane.getChildren().clear();
-        officialMapsFlowPane.getChildren().clear();
+        steamOfficialMapsFlowPane.getChildren().clear();
 
         if (EnumSortedMapsCriteria.RELEASE_DATE_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
             List<PlatformProfileMapDto> sortedMapList = new ArrayList<PlatformProfileMapDto>(
-                    platformProfileMapDtoList.stream()
+                    steamPlatformProfileMapDtoList.stream()
                             .filter(pm -> pm.getReleaseDate() != null)
                             .sorted((pm1, pm2) -> pm1.getReleaseDate().compareTo(pm2.getReleaseDate()))
                             .collect(Collectors.toList())
             );
             List<PlatformProfileMapDto> mapWithoutReleaseDateList = new ArrayList<PlatformProfileMapDto>(
-                    platformProfileMapDtoList.stream()
+                    steamPlatformProfileMapDtoList.stream()
                             .filter(pm -> pm.getReleaseDate() == null)
                             .collect(Collectors.toList())
             );
 
             sortedMapList.addAll(mapWithoutReleaseDateList);
-            platformProfileMapDtoList = sortedMapList;
+            steamPlatformProfileMapDtoList = sortedMapList;
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.RELEASE_DATE_ASC);
         } else {
             List<PlatformProfileMapDto> sortedMapList = new ArrayList<PlatformProfileMapDto>(
-                    platformProfileMapDtoList.stream()
+                    steamPlatformProfileMapDtoList.stream()
                             .filter(pm -> pm.getReleaseDate() != null)
                             .sorted((pm1, pm2) -> pm2.getReleaseDate().compareTo(pm1.getReleaseDate()))
                             .collect(Collectors.toList())
             );
             List<PlatformProfileMapDto> mapWithoutReleaseDateList = new ArrayList<PlatformProfileMapDto>(
-                    platformProfileMapDtoList.stream()
+                    steamPlatformProfileMapDtoList.stream()
                             .filter(pm -> pm.getReleaseDate() == null)
                             .collect(Collectors.toList())
             );
 
             sortedMapList.addAll(mapWithoutReleaseDateList);
-            platformProfileMapDtoList = sortedMapList;
+            steamPlatformProfileMapDtoList = sortedMapList;
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.RELEASE_DATE_DESC);
         }
 
-        for (PlatformProfileMapDto platformProfileMapDto : platformProfileMapDtoList) {
+        for (PlatformProfileMapDto platformProfileMapDto : steamPlatformProfileMapDtoList) {
             GridPane gridpane = createMapGridPane(platformProfileMapDto);
             if (platformProfileMapDto.getMapDto().isOfficial()) {
-                officialMapsFlowPane.getChildren().add(gridpane);
+                steamOfficialMapsFlowPane.getChildren().add(gridpane);
             } else {
                 steamCustomMapsFlowPane.getChildren().add(gridpane);
             }
@@ -1205,20 +1259,20 @@ public class MapsEditionController implements Initializable {
     @FXML
     private void orderMapsByImportedDateOnAction() {
         steamCustomMapsFlowPane.getChildren().clear();
-        officialMapsFlowPane.getChildren().clear();
+        steamOfficialMapsFlowPane.getChildren().clear();
 
         if (EnumSortedMapsCriteria.IMPORTED_DATE_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
-            platformProfileMapDtoList = platformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm1.getImportedDate().compareTo(pm2.getImportedDate())).collect(Collectors.toList());
+            steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm1.getImportedDate().compareTo(pm2.getImportedDate())).collect(Collectors.toList());
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.IMPORTED_DATE_ASC);
         } else {
-            platformProfileMapDtoList = platformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm2.getImportedDate().compareTo(pm1.getImportedDate())).collect(Collectors.toList());
+            steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm2.getImportedDate().compareTo(pm1.getImportedDate())).collect(Collectors.toList());
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.IMPORTED_DATE_DESC);
         }
 
-        for (PlatformProfileMapDto platformProfileMapDto : platformProfileMapDtoList) {
+        for (PlatformProfileMapDto platformProfileMapDto : steamPlatformProfileMapDtoList) {
             GridPane gridpane = createMapGridPane(platformProfileMapDto);
             if (platformProfileMapDto.getMapDto().isOfficial()) {
-                officialMapsFlowPane.getChildren().add(gridpane);
+                steamOfficialMapsFlowPane.getChildren().add(gridpane);
             } else {
                 steamCustomMapsFlowPane.getChildren().add(gridpane);
             }
@@ -1227,13 +1281,13 @@ public class MapsEditionController implements Initializable {
 
     @FXML
     private void orderMapsByDownloadOnAction() {
-        if (officialMapsTab.isSelected()) {
+        if (steamOfficialMapsTab.isSelected()) {
             return;
         }
         steamCustomMapsFlowPane.getChildren().clear();
 
         if (EnumSortedMapsCriteria.DOWNLOAD_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
-            platformProfileMapDtoList = platformProfileMapDtoList.stream().
+            steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().
                     filter(pm -> !pm.getMapDto().isOfficial()).
                     sorted((pm1, pm2) -> {
                 Boolean map1Downloaded = ((CustomMapModDto) pm1.getMapDto()).isDownloaded();
@@ -1242,7 +1296,7 @@ public class MapsEditionController implements Initializable {
             }).collect(Collectors.toList());
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.DOWNLOAD_ASC);
         } else {
-            platformProfileMapDtoList = platformProfileMapDtoList.stream().
+            steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().
                     filter(pm -> !pm.getMapDto().isOfficial()).
                     sorted((pm1, pm2) -> {
                 Boolean map1Downloaded = ((CustomMapModDto) pm1.getMapDto()).isDownloaded();
@@ -1252,7 +1306,7 @@ public class MapsEditionController implements Initializable {
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.DOWNLOAD_DESC);
         }
 
-        for (PlatformProfileMapDto platformProfileMapDto : platformProfileMapDtoList) {
+        for (PlatformProfileMapDto platformProfileMapDto : steamPlatformProfileMapDtoList) {
             GridPane gridpane = createMapGridPane(platformProfileMapDto);
             steamCustomMapsFlowPane.getChildren().add(gridpane);
         }
@@ -1271,8 +1325,8 @@ public class MapsEditionController implements Initializable {
 
             ObservableList<Node> nodeList = null;
             List<PlatformProfileMap> editList = new ArrayList<PlatformProfileMap>();
-            if (officialMapsTab.isSelected()) {
-                nodeList = officialMapsFlowPane.getChildren();
+            if (steamOfficialMapsTab.isSelected()) {
+                nodeList = steamOfficialMapsFlowPane.getChildren();
             } else {
                 nodeList = steamCustomMapsFlowPane.getChildren();
             }

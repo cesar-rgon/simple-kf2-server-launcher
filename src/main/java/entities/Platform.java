@@ -22,11 +22,11 @@ public class Platform extends AbstractExtendedEntity {
     @Column(name="DESCRIPTION", length=255, unique=true, nullable=false)
     private String description;
 
-    @Column(name="LOGO_PATH", unique=false, nullable=true)
-    private File logoPath;
+    @Column(name="LOGO_PATH", length=512, unique=false, nullable=true)
+    private String logoPath;
 
-    @Column(name="SMALL_LOGO_PATH", unique=false, nullable=true)
-    private File smallLogoPath;
+    @Column(name="SMALL_LOGO_PATH", length=512, unique=false, nullable=true)
+    private String smallLogoPath;
 
 
     public Platform() {
@@ -37,8 +37,8 @@ public class Platform extends AbstractExtendedEntity {
         super();
         this.code = platform.name();
         this.description = platform.getDescripcion();
-        this.logoPath = StringUtils.isNotBlank(platform.getLogoPath()) ? new File(platform.getLogoPath()): null;
-        this.smallLogoPath = StringUtils.isNotBlank(platform.getSmallLogoPath()) ? new File(platform.getSmallLogoPath()): null;
+        this.logoPath = platform.getLogoPath();
+        this.smallLogoPath = platform.getSmallLogoPath();
     }
 
     @Override
@@ -71,19 +71,19 @@ public class Platform extends AbstractExtendedEntity {
         this.description = description;
     }
 
-    public File getLogoPath() {
+    public String getLogoPath() {
         return logoPath;
     }
 
-    public void setLogoPath(File logoPath) {
+    public void setLogoPath(String logoPath) {
         this.logoPath = logoPath;
     }
 
-    public File getSmallLogoPath() {
+    public String getSmallLogoPath() {
         return smallLogoPath;
     }
 
-    public void setSmallLogoPath(File smallLogoPath) {
+    public void setSmallLogoPath(String smallLogoPath) {
         this.smallLogoPath = smallLogoPath;
     }
 }

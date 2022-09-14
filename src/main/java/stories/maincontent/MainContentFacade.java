@@ -3,6 +3,7 @@ package stories.maincontent;
 import dtos.*;
 import entities.Platform;
 import javafx.collections.ObservableList;
+import pojos.enums.EnumPlatform;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -66,5 +67,5 @@ public interface MainContentFacade {
     boolean updateProfileSetFriendlyFirePercentage(String profileName, Double friendlyFirePercentage) throws Exception;
     List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws SQLException;
     void runExecutableFile(PlatformDto platform);
-
+    PlatformDto getPlatform(EnumPlatform enumPlatform) throws SQLException;
 }

@@ -27,7 +27,7 @@ public abstract class AbstractPopulateDatabase {
     protected abstract void polulateMaximunPlayersList() throws Exception;
     protected abstract void populateOfficialMaps() throws Exception;
     protected abstract void populateProfiles() throws Exception;
-    protected abstract void populateProfileMapList() throws Exception;
+    protected abstract void populatePlatformProfileMapList() throws Exception;
     protected abstract void populatePlatforms() throws SQLException;
 
     protected void populateLanguage(String code, String description) throws SQLException {

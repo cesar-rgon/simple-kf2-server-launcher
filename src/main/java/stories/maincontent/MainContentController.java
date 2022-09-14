@@ -223,12 +223,12 @@ public class MainContentController implements Initializable {
             lengthSelect.setItems(facade.listAllLengths());
             maxPlayersSelect.setItems(facade.listAllPlayers());
             platformSelect.setItems(facade.listAllPlatforms());
+            platformSelect.getSelectionModel().select(1);
 
-            if (profileSelect.getValue() == null || EnumPlatform.STEAM.equals(platformSelect.getValue())) {
+            if (platformSelect.getValue() != null) {
                 installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
-            } else {
-                installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
             }
+            // installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
 
             if (profileSelect.getValue() != null) {
                 profileOnAction();
@@ -1924,7 +1924,7 @@ public class MainContentController implements Initializable {
     }
 
     private void joinServerVisibility() {
-        if (EnumPlatform.STEAM.equals(platformSelect.getValue())) {
+        if (EnumPlatform.STEAM.name().equals(platformSelect.getValue().getKey())) {
             joinServer.setVisible(true);
             joinServerImage.setVisible(true);
         } else {

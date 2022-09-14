@@ -137,7 +137,7 @@
 #titleConfigLabel {
     -fx-font-family: "Ubuntu Bold";
     -fx-text-fill: #fba140;
-    -fx-font-size: 20;
+    -fx-font-size: 16;
 }
 
 #alreadyInLauncher {

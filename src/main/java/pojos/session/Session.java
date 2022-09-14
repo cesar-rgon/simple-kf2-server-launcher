@@ -33,7 +33,7 @@ public class Session {
         map = null;
         processList = new ArrayList<Process>();
         sortedMapsCriteria = EnumSortedMapsCriteria.NAME_DESC;
-        selectedMapTab = EnumMapsTab.CUSTOM_MAPS_TAB;
+        selectedMapTab = EnumMapsTab.STEAM_CUSTOM_MAPS_TAB;
         platformProfileMapList = new ArrayList<PlatformProfileMap>();
     }
 

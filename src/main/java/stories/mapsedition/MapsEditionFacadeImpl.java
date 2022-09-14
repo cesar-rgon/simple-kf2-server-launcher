@@ -435,7 +435,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     }
 
     @Override
-    public List<PlatformProfileMapDto> listProfileMaps(String platformName, String profileName) throws SQLException {
+    public List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws SQLException {
         Optional<Platform> platformOpt = platformDao.getInstance().findByCode(platformName);
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (!platformOpt.isPresent() || !profileOpt.isPresent()) {

@@ -2,9 +2,9 @@ package pojos.enums;
 
 public enum EnumMapsTab {
 
-    OFFICIAL_MAPS_TAB,
-    CUSTOM_MAPS_TAB;
+    STEAM_OFFICIAL_MAPS_TAB,
+    STEAM_CUSTOM_MAPS_TAB,
+    EPIC_OFFICIAL_MAPS_TAB,
+    EPIC_CUSTOM_MAPS_TAB;
 
-    private EnumMapsTab() {
-    }
 }
