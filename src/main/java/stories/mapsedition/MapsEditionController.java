@@ -61,7 +61,6 @@ public class MapsEditionController implements Initializable {
     private final MapsEditionFacade facade;
     private final PropertyService propertyService;
     protected String languageCode;
-    private String installationFolder;
     private List<PlatformProfileMapDto> steamPlatformProfileMapDtoList;
     private List<PlatformProfileMapDto> epicPlatformProfileMapDtoList;
     private boolean selectMaps;
@@ -132,18 +131,11 @@ public class MapsEditionController implements Initializable {
                         profileSelect.getValue().getName()
                 );
 
-                if (profileSelect.getValue() == null || EnumPlatform.STEAM.equals(Session.getInstance().getPlatform())) {
-                    installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
-                } else {
-                    installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
-                }
-
                 orderMapsByNameOnAction();
             } else {
                 profileSelect.setValue(null);
                 steamPlatformProfileMapDtoList = null;
                 epicPlatformProfileMapDtoList = null;
-                installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
             }
             Session.getInstance().setMapsProfile(profileSelect.getValue());
 
@@ -306,9 +298,10 @@ public class MapsEditionController implements Initializable {
     private GridPane createMapGridPane(PlatformProfileMapDto platformProfileMapDto) {
 
         ImageView mapPreview = new ImageView();
+        String installationFolder = platformProfileMapDto.getPlatformDto().getInstallationFolder();
         try {
             Image image = null;
-            if (facade.isCorrectInstallationFolder(installationFolder) && StringUtils.isNotBlank(platformProfileMapDto.getUrlPhoto())) {
+            if (facade.isCorrectInstallationFolder() && StringUtils.isNotBlank(platformProfileMapDto.getUrlPhoto())) {
                 image = new Image("file:" + installationFolder + "/" + platformProfileMapDto.getUrlPhoto());
             } else {
                 File file = new File(System.getProperty("user.dir") + "/external-images/no-photo.png");
@@ -542,7 +535,15 @@ public class MapsEditionController implements Initializable {
             resizeGridPane(gridPane);
         }
         for (int index = 0; index < steamCustomMapsFlowPane.getChildren().size(); index++) {
-            GridPane gridPane = (GridPane)steamCustomMapsFlowPane.getChildren().get(index);
+            GridPane gridPane = (GridPane) steamCustomMapsFlowPane.getChildren().get(index);
+            resizeGridPane(gridPane);
+        }
+        for (int index = 0; index < epicOfficialMapsFlowPane.getChildren().size(); index++) {
+            GridPane gridPane = (GridPane) epicOfficialMapsFlowPane.getChildren().get(index);
+            resizeGridPane(gridPane);
+        }
+        for (int index = 0; index < epicCustomMapsFlowPane.getChildren().size(); index++) {
+            GridPane gridPane = (GridPane) epicCustomMapsFlowPane.getChildren().get(index);
             resizeGridPane(gridPane);
         }
         try {
@@ -563,8 +564,12 @@ public class MapsEditionController implements Initializable {
         } else {
             selectAllMaps.setVisible(true);
         }
+
         steamOfficialMapsFlowPane.getChildren().clear();
         steamCustomMapsFlowPane.getChildren().clear();
+        epicOfficialMapsFlowPane.getChildren().clear();
+        epicCustomMapsFlowPane.getChildren().clear();
+
         for (PlatformProfileMapDto platformProfileMapDto : steamPlatformProfileMapDtoList) {
             String mapName = StringUtils.upperCase(platformProfileMapDto.getMapDto().getKey());
             String alias = StringUtils.upperCase(platformProfileMapDto.getAlias());
@@ -577,6 +582,19 @@ public class MapsEditionController implements Initializable {
                 }
             }
         }
+
+        for (PlatformProfileMapDto platformProfileMapDto : epicPlatformProfileMapDtoList) {
+            String mapName = StringUtils.upperCase(platformProfileMapDto.getMapDto().getKey());
+            String alias = StringUtils.upperCase(platformProfileMapDto.getAlias());
+            if (mapName.contains(StringUtils.upperCase(searchMaps.getText())) || alias.contains(StringUtils.upperCase(searchMaps.getText()))) {
+                GridPane gridpane = createMapGridPane(platformProfileMapDto);
+                if (platformProfileMapDto.getMapDto().isOfficial()) {
+                    epicOfficialMapsFlowPane.getChildren().add(gridpane);
+                } else {
+                    epicCustomMapsFlowPane.getChildren().add(gridpane);
+                }
+            }
+        }
     }
 
     @FXML
@@ -584,8 +602,8 @@ public class MapsEditionController implements Initializable {
         List<AddMapsToProfile> addMapsToProfileList = new ArrayList<AddMapsToProfile>();
 
         try {
-            if (!facade.isCorrectInstallationFolder(installationFolder)) {
-                logger.warn("Installation folder can not be empty and can not contains whitespaces. Define in Install/Update section: " + installationFolder);
+            if (!facade.isCorrectInstallationFolder()) {
+                logger.warn("Installation folder is not valid. Define in Install/Update section for each Platform used.");
                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
                 String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
                 Utils.warningDialog(headerText, contentText);
@@ -629,7 +647,6 @@ public class MapsEditionController implements Initializable {
                                 addMapsToProfile.getProfileName(),
                                 addMapsToProfile.getMapList(),
                                 languageCode,
-                                installationFolder,
                                 profileSelect.getValue().getName(),
                                 success,
                                 errors);
@@ -695,6 +712,7 @@ public class MapsEditionController implements Initializable {
     @FXML
     private void removeMapsOnAction() {
         try {
+            /*
             if (!facade.isCorrectInstallationFolder(installationFolder)) {
                 logger.warn("Installation folder can not be empty and can not contains whitespaces. Define in Install/Update section: " + installationFolder);
                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
@@ -702,6 +720,7 @@ public class MapsEditionController implements Initializable {
                 Utils.warningDialog(headerText, contentText);
                 return;
             }
+            */
             List<Node> removeList = new ArrayList<Node>();
             StringBuffer message = new StringBuffer();
             ObservableList<Node> officialNodes = steamOfficialMapsFlowPane.getChildren();
@@ -756,7 +775,7 @@ public class MapsEditionController implements Initializable {
                                     if (profileSelect.getValue().getMap() != null && mapNameLabel.getText().equalsIgnoreCase(profileSelect.getValue().getMap().getKey())) {
                                         facade.unselectProfileMap(profileSelect.getValue().getName());
                                     }
-                                    AbstractMapDto map = facade.deleteMapFromProfile(Session.getInstance().getPlatform().getKey(), mapNameLabel.getText(), profileSelect.getValue().getName(), installationFolder);
+                                    AbstractMapDto map = facade.deleteMapFromProfile(Session.getInstance().getPlatform().getKey(), mapNameLabel.getText(), profileSelect.getValue().getName());
                                     if (map != null) {
                                         gridpaneToRemoveList.add(gridpane);
                                     } else {
@@ -824,6 +843,7 @@ public class MapsEditionController implements Initializable {
         Optional<ButtonType> result = Optional.empty();
 
         try {
+            /*
             if (!facade.isCorrectInstallationFolder(installationFolder)) {
                 logger.warn("Installation folder can not be empty and can not contains whitespaces. Define in Install/Update section: " + installationFolder);
                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
@@ -831,6 +851,7 @@ public class MapsEditionController implements Initializable {
                 Utils.warningDialog(headerText, contentText);
                 return;
             }
+             */
             if (profileSelect.getValue() == null) {
                 logger.warn("No profiles defined. Import operation aborted");
                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
@@ -844,15 +865,15 @@ public class MapsEditionController implements Initializable {
                 return;
             }
 
-            if (!Files.exists(Paths.get(installationFolder + "/KFGame/Cache"))) {
-                Files.createDirectory(Paths.get(installationFolder + "/KFGame/Cache"));
+            if (!Files.exists(Paths.get(Session.getInstance().getPlatform().getInstallationFolder() + "/KFGame/Cache"))) {
+                Files.createDirectory(Paths.get(Session.getInstance().getPlatform().getInstallationFolder() + "/KFGame/Cache"));
             }
 
             // CUSTOM MAP LIST
             Kf2Common kf2Common = Kf2Factory.getInstance(
                     Session.getInstance().getPlatform().getKey()
             );
-            List<MapToDisplay> customMapModList = Files.walk(Paths.get(installationFolder + "/KFGame/Cache"))
+            List<MapToDisplay> customMapModList = Files.walk(Paths.get(Session.getInstance().getPlatform().getInstallationFolder() + "/KFGame/Cache"))
                     .filter(Files::isRegularFile)
                     .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
                     .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
@@ -860,20 +881,20 @@ public class MapsEditionController implements Initializable {
                         String filenameWithExtension = path.getFileName().toString();
                         String[] array = filenameWithExtension.split("\\.");
                         String mapName = array[0];
-                        Long idWorkShop = kf2Common.getIdWorkShopFromPath(path.getParent(), installationFolder);
+                        Long idWorkShop = kf2Common.getIdWorkShopFromPath(path.getParent(), Session.getInstance().getPlatform().getInstallationFolder());
                         return new MapToDisplay(idWorkShop, mapName);
                     })
                     .collect(Collectors.toList());
 
             // MOD LIST
-            File[] cacheFolderList = new File(installationFolder + "/KFGame/Cache").listFiles();
+            File[] cacheFolderList = new File(Session.getInstance().getPlatform().getInstallationFolder() + "/KFGame/Cache").listFiles();
             if (cacheFolderList != null && cacheFolderList.length > 0) {
                 List<Long> idWorkShopCustomMapList = customMapModList.stream().map(MapToDisplay::getIdWorkShop).collect(Collectors.toList());
                 customMapModList.addAll(
                         Arrays.stream(cacheFolderList)
                         .filter(file -> file.isDirectory())
                         .map(file -> file.toPath())
-                        .filter(path -> !idWorkShopCustomMapList.contains(kf2Common.getIdWorkShopFromPath(path, installationFolder)))
+                        .filter(path -> !idWorkShopCustomMapList.contains(kf2Common.getIdWorkShopFromPath(path, Session.getInstance().getPlatform().getInstallationFolder())))
                         .map(path -> {
                             Long idWorkShop = Long.parseLong(path.getFileName().toString());
                             return new MapToDisplay(idWorkShop, "MOD [" + idWorkShop + "]");
@@ -885,7 +906,7 @@ public class MapsEditionController implements Initializable {
             String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectCustomMaps");
             selectedCustomMapModList = Utils.selectMapsDialog(headerText, customMapModList);
 
-            officialMapNameList = Files.walk(Paths.get(installationFolder + "/KFGame/BrewedPC/Maps"))
+            officialMapNameList = Files.walk(Paths.get(Session.getInstance().getPlatform().getInstallationFolder() + "/KFGame/BrewedPC/Maps"))
                     .filter(Files::isRegularFile)
                     .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
                     .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
@@ -1045,7 +1066,6 @@ public class MapsEditionController implements Initializable {
                     mapNameLabel,
                     customMapModToDisplay.getIdWorkShop(),
                     customMapModToDisplay.getCommentary(),
-                    installationFolder,
                     selectedProfileNameList,
                     profileSelect.getValue().getName(),
                     importMapResultToDisplayList
@@ -1314,7 +1334,7 @@ public class MapsEditionController implements Initializable {
 
     @FXML
     private void editMapsOnAction() {
-        try {
+        try {/*
             if (!facade.isCorrectInstallationFolder(installationFolder)) {
                 logger.warn("Installation folder can not be empty and can not contains whitespaces. Define in Install/Update section: " + installationFolder);
                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
@@ -1322,6 +1342,7 @@ public class MapsEditionController implements Initializable {
                 Utils.warningDialog(headerText, contentText);
                 return;
             }
+            */
 
             ObservableList<Node> nodeList = null;
             List<PlatformProfileMap> editList = new ArrayList<PlatformProfileMap>();

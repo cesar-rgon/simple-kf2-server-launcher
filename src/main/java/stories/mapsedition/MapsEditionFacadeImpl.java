@@ -61,19 +61,18 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         this.platformProfileMapService = new PlatformProfileMapServiceImpl();
     }
 
-    private CustomMapMod createNewCustomMap(String platformName, String mapName, Long idWorkShop, String urlPhoto, boolean downloaded, List<Profile> profileList, List<ImportMapResultToDisplay> importMapResultToDisplayList) throws Exception {
-        Optional<Platform> platformOptional = platformDao.getInstance().findByCode(platformName);
-        if ((!platformOptional.isPresent() && StringUtils.isBlank(mapName) || idWorkShop == null)) {
+    private CustomMapMod createNewCustomMap(Platform platform, String mapName, Long idWorkShop, String urlPhoto, boolean downloaded, List<Profile> profileList, List<ImportMapResultToDisplay> importMapResultToDisplayList) throws Exception {
+        if ((StringUtils.isBlank(mapName) || idWorkShop == null)) {
             return null;
         }
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         String urlInfo = baseUrlWorkshop + idWorkShop;
         CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop, downloaded);
-        return (CustomMapMod) customMapModService.createMap(platformOptional.get(), customMap, profileList, importMapResultToDisplayList);
+        return (CustomMapMod) customMapModService.createMap(platform, customMap, profileList, importMapResultToDisplayList);
     }
 
 
-    private CustomMapMod createNewCustomMapFromWorkshop(String platformName, Long idWorkShop, String installationFolder, boolean downloaded, List<String> profileNameList) throws Exception {
+    private CustomMapMod createNewCustomMapFromWorkshop(String platformName, Long idWorkShop, boolean downloaded, List<String> profileNameList) throws Exception {
         List<Profile> profileList = profileNameList.stream().map(pn -> {
             try {
                 return findProfileByCode(pn);
@@ -83,6 +82,10 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
             }
         }).collect(Collectors.toList());
         if (profileList == null || profileList.isEmpty()) {
+            return null;
+        }
+        Optional<Platform> platformOptional = platformDao.getInstance().findByCode(platformName);
+        if (!platformOptional.isPresent()) {
             return null;
         }
 
@@ -110,14 +113,14 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         }
         reader.close();
         String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
-        String absoluteTargetFolder = installationFolder + customMapLocalFolder;
+        String absoluteTargetFolder = platformOptional.get().getInstallationFolder() + customMapLocalFolder;
         File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
 
-        return createNewCustomMap(platformName, mapName, idWorkShop, relativeTargetFolder, downloaded, profileList, null);
+        return createNewCustomMap(platformOptional.get(), mapName, idWorkShop, relativeTargetFolder, downloaded, profileList, null);
     }
 
-    private CustomMapMod createNewCustomMapFromWorkshop(String platformName, Long idWorkShop, String mapName, String installationFolder, boolean downloaded, List<String> profileNameList, List<ImportMapResultToDisplay> importMapResultToDisplayList) throws Exception {
+    private CustomMapMod createNewCustomMapFromWorkshop(String platformName, Long idWorkShop, String mapName, boolean downloaded, List<String> profileNameList, List<ImportMapResultToDisplay> importMapResultToDisplayList) throws Exception {
         List<Profile> profileList = profileNameList.stream().map(pn -> {
             try {
                 return findProfileByCode(pn);
@@ -127,6 +130,10 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
             }
         }).collect(Collectors.toList());
         if (profileList == null || profileList.isEmpty()) {
+            return null;
+        }
+        Optional<Platform> platformOptional = platformDao.getInstance().findByCode(platformName);
+        if (!platformOptional.isPresent()) {
             return null;
         }
 
@@ -146,19 +153,38 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         }
         reader.close();
         String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
-        String absoluteTargetFolder = installationFolder + customMapLocalFolder;
+        String absoluteTargetFolder = platformOptional.get().getInstallationFolder() + customMapLocalFolder;
         File localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
 
-        return createNewCustomMap(platformName, mapName, idWorkShop, relativeTargetFolder, downloaded, profileList, importMapResultToDisplayList);
+        return createNewCustomMap(platformOptional.get(), mapName, idWorkShop, relativeTargetFolder, downloaded, profileList, importMapResultToDisplayList);
     }
 
     @Override
-    public boolean isCorrectInstallationFolder(String installationFolder) {
-        Kf2Common kf2Common = Kf2Factory.getInstance(
-                Session.getInstance().getPlatform().getKey()
-        );
-        return kf2Common.isValid(installationFolder);
+    public boolean isCorrectInstallationFolder() {
+        try {
+            Optional<Platform> steamPlatformOptional = platformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
+            if (!steamPlatformOptional.isPresent()) {
+                return false;
+            }
+            Optional<Platform> epicPlatformOptional = platformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
+            if (!epicPlatformOptional.isPresent()) {
+                return false;
+            }
+
+            Kf2Common steamKf2Common = Kf2Factory.getInstance(
+                    steamPlatformOptional.get().getCode()
+            );
+            Kf2Common epicKf2Common = Kf2Factory.getInstance(
+                    epicPlatformOptional.get().getCode()
+            );
+
+            return steamKf2Common.isValid(steamPlatformOptional.get().getInstallationFolder()) && epicKf2Common.isValid(epicPlatformOptional.get().getInstallationFolder());
+
+        } catch (SQLException e) {
+            logger.error("Error validating the installation folder", e);
+            return false;
+        }
     }
 
 
@@ -245,7 +271,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
 
     @Override
-    public AbstractMapDto deleteMapFromProfile(String platformName, String mapName, String profileName, String installationFolder) throws Exception {
+    public AbstractMapDto deleteMapFromProfile(String platformName, String mapName, String profileName) throws Exception {
         Optional<Platform> platformOpt = platformDao.getInstance().findByCode(platformName);
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (!platformOpt.isPresent() || !profileOpt.isPresent()) {
@@ -264,7 +290,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
         Optional customMapModOptional = customMapModService.findMapByCode(mapName);
         if (customMapModOptional.isPresent()) {
-            CustomMapMod deletedMap = (CustomMapMod) customMapModService.deleteMap(platformOpt.get(), (CustomMapMod) customMapModOptional.get(), profileOpt.get(), installationFolder);
+            CustomMapMod deletedMap = (CustomMapMod) customMapModService.deleteMap(platformOpt.get(), (CustomMapMod) customMapModOptional.get(), profileOpt.get());
             return mapDtoFactory.newDto(deletedMap);
         }
         return null;
@@ -318,7 +344,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     }
 
     @Override
-    public List<AbstractMapDto> addCustomMapsToProfile(String platformName, String profileName, String mapNameList, String languageCode, String installationFolder, String actualSelectedProfile, StringBuffer success, StringBuffer errors) {
+    public List<AbstractMapDto> addCustomMapsToProfile(String platformName, String profileName, String mapNameList, String languageCode, String actualSelectedProfile, StringBuffer success, StringBuffer errors) {
 
         List<AbstractMapDto> mapAddedList = new ArrayList<AbstractMapDto>();
 
@@ -343,7 +369,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
                         List<String> profileNameList = new ArrayList<String>();
                         profileNameList.add(profileName);
 
-                        CustomMapMod customMap = createNewCustomMapFromWorkshop(platformName, idWorkShop, installationFolder, false, profileNameList);
+                        CustomMapMod customMap = createNewCustomMapFromWorkshop(platformName, idWorkShop, false, profileNameList);
                         if (customMap != null) {
                             if (profileName.equalsIgnoreCase(actualSelectedProfile)) {
                                 mapAddedList.add(mapDtoFactory.newDto(customMap));
@@ -378,7 +404,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     }
 
     @Override
-    public CustomMapModDto importCustomMapModFromServer(String platformName, String mapNameLabel, Long idWorkShop, String commentary, String installationFolder, List<String> selectedProfileNameList, String actualSelectedProfile, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
+    public CustomMapModDto importCustomMapModFromServer(String platformName, String mapNameLabel, Long idWorkShop, String commentary, List<String> selectedProfileNameList, String actualSelectedProfile, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
 
         try {
             Optional<CustomMapMod> mapInDataBase = CustomMapModDao.getInstance().findByIdWorkShop(idWorkShop);
@@ -387,7 +413,6 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
                         platformName,
                         idWorkShop,
                         commentary,
-                        installationFolder,
                         false,
                         selectedProfileNameList,
                         importMapResultToDisplayList

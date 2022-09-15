@@ -18,7 +18,8 @@ public class PlatformDtoFactory extends AbstractDtoFactory<Platform, PlatformDto
                     platform.getCode(),
                     platform.getDescription(),
                     platform.getLogoPath(),
-                    platform.getSmallLogoPath()
+                    platform.getSmallLogoPath(),
+                    platform.getInstallationFolder()
             );
         } catch (Exception e) {
             Utils.errorDialog(e.getMessage(), e);

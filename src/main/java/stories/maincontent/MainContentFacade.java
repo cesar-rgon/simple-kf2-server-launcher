@@ -41,7 +41,7 @@ public interface MainContentFacade {
     ProfileDto getLastSelectedProfile() throws Exception;
     List<String> selectProfiles(String message, String actualProfileName) throws SQLException;
     String selectProfile(String message, String actualProfileName) throws SQLException;
-    boolean isCorrectInstallationFolder(PlatformDto platform, String installationFolder);
+    boolean isCorrectInstallationFolder(PlatformDto platform);
     boolean updateProfileSetTakeover(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetMapVoting(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetKickVoting(String profileName, boolean isSelected) throws SQLException;

@@ -2,15 +2,18 @@ package pojos;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import pojos.enums.EnumPlatform;
 
 public class AddMapsToProfile {
 
     private StringProperty profileName;
+    private StringProperty platform;
     private StringProperty mapList;
 
     public AddMapsToProfile(String profileName) {
         super();
         this.profileName = new SimpleStringProperty(profileName);
+        this.platform = new SimpleStringProperty(EnumPlatform.ALL.getDescripcion());
         this.mapList = new SimpleStringProperty();
     }
 
@@ -37,4 +40,13 @@ public class AddMapsToProfile {
     public void setMapList(String mapList) {
         this.mapList.set(mapList);
     }
+
+    public String getPlatform() {
+        return platform.get();
+    }
+
+    public StringProperty platformProperty() {
+        return platform;
+    }
+
 }

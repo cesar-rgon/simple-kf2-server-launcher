@@ -45,7 +45,6 @@ public class MainContentController implements Initializable {
     private final MainContentFacade facade;
     private final PropertyService propertyService;
     private String previousSelectedLanguageCode;
-    private String installationFolder;
 
     @FXML private ComboBox<ProfileDto> profileSelect;
     @FXML private ComboBox<SelectDto> languageSelect;
@@ -225,11 +224,6 @@ public class MainContentController implements Initializable {
             platformSelect.setItems(facade.listAllPlatforms());
             platformSelect.getSelectionModel().select(1);
 
-            if (platformSelect.getValue() != null) {
-                installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
-            }
-            // installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
-
             if (profileSelect.getValue() != null) {
                 profileOnAction();
             } else {
@@ -337,8 +331,8 @@ public class MainContentController implements Initializable {
                         ImageView mapPreview = new ImageView();
                         try {
                             Image image;
-                            if (facade.isCorrectInstallationFolder(platformSelect.getValue(), installationFolder) && StringUtils.isNotBlank(profileMapDto.getUrlPhoto())) {
-                                image = new Image("file:" + installationFolder + "/" + profileMapDto.getUrlPhoto());
+                            if (facade.isCorrectInstallationFolder(platformSelect.getValue()) && StringUtils.isNotBlank(profileMapDto.getUrlPhoto())) {
+                                image = new Image("file:" + platformSelect.getValue().getInstallationFolder() + "/" + profileMapDto.getUrlPhoto());
                             } else {
                                 File file = new File(System.getProperty("user.dir") + "/external-images/no-photo.png");
                                 InputStream inputStream;
@@ -388,8 +382,8 @@ public class MainContentController implements Initializable {
                 ImageView mapPreview = new ImageView();
                 try {
                     Image image;
-                    if (facade.isCorrectInstallationFolder(platformSelect.getValue(), installationFolder) && StringUtils.isNotBlank(platformProfileMapDto.getUrlPhoto())) {
-                        image = new Image("file:" + installationFolder + "/" + platformProfileMapDto.getUrlPhoto());
+                    if (facade.isCorrectInstallationFolder(platformSelect.getValue()) && StringUtils.isNotBlank(platformProfileMapDto.getUrlPhoto())) {
+                        image = new Image("file:" + platformSelect.getValue().getInstallationFolder() + "/" + platformProfileMapDto.getUrlPhoto());
                     } else {
                         File file = new File(System.getProperty("user.dir") + "/external-images/no-photo.png");
                         InputStream inputStream;
@@ -1908,12 +1902,6 @@ public class MainContentController implements Initializable {
         try {
             if (profileSelect.getValue() != null) {
                 Session.getInstance().setPlatform(platformSelect.getValue());
-
-                if (EnumPlatform.STEAM.equals(platformSelect.getValue())) {
-                    installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
-                } else {
-                    installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
-                }
                 loadActualProfile(platformSelect.getValue(), profileSelect.getValue());
             }
         } catch (Exception e) {

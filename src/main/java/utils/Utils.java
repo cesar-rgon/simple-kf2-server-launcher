@@ -2,8 +2,10 @@ package utils;
 
 import dtos.ProfileDto;
 import dtos.SelectDto;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,6 +20,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
+import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
@@ -35,6 +38,7 @@ import pojos.AddMapsToProfile;
 import pojos.ImportMapResultToDisplay;
 import pojos.MapToDisplay;
 import pojos.ProfileToDisplay;
+import pojos.enums.EnumPlatform;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import stories.maincontent.MainContentController;
@@ -48,10 +52,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.Key;
-import java.util.ArrayList;
-import java.util.Base64;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class Utils {
@@ -296,6 +298,7 @@ public class Utils {
         dialog.setHeaderText(headerText);
 
         TableView<AddMapsToProfile> tableView = new TableView<AddMapsToProfile>();
+
         // First Column
         TableColumn<AddMapsToProfile, String> profileNameColumn = new TableColumn<AddMapsToProfile, String>();
         profileNameColumn.setText(profileNameText);
@@ -305,6 +308,38 @@ public class Utils {
         profileNameColumn.setMinWidth(150);
 
         // Second Column
+        ObservableList<String> comboBoxOptions = FXCollections.observableArrayList(
+                Arrays.stream(EnumPlatform.values()).
+                        map(EnumPlatform::getDescripcion).
+                        collect(Collectors.toList())
+        );
+
+        TableColumn<AddMapsToProfile, StringProperty> platformColumn = new TableColumn<AddMapsToProfile, StringProperty>();
+        platformColumn.setText("Platform");
+        platformColumn.setMinWidth(120);
+        platformColumn.setSortable(false);
+
+        platformColumn.setCellFactory(col -> {
+            TableCell<AddMapsToProfile, StringProperty> c = new TableCell<>();
+            final ComboBox<String> comboBox = new ComboBox<>(comboBoxOptions);
+            c.itemProperty().addListener((observable, oldValue, newValue) -> {
+                if (oldValue != null) {
+                    comboBox.valueProperty().unbindBidirectional(oldValue);
+                }
+                if (newValue != null) {
+                    comboBox.valueProperty().bindBidirectional(newValue);
+                }
+            });
+            c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node) null).otherwise(comboBox));
+            return c;
+        });
+
+        platformColumn.setCellValueFactory(cellData -> {
+            return Bindings.createObjectBinding(() -> cellData.getValue().platformProperty());
+        });
+        platformColumn.setEditable(true);
+
+        // Third Column
         TableColumn<AddMapsToProfile, String> customMapsColumn = new TableColumn<AddMapsToProfile, String>();
         customMapsColumn.setText(defineMapsToAddText);
         customMapsColumn.setMinWidth(500);
@@ -314,6 +349,7 @@ public class Utils {
         customMapsColumn.setEditable(true);
 
         tableView.getColumns().add(profileNameColumn);
+        tableView.getColumns().add(platformColumn);
         tableView.getColumns().add(customMapsColumn);
 
         if (profileList != null && !profileList.isEmpty()) {

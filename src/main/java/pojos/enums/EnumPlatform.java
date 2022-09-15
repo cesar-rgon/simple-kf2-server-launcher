@@ -5,7 +5,9 @@ import javafx.collections.ObservableList;
 
 public enum EnumPlatform {
     STEAM("Steam", "images/steam-logo.png", "images/steam-small-logo.png"),
-    EPIC("Epic Games", "images/epic-logo.png", "images/epic-small-logo.png");
+    EPIC("Epic Games", "images/epic-logo.png", "images/epic-small-logo.png"),
+    ALL("All platforms", "", "");
+
 
     private String descripcion;
     private String logoPath;

@@ -377,9 +377,9 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean isCorrectInstallationFolder(PlatformDto platform, String installationFolder) {
+    public boolean isCorrectInstallationFolder(PlatformDto platform) {
         Kf2Common kf2Common = Kf2Factory.getInstance(platform.getKey());
-        return kf2Common.isValid(installationFolder);
+        return kf2Common.isValid(platform.getInstallationFolder());
     }
 
     @Override

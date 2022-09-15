@@ -43,14 +43,14 @@ public class CustomMapModServiceImpl extends AbstractMapService {
         return CustomMapModDao.getInstance().update((CustomMapMod) map);
     }
 
-    public CustomMapMod deleteMap(Platform platform, CustomMapMod map, Profile profile, String installationFolder) throws Exception {
+    public CustomMapMod deleteMap(Platform platform, CustomMapMod map, Profile profile) throws Exception {
         super.deleteMap(platform, map, profile);
 
         if (map.getProfileList().isEmpty()) {
             deleteItem(map);
-            File photo = new File(installationFolder + map.getUrlPhoto());
+            File photo = new File(platform.getInstallationFolder() + map.getUrlPhoto());
             photo.delete();
-            File cacheFolder = new File(installationFolder + "/KFGame/Cache/" + map.getIdWorkShop());
+            File cacheFolder = new File(platform.getInstallationFolder() + "/KFGame/Cache/" + map.getIdWorkShop());
             FileUtils.deleteDirectory(cacheFolder);
         }
 

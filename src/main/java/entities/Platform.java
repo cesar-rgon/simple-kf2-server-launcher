@@ -28,6 +28,9 @@ public class Platform extends AbstractExtendedEntity {
     @Column(name="SMALL_LOGO_PATH", length=512, unique=false, nullable=true)
     private String smallLogoPath;
 
+    @Column(name="INSTALLATION_FOLDER", length=512, unique=false, nullable=true)
+    private String installationFolder;
+
 
     public Platform() {
         super();
@@ -39,6 +42,7 @@ public class Platform extends AbstractExtendedEntity {
         this.description = platform.getDescripcion();
         this.logoPath = platform.getLogoPath();
         this.smallLogoPath = platform.getSmallLogoPath();
+        this.installationFolder = StringUtils.EMPTY;
     }
 
     @Override
@@ -85,5 +89,13 @@ public class Platform extends AbstractExtendedEntity {
 
     public void setSmallLogoPath(String smallLogoPath) {
         this.smallLogoPath = smallLogoPath;
+    }
+
+    public String getInstallationFolder() {
+        return installationFolder;
+    }
+
+    public void setInstallationFolder(String installationFolder) {
+        this.installationFolder = installationFolder;
     }
 }
