@@ -23,9 +23,9 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
         populateGameTypes();
         populateLengths();
         polulateMaximunPlayersList();
-        populateOfficialMaps();
         populateProfiles();
-        populatePlatformProfileMapList();
+        populateOfficialMaps();
+        setDefaultMapInProfile();
     }
 
     @Override
@@ -115,6 +115,9 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
         populateOfficialMap("KF-Dystopia2029", "https://wiki.killingfloor2.com/index.php?title=Dystopia_2029","/KFGame/Web/images/maps/KF-Dystopia2029.jpg", dateFormatter.parse("2021-03-23"));
         populateOfficialMap("KF-Moonbase", "https://wiki.killingfloor2.com/index.php?title=Moonbase","/KFGame/Web/images/maps/KF-Moonbase.jpg", dateFormatter.parse("2021-06-22"));
         populateOfficialMap("KF-Netherhold", "https://wiki.killingfloor2.com/index.php?title=Netherhold","/KFGame/Web/images/maps/KF-Netherhold.jpg", dateFormatter.parse("2021-10-05"));
+        populateOfficialMap("KF-CarillonHamlet", "https://wiki.killingfloor2.com/index.php?title=Carillon_Hamlet","/KFGame/Web/images/maps/KF-CarillonHamlet.jpg", dateFormatter.parse("2021-12-09"));
+        populateOfficialMap("KF-Rig", "https://wiki.killingfloor2.com/index.php?title=Rig","/KFGame/Web/images/maps/KF-Rig.jpg", dateFormatter.parse("2022-06-14"));
+        populateOfficialMap("KF-BarmwichTown", "https://wiki.killingfloor2.com/index.php?title=Barmwich_Town","/KFGame/Web/images/maps/KF-BarmwichTown.jpg", null);
     }
 
     @Override
@@ -122,17 +125,16 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
 
         Optional<Language> languageOptional = LanguageDao.getInstance().findByCode("en");
         Optional<GameType> gametypeOptional = GameTypeDao.getInstance().findByCode("KFGameContent.KFGameInfo_Survival");
-        Optional<OfficialMap> officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-BurningParis");
         Optional<Difficulty> difficultyOptional = DifficultyDao.getInstance().findByCode("0");
         Optional<Length> lengthOptional = LengthDao.getInstance().findByCode("0");
         Optional<MaxPlayers> maxPlayersOptional = MaxPlayersDao.getInstance().findByCode("6");
 
-        if (languageOptional.isPresent() && gametypeOptional.isPresent() && officialMapOptional.isPresent() && difficultyOptional.isPresent() && lengthOptional.isPresent() && maxPlayersOptional.isPresent()) {
+        if (languageOptional.isPresent() && gametypeOptional.isPresent() && difficultyOptional.isPresent() && lengthOptional.isPresent() && maxPlayersOptional.isPresent()) {
             populateProfile(
                     "Default",
                     languageOptional.get(),
                     gametypeOptional.get(),
-                    officialMapOptional.get(),
+                    null,
                     difficultyOptional.get(),
                     lengthOptional.get(),
                     maxPlayersOptional.get(),
@@ -179,150 +181,23 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
         }
     }
 
-    private void prepareAndPopulatePlatformProfileMap(
-            Optional<Profile> profileOptional,
-            Optional<OfficialMap> officialMapOptional,
-            Optional<Platform> steamPlatformOptional,
-            Optional<Platform> epicPlatformOptional
-    ) throws Exception {
-
-        if (!profileOptional.isPresent() && !officialMapOptional.isPresent()) {
-            throw new RuntimeException("The relation between the profile <NOT FOUND> and the map <NOT FOUND> could not be persisted to database in populate process");
-        }
-        if (!profileOptional.isPresent()) {
-            throw new RuntimeException("The relation between the profile <NOT FOUND> and the map '" + officialMapOptional.get().getDescription() + "' could not be persisted to database in populate process");
-        }
-        if (!officialMapOptional.isPresent()) {
-            throw new RuntimeException("The relation between the profile '" + profileOptional.get().getDescription() + "' and the map <NOT FOUND> could not be persisted to database in populate process");
-        }
-
-        if (steamPlatformOptional.isPresent()) {
-            populatePlatformProfileMap(steamPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
-        }
-        if (epicPlatformOptional.isPresent()) {
-            populatePlatformProfileMap(epicPlatformOptional.get(), profileOptional.get(), officialMapOptional.get(), officialMapOptional.get().getReleaseDate(), officialMapOptional.get().getUrlInfo(), officialMapOptional.get().getUrlPhoto());
-        }
-    }
-
-    @Override
-    protected void populatePlatformProfileMapList() throws Exception {
-        Optional<Profile> profileOptional = ProfileDao.getInstance().findByCode("Default");
-        Optional<Platform> steamPlatformOptional = PlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
-        Optional<Platform> epicPlatformOptional = PlatformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
-
-        Optional<OfficialMap> officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-BurningParis");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-BioticsLab");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Outpost");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-VolterManor");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Catacombs");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-EvacuationPoint");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Farmhouse");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-BlackForest");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Prison");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-ContainmentStation");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-HostileGrounds");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-InfernalRealm");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-ZedLanding");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Nuked");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-TheDescent");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-TragicKingdom");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Nightmare");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-KrampusLair");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-DieSector");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-PowerCore_Holdout");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Airship");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Lockdown");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-MonsterBall");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-SantasWorkshop");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-ShoppingSpree");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Spillway");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-SteamFortress");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-AshwoodAsylum");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Sanitarium");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Biolapse");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Desolation");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-HellmarkStation");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Elysium");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Dystopia2029");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Moonbase");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-
-        officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-Netherhold");
-        prepareAndPopulatePlatformProfileMap(profileOptional, officialMapOptional, steamPlatformOptional, epicPlatformOptional);
-    }
-
     @Override
     protected void populatePlatforms() throws SQLException {
         populatePlatform(EnumPlatform.STEAM);
         populatePlatform(EnumPlatform.EPIC);
     }
 
+    private void setDefaultMapInProfile() throws SQLException {
+        Optional<Profile> profileOptional = ProfileDao.getInstance().findByCode("Default");
+        if (!profileOptional.isPresent()) {
+            throw new RuntimeException("The profile 'Default' has not been found");
+        }
+        Optional<OfficialMap> officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-BurningParis");
+        if (!officialMapOptional.isPresent()) {
+            throw new RuntimeException("The official map 'KF-BurningParis' has not been found");
+        }
+
+        profileOptional.get().setMap(officialMapOptional.get());
+        ProfileDao.getInstance().update(profileOptional.get());
+    }
 }

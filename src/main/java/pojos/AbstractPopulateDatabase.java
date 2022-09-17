@@ -9,6 +9,7 @@ import services.PropertyServiceImpl;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public abstract class AbstractPopulateDatabase {
 
@@ -27,7 +28,6 @@ public abstract class AbstractPopulateDatabase {
     protected abstract void polulateMaximunPlayersList() throws Exception;
     protected abstract void populateOfficialMaps() throws Exception;
     protected abstract void populateProfiles() throws Exception;
-    protected abstract void populatePlatformProfileMapList() throws Exception;
     protected abstract void populatePlatforms() throws SQLException;
 
     protected void populateLanguage(String code, String description) throws SQLException {
@@ -69,11 +69,6 @@ public abstract class AbstractPopulateDatabase {
         propertyService.setProperty("properties/languages/fr.properties", "prop.maxplayers." + code, frenchDescription);
     }
 
-    protected void populateOfficialMap(String code, String urlInfo, String urlPhoto, Date releaseDate) throws SQLException {
-        OfficialMap officialMap = new OfficialMap(code, urlInfo, urlPhoto, releaseDate);
-        OfficialMapDao.getInstance().insert(officialMap);
-    }
-
     protected void populateProfile(String name, Language language, GameType gametype, AbstractMap map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,
                                    String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
                                    String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, List<PlatformProfileMap> platformProfileMapList, Boolean takeover,
@@ -93,13 +88,43 @@ public abstract class AbstractPopulateDatabase {
         ProfileDao.getInstance().insert(profile);
     }
 
-    protected void populatePlatformProfileMap(Platform platform, Profile profile, AbstractMap map, Date releaseDate, String urlInfo, String urlPhoto) throws SQLException {
-        PlatformProfileMap platformProfileMap = new PlatformProfileMap(platform, profile, map, releaseDate, urlInfo, urlPhoto);
+    protected void populateOfficialMap(String code, String urlInfo, String urlPhoto, Date releaseDate) throws Exception {
+        OfficialMap officialMap = new OfficialMap(code, urlInfo, urlPhoto, releaseDate);
+
+        Optional<Profile> profileOptional = ProfileDao.getInstance().findByCode("Default");
+        if (!profileOptional.isPresent()) {
+            throw new RuntimeException("The relation between the profile <NOT FOUND> and the map '" + officialMap.getDescription() + "' could not be persisted to database in populate process");
+        }
+
+        Optional<Platform> steamPlatformOptional = PlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
+        Optional<Platform> epicPlatformOptional = PlatformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
+
+        OfficialMapDao.getInstance().insert(officialMap);
+        prepareAndPopulatePlatformProfileMap(profileOptional.get(), officialMap, steamPlatformOptional, epicPlatformOptional);
+    }
+
+    protected void populatePlatformProfileMap(Platform platform, Profile profile, AbstractMap map) throws SQLException {
+        PlatformProfileMap platformProfileMap = new PlatformProfileMap(platform, profile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto());
         PlatformProfileMapDao.getInstance().insert(platformProfileMap);
     }
 
     protected void populatePlatform(EnumPlatform platform) throws SQLException {
         Platform newPlatform = new Platform(platform);
         PlatformDao.getInstance().insert(newPlatform);
+    }
+
+    private void prepareAndPopulatePlatformProfileMap(
+            Profile profile,
+            OfficialMap officialMap,
+            Optional<Platform> steamPlatformOptional,
+            Optional<Platform> epicPlatformOptional
+    ) throws Exception {
+
+        if (steamPlatformOptional.isPresent()) {
+            populatePlatformProfileMap(steamPlatformOptional.get(), profile, officialMap);
+        }
+        if (epicPlatformOptional.isPresent()) {
+            populatePlatformProfileMap(epicPlatformOptional.get(), profile, officialMap);
+        }
     }
 }
