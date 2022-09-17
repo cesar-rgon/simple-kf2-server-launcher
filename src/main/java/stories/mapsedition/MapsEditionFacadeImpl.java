@@ -1,7 +1,8 @@
 package stories.mapsedition;
 
+import daos.AbstractPlatformDao;
 import daos.CustomMapModDao;
-import daos.PlatformDao;
+import daos.SteamPlatformDao;
 import daos.ProfileDao;
 import dtos.*;
 import dtos.factories.MapDtoFactory;
@@ -46,7 +47,6 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     private final ProfileService profileService;
     private final PlatformProfileMapDtoFactory platformProfileMapDtoFactory;
     private PlatformProfileMapService platformProfileMapService;
-    private PlatformDao platformDao;
 
     public MapsEditionFacadeImpl() {
         super();
@@ -61,7 +61,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         this.platformProfileMapService = new PlatformProfileMapServiceImpl();
     }
 
-    private CustomMapMod createNewCustomMap(Platform platform, String mapName, Long idWorkShop, String urlPhoto, boolean downloaded, List<Profile> profileList, List<ImportMapResultToDisplay> importMapResultToDisplayList) throws Exception {
+    private CustomMapMod createNewCustomMap(AbstractPlatform platform, String mapName, Long idWorkShop, String urlPhoto, boolean downloaded, List<Profile> profileList, List<ImportMapResultToDisplay> importMapResultToDisplayList) throws Exception {
         if ((StringUtils.isBlank(mapName) || idWorkShop == null)) {
             return null;
         }
@@ -84,7 +84,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         if (profileList == null || profileList.isEmpty()) {
             return null;
         }
-        Optional<Platform> platformOptional = platformDao.getInstance().findByCode(platformName);
+        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
         if (!platformOptional.isPresent()) {
             return null;
         }
@@ -132,7 +132,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         if (profileList == null || profileList.isEmpty()) {
             return null;
         }
-        Optional<Platform> platformOptional = platformDao.getInstance().findByCode(platformName);
+        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
         if (!platformOptional.isPresent()) {
             return null;
         }
@@ -161,26 +161,35 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     }
 
     @Override
-    public boolean isCorrectInstallationFolder() {
+    public boolean isCorrectInstallationFolder(String platformName) {
         try {
-            Optional<Platform> steamPlatformOptional = platformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
-            if (!steamPlatformOptional.isPresent()) {
-                return false;
+            if (EnumPlatform.STEAM.name().equals(platformName)) {
+                Optional<AbstractPlatform> steamPlatformOptional = AbstractPlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
+                if (!steamPlatformOptional.isPresent()) {
+                    return false;
+                }
+
+                Kf2Common steamKf2Common = Kf2Factory.getInstance(
+                        steamPlatformOptional.get().getCode()
+                );
+
+                return steamKf2Common.isValid(steamPlatformOptional.get().getInstallationFolder());
             }
-            Optional<Platform> epicPlatformOptional = platformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
-            if (!epicPlatformOptional.isPresent()) {
-                return false;
+
+            if (EnumPlatform.EPIC.name().equals(platformName)) {
+                Optional<AbstractPlatform> epicPlatformOptional = AbstractPlatformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
+                if (!epicPlatformOptional.isPresent()) {
+                    return false;
+                }
+
+                Kf2Common epicKf2Common = Kf2Factory.getInstance(
+                        epicPlatformOptional.get().getCode()
+                );
+
+                return epicKf2Common.isValid(epicPlatformOptional.get().getInstallationFolder());
             }
 
-            Kf2Common steamKf2Common = Kf2Factory.getInstance(
-                    steamPlatformOptional.get().getCode()
-            );
-            Kf2Common epicKf2Common = Kf2Factory.getInstance(
-                    epicPlatformOptional.get().getCode()
-            );
-
-            return steamKf2Common.isValid(steamPlatformOptional.get().getInstallationFolder()) && epicKf2Common.isValid(epicPlatformOptional.get().getInstallationFolder());
-
+            return false;
         } catch (SQLException e) {
             logger.error("Error validating the installation folder", e);
             return false;
@@ -198,7 +207,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
                     return null;
                 }
             }).collect(Collectors.toList());
-            Optional<Platform> platformOptional = platformDao.getInstance().findByCode(platformName);
+            Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
             if (profileList == null || profileList.isEmpty()) {
                 return null;
 
@@ -225,7 +234,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     @Override
     public AbstractMapDto addProfilesToMap(String platformName, String mapName, List<String> profileNameList, List<ImportMapResultToDisplay> importMapResultToDisplayList) throws SQLException {
 
-        Optional<Platform> platformOptional = platformDao.getInstance().findByCode(platformName);
+        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
         if (!platformOptional.isPresent()) {
             return null;
         }
@@ -272,7 +281,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
     @Override
     public AbstractMapDto deleteMapFromProfile(String platformName, String mapName, String profileName) throws Exception {
-        Optional<Platform> platformOpt = platformDao.getInstance().findByCode(platformName);
+        Optional<AbstractPlatform> platformOpt = AbstractPlatformDao.getInstance().findByCode(platformName);
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (!platformOpt.isPresent() || !profileOpt.isPresent()) {
             return null;
@@ -461,7 +470,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
     @Override
     public List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws SQLException {
-        Optional<Platform> platformOpt = platformDao.getInstance().findByCode(platformName);
+        Optional<AbstractPlatform> platformOpt = AbstractPlatformDao.getInstance().findByCode(platformName);
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (!platformOpt.isPresent() || !profileOpt.isPresent()) {
             return new ArrayList<PlatformProfileMapDto>();

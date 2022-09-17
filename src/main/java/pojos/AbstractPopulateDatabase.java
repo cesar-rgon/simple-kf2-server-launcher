@@ -96,28 +96,35 @@ public abstract class AbstractPopulateDatabase {
             throw new RuntimeException("The relation between the profile <NOT FOUND> and the map '" + officialMap.getDescription() + "' could not be persisted to database in populate process");
         }
 
-        Optional<Platform> steamPlatformOptional = PlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
-        Optional<Platform> epicPlatformOptional = PlatformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
+        Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
+        Optional<EpicPlatform> epicPlatformOptional = EpicPlatformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
 
         OfficialMapDao.getInstance().insert(officialMap);
         prepareAndPopulatePlatformProfileMap(profileOptional.get(), officialMap, steamPlatformOptional, epicPlatformOptional);
     }
 
-    protected void populatePlatformProfileMap(Platform platform, Profile profile, AbstractMap map) throws SQLException {
+    protected void populatePlatformProfileMap(AbstractPlatform platform, Profile profile, AbstractMap map) throws SQLException {
         PlatformProfileMap platformProfileMap = new PlatformProfileMap(platform, profile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto());
         PlatformProfileMapDao.getInstance().insert(platformProfileMap);
     }
 
     protected void populatePlatform(EnumPlatform platform) throws SQLException {
-        Platform newPlatform = new Platform(platform);
-        PlatformDao.getInstance().insert(newPlatform);
+        if (EnumPlatform.STEAM.name().equals(platform.name())) {
+            SteamPlatform newPlatform = new SteamPlatform(platform, false, false, "preview");
+            SteamPlatformDao.getInstance().insert(newPlatform);
+        }
+
+        if (EnumPlatform.EPIC.name().equals(platform.name())) {
+            EpicPlatform newPlatform = new EpicPlatform(platform);
+            EpicPlatformDao.getInstance().insert(newPlatform);
+        }
     }
 
     private void prepareAndPopulatePlatformProfileMap(
             Profile profile,
             OfficialMap officialMap,
-            Optional<Platform> steamPlatformOptional,
-            Optional<Platform> epicPlatformOptional
+            Optional<SteamPlatform> steamPlatformOptional,
+            Optional<EpicPlatform> epicPlatformOptional
     ) throws Exception {
 
         if (steamPlatformOptional.isPresent()) {

@@ -79,4 +79,15 @@ public class GameType extends AbstractExtendedEntity {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    @Override
+    public String toString() {
+        return "GameType{" +
+                "id=" + id +
+                ", code='" + code + '\'' +
+                ", difficultyEnabled=" + difficultyEnabled +
+                ", lengthEnabled=" + lengthEnabled +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }

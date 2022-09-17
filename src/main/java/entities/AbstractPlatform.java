@@ -4,11 +4,11 @@ import org.apache.commons.lang3.StringUtils;
 import pojos.enums.EnumPlatform;
 
 import javax.persistence.*;
-import java.io.File;
 
 @Entity
 @Table(name = "PLATFORMS")
-public class Platform extends AbstractExtendedEntity {
+@Inheritance(strategy = InheritanceType.JOINED)
+public abstract class AbstractPlatform extends AbstractExtendedEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator="platformSequence")
@@ -32,11 +32,11 @@ public class Platform extends AbstractExtendedEntity {
     private String installationFolder;
 
 
-    public Platform() {
+    protected AbstractPlatform() {
         super();
     }
 
-    public Platform(EnumPlatform platform) {
+    protected AbstractPlatform(EnumPlatform platform) {
         super();
         this.code = platform.name();
         this.description = platform.getDescripcion();

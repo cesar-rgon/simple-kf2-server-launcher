@@ -5,6 +5,7 @@ import dtos.PlatformProfileMapDto;
 import entities.PlatformProfileMap;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import pojos.enums.EnumPlatform;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,9 +30,11 @@ public class PlatformProfileMapDtoFactory {
 
         LocalDate releaseDate = platformProfileMap.getReleaseDate() != null ? platformProfileMap.getReleaseDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(): null;
         LocalDateTime importedDate = platformProfileMap.getImportedDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        PlatformDto platformDto = EnumPlatform.STEAM.name().equals(platformProfileMap.getPlatform().getCode()) ?
+                platformDtoFactory.newSteamDto(platformProfileMap.getPlatform()): platformDtoFactory.newEpicDto(platformProfileMap.getPlatform());
 
         return new PlatformProfileMapDto(
-                (PlatformDto) platformDtoFactory.newDto(platformProfileMap.getPlatform()),
+                platformDto,
                 profileDtoFactory.newDto(platformProfileMap.getProfile()),
                 mapDtoFactory.newDto(platformProfileMap.getMap()),
                 platformProfileMap.getAlias(),

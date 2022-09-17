@@ -1,7 +1,6 @@
 package dtos.factories;
 
 import dtos.SelectDto;
-import entities.Difficulty;
 import entities.MaxPlayers;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

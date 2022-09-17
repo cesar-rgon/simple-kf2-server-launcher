@@ -1,9 +1,8 @@
 package daos;
 
-import entities.Platform;
+import entities.AbstractPlatform;
 import entities.Profile;
 import entities.PlatformProfileMap;
-import pojos.enums.EnumPlatform;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -37,7 +36,7 @@ public class PlatformProfileMapDao extends AbstractDao<PlatformProfileMap> {
         return find(query, parameters);
     }
 
-    public List<PlatformProfileMap> listPlatformProfileMaps(Platform platform, Profile profile) throws SQLException {
+    public List<PlatformProfileMap> listPlatformProfileMaps(AbstractPlatform platform, Profile profile) throws SQLException {
         String query = "select ppm from entities.PlatformProfileMap ppm where ppm.platform = :PLATFORM and ppm.profile = :PROFILE";
         java.util.Map<String,Object> parameters = new HashMap<String,Object>();
         parameters.put("PLATFORM", platform);

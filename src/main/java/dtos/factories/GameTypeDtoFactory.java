@@ -1,8 +1,6 @@
 package dtos.factories;
 
 import dtos.GameTypeDto;
-import dtos.SelectDto;
-import entities.Difficulty;
 import entities.GameType;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

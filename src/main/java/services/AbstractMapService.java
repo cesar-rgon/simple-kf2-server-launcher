@@ -1,14 +1,12 @@
 package services;
 
 import daos.OfficialMapDao;
-import daos.PlatformDao;
 import daos.PlatformProfileMapDao;
 import entities.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.ImportMapResultToDisplay;
-import pojos.enums.EnumPlatform;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -70,7 +68,7 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
         return mapList;
     }
 
-    public AbstractMap createMap(Platform platform, AbstractMap map, List<Profile> profileList, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
+    public AbstractMap createMap(AbstractPlatform platform, AbstractMap map, List<Profile> profileList, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
         AbstractMap insertedMap = null;
         try {
             List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
@@ -148,7 +146,7 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
         return insertedMap;
     }
 
-    public AbstractMap addProfilesToMap(Platform platform, AbstractMap map, List<Profile> profileList, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
+    public AbstractMap addProfilesToMap(AbstractPlatform platform, AbstractMap map, List<Profile> profileList, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
         profileList.stream().forEach(profile -> {
             try {
                 if (!profile.getMapList().contains(map)) {
@@ -185,7 +183,7 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
     }
 
 
-    protected AbstractMap deleteMap(Platform platform, AbstractMap map, Profile profile) throws Exception {
+    protected AbstractMap deleteMap(AbstractPlatform platform, AbstractMap map, Profile profile) throws Exception {
         PlatformProfileMap.IdPlatformProfileMap idPlatformProfileMap = new PlatformProfileMap.IdPlatformProfileMap(platform.getId(), profile.getId(), map.getId());
         PlatformProfileMap platformProfileMap = PlatformProfileMapDao.getInstance().get(idPlatformProfileMap);
         platformProfileMapService.deleteItem(platformProfileMap);

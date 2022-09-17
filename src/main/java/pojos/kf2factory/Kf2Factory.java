@@ -1,6 +1,5 @@
 package pojos.kf2factory;
 
-import entities.Platform;
 import org.apache.commons.lang3.StringUtils;
 import pojos.enums.EnumPlatform;
 import services.PropertyService;

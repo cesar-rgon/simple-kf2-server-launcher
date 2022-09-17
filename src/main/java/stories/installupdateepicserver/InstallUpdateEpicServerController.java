@@ -15,7 +15,6 @@ import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Epic;
 import pojos.kf2factory.Kf2Factory;
-import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
@@ -56,7 +55,7 @@ public class InstallUpdateEpicServerController implements Initializable {
 
             String installationFolderLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.installationFolder");
             installationFolderLabel.setText(installationFolderLabelText + "*");
-            installationFolder.setText(facade.findPropertyValue("prop.config.epicInstallationFolder"));
+            installationFolder.setText(facade.getPlatformInstallationFolder());
             loadTooltip("prop.tooltip.installationFolder", installationFolderImg, installationFolderLabel, installationFolder);
 
             Double tooltipDuration = Double.parseDouble(
@@ -85,7 +84,7 @@ public class InstallUpdateEpicServerController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
-                        if (!facade.saveOrUpdateProperty("prop.config.epicInstallationFolder", installationFolder.getText())) {
+                        if (!facade.updatePlatformInstallationFolder(installationFolder.getText())) {
                             logger.warn("The installation folder value could not be saved!:" + installationFolder.getText());
                             String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
                             String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");
@@ -109,7 +108,7 @@ public class InstallUpdateEpicServerController implements Initializable {
             File selectedDirectory = directoryChooser.showDialog(MainApplication.getPrimaryStage());
             if (selectedDirectory != null) {
                 installationFolder.setText(selectedDirectory.getAbsolutePath());
-                if (!facade.saveOrUpdateProperty("prop.config.epicInstallationFolder", installationFolder.getText())) {
+                if (!facade.updatePlatformInstallationFolder(installationFolder.getText())) {
                     logger.warn("The installation folder value could not be saved!: " + installationFolder.getText());
                     String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
                     String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");

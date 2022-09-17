@@ -3,7 +3,7 @@ package services;
 import daos.CustomMapModDao;
 import entities.AbstractMap;
 import entities.CustomMapMod;
-import entities.Platform;
+import entities.AbstractPlatform;
 import entities.Profile;
 import org.apache.commons.io.FileUtils;
 
@@ -43,7 +43,7 @@ public class CustomMapModServiceImpl extends AbstractMapService {
         return CustomMapModDao.getInstance().update((CustomMapMod) map);
     }
 
-    public CustomMapMod deleteMap(Platform platform, CustomMapMod map, Profile profile) throws Exception {
+    public CustomMapMod deleteMap(AbstractPlatform platform, CustomMapMod map, Profile profile) throws Exception {
         super.deleteMap(platform, map, profile);
 
         if (map.getProfileList().isEmpty()) {

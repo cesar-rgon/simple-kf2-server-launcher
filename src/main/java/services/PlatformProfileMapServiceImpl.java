@@ -3,10 +3,9 @@ package services;
 import daos.OfficialMapDao;
 import daos.PlatformProfileMapDao;
 import entities.OfficialMap;
-import entities.Platform;
+import entities.AbstractPlatform;
 import entities.Profile;
 import entities.PlatformProfileMap;
-import pojos.enums.EnumPlatform;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -40,7 +39,7 @@ public class PlatformProfileMapServiceImpl implements PlatformProfileMapService 
     }
 
     @Override
-    public List<PlatformProfileMap> listPlatformProfileMaps(Platform platform, Profile profile) throws SQLException {
+    public List<PlatformProfileMap> listPlatformProfileMaps(AbstractPlatform platform, Profile profile) throws SQLException {
         List<PlatformProfileMap> platformProfileMapList = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(platform, profile);
         List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
         if (platformProfileMapList != null && !platformProfileMapList.isEmpty()) {

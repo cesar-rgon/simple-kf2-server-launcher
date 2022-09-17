@@ -192,7 +192,7 @@ public class ProfileServiceImpl implements ProfileService {
         Profile savedProfile = createItem(newProfile);
         profileToBeCloned.getProfileMapList().stream().forEach(pm -> {
             try {
-                PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(new Platform(EnumPlatform.STEAM), savedProfile, pm.getMap(), pm.getReleaseDate(), pm.getUrlInfo(), pm.getUrlPhoto());
+                PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(new SteamPlatform(EnumPlatform.STEAM), savedProfile, pm.getMap(), pm.getReleaseDate(), pm.getUrlInfo(), pm.getUrlPhoto());
                 newPlatformProfileMap.setAlias(pm.getAlias());
                 savedProfile.getProfileMapList().add(newPlatformProfileMap);
                 platformProfileMapService.createItem(newPlatformProfileMap);
@@ -369,7 +369,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public List<Profile> importProfilesFromFile(Platform platform, List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) {
+    public List<Profile> importProfilesFromFile(AbstractPlatform platform, List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) {
         List<Profile> savedProfileList = saveProfilesToDatabase(platform, selectedProfileList, properties);
 
         if (savedProfileList.size() < selectedProfileList.size()) {
@@ -630,7 +630,7 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
-    private List<Profile> saveProfilesToDatabase(Platform platform, List<Profile> selectedProfileList, Properties properties) {
+    private List<Profile> saveProfilesToDatabase(AbstractPlatform platform, List<Profile> selectedProfileList, Properties properties) {
         List<Profile> savedProfileList = new ArrayList<Profile>();
 
         int profileIndex = 1;
@@ -656,7 +656,7 @@ public class ProfileServiceImpl implements ProfileService {
         return savedProfileList;
     }
 
-    private List<AbstractMap> importPlatformProfileMapsFromFile(Platform platform, int profileIndex, Profile profile, Properties properties) throws Exception {
+    private List<AbstractMap> importPlatformProfileMapsFromFile(AbstractPlatform platform, int profileIndex, Profile profile, Properties properties) throws Exception {
         List<AbstractMap> mapList = new ArrayList<AbstractMap>();
         java.util.Map<String,Integer> officialMapsIndex = new HashMap<String, Integer>();
         List<MapToDisplay> customMapListToDisplay = new ArrayList<MapToDisplay>();
@@ -716,7 +716,7 @@ public class ProfileServiceImpl implements ProfileService {
         return mapList;
     }
 
-    private void importPlatformProfileMap(Platform platform, Profile profile, AbstractMap map, int profileIndex, int mapIndex, Properties properties) throws Exception {
+    private void importPlatformProfileMap(AbstractPlatform platform, Profile profile, AbstractMap map, int profileIndex, int mapIndex, Properties properties) throws Exception {
         String alias = properties.getProperty("exported.profile" + profileIndex + ".profilemap" + mapIndex + ".alias");
         alias = StringUtils.isNotBlank(alias) ? alias: map.getCode();
 

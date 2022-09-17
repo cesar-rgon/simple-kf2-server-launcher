@@ -1,7 +1,6 @@
 package stories.maincontent;
 
 import dtos.*;
-import entities.Platform;
 import javafx.collections.ObservableList;
 import pojos.enums.EnumPlatform;
 

@@ -75,7 +75,7 @@ public class PlatformProfileMap extends AbstractEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="ID_PLATFORM", referencedColumnName = "ID", insertable = false, updatable = false, nullable = false)
-    private Platform platform;
+    private AbstractPlatform platform;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name="ID_PROFILE", referencedColumnName = "ID", insertable = false, updatable = false, nullable = false)
@@ -104,7 +104,7 @@ public class PlatformProfileMap extends AbstractEntity {
         super();
     }
 
-    public PlatformProfileMap(Platform platform, Profile profile, AbstractMap map, Date releaseDate, String urlInfo, String urlPhoto) {
+    public PlatformProfileMap(AbstractPlatform platform, Profile profile, AbstractMap map, Date releaseDate, String urlInfo, String urlPhoto) {
         super();
         this.idPlatformProfileMap = new IdPlatformProfileMap(platform.getId(), profile.getId(), map.getId());
         this.platform = platform;
@@ -129,11 +129,11 @@ public class PlatformProfileMap extends AbstractEntity {
         this.idPlatformProfileMap = (IdPlatformProfileMap) id;
     }
 
-    public Platform getPlatform() {
+    public AbstractPlatform getPlatform() {
         return platform;
     }
 
-    public void setPlatform(Platform platform) {
+    public void setPlatform(AbstractPlatform platform) {
         this.platform = platform;
     }
 
@@ -208,4 +208,18 @@ public class PlatformProfileMap extends AbstractEntity {
         return idPlatformProfileMap.hashCode();
     }
 
+    @Override
+    public String toString() {
+        return "PlatformProfileMap{" +
+                "idPlatformProfileMap=" + idPlatformProfileMap +
+                ", platform=" + platform +
+                ", profile=" + profile +
+                ", map=" + map +
+                ", alias='" + alias + '\'' +
+                ", urlPhoto='" + urlPhoto + '\'' +
+                ", releaseDate=" + releaseDate +
+                ", importedDate=" + importedDate +
+                ", urlInfo='" + urlInfo + '\'' +
+                '}';
+    }
 }

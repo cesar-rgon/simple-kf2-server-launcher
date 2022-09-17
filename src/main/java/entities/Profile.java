@@ -591,4 +591,54 @@ public class Profile extends AbstractExtendedEntity {
                 map(PlatformProfileMap::getMap).
                 collect(Collectors.toList());
     }
+
+    @Override
+    public String toString() {
+        return "Profile{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", language=" + language +
+                ", gametype=" + gametype +
+                ", map=" + map +
+                ", difficulty=" + difficulty +
+                ", length=" + length +
+                ", maxPlayers=" + maxPlayers +
+                ", serverName='" + serverName + '\'' +
+                ", serverPassword='" + serverPassword + '\'' +
+                ", webPage=" + webPage +
+                ", webPassword='" + webPassword + '\'' +
+                ", takeover=" + takeover +
+                ", webPort=" + webPort +
+                ", gamePort=" + gamePort +
+                ", queryPort=" + queryPort +
+                ", yourClan='" + yourClan + '\'' +
+                ", yourWebLink='" + yourWebLink + '\'' +
+                ", urlImageServer='" + urlImageServer + '\'' +
+                ", welcomeMessage='" + welcomeMessage + '\'' +
+                ", customParameters='" + customParameters + '\'' +
+                ", platformProfileMapList=" + platformProfileMapList +
+                ", teamCollision=" + teamCollision +
+                ", adminCanPause=" + adminCanPause +
+                ", announceAdminLogin=" + announceAdminLogin +
+                ", mapVoting=" + mapVoting +
+                ", mapVotingTime=" + mapVotingTime +
+                ", kickVoting=" + kickVoting +
+                ", kickPercentage=" + kickPercentage +
+                ", publicTextChat=" + publicTextChat +
+                ", spectatorsOnlyChatToOtherSpectators=" + spectatorsOnlyChatToOtherSpectators +
+                ", voip=" + voip +
+                ", chatLogging=" + chatLogging +
+                ", chatLoggingFile='" + chatLoggingFile + '\'' +
+                ", chatLoggingFileTimestamp=" + chatLoggingFileTimestamp +
+                ", timeBetweenKicks=" + timeBetweenKicks +
+                ", maxIdleTime=" + maxIdleTime +
+                ", deadPlayersCanTalk=" + deadPlayersCanTalk +
+                ", readyUpDelay=" + readyUpDelay +
+                ", gameStartDelay=" + gameStartDelay +
+                ", maxSpectators=" + maxSpectators +
+                ", mapObjetives=" + mapObjetives +
+                ", pickupItems=" + pickupItems +
+                ", friendlyFirePercentage=" + friendlyFirePercentage +
+                '}';
+    }
 }

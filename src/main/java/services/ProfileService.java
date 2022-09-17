@@ -1,7 +1,7 @@
 package services;
 
 import entities.Language;
-import entities.Platform;
+import entities.AbstractPlatform;
 import entities.Profile;
 
 import java.io.File;
@@ -22,5 +22,5 @@ public interface ProfileService extends AbstractExtendedService<Profile> {
     void importLengthsFromFile(Properties properties, List<Language> languageList) throws SQLException;
     void importMaxPlayersFromFile(Properties properties, List<Language> languageList) throws SQLException;
     List<Profile> selectProfilesToBeImported(Properties properties, String message) throws Exception;
-    List<Profile> importProfilesFromFile(Platform platform, List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage);
+    List<Profile> importProfilesFromFile(AbstractPlatform platform, List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage);
 }

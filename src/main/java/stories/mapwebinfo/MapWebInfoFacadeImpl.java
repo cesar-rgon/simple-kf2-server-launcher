@@ -1,9 +1,8 @@
 package stories.mapwebinfo;
 
+import daos.AbstractPlatformDao;
 import daos.CustomMapModDao;
-import daos.OfficialMapDao;
-import daos.PlatformDao;
-import daos.ProfileDao;
+import daos.SteamPlatformDao;
 import dtos.CustomMapModDto;
 import dtos.factories.MapDtoFactory;
 import entities.*;
@@ -21,7 +20,6 @@ import utils.Utils;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,7 +34,6 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
     private final CustomMapModServiceImpl customMapModService;
     private final ProfileToDisplayFactory profileToDisplayFactory;
     private final ProfileService profileService;
-    private PlatformDao platformDao;
 
     public MapWebInfoFacadeImpl() {
         super();
@@ -90,7 +87,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
     }
 
     private CustomMapMod createNewCustomMap(String platformName, String mapName, Long idWorkShop, String urlPhoto, boolean downloaded, List<Profile> profileList) throws Exception {
-        Optional<Platform> platformOptional = platformDao.getInstance().findByCode(platformName);
+        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
         if (!platformOptional.isPresent() || StringUtils.isBlank(mapName) || idWorkShop == null) {
             return null;
         }
@@ -112,7 +109,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
 
     @Override
     public void addProfilesToMap(String platformName, String mapName, List<String> profileNameList) throws SQLException {
-        Optional<Platform> platformOptional = platformDao.getInstance().findByCode(platformName);
+        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
         if (!platformOptional.isPresent()) {
             return;
         }

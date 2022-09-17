@@ -16,4 +16,9 @@ public class OfficialMap extends AbstractMap {
     public OfficialMap(String code, String urlInfo, String urlPhoto, Date releaseDate) {
         super(code, urlInfo, urlPhoto, true, releaseDate);
     }
+
+    @Override
+    public String toString() {
+        return "OfficialMap{} " + super.toString();
+    }
 }

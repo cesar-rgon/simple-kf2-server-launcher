@@ -301,7 +301,7 @@ public class MapsEditionController implements Initializable {
         String installationFolder = platformProfileMapDto.getPlatformDto().getInstallationFolder();
         try {
             Image image = null;
-            if (facade.isCorrectInstallationFolder() && StringUtils.isNotBlank(platformProfileMapDto.getUrlPhoto())) {
+            if (facade.isCorrectInstallationFolder(platformProfileMapDto.getPlatformDto().getKey()) && StringUtils.isNotBlank(platformProfileMapDto.getUrlPhoto())) {
                 image = new Image("file:" + installationFolder + "/" + platformProfileMapDto.getUrlPhoto());
             } else {
                 File file = new File(System.getProperty("user.dir") + "/external-images/no-photo.png");
@@ -602,7 +602,7 @@ public class MapsEditionController implements Initializable {
         List<AddMapsToProfile> addMapsToProfileList = new ArrayList<AddMapsToProfile>();
 
         try {
-            if (!facade.isCorrectInstallationFolder()) {
+            if (!facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name()) || !facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
                 logger.warn("Installation folder is not valid. Define in Install/Update section for each Platform used.");
                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
                 String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");

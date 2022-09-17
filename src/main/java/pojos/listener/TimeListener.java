@@ -2,7 +2,9 @@ package pojos.listener;
 
 import daos.CustomMapModDao;
 import entities.CustomMapMod;
-import entities.Platform;
+import entities.AbstractPlatform;
+import entities.EpicPlatform;
+import entities.SteamPlatform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.enums.EnumPlatform;
@@ -59,12 +61,12 @@ public class TimeListener extends TimerTask {
                             String[] array = filenameWithExtension.split("\\.");
                             String filenameWithoutExtension = array[0];
                             map.setCode(filenameWithoutExtension);
-                            map.getDownnloadedMap().add(new Platform(EnumPlatform.STEAM));
+                            map.getDownnloadedMap().add(new SteamPlatform(EnumPlatform.STEAM));
                             CustomMapModDao.getInstance().update(map);
                         } else {
                             File folder = new File(installationFolder + "/KFGame/Cache/" + map.getIdWorkShop());
                             if (folder.exists()) {
-                                map.getDownnloadedMap().add(new Platform(EnumPlatform.STEAM));
+                                map.getDownnloadedMap().add(new SteamPlatform(EnumPlatform.STEAM));
                                 CustomMapModDao.getInstance().update(map);
                             }
                         }

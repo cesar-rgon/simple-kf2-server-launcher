@@ -84,8 +84,8 @@ public class MainApplication extends Application {
 
     public static void main(String[] args) {
         try {
-            File databaseFile = new File("./kf2database.odb");
-            if (!databaseFile.exists()) {
+            File databaseFolder = new File("kf2database");
+            if (!databaseFolder.exists()) {
                 logger.info("----- Starting the populate process over the application database -----");
                 PopulateDatabase populateDatabase = new PopulateDatabase();
                 populateDatabase.start();
@@ -112,7 +112,7 @@ public class MainApplication extends Application {
                 System.exit(0);
             }
         } catch (Exception e) {
-            logger.error(e);
+             logger.error(e);
         }
     }
 

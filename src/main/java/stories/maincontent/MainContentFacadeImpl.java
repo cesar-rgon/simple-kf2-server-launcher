@@ -33,7 +33,6 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     private final PlatformProfileMapDtoFactory platformProfileMapDtoFactory;
     private final PlatformProfileMapService platformProfileMapService;
     private final PlatformDtoFactory platformDtoFactory;
-    private PlatformDao platformDao;
 
     public MainContentFacadeImpl() {
         super();
@@ -86,7 +85,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     public ObservableList<PlatformDto> listAllPlatforms() throws SQLException {
-        List<Platform> platformList = PlatformDao.getInstance().listAll();
+        List<AbstractPlatform> platformList = AbstractPlatformDao.getInstance().listAll();
         return platformDtoFactory.newDtos(platformList);
     }
 
@@ -669,7 +668,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws SQLException {
-        Optional<Platform> platformOpt = platformDao.getInstance().findByCode(platformName);
+        Optional<AbstractPlatform> platformOpt = AbstractPlatformDao.getInstance().findByCode(platformName);
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (platformOpt.isPresent() && profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -687,7 +686,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public PlatformDto getPlatform(EnumPlatform enumPlatform) throws SQLException {
-        Optional<Platform> platformOptional = PlatformDao.getInstance().findByCode(enumPlatform.name());
-        return platformOptional.isPresent() ? platformDtoFactory.newDto(platformOptional.get()): null;
+        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(enumPlatform.name());
+        return platformOptional.isPresent() ? platformDtoFactory.newSteamDto(platformOptional.get()): null;
     }
 }

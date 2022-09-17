@@ -12,7 +12,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.ProfileToDisplay;
 import pojos.ProfileToDisplayFactory;
-import pojos.enums.EnumPlatform;
 import services.*;
 import stories.AbstractFacade;
 import utils.Utils;
@@ -32,7 +31,6 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
     private final ProfileService profileService;
     private final AbstractMapService officialMapService;
     private final PlatformProfileMapService platformProfileMapService;
-    private PlatformDao platformDao;
 
     public ProfilesEditionFacadeImpl() {
         profileDtoFactory = new ProfileDtoFactory();
@@ -111,7 +109,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
                 0.0
         );
 
-        Optional<Platform> platformOptional = platformDao.getInstance().findByCode(platformName);
+        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
         Profile savedProfile = profileService.createItem(newProfile);
 
 
@@ -219,7 +217,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
 
     @Override
     public ObservableList<ProfileDto> importProfilesFromFile(String platformName, List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) throws Exception {
-        Optional<Platform> platformOptional = platformDao.getInstance().findByCode(platformName);
+        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
         if (!platformOptional.isPresent()) {
             return null;
         }

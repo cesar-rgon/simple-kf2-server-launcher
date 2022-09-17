@@ -2,24 +2,19 @@
 <persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
     <persistence-unit name="kf2database">
         <description>Killing Floor 2 DataBase</description>
-        <provider>com.objectdb.jpa.Provider</provider>
-
-        <class>entities.Difficulty</class>
-        <class>entities.GameType</class>
-        <class>entities.Language</class>
-        <class>entities.Length</class>
-        <class>entities.MaxPlayers</class>
-        <class>entities.AbstractMap</class>
-        <class>entities.OfficialMap</class>
-        <class>entities.CustomMapMod</class>
-        <class>entities.Profile</class>
-        <class>entities.PlatformProfileMap</class>
-        <exclude-unlisted-classes>true</exclude-unlisted-classes>
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <properties>
-            <property name="javax.persistence.jdbc.url" value="objectdb:kf2database.odb"/>
-            <property name="javax.persistence.jdbc.user" value="admin"/>
-            <property name="javax.persistence.jdbc.password" value="admin"/>
+            <property name="hibernate.connection.driver_class" value="org.apache.derby.jdbc.EmbeddedDriver" />
+            <property name="hibernate.connection.url" value="jdbc:derby:kf2database;create=true" />
+            <property name="hibernate.connection.username" value="kf2database" />
+            <property name="hibernate.connection.password" value="" />
+            <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyTenSevenDialect" />
+            <property name="hibernate.hbm2ddl.auto" value="update" />
+            <property name="hibernate.connection.charSet" value="UTF-8"/>
+            <property name="hibernate.show_sql" value = "true" />
+            <property name="hibernate.connection.autocommit" value="false" />
         </properties>
+
     </persistence-unit>
 </persistence>

@@ -16,7 +16,6 @@ import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import pojos.kf2factory.Kf2Steam;
-import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
@@ -67,7 +66,7 @@ public class InstallUpdateSteamServerController implements Initializable {
 
             String installationFolderLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.installationFolder");
             installationFolderLabel.setText(installationFolderLabelText + "*");
-            installationFolder.setText(facade.findPropertyValue("prop.config.steamInstallationFolder"));
+            installationFolder.setText(facade.getPlatformInstallationFolder());
             loadTooltip("prop.tooltip.installationFolder", installationFolderImg, installationFolderLabel, installationFolder);
 
             String validateFilesLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.validateFiles");
@@ -113,7 +112,7 @@ public class InstallUpdateSteamServerController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
-                        if (!facade.saveOrUpdateProperty("prop.config.steamInstallationFolder", installationFolder.getText())) {
+                        if (!facade.updatePlatformInstallationFolder(installationFolder.getText())) {
                             logger.warn("The installation folder value could not be saved!:" + installationFolder.getText());
                             String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
                             String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");
@@ -178,7 +177,7 @@ public class InstallUpdateSteamServerController implements Initializable {
             File selectedDirectory = directoryChooser.showDialog(MainApplication.getPrimaryStage());
             if (selectedDirectory != null) {
                 installationFolder.setText(selectedDirectory.getAbsolutePath());
-                if (!facade.saveOrUpdateProperty("prop.config.steamInstallationFolder", installationFolder.getText())) {
+                if (!facade.updatePlatformInstallationFolder(installationFolder.getText())) {
                     logger.warn("The installation folder value could not be saved!: " + installationFolder.getText());
                     String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
                     String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");

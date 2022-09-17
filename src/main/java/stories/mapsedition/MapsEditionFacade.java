@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface MapsEditionFacade {
     String findConfigPropertyValue(String key) throws Exception;
     void setConfigPropertyValue(String key, String value) throws Exception;
-    boolean isCorrectInstallationFolder();
+    boolean isCorrectInstallationFolder(String platformName);
     ObservableList<ProfileDto> listAllProfiles() throws SQLException;
     AbstractMapDto addProfilesToMap(String platformName, String mapName, List<String> profileNameList, List<ImportMapResultToDisplay> importMapResultToDisplayList) throws SQLException;
     AbstractMapDto deleteMapFromProfile(String platformName, String mapName, String profileName) throws Exception;
