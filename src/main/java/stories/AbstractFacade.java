@@ -1,7 +1,9 @@
 package stories;
 
+import daos.AbstractPlatformDao;
 import dtos.ProfileDto;
 import dtos.factories.ProfileDtoFactory;
+import entities.AbstractPlatform;
 import entities.Profile;
 import services.ProfileService;
 import services.ProfileServiceImpl;
@@ -24,6 +26,14 @@ public abstract class AbstractFacade {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             return profileOpt.get();
+        }
+        return null;
+    }
+
+    public AbstractPlatform findPlatformByCode(String platformName) throws SQLException {
+        Optional<AbstractPlatform> platformOpt = AbstractPlatformDao.getInstance().findByCode(platformName);
+        if (platformOpt.isPresent()) {
+            return platformOpt.get();
         }
         return null;
     }

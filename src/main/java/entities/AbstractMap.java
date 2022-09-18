@@ -111,11 +111,11 @@ public abstract class AbstractMap extends AbstractExtendedEntity {
         this.releaseDate = releaseDate;
     }
 
-    public List<PlatformProfileMap> getProfileMapList() {
+    public List<PlatformProfileMap> getPlatformProfileMapList() {
         return platformProfileMapList;
     }
 
-    public void setProfileMapList(List<PlatformProfileMap> platformProfileMapList) {
+    public void setPlatformProfileMapList(List<PlatformProfileMap> platformProfileMapList) {
         this.platformProfileMapList = platformProfileMapList;
     }
 

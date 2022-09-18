@@ -49,7 +49,7 @@ public class MapDtoFactory {
 
         DateFormat importedDateFormat = new SimpleDateFormat(datePattern);
         List<ImportedDateByProfileDto> importedDateByProfileDtoList = new ArrayList<ImportedDateByProfileDto>();
-        map.getProfileMapList().forEach(pm -> {
+        map.getPlatformProfileMapList().forEach(pm -> {
             importedDateByProfileDtoList.add(
                 new ImportedDateByProfileDto(
                     pm.getProfile().getName(),
@@ -72,7 +72,7 @@ public class MapDtoFactory {
 
         DateFormat importedDateFormat = new SimpleDateFormat(datePattern);
         List<ImportedDateByProfileDto> importedDateByProfileDtoList = new ArrayList<ImportedDateByProfileDto>();
-        map.getProfileMapList().forEach(pm -> {
+        map.getPlatformProfileMapList().forEach(pm -> {
             importedDateByProfileDtoList.add(
                     new ImportedDateByProfileDto(
                             pm.getProfile().getName(),

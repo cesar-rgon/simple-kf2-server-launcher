@@ -149,11 +149,11 @@ public class MapsEditionController implements Initializable {
             steamCustomMapsTab.setText("");
 
             String epicOfficialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.epicOfficiaslMaps");
-            epicOfficialMapsTab.setGraphic(createTabTitle(epicOfficialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
+            epicOfficialMapsTab.setGraphic(createTabTitle(epicOfficialMapsTabText, epicOfficialMapsFlowPane.getChildren().size()));
             epicOfficialMapsTab.setText("");
 
             String epicCustomMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.epicCustomMaps");
-            epicCustomMapsTab.setGraphic(createTabTitle(epicCustomMapsTabText, steamCustomMapsFlowPane.getChildren().size()));
+            epicCustomMapsTab.setGraphic(createTabTitle(epicCustomMapsTabText, epicCustomMapsFlowPane.getChildren().size()));
             epicCustomMapsTab.setText("");
 
             SingleSelectionModel<Tab> selectionModel = mapsTabPane.getSelectionModel();
@@ -632,16 +632,77 @@ public class MapsEditionController implements Initializable {
             Task<List<PlatformProfileMapDto>> task = new Task<List<PlatformProfileMapDto>>() {
                 @Override
                 protected List<PlatformProfileMapDto> call() throws Exception {
+
                     String platformNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.platformName");
                     String profileNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileName");
 
                     List<PlatformProfileMapDto> mapAddedListToActualPlatformProfile = new ArrayList<PlatformProfileMapDto>();
                     for (AddMapsToPlatformProfile addMapsToPlatformProfile: finalAddMapsToPlatformProfileList) {
 
-                        if (EnumPlatform.STEAM.getDescripcion().equals(addMapsToPlatformProfile.getPlatformName()) || EnumPlatform.ALL.getDescripcion().equals(addMapsToPlatformProfile.getPlatformName())) {
-                            if (facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
+                        List<String> platformNameList = new ArrayList<String>();
+                        switch (addMapsToPlatformProfile.getPlatformName()) {
+                            case "Steam":
+                                platformNameList.add(EnumPlatform.STEAM.name());
+                                if (facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
+                                    List<PlatformProfileMapDto> mapAddedList = facade.addCustomMapsToProfile(
+                                            platformNameList,
+                                            addMapsToPlatformProfile.getProfileName(),
+                                            addMapsToPlatformProfile.getMapList(),
+                                            languageCode,
+                                            profileSelect.getValue().getName(),
+                                            success,
+                                            errors);
+
+                                    if (addMapsToPlatformProfile.getProfileName().equals(profileSelect.getValue().getName())) {
+                                        mapAddedListToActualPlatformProfile.addAll(mapAddedList);
+                                    }
+                                } else {
+                                    String[] idUrlWorkShopArray = addMapsToPlatformProfile.getMapList().replaceAll(" ", "").split(",");
+                                    for (String idUrlWorkShop: idUrlWorkShopArray) {
+                                        errors.append(platformNameMessage + ": ").append(EnumPlatform.STEAM.getDescripcion()).append(" - " + profileNameMessage + ": ").append(addMapsToPlatformProfile.getProfileName()).append(" - url/id WorkShop: ").append(idUrlWorkShop).append("\n");
+                                    }
+                                }
+                                break;
+
+                            case "Epic Games":
+                                platformNameList.add(EnumPlatform.EPIC.name());
+                                if (facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
+                                    List<PlatformProfileMapDto> mapAddedList = facade.addCustomMapsToProfile(
+                                            platformNameList,
+                                            addMapsToPlatformProfile.getProfileName(),
+                                            addMapsToPlatformProfile.getMapList(),
+                                            languageCode,
+                                            profileSelect.getValue().getName(),
+                                            success,
+                                            errors);
+
+                                    if (addMapsToPlatformProfile.getProfileName().equals(profileSelect.getValue().getName())) {
+                                        mapAddedListToActualPlatformProfile.addAll(mapAddedList);
+                                    }
+                                } else {
+                                    String[] idUrlWorkShopArray = addMapsToPlatformProfile.getMapList().replaceAll(" ", "").split(",");
+                                    for (String idUrlWorkShop: idUrlWorkShopArray) {
+                                        errors.append(platformNameMessage + ": ").append(EnumPlatform.EPIC.getDescripcion()).append(" - " + profileNameMessage + ": ").append(addMapsToPlatformProfile.getProfileName()).append(" - url/id WorkShop: ").append(idUrlWorkShop).append("\n");
+                                    }
+                                }
+                                break;
+
+                            case "All platforms":
+                                if (facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
+                                    platformNameList.add(EnumPlatform.STEAM.name());
+                                }
+                                if (facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
+                                    platformNameList.add(EnumPlatform.EPIC.name());
+                                }
+
+                                if (platformNameList.isEmpty()) {
+                                    String[] idUrlWorkShopArray = addMapsToPlatformProfile.getMapList().replaceAll(" ", "").split(",");
+                                    for (String idUrlWorkShop: idUrlWorkShopArray) {
+                                        errors.append(platformNameMessage + ": ").append(EnumPlatform.EPIC.getDescripcion()).append(" - " + profileNameMessage + ": ").append(addMapsToPlatformProfile.getProfileName()).append(" - url/id WorkShop: ").append(idUrlWorkShop).append("\n");
+                                    }
+                                }
                                 List<PlatformProfileMapDto> mapAddedList = facade.addCustomMapsToProfile(
-                                        EnumPlatform.STEAM.name(),
+                                        platformNameList,
                                         addMapsToPlatformProfile.getProfileName(),
                                         addMapsToPlatformProfile.getMapList(),
                                         languageCode,
@@ -652,34 +713,7 @@ public class MapsEditionController implements Initializable {
                                 if (addMapsToPlatformProfile.getProfileName().equals(profileSelect.getValue().getName())) {
                                     mapAddedListToActualPlatformProfile.addAll(mapAddedList);
                                 }
-                            }  else {
-                                String[] idUrlWorkShopArray = addMapsToPlatformProfile.getMapList().replaceAll(" ", "").split(",");
-                                for (String idUrlWorkShop: idUrlWorkShopArray) {
-                                    errors.append(platformNameMessage + ": ").append(EnumPlatform.STEAM.getDescripcion()).append(" - " + profileNameMessage + ": ").append(addMapsToPlatformProfile.getProfileName()).append(" - url/id WorkShop: ").append(idUrlWorkShop).append("\n");
-                                }
-                            }
-                        }
-
-                        if (EnumPlatform.EPIC.getDescripcion().equals(addMapsToPlatformProfile.getPlatformName()) || EnumPlatform.ALL.getDescripcion().equals(addMapsToPlatformProfile.getPlatformName())) {
-                            if (facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
-                                List<PlatformProfileMapDto> mapAddedList = facade.addCustomMapsToProfile(
-                                        EnumPlatform.EPIC.name(),
-                                        addMapsToPlatformProfile.getProfileName(),
-                                        addMapsToPlatformProfile.getMapList(),
-                                        languageCode,
-                                        profileSelect.getValue().getName(),
-                                        success,
-                                        errors);
-
-                                if (addMapsToPlatformProfile.getProfileName().equals(profileSelect.getValue().getName())) {
-                                    mapAddedListToActualPlatformProfile.addAll(mapAddedList);
-                                }
-                            }  else {
-                                String[] idUrlWorkShopArray = addMapsToPlatformProfile.getMapList().replaceAll(" ", "").split(",");
-                                for (String idUrlWorkShop: idUrlWorkShopArray) {
-                                    errors.append(platformNameMessage + ": ").append(EnumPlatform.EPIC.getDescripcion()).append(" - " + profileNameMessage + ": ").append(addMapsToPlatformProfile.getProfileName()).append(" - url/id WorkShop: ").append(idUrlWorkShop).append("\n");
-                                }
-                            }
+                                break;
                         }
                     }
 
@@ -691,20 +725,20 @@ public class MapsEditionController implements Initializable {
                 List<PlatformProfileMapDto> mapAddedListToActualPlatformProfile = task.getValue();
                 if (mapAddedListToActualPlatformProfile != null && !mapAddedListToActualPlatformProfile.isEmpty()) {
 
-
                     mapAddedListToActualPlatformProfile.stream().forEach(platformProfileMap -> {
 
-                        if (!steamPlatformProfileMapDtoList.stream()
-                                .filter(steamPpm -> !steamPpm.getMapDto().isOfficial() &&
-                                        EnumPlatform.STEAM.name().equals(platformProfileMap.getPlatformDto().getKey()) &&
-                                        ((CustomMapModDto) steamPpm.getMapDto()).getIdWorkShop().equals(((CustomMapModDto) platformProfileMap.getMapDto()).getIdWorkShop())).
-                                findFirst().
-                                isPresent()) {
+                        Optional<PlatformProfileMapDto> firstSteamPlatformProfileMap = steamPlatformProfileMapDtoList.stream().
+                                filter(steamPpm -> !steamPpm.getMapDto().isOfficial() &&
+                                        EnumPlatform.STEAM.name().equals(steamPpm.getPlatformDto().getKey()) &&
+                                        ((CustomMapModDto) steamPpm.getMapDto()).getIdWorkShop().equals(((CustomMapModDto) platformProfileMap.getMapDto()).getIdWorkShop())
+                                ).findFirst();
+
+                        if (!firstSteamPlatformProfileMap.isPresent()) {
                             try {
-                                Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByNames(EnumPlatform.STEAM.name(), profileSelect.getValue().getName(), platformProfileMap.getMapDto().getKey());
-                                if (profileMapDtoOptional.isPresent()) {
-                                    steamPlatformProfileMapDtoList.add(profileMapDtoOptional.get());
-                                    GridPane gridpane = createMapGridPane(profileMapDtoOptional.get());
+                                Optional<PlatformProfileMapDto> platformProfileMapDtoOptional = facade.findPlatformProfileMapDtoByNames(EnumPlatform.STEAM.name(), profileSelect.getValue().getName(), platformProfileMap.getMapDto().getKey());
+                                if (platformProfileMapDtoOptional.isPresent()) {
+                                    steamPlatformProfileMapDtoList.add(platformProfileMapDtoOptional.get());
+                                    GridPane gridpane = createMapGridPane(platformProfileMapDtoOptional.get());
                                     steamCustomMapsFlowPane.getChildren().add(gridpane);
                                 }
                             } catch (Exception e) {
@@ -712,17 +746,18 @@ public class MapsEditionController implements Initializable {
                             }
                         }
 
-                        if (!epicPlatformProfileMapDtoList.stream()
-                                .filter(epicPpm -> !epicPpm.getMapDto().isOfficial() &&
-                                        EnumPlatform.EPIC.name().equals(platformProfileMap.getPlatformDto().getKey()) &&
-                                        ((CustomMapModDto) epicPpm.getMapDto()).getIdWorkShop().equals(((CustomMapModDto) platformProfileMap.getMapDto()).getIdWorkShop())).
-                                findFirst().
-                                isPresent()) {
+                        Optional<PlatformProfileMapDto> firstEpicPlatformProfileMap = epicPlatformProfileMapDtoList.stream().
+                                filter(epicPpm -> !epicPpm.getMapDto().isOfficial() &&
+                                        EnumPlatform.EPIC.name().equals(epicPpm.getPlatformDto().getKey()) &&
+                                        ((CustomMapModDto) epicPpm.getMapDto()).getIdWorkShop().equals(((CustomMapModDto) platformProfileMap.getMapDto()).getIdWorkShop())
+                                ).findFirst();
+
+                        if (!firstEpicPlatformProfileMap.isPresent()) {
                             try {
-                                Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByNames(EnumPlatform.EPIC.name(), profileSelect.getValue().getName(), platformProfileMap.getMapDto().getKey());
-                                if (profileMapDtoOptional.isPresent()) {
-                                    epicPlatformProfileMapDtoList.add(profileMapDtoOptional.get());
-                                    GridPane gridpane = createMapGridPane(profileMapDtoOptional.get());
+                                Optional<PlatformProfileMapDto> platformProfileMapDtoOptional = facade.findPlatformProfileMapDtoByNames(EnumPlatform.EPIC.name(), profileSelect.getValue().getName(), platformProfileMap.getMapDto().getKey());
+                                if (platformProfileMapDtoOptional.isPresent()) {
+                                    epicPlatformProfileMapDtoList.add(platformProfileMapDtoOptional.get());
+                                    GridPane gridpane = createMapGridPane(platformProfileMapDtoOptional.get());
                                     epicCustomMapsFlowPane.getChildren().add(gridpane);
                                 }
                             } catch (Exception e) {
@@ -736,8 +771,12 @@ public class MapsEditionController implements Initializable {
 
                 try {
                     if (StringUtils.isNotBlank(success)) {
-                        String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamCustomMaps");
-                        steamCustomMapsTab.setGraphic(createTabTitle(customMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
+                        String steamCustomMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamCustomMaps");
+                        steamCustomMapsTab.setGraphic(createTabTitle(steamCustomMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
+
+                        String epicCustomMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.epicCustomMaps");
+                        epicCustomMapsTab.setGraphic(createTabTitle(epicCustomMapsModsTabText, epicCustomMapsFlowPane.getChildren().size()));
+
                         String message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapsAdded");
                         Utils.infoDialog(message + ":", success.toString());
                     } else {
@@ -1073,10 +1112,13 @@ public class MapsEditionController implements Initializable {
         } catch (Exception e) {
             mapNameLabel = "Map name";
         }
+        List<String> platformNameList = new ArrayList<String>();
+        platformNameList.add(EnumPlatform.STEAM.name());
+        platformNameList.add(EnumPlatform.EPIC.name());
 
         for (String officialMapName: officialMapNameList) {
             OfficialMapDto officialMapImportedDto = facade.importOfficialMapFromServer(
-                    Session.getInstance().getPlatform().getKey(),
+                    platformNameList,
                     officialMapName,
                     selectedProfileNameList,
                     profileSelect.getValue().getName(),
@@ -1113,10 +1155,13 @@ public class MapsEditionController implements Initializable {
         } catch (Exception e) {
             mapNameLabel = "Map name";
         }
+        List<String> platformNameList = new ArrayList<String>();
+        platformNameList.add(EnumPlatform.STEAM.name());
+        platformNameList.add(EnumPlatform.EPIC.name());
 
         for (MapToDisplay customMapModToDisplay: customMapModList) {
             CustomMapModDto customMapModImportedDto = facade.importCustomMapModFromServer(
-                    Session.getInstance().getPlatform().getKey(),
+                    platformNameList,
                     mapNameLabel,
                     customMapModToDisplay.getIdWorkShop(),
                     customMapModToDisplay.getCommentary(),
@@ -1264,7 +1309,7 @@ public class MapsEditionController implements Initializable {
 
         for (PlatformProfileMapDto platformProfileMapDto : steamPlatformProfileMapDtoList) {
             GridPane gridpane = createMapGridPane(platformProfileMapDto);
-            if (platformProfileMapDto.getMapDto().isOfficial()) {
+                                         if (platformProfileMapDto.getMapDto().isOfficial()) {
                 steamOfficialMapsFlowPane.getChildren().add(gridpane);
             } else {
                 steamCustomMapsFlowPane.getChildren().add(gridpane);

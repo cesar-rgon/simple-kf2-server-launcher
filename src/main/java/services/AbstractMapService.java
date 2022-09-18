@@ -68,7 +68,7 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
         return mapList;
     }
 
-    public AbstractMap createMap(AbstractPlatform platform, AbstractMap map, List<Profile> profileList, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
+    public AbstractMap createMap(List<AbstractPlatform> platformList, AbstractMap map, List<Profile> profileList, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
         AbstractMap insertedMap = null;
         try {
             List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
@@ -115,9 +115,15 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
         profileList.stream().forEach(profile -> {
             try {
                 boolean downloaded = map.isOfficial();
-                PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(platform, profile, finalInsertedMap, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), downloaded);
-                platformProfileMapService.createItem(newPlatformProfileMap);
-                finalInsertedMap.getProfileMapList().add(newPlatformProfileMap);
+                platformList.stream().forEach(platform -> {
+                    try {
+                        PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(platform, profile, finalInsertedMap, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), downloaded);
+                        platformProfileMapService.createItem(newPlatformProfileMap);
+                        finalInsertedMap.getPlatformProfileMapList().add(newPlatformProfileMap);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                });
 
                 if (importMapResultToDisplayList != null) {
                     importMapResultToDisplayList.add(new ImportMapResultToDisplay(
@@ -147,24 +153,24 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
         return insertedMap;
     }
 
-    public AbstractMap addProfilesToMap(AbstractPlatform platform, AbstractMap map, List<Profile> profileList, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
-        profileList.stream().forEach(profile -> {
+    public AbstractMap addProfilesToMap(List<AbstractPlatform> platformList, AbstractMap map, List<Profile> profilePlatformNotContainingMap, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
+        profilePlatformNotContainingMap.stream().forEach(profile -> {
             try {
-                if (!profile.getMapList().contains(map)) {
-                    boolean downloaded = map.isOfficial();
+                boolean downloaded = map.isOfficial();
+                for (AbstractPlatform platform: platformList) {
                     PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(platform, profile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), downloaded);
                     platformProfileMapService.createItem(newPlatformProfileMap);
-                    map.getProfileMapList().add(newPlatformProfileMap);
+                    map.getPlatformProfileMapList().add(newPlatformProfileMap);
+                }
 
-                    if (importMapResultToDisplayList != null) {
-                        importMapResultToDisplayList.add(new ImportMapResultToDisplay(
-                                profile.getName(),
-                                map.getCode(),
-                                map.isOfficial(),
-                                new Date(),
-                                StringUtils.EMPTY
-                        ));
-                    }
+                if (importMapResultToDisplayList != null) {
+                    importMapResultToDisplayList.add(new ImportMapResultToDisplay(
+                            profile.getName(),
+                            map.getCode(),
+                            map.isOfficial(),
+                            new Date(),
+                            StringUtils.EMPTY
+                    ));
                 }
             } catch (Exception e) {
                 String errorMessage = "Error creating the relation between the profile: " + profile.getCode() + " and the new map: " + map.getCode();

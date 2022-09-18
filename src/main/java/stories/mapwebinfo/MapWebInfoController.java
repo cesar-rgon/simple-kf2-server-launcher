@@ -1,6 +1,11 @@
 package stories.mapwebinfo;
 
+import daos.EpicPlatformDao;
+import daos.SteamPlatformDao;
 import dtos.CustomMapModDto;
+import entities.AbstractPlatform;
+import entities.EpicPlatform;
+import entities.SteamPlatform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -28,8 +33,7 @@ import utils.Utils;
 
 import java.lang.reflect.Field;
 import java.net.URL;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MapWebInfoController implements Initializable {
@@ -190,9 +194,13 @@ public class MapWebInfoController implements Initializable {
                 List<String> selectedProfileNameList = selectedProfiles.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
                 CustomMapModDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
 
+                List<String> platformNameList = new ArrayList<String>();
+                platformNameList.add(EnumPlatform.STEAM.name());
+                platformNameList.add(EnumPlatform.EPIC.name());
+
                 if (mapModInDataBase == null) {
                     CustomMapModDto customMap = facade.createNewCustomMapFromWorkshop(
-                            Session.getInstance().getPlatform().getKey(),
+                            platformNameList,
                             idWorkShop,
                             mapName,
                             strUrlMapImage,
@@ -213,7 +221,7 @@ public class MapWebInfoController implements Initializable {
                     }
                 } else {
                     facade.addProfilesToMap(
-                            Session.getInstance().getPlatform().getKey(),
+                            platformNameList,
                             mapModInDataBase.getKey(),
                             selectedProfileNameList
                     );
