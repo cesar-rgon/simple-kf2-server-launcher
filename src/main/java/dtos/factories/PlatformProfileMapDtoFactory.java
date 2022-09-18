@@ -41,7 +41,8 @@ public class PlatformProfileMapDtoFactory {
                 platformProfileMap.getUrlPhoto(),
                 releaseDate,
                 importedDate,
-                platformProfileMap.getUrlInfo()
+                platformProfileMap.getUrlInfo(),
+                platformProfileMap.isDownloaded()
         );
     }
 

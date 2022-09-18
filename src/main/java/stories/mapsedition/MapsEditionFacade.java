@@ -21,7 +21,7 @@ public interface MapsEditionFacade {
     void unselectProfileMap(String profileName) throws SQLException;
     List<String> selectProfilesToImport(String defaultSelectedProfileName) throws Exception;
     String runServer(String profileName) throws SQLException;
-    List<AbstractMapDto> addCustomMapsToProfile(String platformName, String profileName, String mapNameList, String languageCode, String actualSelectedProfile, StringBuffer success, StringBuffer errors);
+    List<PlatformProfileMapDto> addCustomMapsToProfile(String platformName, String profileName, String mapNameList, String languageCode, String actualSelectedProfile, StringBuffer success, StringBuffer errors);
     CustomMapModDto importCustomMapModFromServer(String platformName, String mapNameLabel, Long idWorkShop, String commentary, List<String> selectedProfileNameList, String actualSelectedProfile, List<ImportMapResultToDisplay> importMapResultToDisplayList);
     OfficialMapDto importOfficialMapFromServer(String platformName, String officialMapName, List<String> selectedProfileNameList, String actualSelectedProfile, String mapNameLabel, List<ImportMapResultToDisplay> importMapResultToDisplayList);
     Optional<AbstractMap> findMapByName(String mapName) throws SQLException;

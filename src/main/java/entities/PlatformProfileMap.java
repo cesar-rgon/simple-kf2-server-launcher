@@ -100,11 +100,14 @@ public class PlatformProfileMap extends AbstractEntity {
     @Column(name="URL_INFO", length=255)
     private String urlInfo;
 
+    @Column(name="DOWNLOADED")
+    private boolean downloaded;
+
     public PlatformProfileMap() {
         super();
     }
 
-    public PlatformProfileMap(AbstractPlatform platform, Profile profile, AbstractMap map, Date releaseDate, String urlInfo, String urlPhoto) {
+    public PlatformProfileMap(AbstractPlatform platform, Profile profile, AbstractMap map, Date releaseDate, String urlInfo, String urlPhoto, boolean downloaded) {
         super();
         this.idPlatformProfileMap = new IdPlatformProfileMap(platform.getId(), profile.getId(), map.getId());
         this.platform = platform;
@@ -115,6 +118,7 @@ public class PlatformProfileMap extends AbstractEntity {
         this.releaseDate = releaseDate;
         this.urlInfo = urlInfo;
         this.urlPhoto = urlPhoto;
+        this.downloaded = downloaded;
     }
 
     // Getters y Setters
@@ -193,6 +197,14 @@ public class PlatformProfileMap extends AbstractEntity {
         this.urlInfo = urlInfo;
     }
 
+    public boolean isDownloaded() {
+        return downloaded;
+    }
+
+    public void setDownloaded(boolean downloaded) {
+        this.downloaded = downloaded;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o != null && o instanceof PlatformProfileMap) {
@@ -220,6 +232,7 @@ public class PlatformProfileMap extends AbstractEntity {
                 ", releaseDate=" + releaseDate +
                 ", importedDate=" + importedDate +
                 ", urlInfo='" + urlInfo + '\'' +
+                ", downloaded='" + downloaded + '\'' +
                 '}';
     }
 }

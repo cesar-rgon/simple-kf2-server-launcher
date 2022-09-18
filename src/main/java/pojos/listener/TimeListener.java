@@ -61,12 +61,12 @@ public class TimeListener extends TimerTask {
                             String[] array = filenameWithExtension.split("\\.");
                             String filenameWithoutExtension = array[0];
                             map.setCode(filenameWithoutExtension);
-                            map.getDownnloadedMap().add(new SteamPlatform(EnumPlatform.STEAM));
+                            //map.getDownnloadedMap().add(new SteamPlatform(EnumPlatform.STEAM));
                             CustomMapModDao.getInstance().update(map);
                         } else {
                             File folder = new File(installationFolder + "/KFGame/Cache/" + map.getIdWorkShop());
                             if (folder.exists()) {
-                                map.getDownnloadedMap().add(new SteamPlatform(EnumPlatform.STEAM));
+                                //map.getDownnloadedMap().add(new SteamPlatform(EnumPlatform.STEAM));
                                 CustomMapModDao.getInstance().update(map);
                             }
                         }

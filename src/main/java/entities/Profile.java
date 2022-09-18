@@ -1,7 +1,5 @@
 package entities;
 
-import pojos.enums.EnumPlatform;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -577,7 +575,7 @@ public class Profile extends AbstractExtendedEntity {
         this.name = name;
     }
 
-    public List<PlatformProfileMap> getProfileMapList() {
+    public List<PlatformProfileMap> getPlatformProfileMapList() {
         return platformProfileMapList;
     }
 

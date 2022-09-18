@@ -80,20 +80,20 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         }
         if (localfile != null) {
             String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
-            CustomMapMod insertedMap = createNewCustomMap(platformName, mapName, idWorkShop, relativeTargetFolder, false, profileList);
+            CustomMapMod insertedMap = createNewCustomMap(platformName, mapName, idWorkShop, relativeTargetFolder, profileList);
             return insertedMap != null ? (CustomMapModDto) mapDtoFactory.newDto(insertedMap): null;
         }
         return null;
     }
 
-    private CustomMapMod createNewCustomMap(String platformName, String mapName, Long idWorkShop, String urlPhoto, boolean downloaded, List<Profile> profileList) throws Exception {
+    private CustomMapMod createNewCustomMap(String platformName, String mapName, Long idWorkShop, String urlPhoto, List<Profile> profileList) throws Exception {
         Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
         if (!platformOptional.isPresent() || StringUtils.isBlank(mapName) || idWorkShop == null) {
             return null;
         }
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         String urlInfo = baseUrlWorkshop + idWorkShop;
-        CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop, downloaded);
+        CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop);
 
         return (CustomMapMod) customMapModService.createMap(platformOptional.get(), customMap, profileList, null);
     }

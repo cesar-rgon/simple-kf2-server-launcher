@@ -75,7 +75,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile createItem(Profile profile) throws Exception {
         List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
-        profile.getProfileMapList().stream().forEach(pm -> {
+        profile.getPlatformProfileMapList().stream().forEach(pm -> {
             if (idsMapasOficiales.contains(pm.getMap().getId())) {
                 pm.getMap().setOfficial(true);
             } else {
@@ -102,7 +102,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public boolean deleteProfile(Profile profile, String steamInstallationFolder, String epicInstallationFolder) throws Exception {
 
-        List<PlatformProfileMap> platformProfileMapList = new ArrayList<PlatformProfileMap>(profile.getProfileMapList());
+        List<PlatformProfileMap> platformProfileMapList = new ArrayList<PlatformProfileMap>(profile.getPlatformProfileMapList());
         platformProfileMapList.stream().forEach(pm -> {
             try {
                 platformProfileMapService.deleteItem(pm);
@@ -190,14 +190,14 @@ public class ProfileServiceImpl implements ProfileService {
         );
 
         Profile savedProfile = createItem(newProfile);
-        profileToBeCloned.getProfileMapList().stream().forEach(pm -> {
+        profileToBeCloned.getPlatformProfileMapList().stream().forEach(ppm -> {
             try {
-                PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(new SteamPlatform(EnumPlatform.STEAM), savedProfile, pm.getMap(), pm.getReleaseDate(), pm.getUrlInfo(), pm.getUrlPhoto());
-                newPlatformProfileMap.setAlias(pm.getAlias());
-                savedProfile.getProfileMapList().add(newPlatformProfileMap);
+                PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(new SteamPlatform(EnumPlatform.STEAM), savedProfile, ppm.getMap(), ppm.getReleaseDate(), ppm.getUrlInfo(), ppm.getUrlPhoto(), ppm.isDownloaded());
+                newPlatformProfileMap.setAlias(ppm.getAlias());
+                savedProfile.getPlatformProfileMapList().add(newPlatformProfileMap);
                 platformProfileMapService.createItem(newPlatformProfileMap);
             } catch (Exception e) {
-                logger.error("Error creating the relation between the profile: " + savedProfile.getName() + " and the map: " + pm.getMap().getCode());
+                logger.error("Error creating the relation between the profile: " + savedProfile.getName() + " and the map: " + ppm.getMap().getCode());
             }
         });
 
@@ -256,9 +256,9 @@ public class ProfileServiceImpl implements ProfileService {
             properties.setProperty("exported.profile" + profileIndex + ".pickupItems", profile.getPickupItems()? String.valueOf(profile.getPickupItems()): "false");
             properties.setProperty("exported.profile" + profileIndex + ".friendlyFirePercentage", profile.getFriendlyFirePercentage() != null? String.valueOf(profile.getFriendlyFirePercentage()): "");
 
-            if (profile.getProfileMapList() != null && !profile.getProfileMapList().isEmpty()) {
+            if (profile.getPlatformProfileMapList() != null && !profile.getPlatformProfileMapList().isEmpty()) {
                 int profileMapIndex = 1;
-                for (PlatformProfileMap platformProfileMap : profile.getProfileMapList()) {
+                for (PlatformProfileMap platformProfileMap : profile.getPlatformProfileMapList()) {
                     // Save original map values
                     properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".name", platformProfileMap.getMap().getCode());
                     if (platformProfileMap.getMap().getReleaseDate() != null) {
@@ -269,7 +269,7 @@ public class ProfileServiceImpl implements ProfileService {
                     properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".official", String.valueOf(platformProfileMap.getMap().isOfficial()));
                     if (!platformProfileMap.getMap().isOfficial()) {
                         properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".idWorkShop", ((CustomMapMod) platformProfileMap.getMap()).getIdWorkShop()!=null? String.valueOf(((CustomMapMod) platformProfileMap.getMap()).getIdWorkShop()): "");
-                        properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".downloaded", String.valueOf(((CustomMapMod) platformProfileMap.getMap()).isDownnloadedMapForSteam()));
+                        properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".downloaded", String.valueOf(platformProfileMap.isDownloaded()));
                     }
                     // Save copied map values (they could be edited and changed)
                     properties.setProperty("exported.profile" + profileIndex + ".profilemap" + profileMapIndex + ".alias", platformProfileMap.getAlias());
@@ -692,7 +692,7 @@ public class ProfileServiceImpl implements ProfileService {
                 AbstractMap map = getImportedMap(mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, mapName, null, true);
                 if (map != null) {
                     mapList.add(map);
-                    importPlatformProfileMap(platform, profile, map, profileIndex, mapIndex,  properties);
+                    importPlatformProfileMap(platform, profile, map, true, profileIndex, mapIndex,  properties);
                 }
             } catch (Exception e) {
                 logger.error("Error importing the official map " + mapName + " of profile index " + profileIndex + " from file", e);
@@ -706,7 +706,7 @@ public class ProfileServiceImpl implements ProfileService {
                 AbstractMap map = getImportedMap(mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, customMap.getCommentary(), customMap.getIdWorkShop(), false);
                 if (map != null) {
                     mapList.add(map);
-                    importPlatformProfileMap(platform, profile, map, profileIndex, mapIndex,  properties);
+                    importPlatformProfileMap(platform, profile, map, false, profileIndex, mapIndex,  properties);
                 }
             } catch (Exception e) {
                 logger.error("Error importing the official map " + customMap.getCommentary() + " of profile index " + profileIndex + " from file", e);
@@ -716,7 +716,7 @@ public class ProfileServiceImpl implements ProfileService {
         return mapList;
     }
 
-    private void importPlatformProfileMap(AbstractPlatform platform, Profile profile, AbstractMap map, int profileIndex, int mapIndex, Properties properties) throws Exception {
+    private void importPlatformProfileMap(AbstractPlatform platform, Profile profile, AbstractMap map, boolean downloaded, int profileIndex, int mapIndex, Properties properties) throws Exception {
         String alias = properties.getProperty("exported.profile" + profileIndex + ".profilemap" + mapIndex + ".alias");
         alias = StringUtils.isNotBlank(alias) ? alias: map.getCode();
 
@@ -731,7 +731,7 @@ public class ProfileServiceImpl implements ProfileService {
         String urlPhoto = properties.getProperty("exported.profile" + profileIndex + ".profilemap" + mapIndex + ".urlPhoto");
         urlPhoto = StringUtils.isNotBlank(urlPhoto) ? urlPhoto: map.getUrlPhoto();
 
-        PlatformProfileMap platformProfileMap = new PlatformProfileMap(platform, profile, map, releaseDate, urlInfo, urlPhoto);
+        PlatformProfileMap platformProfileMap = new PlatformProfileMap(platform, profile, map, releaseDate, urlInfo, urlPhoto, downloaded);
         platformProfileMap.setAlias(alias);
         platformProfileMapService.createItem(platformProfileMap);
     }
@@ -760,7 +760,7 @@ public class ProfileServiceImpl implements ProfileService {
                 return officialMapService.createItem(map);
             } else {
                 boolean downloaded = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".downloaded"));
-                map = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop, downloaded);
+                map = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop);
                 if (createNewCustomMapFromWorkshop((CustomMapMod) map)) {
                     return map;
                 }

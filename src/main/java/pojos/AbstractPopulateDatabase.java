@@ -104,7 +104,7 @@ public abstract class AbstractPopulateDatabase {
     }
 
     protected void populatePlatformProfileMap(AbstractPlatform platform, Profile profile, AbstractMap map) throws SQLException {
-        PlatformProfileMap platformProfileMap = new PlatformProfileMap(platform, profile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto());
+        PlatformProfileMap platformProfileMap = new PlatformProfileMap(platform, profile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), true);
         PlatformProfileMapDao.getInstance().insert(platformProfileMap);
     }
 

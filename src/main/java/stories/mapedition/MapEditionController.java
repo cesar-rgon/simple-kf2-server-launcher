@@ -360,7 +360,7 @@ public class MapEditionController implements Initializable {
                 String noText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.no");
 
                 officialValue.setText(platformProfileMapDto.getMapDto().isOfficial() ? yesText : noText);
-                downloadedValue.setText(platformProfileMapDto.getMapDto().isOfficial() ? yesText : ((CustomMapModDto) platformProfileMapDto.getMapDto()).isDownloaded() ? yesText : noText);
+                downloadedValue.setText(platformProfileMapDto.getMapDto().isOfficial() ? yesText : platformProfileMapDto.isDownloaded() ? yesText : noText);
                 idWorkShopValue.setText(platformProfileMapDto.getMapDto().isOfficial() ? StringUtils.EMPTY : String.valueOf(((CustomMapModDto) platformProfileMapDto.getMapDto()).getIdWorkShop()));
                 String unknownStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unknown");
                 String dateHourPattern = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.code.dateHourPattern");

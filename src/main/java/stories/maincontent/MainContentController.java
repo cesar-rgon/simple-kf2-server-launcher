@@ -1252,17 +1252,17 @@ public class MainContentController implements Initializable {
         previousSelectedLanguageCode = profile.getLanguage().getKey();
         gameTypeSelect.setValue(profile.getGametype());
 
-        List<PlatformProfileMapDto> profileMapList = facade.listPlatformProfileMaps(platformDto.getKey(), profile.getName());
+        List<PlatformProfileMapDto> platformProfileMapList = facade.listPlatformProfileMaps(platformDto.getKey(), profile.getName());
 
-        List<PlatformProfileMapDto> officialMaps = profileMapList.stream()
-                .sorted((pm1, pm2) -> pm1.getAlias().compareTo(pm2.getAlias()))
-                .filter(pm -> pm.getMapDto().isOfficial())
+        List<PlatformProfileMapDto> officialMaps = platformProfileMapList.stream()
+                .sorted((ppm1, ppm2) -> ppm1.getAlias().compareTo(ppm2.getAlias()))
+                .filter(ppm -> ppm.getMapDto().isOfficial())
                 .collect(Collectors.toList());
 
-        List<PlatformProfileMapDto> downloadedCustomMaps = profileMapList.stream()
-                .sorted((pm1, pm2) -> pm1.getAlias().compareTo(pm2.getAlias()))
-                .filter(pm -> !pm.getMapDto().isOfficial())
-                .filter(pm -> ((CustomMapModDto) pm.getMapDto()).isDownloaded())
+        List<PlatformProfileMapDto> downloadedCustomMaps = platformProfileMapList.stream()
+                .sorted((ppm1, ppm2) -> ppm1.getAlias().compareTo(ppm2.getAlias()))
+                .filter(ppm -> !ppm.getMapDto().isOfficial())
+                .filter(ppm -> ppm.isDownloaded())
                 .collect(Collectors.toList());
 
         List<PlatformProfileMapDto> filteredMapList = new ArrayList<PlatformProfileMapDto>(officialMaps);

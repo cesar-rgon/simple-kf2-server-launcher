@@ -5,7 +5,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<fx:root id="centerPane" fx:id="mapsEditionGridPane" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapsedition.MapsEditionController">
+<fx:root id="centerPane" fx:id="mapsEditionGridPane" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapsedition.MapsEditionController">
    <children>
       <ImageView fx:id="profileImg" fitHeight="30.0" fitWidth="110.0" pickOnBounds="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
          <image>
@@ -44,7 +44,7 @@
                <content>
                   <ScrollPane fx:id="steamCustomMapsScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS">
                      <content>
-                        <FlowPane fx:id="steamCustomMapsFlowPane" alignment="TOP_CENTER" columnHalignment="CENTER" hgap="50.0" style="-fx-background-color: black;;" vgap="50.0">
+                        <FlowPane fx:id="steamCustomMapsFlowPane" hgap="50.0" style="-fx-background-color: black;;" vgap="50.0">
                            <padding>
                               <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                            </padding>
@@ -70,7 +70,7 @@
               <content>
                  <ScrollPane fx:id="epicCustomMapsScrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" vbarPolicy="ALWAYS">
                     <content>
-                       <FlowPane fx:id="epicCustomMapsFlowPane" columnHalignment="CENTER" hgap="50.0" style="-fx-background-color: black;;" vgap="50.0">
+                       <FlowPane fx:id="epicCustomMapsFlowPane" hgap="50.0" style="-fx-background-color: black;;" vgap="50.0">
                           <padding>
                              <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                           </padding>

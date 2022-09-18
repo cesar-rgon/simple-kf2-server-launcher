@@ -3,8 +3,6 @@ package utils;
 import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.beans.binding.Bindings;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,19 +11,16 @@ import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
-import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
 import org.apache.commons.io.FileUtils;
@@ -34,21 +29,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
-import pojos.AddMapsToProfile;
+import pojos.AddMapsToPlatformProfile;
 import pojos.ImportMapResultToDisplay;
 import pojos.MapToDisplay;
 import pojos.ProfileToDisplay;
 import pojos.enums.EnumPlatform;
 import services.PropertyService;
 import services.PropertyServiceImpl;
-import stories.maincontent.MainContentController;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.awt.*;
 import java.io.*;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.Key;
@@ -280,8 +273,8 @@ public class Utils {
         }
     }
 
-    public static List<AddMapsToProfile> defineCustomMapsToAddPerProfile(String headerText, ObservableList<ProfileDto> profileList) {
-        Dialog<TableView<AddMapsToProfile>> dialog = new Dialog<TableView<AddMapsToProfile>>();
+    public static List<AddMapsToPlatformProfile> defineCustomMapsToAddPerProfile(String headerText, ObservableList<ProfileDto> profileList) {
+        Dialog<TableView<AddMapsToPlatformProfile>> dialog = new Dialog<TableView<AddMapsToPlatformProfile>>();
         PropertyService propertyService = new PropertyServiceImpl();
         String profileNameText = "";
         String defineMapsToAddText = "";
@@ -297,10 +290,10 @@ public class Utils {
         }
         dialog.setHeaderText(headerText);
 
-        TableView<AddMapsToProfile> tableView = new TableView<AddMapsToProfile>();
+        TableView<AddMapsToPlatformProfile> tableView = new TableView<AddMapsToPlatformProfile>();
 
         // First Column
-        TableColumn<AddMapsToProfile, String> profileNameColumn = new TableColumn<AddMapsToProfile, String>();
+        TableColumn<AddMapsToPlatformProfile, String> profileNameColumn = new TableColumn<AddMapsToPlatformProfile, String>();
         profileNameColumn.setText(profileNameText);
         profileNameColumn.setCellValueFactory(cellData -> cellData.getValue().profileNameProperty());
         profileNameColumn.setSortable(false);
@@ -314,13 +307,13 @@ public class Utils {
                         collect(Collectors.toList())
         );
 
-        TableColumn<AddMapsToProfile, StringProperty> platformColumn = new TableColumn<AddMapsToProfile, StringProperty>();
+        TableColumn<AddMapsToPlatformProfile, StringProperty> platformColumn = new TableColumn<AddMapsToPlatformProfile, StringProperty>();
         platformColumn.setText("Platform");
         platformColumn.setMinWidth(120);
         platformColumn.setSortable(false);
 
         platformColumn.setCellFactory(col -> {
-            TableCell<AddMapsToProfile, StringProperty> c = new TableCell<>();
+            TableCell<AddMapsToPlatformProfile, StringProperty> c = new TableCell<>();
             final ComboBox<String> comboBox = new ComboBox<>(comboBoxOptions);
             c.itemProperty().addListener((observable, oldValue, newValue) -> {
                 if (oldValue != null) {
@@ -335,12 +328,12 @@ public class Utils {
         });
 
         platformColumn.setCellValueFactory(cellData -> {
-            return Bindings.createObjectBinding(() -> cellData.getValue().platformProperty());
+            return Bindings.createObjectBinding(() -> cellData.getValue().platformNameProperty());
         });
         platformColumn.setEditable(true);
 
         // Third Column
-        TableColumn<AddMapsToProfile, String> customMapsColumn = new TableColumn<AddMapsToProfile, String>();
+        TableColumn<AddMapsToPlatformProfile, String> customMapsColumn = new TableColumn<AddMapsToPlatformProfile, String>();
         customMapsColumn.setText(defineMapsToAddText);
         customMapsColumn.setMinWidth(500);
         customMapsColumn.setSortable(false);
@@ -354,7 +347,7 @@ public class Utils {
 
         if (profileList != null && !profileList.isEmpty()) {
             for (ProfileDto profile: profileList) {
-                tableView.getItems().add(new AddMapsToProfile(profile.getName()));
+                tableView.getItems().add(new AddMapsToPlatformProfile(profile.getName()));
             }
         }
         tableView.setEditable(true);
@@ -380,7 +373,7 @@ public class Utils {
         dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
         dialog.getDialogPane().getButtonTypes().add(buttonTypeCancel);
         ButtonType finalButtonTypeOk = buttonTypeOk;
-        dialog.setResultConverter(new Callback<ButtonType, TableView<AddMapsToProfile>>() {
+        dialog.setResultConverter(new Callback<ButtonType, TableView<AddMapsToPlatformProfile>>() {
             @Override
             public TableView call(ButtonType b) {
                 if (b == finalButtonTypeOk) {
@@ -390,11 +383,11 @@ public class Utils {
             }
         });
 
-        Optional<TableView<AddMapsToProfile>> result = dialog.showAndWait();
+        Optional<TableView<AddMapsToPlatformProfile>> result = dialog.showAndWait();
         if (result.isPresent() && result.get() != null && result.get().getItems() != null && !result.get().getItems().isEmpty()) {
             return result.get().getItems();
         }
-        return new ArrayList<AddMapsToProfile>();
+        return new ArrayList<AddMapsToPlatformProfile>();
     }
 
 
