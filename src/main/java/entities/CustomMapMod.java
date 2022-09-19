@@ -1,10 +1,7 @@
 package entities;
 
-import pojos.enums.EnumPlatform;
+import jakarta.persistence.*;
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(name = "CUSTOM_MAPS_MODS")

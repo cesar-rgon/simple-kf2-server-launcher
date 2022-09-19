@@ -1,10 +1,7 @@
 package entities;
 
 import pojos.enums.EnumPlatform;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "STEAM_PLATFORM")

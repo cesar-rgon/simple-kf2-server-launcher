@@ -1,9 +1,9 @@
 package entities;
 
+import jakarta.persistence.*;
 import org.apache.commons.lang3.StringUtils;
 import pojos.enums.EnumPlatform;
 
-import javax.persistence.*;
 
 @Entity
 @Table(name = "PLATFORMS")

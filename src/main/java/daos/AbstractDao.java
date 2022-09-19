@@ -2,10 +2,10 @@ package daos;
 
 
 import entities.AbstractEntity;
+import jakarta.persistence.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import javax.persistence.*;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;

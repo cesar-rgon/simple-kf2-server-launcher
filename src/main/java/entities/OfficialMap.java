@@ -1,9 +1,8 @@
 package entities;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.*;
 import java.util.Date;
-import java.util.List;
+
 
 @Entity
 @Table(name = "OFFICIAL_MAPS")
