@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import org.apache.commons.lang3.StringUtils;
 import pojos.enums.EnumPlatform;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
 @Table(name = "PLATFORMS")
@@ -31,9 +34,12 @@ public abstract class AbstractPlatform extends AbstractExtendedEntity {
     @Column(name="INSTALLATION_FOLDER", length=512, unique=false, nullable=true)
     private String installationFolder;
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "platform")
+    private List<PlatformProfileMap> platformProfileMapList;
 
     protected AbstractPlatform() {
         super();
+        this.platformProfileMapList = new ArrayList<PlatformProfileMap>();
     }
 
     protected AbstractPlatform(EnumPlatform platform) {
@@ -97,5 +103,13 @@ public abstract class AbstractPlatform extends AbstractExtendedEntity {
 
     public void setInstallationFolder(String installationFolder) {
         this.installationFolder = installationFolder;
+    }
+
+    public List<PlatformProfileMap> getPlatformProfileMapList() {
+        return platformProfileMapList;
+    }
+
+    public void setPlatformProfileMapList(List<PlatformProfileMap> platformProfileMapList) {
+        this.platformProfileMapList = platformProfileMapList;
     }
 }

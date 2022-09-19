@@ -5,7 +5,6 @@ import entities.AbstractMap;
 import entities.PlatformProfileMap;
 import javafx.collections.ObservableList;
 import pojos.ImportMapResultToDisplay;
-import pojos.enums.EnumPlatform;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -16,7 +15,7 @@ public interface MapsEditionFacade {
     void setConfigPropertyValue(String key, String value) throws Exception;
     boolean isCorrectInstallationFolder(String platformName);
     ObservableList<ProfileDto> listAllProfiles() throws SQLException;
-    AbstractMapDto addProfilesToMap(List<String> platformNameList, String mapName, List<String> profileNameList, List<ImportMapResultToDisplay> importMapResultToDisplayList) throws SQLException;
+    public void addPlatformProfileMapList(List<PlatformProfileMap> platformProfileMapListToAdd, List<ImportMapResultToDisplay> importMapResultToDisplayList) throws SQLException;
     AbstractMapDto deleteMapFromProfile(String platformName, String mapName, String profileName) throws Exception;
     void unselectProfileMap(String profileName) throws SQLException;
     List<String> selectProfilesToImport(String defaultSelectedProfileName) throws Exception;

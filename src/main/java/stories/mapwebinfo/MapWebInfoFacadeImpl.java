@@ -1,8 +1,6 @@
 package stories.mapwebinfo;
 
-import daos.AbstractPlatformDao;
 import daos.CustomMapModDao;
-import daos.SteamPlatformDao;
 import dtos.CustomMapModDto;
 import dtos.factories.MapDtoFactory;
 import entities.*;
@@ -144,9 +142,10 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
             return;
         }
 
+        /*
         Optional officialMapOptional = officialMapService.findMapByCode(mapName);
         if (officialMapOptional.isPresent()) {
-            officialMapService.addProfilesToMap(
+            officialMapService.addPlatformProfileMapList(
                     platformList,
                     (OfficialMap) officialMapOptional.get(),
                     profileList,
@@ -155,12 +154,13 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
 
         Optional customMapModOptional = customMapModService.findMapByCode(mapName);
         if (customMapModOptional.isPresent()) {
-            customMapModService.addProfilesToMap(
+            customMapModService.addPlatformProfileMapList(
                     platformList,
                     (CustomMapMod) customMapModOptional.get(),
                     profileList,
                     null);
         }
+         */
     }
 
     private boolean isMapInProfile(Long idWorkShop, Profile profile) {

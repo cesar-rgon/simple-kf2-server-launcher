@@ -254,67 +254,8 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
 
     @Override
-    public AbstractMapDto addProfilesToMap(List<String> platformNameList, String mapName, List<String> profileNameList, List<ImportMapResultToDisplay> importMapResultToDisplayList) throws SQLException {
-
-        List<Profile> profileList = profileNameList.stream().map(pn -> {
-                    try {
-                        return findProfileByCode(pn);
-                    } catch (SQLException e) {
-                        logger.error("Error finding a profile by name " + pn, e);
-                        return null;
-                    }
-                })
-                .collect(Collectors.toList());
-        if (profileList == null || profileList.isEmpty()) {
-            return null;
-        }
-
-        List<AbstractPlatform> platformList = platformNameList.stream().map(pn -> {
-                    try {
-                        return findPlatformByCode(pn);
-                    } catch (SQLException e) {
-                        logger.error("Error finding a platform by name " + pn, e);
-                        return null;
-                    }
-                })
-                .collect(Collectors.toList());
-        if (platformList == null || platformList.isEmpty()) {
-            return null;
-        }
-
-
-        Optional officialMapOptional = officialMapService.findMapByCode(mapName);
-        if (officialMapOptional.isPresent()) {
-            OfficialMap officialMap = (OfficialMap) officialMapOptional.get();
-            List<Profile> profilesNotContainingMap =  profileList.stream().
-                    filter(profile -> !profile.getMapList().contains(officialMap)).
-                    collect(Collectors.toList());
-
-            return mapDtoFactory.newDto(
-                    officialMapService.addProfilesToMap(platformList, officialMap, profilesNotContainingMap, importMapResultToDisplayList)
-            );
-        }
-
-        Optional customMapModOptional = customMapModService.findMapByCode(mapName);
-        if (customMapModOptional.isPresent()) {
-            CustomMapMod customMapMod = (CustomMapMod) customMapModOptional.get();
-
-            List<Profile> profilePlatformNotContainingMap = profileList.stream().
-                    filter(profile -> {
-                        List<PlatformProfileMap> platformProfileMapList = new ArrayList<PlatformProfileMap>();
-                        for (AbstractPlatform platform: platformList) {
-                            PlatformProfileMap platformProfileMap = new PlatformProfileMap(platform, profile, customMapMod, customMapMod.getReleaseDate(), customMapMod.getUrlInfo(), customMapMod.getUrlPhoto(), false);
-                            platformProfileMapList.add(platformProfileMap);
-                        }
-
-                        return !profile.getPlatformProfileMapList().containsAll(platformProfileMapList);
-                    }).collect(Collectors.toList());
-
-            return mapDtoFactory.newDto(
-                    customMapModService.addProfilesToMap(platformList, customMapMod, profilePlatformNotContainingMap,importMapResultToDisplayList)
-            );
-        }
-        return null;
+    public void addPlatformProfileMapList(List<PlatformProfileMap> platformProfileMapListToAdd, List<ImportMapResultToDisplay> importMapResultToDisplayList) throws SQLException {
+        customMapModService.addPlatformProfileMapList(platformProfileMapListToAdd, importMapResultToDisplayList);
     }
 
 
@@ -406,6 +347,16 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         if (platformList == null || platformList.isEmpty()) {
             return null;
         }
+        Profile profile = null;
+        try {
+            profile = findProfileByCode(profileName);
+        } catch (SQLException e) {
+            logger.error("Error finding a profile by name " + profileName, e);
+            return null;
+        }
+        if (profile == null) {
+            return null;
+        }
 
         List<PlatformProfileMapDto> mapAddedList = new ArrayList<PlatformProfileMapDto>();
 
@@ -451,28 +402,28 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
                             }
                         }
                     } else {
+                        List<AbstractPlatform> platformListContainingMap = profile.getPlatformProfileMapList().stream().
+                                filter(ppm -> ppm.getMap().equals(mapModInDataBase.get())).
+                                filter(ppm -> platformList.contains(ppm.getPlatform())).
+                                map(PlatformProfileMap::getPlatform).
+                                collect(Collectors.toList());
 
-                        if (mapModInDataBase.get().getPlatformProfileMapList().stream().
-                                filter(ppm -> platformNameList.contains(ppm.getPlatform().getCode())).
-                                filter(ppm -> ppm.getProfile().getCode().equals(profileName)).
-                                findFirst().
-                                isPresent()) {
-                            for (String platformName: platformNameList) {
-                                errors.append(platformNameMessage + ": ").append(platformName).append(" - " + profileNameMessage + ": ").append(profileName).append(" - url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
-                            }
-                        } else {
-                            List<String> profileList = new ArrayList<String>();
-                            profileList.add(profileName);
-                            addProfilesToMap(platformNameList, mapModInDataBase.get().getCode(), profileList, null);
-                            Optional<Profile> profileOptional = ProfileDao.getInstance().findByCode(profileName);
-                            if (!platformList.isEmpty() && profileOptional.isPresent()) {
-                                for (AbstractPlatform platform: platformList) {
-                                    PlatformProfileMap platformProfileMap = new PlatformProfileMap(platform, profileOptional.get(), mapModInDataBase.get(), mapModInDataBase.get().getReleaseDate(), mapModInDataBase.get().getUrlInfo(), mapModInDataBase.get().getUrlPhoto(), false);
-                                    mapAddedList.add(platformProfileMapDtoFactory.newDto(platformProfileMap));
-                                    String mapNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                                    success.append(platformNameMessage + ": ").append(platform.getDescription()).append(" - " + profileNameMessage + ": ").append(profileName).append(" - " + mapNameMessage + ": ").append(mapModInDataBase.get().getCode()).append(" - id WorkShop: ").append(mapModInDataBase.get().getIdWorkShop()).append("\n");
-                                }
-                            }
+                        platformList.removeAll(platformListContainingMap);
+                        List<AbstractPlatform> platformListNotContainingMap = platformList;
+
+                        String mapNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                        List<PlatformProfileMap> ppmList = new ArrayList<PlatformProfileMap>();
+                        for (AbstractPlatform platformNotContainingMap: platformListNotContainingMap) {
+                            PlatformProfileMap ppm = new PlatformProfileMap(platformNotContainingMap, profile, mapModInDataBase.get(), mapModInDataBase.get().getReleaseDate(), mapModInDataBase.get().getUrlInfo(), mapModInDataBase.get().getUrlPhoto(), false);
+                            ppmList.add(ppm);
+                            success.append(platformNameMessage + ": ").append(platformNotContainingMap.getDescription()).append(" - " + profileNameMessage + ": ").append(profileName).append(" - " + mapNameMessage + ": ").append(mapModInDataBase.get().getCode()).append(" - id WorkShop: ").append(mapModInDataBase.get().getIdWorkShop()).append("\n");
+                        }
+
+                        addPlatformProfileMapList(ppmList, null);
+                        mapAddedList.addAll(platformProfileMapDtoFactory.newDtos(ppmList));
+
+                        for (AbstractPlatform platformContainingMap: platformListContainingMap) {
+                            errors.append(platformNameMessage + ": ").append(platformContainingMap.getDescription()).append(" - " + profileNameMessage + ": ").append(profileName).append(" - url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
                         }
                     }
 
@@ -502,7 +453,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
                 return (CustomMapModDto) mapDtoFactory.newDto(customMap);
 
             } else {
-                return (CustomMapModDto) addProfilesToMap(platformNameList, mapInDataBase.get().getCode(), selectedProfileNameList, importMapResultToDisplayList);
+                // return (CustomMapModDto) addPlatformProfileMapList(platformNameList, mapInDataBase.get().getCode(), selectedProfileNameList, importMapResultToDisplayList);
             }
         } catch (Exception e) {
             logger.error("Error importing the custom map/mod with idWorkShop: " + idWorkShop + " from server", e);
@@ -520,7 +471,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
                 return (OfficialMapDto) mapDtoFactory.newDto(insertedMap);
 
              } else {
-                return (OfficialMapDto) addProfilesToMap(platformNameList, mapInDataBase.get().getCode(), selectedProfileNameList, importMapResultToDisplayList);
+                //return (OfficialMapDto) addPlatformProfileMapList(platformNameList, mapInDataBase.get().getCode(), selectedProfileNameList, importMapResultToDisplayList);
             }
         } catch (Exception e) {
             logger.error("Error importing the official map with name: " + officialMapName + " from server", e);

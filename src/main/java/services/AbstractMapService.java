@@ -153,41 +153,37 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
         return insertedMap;
     }
 
-    public AbstractMap addProfilesToMap(List<AbstractPlatform> platformList, AbstractMap map, List<Profile> profilePlatformNotContainingMap, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
-        profilePlatformNotContainingMap.stream().forEach(profile -> {
+    public void addPlatformProfileMapList(List<PlatformProfileMap> platformProfileMapListToAdd, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
+
+        platformProfileMapListToAdd.stream().forEach(ppm -> {
             try {
-                boolean downloaded = map.isOfficial();
-                for (AbstractPlatform platform: platformList) {
-                    PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(platform, profile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), downloaded);
-                    platformProfileMapService.createItem(newPlatformProfileMap);
-                    map.getPlatformProfileMapList().add(newPlatformProfileMap);
-                }
+                platformProfileMapService.createItem(ppm);
+                ppm.getMap().getPlatformProfileMapList().add(ppm);
 
                 if (importMapResultToDisplayList != null) {
                     importMapResultToDisplayList.add(new ImportMapResultToDisplay(
-                            profile.getName(),
-                            map.getCode(),
-                            map.isOfficial(),
+                            ppm.getProfile().getName(),
+                            ppm.getMap().getCode(),
+                            ppm.getMap().isOfficial(),
                             new Date(),
                             StringUtils.EMPTY
                     ));
                 }
             } catch (Exception e) {
-                String errorMessage = "Error creating the relation between the profile: " + profile.getCode() + " and the new map: " + map.getCode();
+                String errorMessage = "Error creating the relation between the platform: " + ppm.getPlatform().getDescription() + ", the profile: " + ppm.getProfile().getCode() + " and the new map: " + ppm.getMap().getCode();
                 logger.error(errorMessage, e);
 
                 if (importMapResultToDisplayList != null) {
                     importMapResultToDisplayList.add(new ImportMapResultToDisplay(
-                            profile.getName(),
-                            map.getCode(),
-                            map.isOfficial(),
+                            ppm.getProfile().getName(),
+                            ppm.getMap().getCode(),
+                            ppm.getMap().isOfficial(),
                             null,
                             errorMessage
                     ));
                 }
             }
         });
-        return map;
     }
 
 
