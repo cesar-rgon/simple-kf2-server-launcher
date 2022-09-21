@@ -2,8 +2,6 @@ package dtos;
 
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import javafx.collections.ObservableList;
-import pojos.enums.EnumPlatform;
 
 public class ProfileDto {
 

@@ -1407,7 +1407,8 @@ public class MainContentController implements Initializable {
             if (profileSelect.getValue() != null && profileMapSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
                 String mapCode = profileMapSelect.getValue().getMapDto().getKey();
-                if (!facade.updateProfileSetMap(profileName, mapCode)) {
+                boolean isOfficial = profileMapSelect.getValue().getMapDto().isOfficial();
+                if (!facade.updateProfileSetMap(profileName, mapCode, isOfficial)) {
                     logger.warn("The map value could not be saved!: " + mapCode);
                     String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
                             "prop.message.profileNotUpdated");

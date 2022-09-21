@@ -1,6 +1,7 @@
 package dtos.factories;
 
 import daos.OfficialMapDao;
+import daos.PlatformProfileMapDao;
 import dtos.AbstractMapDto;
 import dtos.CustomMapModDto;
 import dtos.ImportedDateByProfileDto;
@@ -8,6 +9,7 @@ import dtos.OfficialMapDto;
 import entities.AbstractMap;
 import entities.CustomMapMod;
 import entities.OfficialMap;
+import entities.PlatformProfileMap;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.logging.log4j.LogManager;
@@ -45,15 +47,15 @@ public class MapDtoFactory {
         }
     }
 
-    private OfficialMapDto newOfficialMapDto(OfficialMap map) {
+    private OfficialMapDto newOfficialMapDto(OfficialMap map, List<PlatformProfileMap> platformProfileMapListForNewMap) {
 
         DateFormat importedDateFormat = new SimpleDateFormat(datePattern);
         List<ImportedDateByProfileDto> importedDateByProfileDtoList = new ArrayList<ImportedDateByProfileDto>();
-        map.getPlatformProfileMapList().forEach(pm -> {
+        platformProfileMapListForNewMap.forEach(ppm -> {
             importedDateByProfileDtoList.add(
                 new ImportedDateByProfileDto(
-                    pm.getProfile().getName(),
-                    pm.getImportedDate() != null ? importedDateFormat.format(pm.getImportedDate()): unknownStr
+                    ppm.getProfile().getName(),
+                    ppm.getImportedDate() != null ? importedDateFormat.format(ppm.getImportedDate()): unknownStr
                 )
             );
         });
@@ -68,15 +70,15 @@ public class MapDtoFactory {
         );
     }
 
-    private CustomMapModDto newCustomMapModDto(CustomMapMod map) {
+    private CustomMapModDto newCustomMapModDto(CustomMapMod map, List<PlatformProfileMap> platformProfileMapListForNewMap) {
 
         DateFormat importedDateFormat = new SimpleDateFormat(datePattern);
         List<ImportedDateByProfileDto> importedDateByProfileDtoList = new ArrayList<ImportedDateByProfileDto>();
-        map.getPlatformProfileMapList().forEach(pm -> {
+        platformProfileMapListForNewMap.forEach(ppm -> {
             importedDateByProfileDtoList.add(
                     new ImportedDateByProfileDto(
-                            pm.getProfile().getName(),
-                            pm.getImportedDate() != null ? importedDateFormat.format(pm.getImportedDate()): unknownStr
+                            ppm.getProfile().getName(),
+                            ppm.getImportedDate() != null ? importedDateFormat.format(ppm.getImportedDate()): unknownStr
                     )
             );
         });
@@ -95,13 +97,14 @@ public class MapDtoFactory {
 
     public AbstractMapDto newDto(AbstractMap map) {
         try {
+            List<PlatformProfileMap> platformProfileMapListForNewMap = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(map);
             List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
             if (idsMapasOficiales.contains(map.getId())) {
                 map.setOfficial(true);
-                return newOfficialMapDto((OfficialMap) map);
+                return newOfficialMapDto((OfficialMap) map, platformProfileMapListForNewMap);
             } else {
                 map.setOfficial(false);
-                return newCustomMapModDto((CustomMapMod) map);
+                return newCustomMapModDto((CustomMapMod) map, platformProfileMapListForNewMap);
             }
         } catch (SQLException e) {
             logger.error("Error getting dto of map entity " + map.getCode(), e);

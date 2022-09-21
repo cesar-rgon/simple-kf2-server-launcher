@@ -119,7 +119,6 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
                     try {
                         PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(platform, profile, finalInsertedMap, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), downloaded);
                         platformProfileMapService.createItem(newPlatformProfileMap);
-                        finalInsertedMap.getPlatformProfileMapList().add(newPlatformProfileMap);
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);
                     }
@@ -158,7 +157,6 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
         platformProfileMapListToAdd.stream().forEach(ppm -> {
             try {
                 platformProfileMapService.createItem(ppm);
-                ppm.getMap().getPlatformProfileMapList().add(ppm);
 
                 if (importMapResultToDisplayList != null) {
                     importMapResultToDisplayList.add(new ImportMapResultToDisplay(

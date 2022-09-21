@@ -83,7 +83,6 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
                 null,
                 null,
                 null,
-                new ArrayList<PlatformProfileMap>(),
                 false,
                 true,
                 false,

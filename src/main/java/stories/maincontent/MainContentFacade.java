@@ -17,7 +17,7 @@ public interface MainContentFacade {
     ObservableList<PlatformDto> listAllPlatforms() throws SQLException;
 
     boolean updateProfileSetGameType(String profileName, String gameTypeCode) throws SQLException;
-    boolean updateProfileSetMap(String profileName, String mapCode) throws SQLException;
+    boolean updateProfileSetMap(String profileName, String mapCode, boolean isOfficial) throws SQLException;
     boolean updateProfileSetDifficulty(String profileName, String difficultyCode) throws SQLException;
     boolean updateProfileSetLength(String profileName, String lengthCode) throws SQLException;
     boolean updateProfileSetMaxPlayers(String profileName, String maxPlayersCode) throws SQLException;

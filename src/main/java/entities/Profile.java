@@ -81,9 +81,6 @@ public class Profile extends AbstractExtendedEntity {
     @Column(name="CUSTOM_PARAMETERS", length=500)
     private String customParameters;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "profile")
-    private List<PlatformProfileMap> platformProfileMapList;
-
     @Column(name="TEAM_COLLISION")
     private Boolean teamCollision;
 
@@ -153,12 +150,11 @@ public class Profile extends AbstractExtendedEntity {
 
     public Profile() {
         super();
-        this.platformProfileMapList = new ArrayList<PlatformProfileMap>();
     }
 
     public Profile(String name, Language language, GameType gametype, AbstractMap map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,
                    String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
-                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, List<PlatformProfileMap> platformProfileMapList, Boolean takeover,
+                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, Boolean takeover,
                    Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting, Double mapVotingTime,
                    Boolean kickVoting, Double kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators, Boolean voip,
                    Boolean chatLogging, String chatLoggingFile, Boolean chatLoggingFileTimestamp, Double timeBetweenKicks, Double maxIdleTime, Boolean deadPlayersCanTalk,
@@ -184,7 +180,6 @@ public class Profile extends AbstractExtendedEntity {
         this.urlImageServer = urlImageServer;
         this.welcomeMessage = welcomeMessage;
         this.customParameters = customParameters;
-        this.platformProfileMapList = platformProfileMapList;
         this.takeover = takeover;
         this.teamCollision = teamCollision;
         this.adminCanPause = adminCanPause;
@@ -575,21 +570,6 @@ public class Profile extends AbstractExtendedEntity {
         this.name = name;
     }
 
-    public List<PlatformProfileMap> getPlatformProfileMapList() {
-        return platformProfileMapList;
-    }
-
-    public void setProfileMapList(List<PlatformProfileMap> platformProfileMapList) {
-        this.platformProfileMapList = platformProfileMapList;
-    }
-
-    public List<AbstractMap> getMapList() {
-        return platformProfileMapList.
-                stream().
-                map(PlatformProfileMap::getMap).
-                collect(Collectors.toList());
-    }
-
     @Override
     public String toString() {
         return "Profile{" +
@@ -614,7 +594,6 @@ public class Profile extends AbstractExtendedEntity {
                 ", urlImageServer='" + urlImageServer + '\'' +
                 ", welcomeMessage='" + welcomeMessage + '\'' +
                 ", customParameters='" + customParameters + '\'' +
-                ", platformProfileMapList=" + platformProfileMapList +
                 ", teamCollision=" + teamCollision +
                 ", adminCanPause=" + adminCanPause +
                 ", announceAdminLogin=" + announceAdminLogin +

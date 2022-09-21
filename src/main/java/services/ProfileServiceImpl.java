@@ -40,48 +40,16 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public Optional<Profile> findProfileByCode(String profileName) throws SQLException {
-        Optional<Profile> profileOpt = ProfileDao.getInstance().findByCode(profileName);
-        List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
-
-        if (profileOpt.isPresent()) {
-            profileOpt.get().getMapList().forEach(m -> {
-                if (idsMapasOficiales.contains(m.getId())) {
-                    m.setOfficial(true);
-                } else {
-                    m.setOfficial(false);
-                }
-            });
-        }
-        return profileOpt;
+        return ProfileDao.getInstance().findByCode(profileName);
     }
 
     @Override
     public List<Profile> listAllProfiles() throws SQLException {
-        List<Profile> profiles = ProfileDao.getInstance().listAll();
-        List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
-
-        profiles.stream().forEach(p -> {
-            p.getMapList().forEach(m -> {
-                if (idsMapasOficiales.contains(m.getId())) {
-                    m.setOfficial(true);
-                } else {
-                    m.setOfficial(false);
-                }
-            });
-        });
-        return profiles;
+        return ProfileDao.getInstance().listAll();
     }
 
     @Override
     public Profile createItem(Profile profile) throws Exception {
-        List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
-        profile.getPlatformProfileMapList().stream().forEach(pm -> {
-            if (idsMapasOficiales.contains(pm.getMap().getId())) {
-                pm.getMap().setOfficial(true);
-            } else {
-                pm.getMap().setOfficial(false);
-            }
-        });
         return ProfileDao.getInstance().insert(profile);
     }
 
@@ -102,15 +70,16 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public boolean deleteProfile(Profile profile, String steamInstallationFolder, String epicInstallationFolder) throws Exception {
 
-        List<PlatformProfileMap> platformProfileMapList = new ArrayList<PlatformProfileMap>(profile.getPlatformProfileMapList());
-        platformProfileMapList.stream().forEach(pm -> {
+        List<PlatformProfileMap> platformProfileMapList = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profile);
+        platformProfileMapList.stream().forEach(ppm -> {
             try {
-                platformProfileMapService.deleteItem(pm);
+                platformProfileMapService.deleteItem(ppm);
 
-                if (!pm.getMap().isOfficial()) {
-                    Integer idMap = pm.getMap().getId();
-                    CustomMapMod customMapMod = CustomMapModDao.getInstance().get(idMap);
-                    if (customMapMod.getProfileList().isEmpty()) {
+                if (!ppm.getMap().isOfficial()) {
+                    CustomMapMod customMapMod = (CustomMapMod) ppm.getMap();
+
+                    List<PlatformProfileMap> platformProfileMapListForMap = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(customMapMod);
+                    if (platformProfileMapListForMap.isEmpty()) {
                         if (CustomMapModDao.getInstance().remove(customMapMod)) {
                             File steamMapPhoto = new File(steamInstallationFolder + customMapMod.getUrlPhoto());
                             if (steamMapPhoto.exists()) {
@@ -133,7 +102,7 @@ public class ProfileServiceImpl implements ProfileService {
                     }
                 }
             } catch (Exception e) {
-                logger.error("Error removing the relation between the profile: " + profile.getName() + " and the map: " + pm.getMap().getCode());
+                logger.error("Error removing the relation between the profile: " + profile.getName() + " and the map: " + ppm.getMap().getCode());
             }
         });
 
@@ -163,7 +132,6 @@ public class ProfileServiceImpl implements ProfileService {
                 profileToBeCloned.getUrlImageServer(),
                 profileToBeCloned.getWelcomeMessage(),
                 profileToBeCloned.getCustomParameters(),
-                new ArrayList<PlatformProfileMap>(),
                 profileToBeCloned.getTakeover(),
                 profileToBeCloned.getTeamCollision(),
                 profileToBeCloned.getAdminCanPause(),
@@ -190,17 +158,18 @@ public class ProfileServiceImpl implements ProfileService {
         );
 
         Profile savedProfile = createItem(newProfile);
-        profileToBeCloned.getPlatformProfileMapList().stream().forEach(ppm -> {
+
+        List<PlatformProfileMap> platformProfileMapListForProfileToBeCloned = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profileToBeCloned);
+
+        platformProfileMapListForProfileToBeCloned.stream().forEach(ppm -> {
             try {
-                PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(new SteamPlatform(EnumPlatform.STEAM), savedProfile, ppm.getMap(), ppm.getReleaseDate(), ppm.getUrlInfo(), ppm.getUrlPhoto(), ppm.isDownloaded());
+                PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(ppm.getPlatform(), savedProfile, ppm.getMap(), ppm.getReleaseDate(), ppm.getUrlInfo(), ppm.getUrlPhoto(), ppm.isDownloaded());
                 newPlatformProfileMap.setAlias(ppm.getAlias());
-                savedProfile.getPlatformProfileMapList().add(newPlatformProfileMap);
                 platformProfileMapService.createItem(newPlatformProfileMap);
             } catch (Exception e) {
-                logger.error("Error creating the relation between the profile: " + savedProfile.getName() + " and the map: " + ppm.getMap().getCode());
+                logger.error("Error creating the relation between the platform: " + ppm.getPlatform().getDescription() + ", the profile: " + savedProfile.getName() + " and the map: " + ppm.getMap().getCode());
             }
         });
-
 
         return savedProfile;
     }
@@ -230,7 +199,7 @@ public class ProfileServiceImpl implements ProfileService {
             properties.setProperty("exported.profile" + profileIndex + ".urlImageServer", StringUtils.isNotBlank(profile.getUrlImageServer())? profile.getUrlImageServer(): "");
             properties.setProperty("exported.profile" + profileIndex + ".welcomeMessage", StringUtils.isNotBlank(profile.getWelcomeMessage())? profile.getWelcomeMessage(): "");
             properties.setProperty("exported.profile" + profileIndex + ".customParameters", StringUtils.isNotBlank(profile.getCustomParameters())? profile.getCustomParameters(): "");
-            properties.setProperty("exported.profile" + profileIndex + ".mapListSize", profile.getMapList()!=null? String.valueOf(profile.getMapList().size()): "0");
+            //properties.setProperty("exported.profile" + profileIndex + ".mapListSize", profile.getMapList()!=null? String.valueOf(profile.getMapList().size()): "0");
             properties.setProperty("exported.profile" + profileIndex + ".takeover", profile.getTakeover()!=null? String.valueOf(profile.getTakeover()): "false");
 
             properties.setProperty("exported.profile" + profileIndex + ".mapVoting", profile.getMapVoting()? String.valueOf(profile.getMapVoting()): "false");
@@ -256,6 +225,8 @@ public class ProfileServiceImpl implements ProfileService {
             properties.setProperty("exported.profile" + profileIndex + ".pickupItems", profile.getPickupItems()? String.valueOf(profile.getPickupItems()): "false");
             properties.setProperty("exported.profile" + profileIndex + ".friendlyFirePercentage", profile.getFriendlyFirePercentage() != null? String.valueOf(profile.getFriendlyFirePercentage()): "");
 
+            // TODO: Revisar este código para tener en cuenta los ppm (en concreto, la Plataforma)
+            /*
             if (profile.getPlatformProfileMapList() != null && !profile.getPlatformProfileMapList().isEmpty()) {
                 int profileMapIndex = 1;
                 for (PlatformProfileMap platformProfileMap : profile.getPlatformProfileMapList()) {
@@ -282,6 +253,7 @@ public class ProfileServiceImpl implements ProfileService {
                     profileMapIndex++;
                 }
             }
+            */
             profileIndex ++;
         }
 
@@ -599,7 +571,6 @@ public class ProfileServiceImpl implements ProfileService {
                     properties.getProperty("exported.profile" + profileIndex + ".urlImageServer"),
                     properties.getProperty("exported.profile" + profileIndex + ".welcomeMessage"),
                     properties.getProperty("exported.profile" + profileIndex + ".customParameters"),
-                    new ArrayList<PlatformProfileMap>(),
                     StringUtils.isNotBlank(takeoverStr) ? Boolean.parseBoolean(takeoverStr): false,
                     StringUtils.isNotBlank(teamCollisionStr) ? Boolean.parseBoolean(teamCollisionStr): true,
                     StringUtils.isNotBlank(adminPauseStr) ? Boolean.parseBoolean(adminPauseStr): false,
@@ -639,7 +610,6 @@ public class ProfileServiceImpl implements ProfileService {
                 Profile savedProfile = (Profile) ProfileDao.getInstance().insert(profile);
 
                 List<AbstractMap> mapList = importPlatformProfileMapsFromFile(platform, profileIndex, savedProfile, properties);
-                savedProfile.getMapList().addAll(mapList);
 
                 String mapName = properties.getProperty("exported.profile" + profileIndex + ".map");
                 Optional<AbstractMap> mapOpt = mapList.stream().filter(m -> m.getCode().equalsIgnoreCase(mapName)).findFirst();
@@ -738,7 +708,6 @@ public class ProfileServiceImpl implements ProfileService {
 
     private AbstractMap getImportedMap(Optional<AbstractMap> mapInDataBaseOpt, Profile profile, Properties properties, int profileIndex, Integer mapIndex, String mapName, Long idWorkShop, boolean official) throws Exception {
         if (mapInDataBaseOpt.isPresent()) {
-            mapInDataBaseOpt.get().getProfileList().add(profile);
             if (mapInDataBaseOpt.get().isOfficial()) {
                 if (OfficialMapDao.getInstance().update((OfficialMap) mapInDataBaseOpt.get())) {
                     return mapInDataBaseOpt.get();

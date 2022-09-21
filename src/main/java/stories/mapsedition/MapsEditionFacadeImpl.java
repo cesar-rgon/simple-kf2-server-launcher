@@ -2,6 +2,7 @@ package stories.mapsedition;
 
 import daos.AbstractPlatformDao;
 import daos.CustomMapModDao;
+import daos.PlatformProfileMapDao;
 import daos.ProfileDao;
 import dtos.*;
 import dtos.factories.MapDtoFactory;
@@ -262,25 +263,21 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
     @Override
     public AbstractMapDto deleteMapFromProfile(String platformName, String mapName, String profileName) throws Exception {
-        Optional<AbstractPlatform> platformOpt = AbstractPlatformDao.getInstance().findByCode(platformName);
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (!platformOpt.isPresent() || !profileOpt.isPresent()) {
+
+        Optional<PlatformProfileMap> platformProfileMapOptional = PlatformProfileMapDao.getInstance().findByPlatformNameProfileNameMapName(platformName, profileName, mapName);
+        if (!platformProfileMapOptional.isPresent()) {
             return null;
         }
 
-        Optional<AbstractMap> mapOpt = profileOpt.get().getMapList().stream().filter(m -> m.getCode().equalsIgnoreCase(mapName)).findFirst();
-        if (!mapOpt.isPresent()) {
-            return null;
-        }
         Optional officialMapOptional = officialMapService.findMapByCode(mapName);
         if (officialMapOptional.isPresent()) {
-            OfficialMap deletedMap = (OfficialMap) officialMapService.deleteMap(platformOpt.get(), (OfficialMap) officialMapOptional.get(), profileOpt.get());
+            OfficialMap deletedMap = (OfficialMap) officialMapService.deleteMap(platformProfileMapOptional.get().getPlatform(), (OfficialMap) platformProfileMapOptional.get().getMap(), platformProfileMapOptional.get().getProfile());
             return mapDtoFactory.newDto(deletedMap);
         }
 
         Optional customMapModOptional = customMapModService.findMapByCode(mapName);
         if (customMapModOptional.isPresent()) {
-            CustomMapMod deletedMap = (CustomMapMod) customMapModService.deleteMap(platformOpt.get(), (CustomMapMod) customMapModOptional.get(), profileOpt.get());
+            CustomMapMod deletedMap = customMapModService.deleteMap(platformProfileMapOptional.get().getPlatform(), (CustomMapMod) platformProfileMapOptional.get().getMap(), platformProfileMapOptional.get().getProfile());
             return mapDtoFactory.newDto(deletedMap);
         }
         return null;
@@ -402,7 +399,9 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
                             }
                         }
                     } else {
-                        List<AbstractPlatform> platformListContainingMap = profile.getPlatformProfileMapList().stream().
+                        List<PlatformProfileMap> platformProfileMapListForProfile = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profile);
+
+                        List<AbstractPlatform> platformListContainingMap = platformProfileMapListForProfile.stream().
                                 filter(ppm -> ppm.getMap().equals(mapModInDataBase.get())).
                                 filter(ppm -> platformList.contains(ppm.getPlatform())).
                                 map(PlatformProfileMap::getPlatform).

@@ -1,10 +1,8 @@
 package services;
 
 import daos.CustomMapModDao;
-import entities.AbstractMap;
-import entities.CustomMapMod;
-import entities.AbstractPlatform;
-import entities.Profile;
+import daos.PlatformProfileMapDao;
+import entities.*;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -46,7 +44,8 @@ public class CustomMapModServiceImpl extends AbstractMapService {
     public CustomMapMod deleteMap(AbstractPlatform platform, CustomMapMod map, Profile profile) throws Exception {
         super.deleteMap(platform, map, profile);
 
-        if (map.getProfileList().isEmpty()) {
+        List<PlatformProfileMap> platformProfileMapListForMap = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(map);
+        if (platformProfileMapListForMap.isEmpty()) {
             deleteItem(map);
             File photo = new File(platform.getInstallationFolder() + map.getUrlPhoto());
             photo.delete();

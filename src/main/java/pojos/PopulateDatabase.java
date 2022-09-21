@@ -149,7 +149,6 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
                     null,
                     null,
                     null,
-                    new ArrayList<PlatformProfileMap>(),
                     false,
                     true,
                     false,

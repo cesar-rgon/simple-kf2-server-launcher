@@ -1,6 +1,7 @@
 package stories.mapwebinfo;
 
 import daos.CustomMapModDao;
+import daos.PlatformProfileMapDao;
 import dtos.CustomMapModDto;
 import dtos.factories.MapDtoFactory;
 import entities.*;
@@ -163,19 +164,15 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
          */
     }
 
-    private boolean isMapInProfile(Long idWorkShop, Profile profile) {
-        Optional<AbstractMap> mapOpt = profile.getMapList()
-                .stream()
-                .filter(m -> !m.isOfficial())
-                .filter(m -> idWorkShop.equals(((CustomMapMod) m).getIdWorkShop()))
-                .findFirst();
-        return mapOpt.isPresent();
-    }
-
     @Override
     public List<ProfileToDisplay> getProfilesWithoutMap(Long idWorkShop) throws SQLException {
-        List<Profile> allProfiles = profileService.listAllProfiles();
-        List<Profile> profilesWithoutMap = allProfiles.stream().filter(p -> !isMapInProfile(idWorkShop, p)).collect(Collectors.toList());
+
+        List<Profile> profilesWithoutMap = PlatformProfileMapDao.getInstance().listPlatformProfileMaps().stream().
+                filter(ppm -> !ppm.getMap().isOfficial()).
+                filter(ppm -> idWorkShop.equals(((CustomMapMod) ppm.getMap()).getIdWorkShop())).
+                map(PlatformProfileMap::getProfile).
+                collect(Collectors.toList());
+
         return profileToDisplayFactory.newOnes(profilesWithoutMap);
     }
 }

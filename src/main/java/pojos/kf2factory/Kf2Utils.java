@@ -1,7 +1,9 @@
 package pojos.kf2factory;
 
+import daos.PlatformProfileMapDao;
 import entities.AbstractMap;
 import entities.CustomMapMod;
+import entities.PlatformProfileMap;
 import entities.Profile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +18,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -214,7 +217,11 @@ public class Kf2Utils {
                 }
             }
 
-            List<AbstractMap> customMapsMods = profile.getMapList().stream().filter(m -> !m.isOfficial()).collect(Collectors.toList());
+            List<AbstractMap> customMapsMods = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profile).stream().
+                    map(PlatformProfileMap::getMap).
+                    filter(m -> !m.isOfficial()).
+                    collect(Collectors.toList());
+
             if (customMapsMods != null && !customMapsMods.isEmpty()) {
                 pw.println("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]");
                 for (AbstractMap customMapMod: customMapsMods) {
@@ -249,7 +256,11 @@ public class Kf2Utils {
                     String[] array = line.split(" ");
                     String mapName = array[0].replace("[", "");
 
-                    Optional<AbstractMap> map = profile.getMapList().stream().filter(m -> m.getCode().equals(mapName)).findFirst();
+                    Optional<AbstractMap> map = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profile).stream().
+                            map(PlatformProfileMap::getMap).
+                            filter(m -> m.getCode().equals(mapName)).
+                            findFirst();
+
                     if (map.isPresent() && map.get().isOfficial() || line.contains("[KF-Default KFMapSummary]")) {
                         pw.println(line);
                         while (!line.contains("MapName=")) {
@@ -273,7 +284,11 @@ public class Kf2Utils {
                 }
             }
 
-            List<AbstractMap> customMaps = profile.getMapList().stream().filter(m -> !m.isOfficial()).collect(Collectors.toList());
+            List<AbstractMap> customMaps = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profile).stream().
+                    map(PlatformProfileMap::getMap).
+                    filter(m -> !m.isOfficial()).
+                    collect(Collectors.toList());
+
             if (customMaps != null && !customMaps.isEmpty()) {
                 for (AbstractMap customMap: customMaps) {
                     pw.println("[" + customMap.getCode() + " KFMapSummary]");
@@ -332,18 +347,29 @@ public class Kf2Utils {
             modifiedLine = null;
         }
         if (line.contains("GameMapCycles=(Maps=(")) {
-            List<AbstractMap> officialMaps = profile.getMapList().stream()
-                    .filter(m -> m.isOfficial())
-                    .sorted((o1, o2) -> o1.getCode().compareTo(o2.getCode()))
-                    .collect(Collectors.toList());
 
-            List<AbstractMap> downloadedCustomMaps = profile.getMapList().stream()
-                    .filter(m -> !m.isOfficial())
-                    //.filter(m -> ((CustomMapMod) m).isDownnloadedMapForSteam())
-                    .sorted((o1, o2) -> o1.getCode().compareTo(o2.getCode()))
-                    .collect(Collectors.toList());
+            try {
+                List<PlatformProfileMap> platformProfileMapListForProfile = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profile);
+                if (platformProfileMapListForProfile != null && !platformProfileMapListForProfile.isEmpty()) {
 
-            modifiedLine = generateMapCycleLine(officialMaps, downloadedCustomMaps);
+                    List<AbstractMap> officialMaps = platformProfileMapListForProfile.stream().
+                            map(PlatformProfileMap::getMap).
+                            filter(m -> m.isOfficial()).
+                            sorted((o1, o2) -> o1.getCode().compareTo(o2.getCode())).
+                            collect(Collectors.toList());
+
+                    List<AbstractMap> downloadedCustomMaps = platformProfileMapListForProfile.stream().
+                            filter(ppm -> ppm.isDownloaded()).
+                            map(PlatformProfileMap::getMap).
+                            filter(m -> !m.isOfficial()).
+                            sorted((o1, o2) -> o1.getCode().compareTo(o2.getCode())).
+                            collect(Collectors.toList());
+
+                    modifiedLine = generateMapCycleLine(officialMaps, downloadedCustomMaps);
+                }
+            } catch (SQLException e) {
+                logger.error(e.getMessage(), e);
+            }
         }
         if (line.contains("GameDifficulty=")) {
             modifiedLine = "GameDifficulty=" + profile.getDifficulty().getCode();

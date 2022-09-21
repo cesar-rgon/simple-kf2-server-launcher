@@ -104,15 +104,18 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetMap(String profileName, String mapCode) throws SQLException {
+    public boolean updateProfileSetMap(String profileName, String mapCode, boolean isOfficial) throws SQLException {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            Optional<AbstractMap> mapOpt = profile.getMapList().stream().filter(m -> m.getCode().equals(mapCode)).findFirst();
-            if (mapOpt.isPresent()) {
-                profile.setMap(mapOpt.get());
-                return ProfileDao.getInstance().update(profile);
-            }
+        Optional mapOptionaL;
+        if (isOfficial) {
+            mapOptionaL = OfficialMapDao.getInstance().findByCode(mapCode);
+        } else {
+            mapOptionaL = CustomMapModDao.getInstance().findByCode(mapCode);
+        }
+
+        if (profileOpt.isPresent() && mapOptionaL.isPresent()) {
+            profileOpt.get().setMap((AbstractMap) mapOptionaL.get());
+            return ProfileDao.getInstance().update(profileOpt.get());
         }
         return false;
     }

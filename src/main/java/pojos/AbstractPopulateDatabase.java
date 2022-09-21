@@ -71,7 +71,7 @@ public abstract class AbstractPopulateDatabase {
 
     protected void populateProfile(String name, Language language, GameType gametype, AbstractMap map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,
                                    String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
-                                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, List<PlatformProfileMap> platformProfileMapList, Boolean takeover,
+                                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, Boolean takeover,
                                    Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting, Double mapVotingTime,
                                    Boolean kickVoting, Double kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators, Boolean voip,
                                    Boolean chatLogging, String chatLoggingFile, Boolean chatLoggingFileTimestamp, Double timeBetweenKicks, Double maxIdleTime, Boolean deadPlayersCanTalk,
@@ -79,7 +79,7 @@ public abstract class AbstractPopulateDatabase {
 
         Profile profile = new Profile(name, language, gametype, map, difficulty, length, maxPlayers,
                 serverName, serverPassword, webPage, webPassword, webPort, gamePort, queryPort,
-                yourClan, yourWebLink, urlImageServer, welcomeMessage, customParameters, platformProfileMapList, takeover,
+                yourClan, yourWebLink, urlImageServer, welcomeMessage, customParameters, takeover,
                 teamCollision, adminCanPause, announceAdminLogin, mapVoting, mapVotingTime,
                 kickVoting, kickPercentage, publicTextChat, spectatorsOnlyChatToOtherSpectators, voip,
                 chatLogging, chatLoggingFile, chatLoggingFileTimestamp, timeBetweenKicks, maxIdleTime, deadPlayersCanTalk,

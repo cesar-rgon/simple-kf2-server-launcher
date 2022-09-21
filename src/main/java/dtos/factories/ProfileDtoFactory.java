@@ -32,22 +32,10 @@ public class ProfileDtoFactory {
 
     public ProfileDto newDto(Profile profile) {
 
-        AbstractMapDto selectedMap = null;
-        if (profile.getMap() != null) {
-            Optional<AbstractMap> mapInListOpt = profile.getMapList()
-                    .stream()
-                    .filter(m -> m.getId().equals(profile.getMap().getId()))
-                    .findFirst();
-
-            if (mapInListOpt.isPresent()) {
-                selectedMap = mapDtoFactory.newDto(profile.getMap());
-            }
-        }
-
         return new ProfileDto(profile.getCode(),
                 languageDtoFactory.newDto(profile.getLanguage()),
                 profile.getGametype() != null ? gameTypeDtoFactory.newDto(profile.getGametype()): null,
-                selectedMap,
+                profile.getMap() != null ? mapDtoFactory.newDto(profile.getMap()): null,
                 profile.getDifficulty() != null ? difficultyDtoFactory.newDto(profile.getDifficulty()): null,
                 profile.getLength() != null ? lengthDtoFactory.newDto(profile.getLength()): null,
                 profile.getMaxPlayers() != null ? maxPlayersDtoFactory.newDto(profile.getMaxPlayers()): null,

@@ -3,10 +3,7 @@ package entities;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "MAPS")
@@ -31,16 +28,12 @@ public abstract class AbstractMap extends AbstractExtendedEntity {
     @Column(name="RELEASE_DATE")
     private Date releaseDate;
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "map")
-    private List<PlatformProfileMap> platformProfileMapList;
-
     // Not mapped attribute
     @Transient
     private boolean official;
 
     protected AbstractMap() {
         super();
-        this.platformProfileMapList = new ArrayList<PlatformProfileMap>();
     }
 
     protected AbstractMap(String code, String urlInfo, String urlPhoto, boolean official, Date releaseDate) {
@@ -113,18 +106,4 @@ public abstract class AbstractMap extends AbstractExtendedEntity {
         this.releaseDate = releaseDate;
     }
 
-    public List<PlatformProfileMap> getPlatformProfileMapList() {
-        return platformProfileMapList;
-    }
-
-    public void setPlatformProfileMapList(List<PlatformProfileMap> platformProfileMapList) {
-        this.platformProfileMapList = platformProfileMapList;
-    }
-
-    public List<Profile> getProfileList() {
-        return platformProfileMapList.
-                stream().
-                map(PlatformProfileMap::getProfile).
-                collect(Collectors.toList());
-    }
 }
