@@ -4,9 +4,11 @@ import dtos.PlatformDto;
 import dtos.EpicPlatformDto;
 import dtos.SteamPlatformDto;
 import entities.AbstractPlatform;
+import entities.EpicPlatform;
 import entities.SteamPlatform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.hibernate.Hibernate;
 import utils.Utils;
 
 import java.util.List;
@@ -15,8 +17,8 @@ import java.util.stream.Collectors;
 public class PlatformDtoFactory {
 
     public PlatformDto newSteamDto(AbstractPlatform platform) {
+        SteamPlatform steamPlatform = (SteamPlatform) Hibernate.unproxy(platform);
         try {
-            SteamPlatform steamPlatform = (SteamPlatform) platform;
             return new SteamPlatformDto(
                     platform.getCode(),
                     platform.getDescription(),

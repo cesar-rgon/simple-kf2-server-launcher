@@ -73,15 +73,15 @@ public class PlatformProfileMap extends AbstractEntity {
     @EmbeddedId
     private IdPlatformProfileMap idPlatformProfileMap;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ID_PLATFORM", referencedColumnName = "ID", insertable = false, updatable = false, nullable = false)
     private AbstractPlatform platform;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ID_PROFILE", referencedColumnName = "ID", insertable = false, updatable = false, nullable = false)
     private Profile profile;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ID_MAP", referencedColumnName = "ID", insertable = false, updatable = false, nullable = false)
     private AbstractMap map;
 

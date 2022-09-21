@@ -64,4 +64,5 @@ public class PlatformProfileMapDao extends AbstractDao<PlatformProfileMap> {
         java.util.Map<String,Object> parameters = new HashMap<String,Object>();
         return list(query, parameters);
     }
+
 }

@@ -13,10 +13,12 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 
-public abstract class AbstractDao<T extends AbstractEntity> {
+public abstract class AbstractDao<T extends AbstractEntity> implements AutoCloseable {
 
 	private static final Logger logger = LogManager.getLogger(AbstractDao.class);
 	protected static EntityManagerFactory emf;
+	protected EntityManager em;
+
 	private static final String PERSISTENCE_UNIT = "kf2database";
 
 	private final Class<T> entityClass;
@@ -27,6 +29,18 @@ public abstract class AbstractDao<T extends AbstractEntity> {
 		if (emf == null) {
 			emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT);
 		}
+		if (emf != null && em == null) {
+			em = emf.createEntityManager();
+		}
+	}
+
+	@Override
+	public void close() throws Exception {
+		if (em != null) {
+			if (em.isOpen()) {
+				em.close();
+			}
+		}
 	}
 
 	/**
@@ -35,9 +49,7 @@ public abstract class AbstractDao<T extends AbstractEntity> {
 	 * @return Entity
 	 */
 	public T get(Object id) throws SQLException {
-		EntityManager em = null;
 		try {
-			em = emf.createEntityManager();
 			em.getTransaction().begin();
 			T result = em.find(entityClass, id);
 			em.getTransaction().commit();
@@ -47,7 +59,11 @@ public abstract class AbstractDao<T extends AbstractEntity> {
 			logger.error(errorMessage, e);
 			throw new SQLException(errorMessage, e);
 		} finally {
-			endTransaction(em);
+			if (em != null) {
+				if (em.getTransaction() != null && em.getTransaction().isActive()) {
+					em.getTransaction().rollback();
+				}
+			}
 		}
 	}
 	
@@ -58,9 +74,7 @@ public abstract class AbstractDao<T extends AbstractEntity> {
 	 * @return List of entities
 	 */
 	public List<T> list(String query, Map<String,Object> parameters) throws SQLException {
-		EntityManager em = null;
 		try {
-			em = emf.createEntityManager();
 			em.getTransaction().begin();
 			Query queryObject = em.createQuery(query);
 			if (parameters != null && !parameters.isEmpty()) {
@@ -76,7 +90,11 @@ public abstract class AbstractDao<T extends AbstractEntity> {
 			logger.error(errorMessage, e);
 			throw new SQLException(errorMessage, e);
 		} finally {
-			endTransaction(em);
+			if (em != null) {
+				if (em.getTransaction() != null && em.getTransaction().isActive()) {
+					em.getTransaction().rollback();
+				}
+			}
 		}
 	}
 	
@@ -87,9 +105,7 @@ public abstract class AbstractDao<T extends AbstractEntity> {
 	 * @return Entity
 	 */
 	public Optional<T> find(String query, Map<String,Object> parameters) throws SQLException {
-		EntityManager em = null;
 		try {
-			em = emf.createEntityManager();
 			em.getTransaction().begin();
 			Query queryObject = em.createQuery(query);
 			if (parameters != null && !parameters.isEmpty()) {
@@ -109,7 +125,11 @@ public abstract class AbstractDao<T extends AbstractEntity> {
 			logger.error(errorMessage, e);
 			throw new SQLException(errorMessage, e);
 		} finally {
-			endTransaction(em);
+			if (em != null) {
+				if (em.getTransaction() != null && em.getTransaction().isActive()) {
+					em.getTransaction().rollback();
+				}
+			}
 		}
 	}
 	
@@ -119,9 +139,7 @@ public abstract class AbstractDao<T extends AbstractEntity> {
 	 * @return True in case of success
 	 */
 	public T insert(T entity) throws SQLException {
-		EntityManager em = null;
 		try{
-			em = emf.createEntityManager();
 			em.getTransaction().begin();
 			em.persist(entity);
 			em.getTransaction().commit();
@@ -131,7 +149,11 @@ public abstract class AbstractDao<T extends AbstractEntity> {
 			logger.error(errorMessage, e);
 			throw new SQLException(errorMessage, e);
 		} finally {
-			endTransaction(em);
+			if (em != null) {
+				if (em.getTransaction() != null && em.getTransaction().isActive()) {
+					em.getTransaction().rollback();
+				}
+			}
 		}
 	}
 
@@ -141,9 +163,7 @@ public abstract class AbstractDao<T extends AbstractEntity> {
 	 * @return True in case of success
 	 */
 	public boolean update(T entity) throws SQLException {
-		EntityManager em = null;
 		try {
-			em = emf.createEntityManager();
 			em.getTransaction().begin();
 			em.merge(entity);
 			em.getTransaction().commit();
@@ -153,7 +173,11 @@ public abstract class AbstractDao<T extends AbstractEntity> {
 			logger.error(errorMessage, e);
 			throw new SQLException(errorMessage, e);
 		} finally {
-			endTransaction(em);
+			if (em != null) {
+				if (em.getTransaction() != null && em.getTransaction().isActive()) {
+					em.getTransaction().rollback();
+				}
+			}
 		}
 	}
 	
@@ -163,7 +187,6 @@ public abstract class AbstractDao<T extends AbstractEntity> {
 	 * @return True in case of success
 	 */
 	public boolean remove(T entity) throws SQLException {
-		EntityManager em = null;
 		try {
 			em = emf.createEntityManager();
 			em.getTransaction().begin();
@@ -176,23 +199,11 @@ public abstract class AbstractDao<T extends AbstractEntity> {
 			logger.error(errorMessage, e);
 			throw new SQLException(errorMessage, e);
 		} finally {
-			endTransaction(em);
-		}
-	}
-
-	/**
-	 * Ends a database transaction
-	 * @param em
-	 */
-	private void endTransaction(EntityManager em) {
-		if (em != null) {
-			if (em.getTransaction() != null && em.getTransaction().isActive()) {
-				em.getTransaction().rollback();
-			}
-			if (em.isOpen()) {
-				em.close();
+			if (em != null) {
+				if (em.getTransaction() != null && em.getTransaction().isActive()) {
+					em.getTransaction().rollback();
+				}
 			}
 		}
 	}
-
 }

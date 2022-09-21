@@ -6,14 +6,12 @@ import dtos.AbstractMapDto;
 import dtos.CustomMapModDto;
 import dtos.ImportedDateByProfileDto;
 import dtos.OfficialMapDto;
-import entities.AbstractMap;
-import entities.CustomMapMod;
-import entities.OfficialMap;
-import entities.PlatformProfileMap;
+import entities.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Hibernate;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 
@@ -47,7 +45,7 @@ public class MapDtoFactory {
         }
     }
 
-    private OfficialMapDto newOfficialMapDto(OfficialMap map, List<PlatformProfileMap> platformProfileMapListForNewMap) {
+    private OfficialMapDto newOfficialMapDto(AbstractMap map, List<PlatformProfileMap> platformProfileMapListForNewMap) {
 
         DateFormat importedDateFormat = new SimpleDateFormat(datePattern);
         List<ImportedDateByProfileDto> importedDateByProfileDtoList = new ArrayList<ImportedDateByProfileDto>();
@@ -70,7 +68,7 @@ public class MapDtoFactory {
         );
     }
 
-    private CustomMapModDto newCustomMapModDto(CustomMapMod map, List<PlatformProfileMap> platformProfileMapListForNewMap) {
+    private CustomMapModDto newCustomMapModDto(AbstractMap map, List<PlatformProfileMap> platformProfileMapListForNewMap) {
 
         DateFormat importedDateFormat = new SimpleDateFormat(datePattern);
         List<ImportedDateByProfileDto> importedDateByProfileDtoList = new ArrayList<ImportedDateByProfileDto>();
@@ -84,12 +82,13 @@ public class MapDtoFactory {
         });
 
         LocalDate releaseDate = map.getReleaseDate() != null ? map.getReleaseDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(): null;
+        CustomMapMod customMapMod = (CustomMapMod) Hibernate.unproxy(map);
 
         return new CustomMapModDto(
                 map.getCode(),
                 map.getUrlInfo(),
                 map.getUrlPhoto(),
-                map.getIdWorkShop(),
+                customMapMod.getIdWorkShop(),
                 releaseDate,
                 importedDateByProfileDtoList
         );
@@ -101,10 +100,10 @@ public class MapDtoFactory {
             List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
             if (idsMapasOficiales.contains(map.getId())) {
                 map.setOfficial(true);
-                return newOfficialMapDto((OfficialMap) map, platformProfileMapListForNewMap);
+                return newOfficialMapDto(map, platformProfileMapListForNewMap);
             } else {
                 map.setOfficial(false);
-                return newCustomMapModDto((CustomMapMod) map, platformProfileMapListForNewMap);
+                return newCustomMapModDto(map, platformProfileMapListForNewMap);
             }
         } catch (SQLException e) {
             logger.error("Error getting dto of map entity " + map.getCode(), e);

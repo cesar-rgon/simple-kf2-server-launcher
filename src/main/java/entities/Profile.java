@@ -18,27 +18,27 @@ public class Profile extends AbstractExtendedEntity {
     @Column(name="NAME", length=50, unique=true, nullable=false)
     private String name;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ID_LANGUAGE", referencedColumnName="ID", nullable=false)
     private Language language;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ID_GAMETYPE", referencedColumnName="ID")
     private GameType gametype;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ID_MAP", referencedColumnName="ID")
     private AbstractMap map;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ID_DIFFICULTY", referencedColumnName="ID")
     private Difficulty difficulty;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ID_LENGTH", referencedColumnName="ID")
     private Length length;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="ID_MAXPLAYERS", referencedColumnName="ID")
     private MaxPlayers maxPlayers;
 

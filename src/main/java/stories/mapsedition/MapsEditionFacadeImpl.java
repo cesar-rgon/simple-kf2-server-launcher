@@ -1,9 +1,6 @@
 package stories.mapsedition;
 
-import daos.AbstractPlatformDao;
-import daos.CustomMapModDao;
-import daos.PlatformProfileMapDao;
-import daos.ProfileDao;
+import daos.*;
 import dtos.*;
 import dtos.factories.MapDtoFactory;
 import dtos.factories.PlatformProfileMapDtoFactory;
@@ -183,7 +180,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     public boolean isCorrectInstallationFolder(String platformName) {
         try {
             if (EnumPlatform.STEAM.name().equals(platformName)) {
-                Optional<AbstractPlatform> steamPlatformOptional = AbstractPlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
+                Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
                 if (!steamPlatformOptional.isPresent()) {
                     return false;
                 }
@@ -196,7 +193,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
             }
 
             if (EnumPlatform.EPIC.name().equals(platformName)) {
-                Optional<AbstractPlatform> epicPlatformOptional = AbstractPlatformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
+                Optional<EpicPlatform> epicPlatformOptional = EpicPlatformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
                 if (!epicPlatformOptional.isPresent()) {
                     return false;
                 }
