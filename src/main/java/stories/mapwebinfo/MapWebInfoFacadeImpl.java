@@ -1,15 +1,18 @@
 package stories.mapwebinfo;
 
 import daos.CustomMapModDao;
+import daos.EpicPlatformDao;
 import daos.PlatformProfileMapDao;
+import daos.SteamPlatformDao;
 import dtos.CustomMapModDto;
 import dtos.factories.MapDtoFactory;
 import entities.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.ProfileToDisplay;
-import pojos.ProfileToDisplayFactory;
+import pojos.PlatformProfileToDisplay;
+import pojos.PlatformProfileToDisplayFactory;
+import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import pojos.session.Session;
@@ -31,7 +34,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
     private final MapDtoFactory mapDtoFactory;
     private final OfficialMapServiceImpl officialMapService;
     private final CustomMapModServiceImpl customMapModService;
-    private final ProfileToDisplayFactory profileToDisplayFactory;
+    private final PlatformProfileToDisplayFactory platformProfileToDisplayFactory;
     private final ProfileService profileService;
 
     public MapWebInfoFacadeImpl() {
@@ -40,16 +43,44 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         this.mapDtoFactory = new MapDtoFactory();
         this.officialMapService = new OfficialMapServiceImpl();
         this.customMapModService = new CustomMapModServiceImpl();
-        this.profileToDisplayFactory = new ProfileToDisplayFactory();
+        this.platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory();
         this.profileService = new ProfileServiceImpl();
     }
 
     @Override
-    public boolean isCorrectInstallationFolder(String installationFolder) {
-        Kf2Common kf2Common = Kf2Factory.getInstance(
-                Session.getInstance().getPlatform().getKey()
-        );
-        return kf2Common.isValid(installationFolder);
+    public boolean isCorrectInstallationFolder(String platformName) {
+        try {
+            if (EnumPlatform.STEAM.name().equals(platformName)) {
+                Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
+                if (!steamPlatformOptional.isPresent()) {
+                    return false;
+                }
+
+                Kf2Common steamKf2Common = Kf2Factory.getInstance(
+                        steamPlatformOptional.get().getCode()
+                );
+
+                return steamKf2Common.isValid(steamPlatformOptional.get().getInstallationFolder());
+            }
+
+            if (EnumPlatform.EPIC.name().equals(platformName)) {
+                Optional<EpicPlatform> epicPlatformOptional = EpicPlatformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
+                if (!epicPlatformOptional.isPresent()) {
+                    return false;
+                }
+
+                Kf2Common epicKf2Common = Kf2Factory.getInstance(
+                        epicPlatformOptional.get().getCode()
+                );
+
+                return epicKf2Common.isValid(epicPlatformOptional.get().getInstallationFolder());
+            }
+
+            return false;
+        } catch (SQLException e) {
+            logger.error("Error validating the installation folder", e);
+            return false;
+        }
     }
 
     @Override
@@ -63,7 +94,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
             }
         }).collect(Collectors.toList());
         if (profileList == null || profileList.isEmpty()) {
-            return null;
+            throw new RuntimeException("No profiles were found.");
         }
         List<AbstractPlatform> platformList = platformNameList.stream().map(pn -> {
             try {
@@ -74,21 +105,17 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
             }
         }).collect(Collectors.toList());
         if (platformList == null || platformList.isEmpty()) {
-            return null;
+            throw new RuntimeException("No platforms were found.");
         }
 
-        String steamInstallationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");;
-        String epicInstallationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");;
         String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
+
         File localfile = null;
-        if (StringUtils.isNotBlank(steamInstallationFolder)) {
-            String absoluteTargetFolder = steamInstallationFolder + customMapLocalFolder;
+        for (AbstractPlatform platform: platformList) {
+            String absoluteTargetFolder = platform.getInstallationFolder() + customMapLocalFolder;
             localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
         }
-        if (StringUtils.isNotBlank(epicInstallationFolder)) {
-            String absoluteTargetFolder = epicInstallationFolder + customMapLocalFolder;
-            localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
-        }
+
         if (localfile != null) {
             String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
             CustomMapMod insertedMap = createNewCustomMap(platformList, mapName, idWorkShop, relativeTargetFolder, profileList);
@@ -165,14 +192,18 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
     }
 
     @Override
-    public List<ProfileToDisplay> getProfilesWithoutMap(Long idWorkShop) throws SQLException {
+    public List<PlatformProfileToDisplay> getPlatformProfilesWithoutMap(Long idWorkShop) throws SQLException {
 
-        List<Profile> profilesWithoutMap = PlatformProfileMapDao.getInstance().listPlatformProfileMaps().stream().
+        List<PlatformProfileMap> platformProfileMapList = PlatformProfileMapDao.getInstance().listPlatformProfileMaps();
+
+        List<PlatformProfileMap> platformProfileMapListWithIdWorkshop = platformProfileMapList.stream().
                 filter(ppm -> !ppm.getMap().isOfficial()).
                 filter(ppm -> idWorkShop.equals(((CustomMapMod) ppm.getMap()).getIdWorkShop())).
-                map(PlatformProfileMap::getProfile).
                 collect(Collectors.toList());
 
-        return profileToDisplayFactory.newOnes(profilesWithoutMap);
+        platformProfileMapList.removeAll(platformProfileMapListWithIdWorkshop);
+        List<PlatformProfileMap> platformProfileMapListWithoutIdWorkshop = platformProfileMapList;
+
+        return platformProfileToDisplayFactory.newOnes(platformProfileMapListWithoutIdWorkshop);
     }
 }

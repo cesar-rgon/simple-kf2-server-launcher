@@ -11,8 +11,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.ImportMapResultToDisplay;
-import pojos.ProfileToDisplay;
-import pojos.ProfileToDisplayFactory;
+import pojos.PlatformProfileToDisplay;
+import pojos.PlatformProfileToDisplayFactory;
 import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
@@ -40,7 +40,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     private final ProfileDtoFactory profileDtoFactory;
     private final OfficialMapServiceImpl officialMapService;
     private final CustomMapModServiceImpl customMapModService;
-    private final ProfileToDisplayFactory profileToDisplayFactory;
+    private final PlatformProfileToDisplayFactory platformProfileToDisplayFactory;
     private final ProfileService profileService;
     private final PlatformProfileMapDtoFactory platformProfileMapDtoFactory;
     private PlatformProfileMapService platformProfileMapService;
@@ -52,7 +52,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         this.profileDtoFactory = new ProfileDtoFactory();
         this.officialMapService = new OfficialMapServiceImpl();
         this.customMapModService = new CustomMapModServiceImpl();
-        this.profileToDisplayFactory = new ProfileToDisplayFactory();
+        this.platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory();
         this.profileService = new ProfileServiceImpl();
         this.platformProfileMapDtoFactory = new PlatformProfileMapDtoFactory();
         this.platformProfileMapService = new PlatformProfileMapServiceImpl();
@@ -301,21 +301,21 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
     @Override
     public List<String> selectProfilesToImport(String defaultSelectedProfileName) throws Exception {
-        List<Profile> allProfiles = profileService.listAllProfiles();
-        if (allProfiles == null || allProfiles.isEmpty()) {
+        List<PlatformProfileMap> platformProfileMapList = PlatformProfileMapDao.getInstance().listPlatformProfileMaps();
+        if (platformProfileMapList == null || platformProfileMapList.isEmpty()) {
             return new ArrayList<String>();
         }
-        List<ProfileToDisplay> selectedProfiles = selectProfilesToImport(allProfiles, defaultSelectedProfileName);
+        List<PlatformProfileToDisplay> selectedProfiles = selectProfilesToImport(platformProfileMapList, defaultSelectedProfileName);
         return selectedProfiles.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
     }
 
 
-    public List<ProfileToDisplay> selectProfilesToImport(List<Profile> allProfiles, String defaultSelectedProfileName) throws Exception {
-        List<ProfileToDisplay> allProfilesToDisplay = profileToDisplayFactory.newOnes(allProfiles);
+    public List<PlatformProfileToDisplay> selectProfilesToImport(List<PlatformProfileMap> platformProfileMapList, String defaultSelectedProfileName) throws Exception {
+        List<PlatformProfileToDisplay> allProfilesToDisplay = platformProfileToDisplayFactory.newOnes(platformProfileMapList);
         allProfilesToDisplay.stream().filter(p -> p.getProfileName().equalsIgnoreCase(defaultSelectedProfileName)).forEach(profile -> profile.setSelected(true));
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
         String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfiles");
-        return Utils.selectProfilesDialog(headerText + ":", allProfilesToDisplay);
+        return Utils.selectPlatformProfilesDialog(headerText + ":", allProfilesToDisplay);
     }
 
     @Override

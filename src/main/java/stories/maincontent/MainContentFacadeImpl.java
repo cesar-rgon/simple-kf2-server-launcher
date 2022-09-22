@@ -5,8 +5,8 @@ import dtos.*;
 import dtos.factories.*;
 import entities.*;
 import javafx.collections.ObservableList;
-import pojos.ProfileToDisplay;
-import pojos.ProfileToDisplayFactory;
+import pojos.PlatformProfileToDisplay;
+import pojos.PlatformProfileToDisplayFactory;
 import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
@@ -346,32 +346,32 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public List<String> selectProfiles(String message, String actualProfileName) throws SQLException {
-        ProfileToDisplayFactory profileToDisplayFactory = new ProfileToDisplayFactory();
-        List<Profile> allProfiles = profileService.listAllProfiles();
-        List<ProfileToDisplay> allProfilesToDisplay = profileToDisplayFactory.newOnes(allProfiles);
+        PlatformProfileToDisplayFactory platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory();
+        List<PlatformProfileMap> platformProfileMapList = PlatformProfileMapDao.getInstance().listPlatformProfileMaps();
+        List<PlatformProfileToDisplay> allProfilesToDisplay = platformProfileToDisplayFactory.newOnes(platformProfileMapList);
 
-        Optional<ProfileToDisplay> actualProfile = allProfilesToDisplay.stream().filter(p -> p.getProfileName().equalsIgnoreCase(actualProfileName)).findFirst();
+        Optional<PlatformProfileToDisplay> actualProfile = allProfilesToDisplay.stream().filter(p -> p.getProfileName().equalsIgnoreCase(actualProfileName)).findFirst();
         if (actualProfile.isPresent()) {
             actualProfile.get().setSelected(true);
         }
 
-        List<ProfileToDisplay> selectedProfiles = Utils.selectProfilesDialog(message + ":", allProfilesToDisplay);
+        List<PlatformProfileToDisplay> selectedProfiles = Utils.selectPlatformProfilesDialog(message + ":", allProfilesToDisplay);
         return selectedProfiles.stream().map(dto -> dto.getProfileName()).collect(Collectors.toList());
     }
 
 
     @Override
     public String selectProfile(String message, String actualProfileName) throws SQLException {
-        ProfileToDisplayFactory profileToDisplayFactory = new ProfileToDisplayFactory();
-        List<Profile> allProfiles = profileService.listAllProfiles();
-        List<ProfileToDisplay> allProfilesToDisplay = profileToDisplayFactory.newOnes(allProfiles);
+        PlatformProfileToDisplayFactory platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory();
+        List<PlatformProfileMap> platformProfileMapList = PlatformProfileMapDao.getInstance().listPlatformProfileMaps();
+        List<PlatformProfileToDisplay> allProfilesToDisplay = platformProfileToDisplayFactory.newOnes(platformProfileMapList);
 
-        Optional<ProfileToDisplay> actualProfile = allProfilesToDisplay.stream().filter(p -> p.getProfileName().equalsIgnoreCase(actualProfileName)).findFirst();
+        Optional<PlatformProfileToDisplay> actualProfile = allProfilesToDisplay.stream().filter(p -> p.getProfileName().equalsIgnoreCase(actualProfileName)).findFirst();
         if (actualProfile.isPresent()) {
             actualProfile.get().setSelected(true);
         }
 
-        Optional<ProfileToDisplay> selectedProfile = Utils.selectProfileDialog(message + ":", allProfilesToDisplay);
+        Optional<PlatformProfileToDisplay> selectedProfile = Utils.selectProfileDialog(message + ":", allProfilesToDisplay);
         if (selectedProfile.isPresent()) {
             return selectedProfile.get().getProfileName();
         }

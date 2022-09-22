@@ -32,7 +32,7 @@ import org.jsoup.select.Elements;
 import pojos.AddMapsToPlatformProfile;
 import pojos.ImportMapResultToDisplay;
 import pojos.MapToDisplay;
-import pojos.ProfileToDisplay;
+import pojos.PlatformProfileToDisplay;
 import pojos.enums.EnumPlatform;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -391,8 +391,8 @@ public class Utils {
     }
 
 
-    public static List<ProfileToDisplay> selectProfilesDialog(String headerText, List<ProfileToDisplay> profileList) {
-        Dialog<TableView<ProfileToDisplay>> dialog = new Dialog<TableView<ProfileToDisplay>>();
+    public static List<PlatformProfileToDisplay> selectPlatformProfilesDialog(String headerText, List<PlatformProfileToDisplay> platformProfileList) {
+        Dialog<TableView<PlatformProfileToDisplay>> dialog = new Dialog<TableView<PlatformProfileToDisplay>>();
         PropertyService propertyService = new PropertyServiceImpl();
         String selectText = "";
         String profileNameText = "";
@@ -416,10 +416,10 @@ public class Utils {
         }
         dialog.setHeaderText(headerText);
 
-        TableView<ProfileToDisplay> tableView = new TableView<ProfileToDisplay>();
+        TableView<PlatformProfileToDisplay> tableView = new TableView<PlatformProfileToDisplay>();
 
         // First Column
-        TableColumn<ProfileToDisplay, Boolean> selectColumn = new TableColumn<ProfileToDisplay, Boolean>();
+        TableColumn<PlatformProfileToDisplay, Boolean> selectColumn = new TableColumn<PlatformProfileToDisplay, Boolean>();
         selectColumn.setText(selectText);
         selectColumn.setCellFactory(col -> new CheckBoxTableCell<>());
         selectColumn.setCellValueFactory(cellData -> cellData.getValue().selectedProperty());
@@ -428,39 +428,71 @@ public class Utils {
         selectColumn.setMinWidth(50);
 
         // Second Column
-        TableColumn<ProfileToDisplay, String> profileNameColumn = new TableColumn<ProfileToDisplay, String>();
+        ObservableList<String> comboBoxOptions = FXCollections.observableArrayList(
+                Arrays.stream(EnumPlatform.values()).
+                        map(EnumPlatform::getDescripcion).
+                        collect(Collectors.toList())
+        );
+
+        TableColumn<PlatformProfileToDisplay, StringProperty> platformColumn = new TableColumn<PlatformProfileToDisplay, StringProperty>();
+        platformColumn.setText("Platform");
+        platformColumn.setMinWidth(120);
+        platformColumn.setSortable(false);
+
+        platformColumn.setCellFactory(col -> {
+            TableCell<PlatformProfileToDisplay, StringProperty> c = new TableCell<>();
+            final ComboBox<String> comboBox = new ComboBox<>(comboBoxOptions);
+            c.itemProperty().addListener((observable, oldValue, newValue) -> {
+                if (oldValue != null) {
+                    comboBox.valueProperty().unbindBidirectional(oldValue);
+                }
+                if (newValue != null) {
+                    comboBox.valueProperty().bindBidirectional(newValue);
+                }
+            });
+            c.graphicProperty().bind(Bindings.when(c.emptyProperty()).then((Node) null).otherwise(comboBox));
+            return c;
+        });
+
+        platformColumn.setCellValueFactory(cellData -> {
+            return Bindings.createObjectBinding(() -> cellData.getValue().platformNameProperty());
+        });
+        platformColumn.setEditable(true);
+
+        // Third Column
+        TableColumn<PlatformProfileToDisplay, String> profileNameColumn = new TableColumn<PlatformProfileToDisplay, String>();
         profileNameColumn.setText(profileNameText);
         profileNameColumn.setCellValueFactory(cellData -> cellData.getValue().profileNameProperty());
         profileNameColumn.setSortable(false);
         profileNameColumn.setEditable(false);
         profileNameColumn.setMinWidth(150);
 
-        // Third Column
-        TableColumn<ProfileToDisplay, String> gameTypeColumn = new TableColumn<ProfileToDisplay, String>();
+        // Fourth Column
+        TableColumn<PlatformProfileToDisplay, String> gameTypeColumn = new TableColumn<PlatformProfileToDisplay, String>();
         gameTypeColumn.setText(gameTypeText);
         gameTypeColumn.setCellValueFactory(cellData -> cellData.getValue().gameTypeDescriptionProperty());
         gameTypeColumn.setSortable(false);
         gameTypeColumn.setEditable(false);
         gameTypeColumn.setMinWidth(150);
 
-        // Fourth Column
-        TableColumn<ProfileToDisplay, String> mapNameColumn = new TableColumn<ProfileToDisplay, String>();
+        // Fifth Column
+        TableColumn<PlatformProfileToDisplay, String> mapNameColumn = new TableColumn<PlatformProfileToDisplay, String>();
         mapNameColumn.setText(mapNameText);
         mapNameColumn.setCellValueFactory(cellData -> cellData.getValue().mapNameProperty());
         mapNameColumn.setSortable(false);
         mapNameColumn.setEditable(false);
         mapNameColumn.setMinWidth(150);
 
-        // Fifth Column
-        TableColumn<ProfileToDisplay, String> difficultyColumn = new TableColumn<ProfileToDisplay, String>();
+        // Sixth Column
+        TableColumn<PlatformProfileToDisplay, String> difficultyColumn = new TableColumn<PlatformProfileToDisplay, String>();
         difficultyColumn.setText(difficultyText);
         difficultyColumn.setCellValueFactory(cellData -> cellData.getValue().difficultyDescriptionProperty());
         difficultyColumn.setSortable(false);
         difficultyColumn.setEditable(false);
         difficultyColumn.setMinWidth(150);
 
-        // Sixth Column
-        TableColumn<ProfileToDisplay, String> lengthColumn = new TableColumn<ProfileToDisplay, String>();
+        // Seventh Column
+        TableColumn<PlatformProfileToDisplay, String> lengthColumn = new TableColumn<PlatformProfileToDisplay, String>();
         lengthColumn.setText(lengthText);
         lengthColumn.setCellValueFactory(cellData -> cellData.getValue().lengthDescriptionProperty());
         lengthColumn.setSortable(false);
@@ -469,11 +501,12 @@ public class Utils {
 
         tableView.getColumns().add(selectColumn);
         tableView.getColumns().add(profileNameColumn);
+        tableView.getColumns().add(platformColumn);
         tableView.getColumns().add(gameTypeColumn);
         tableView.getColumns().add(mapNameColumn);
         tableView.getColumns().add(difficultyColumn);
         tableView.getColumns().add(lengthColumn);
-        tableView.setItems(FXCollections.observableArrayList(profileList));
+        tableView.setItems(FXCollections.observableArrayList(platformProfileList));
         tableView.setEditable(true);
 
         dialog.getDialogPane().setContent(tableView);
@@ -509,28 +542,28 @@ public class Utils {
                 return tableView;
             }
             if (b.equals(finalUnselectAll)) {
-                profileList.stream().forEach(p -> p.setSelected(false));
+                platformProfileList.stream().forEach(p -> p.setSelected(false));
                 dialog.showAndWait();
             }
             if (b.equals(finalSelectAll)) {
-                profileList.stream().forEach(p -> p.setSelected(true));
+                platformProfileList.stream().forEach(p -> p.setSelected(true));
                 dialog.showAndWait();
             }
             return null;
         });
 
-        Optional<TableView<ProfileToDisplay>> result = dialog.showAndWait();
+        Optional<TableView<PlatformProfileToDisplay>> result = dialog.showAndWait();
         if (result.isPresent() && result.get() != null && result.get().getItems() != null && !result.get().getItems().isEmpty()) {
-            List<ProfileToDisplay> selectedProfiles = new ArrayList<ProfileToDisplay>();
-            for (ProfileToDisplay profileToDisplay : profileList) {
-                Boolean isSelected = selectColumn.getCellData(profileToDisplay);
+            List<PlatformProfileToDisplay> selectedProfiles = new ArrayList<PlatformProfileToDisplay>();
+            for (PlatformProfileToDisplay platformProfileToDisplay : platformProfileList) {
+                Boolean isSelected = selectColumn.getCellData(platformProfileToDisplay);
                 if (isSelected != null && isSelected) {
-                    selectedProfiles.add(profileToDisplay);
+                    selectedProfiles.add(platformProfileToDisplay);
                 }
             }
             return selectedProfiles;
         }
-        return new ArrayList<ProfileToDisplay>();
+        return new ArrayList<PlatformProfileToDisplay>();
     }
 
 
@@ -673,8 +706,8 @@ public class Utils {
         return new ArrayList<MapToDisplay>();
     }
 
-    public static Optional<ProfileToDisplay> selectProfileDialog(String headerText, List<ProfileToDisplay> profileList) {
-        Dialog<TableView<ProfileToDisplay>> dialog = new Dialog<TableView<ProfileToDisplay>>();
+    public static Optional<PlatformProfileToDisplay> selectProfileDialog(String headerText, List<PlatformProfileToDisplay> profileList) {
+        Dialog<TableView<PlatformProfileToDisplay>> dialog = new Dialog<TableView<PlatformProfileToDisplay>>();
         PropertyService propertyService = new PropertyServiceImpl();
         String profileNameText = "";
         String gameTypeText = "";
@@ -696,38 +729,38 @@ public class Utils {
         }
         dialog.setHeaderText(headerText);
 
-        TableView<ProfileToDisplay> tableView = new TableView<ProfileToDisplay>();
+        TableView<PlatformProfileToDisplay> tableView = new TableView<PlatformProfileToDisplay>();
 
         // First Column
-        TableColumn<ProfileToDisplay, String> profileNameColumn = new TableColumn<ProfileToDisplay, String>();
+        TableColumn<PlatformProfileToDisplay, String> profileNameColumn = new TableColumn<PlatformProfileToDisplay, String>();
         profileNameColumn.setText(profileNameText);
         profileNameColumn.setCellValueFactory(cellData -> cellData.getValue().profileNameProperty());
         profileNameColumn.setSortable(false);
         profileNameColumn.setMinWidth(150);
 
         // Second Column
-        TableColumn<ProfileToDisplay, String> gameTypeColumn = new TableColumn<ProfileToDisplay, String>();
+        TableColumn<PlatformProfileToDisplay, String> gameTypeColumn = new TableColumn<PlatformProfileToDisplay, String>();
         gameTypeColumn.setText(gameTypeText);
         gameTypeColumn.setCellValueFactory(cellData -> cellData.getValue().gameTypeDescriptionProperty());
         gameTypeColumn.setSortable(false);
         gameTypeColumn.setMinWidth(150);
 
         // Third Column
-        TableColumn<ProfileToDisplay, String> mapNameColumn = new TableColumn<ProfileToDisplay, String>();
+        TableColumn<PlatformProfileToDisplay, String> mapNameColumn = new TableColumn<PlatformProfileToDisplay, String>();
         mapNameColumn.setText(mapNameText);
         mapNameColumn.setCellValueFactory(cellData -> cellData.getValue().mapNameProperty());
         mapNameColumn.setSortable(false);
         mapNameColumn.setMinWidth(150);
 
         // Fourth Column
-        TableColumn<ProfileToDisplay, String> difficultyColumn = new TableColumn<ProfileToDisplay, String>();
+        TableColumn<PlatformProfileToDisplay, String> difficultyColumn = new TableColumn<PlatformProfileToDisplay, String>();
         difficultyColumn.setText(difficultyText);
         difficultyColumn.setCellValueFactory(cellData -> cellData.getValue().difficultyDescriptionProperty());
         difficultyColumn.setSortable(false);
         difficultyColumn.setMinWidth(150);
 
         // Fifth Column
-        TableColumn<ProfileToDisplay, String> lengthColumn = new TableColumn<ProfileToDisplay, String>();
+        TableColumn<PlatformProfileToDisplay, String> lengthColumn = new TableColumn<PlatformProfileToDisplay, String>();
         lengthColumn.setText(lengthText);
         lengthColumn.setCellValueFactory(cellData -> cellData.getValue().lengthDescriptionProperty());
         lengthColumn.setSortable(false);
@@ -740,7 +773,7 @@ public class Utils {
         tableView.getColumns().add(lengthColumn);
         tableView.setItems(FXCollections.observableArrayList(profileList));
         tableView.setEditable(false);
-        Optional<ProfileToDisplay> selectedProfile = profileList.stream().filter(p -> p.isSelected()).findFirst();
+        Optional<PlatformProfileToDisplay> selectedProfile = profileList.stream().filter(p -> p.isSelected()).findFirst();
         if (selectedProfile.isPresent()) {
             tableView.getSelectionModel().select(selectedProfile.get());
             tableView.scrollTo(selectedProfile.get());
@@ -767,7 +800,7 @@ public class Utils {
         dialog.getDialogPane().getButtonTypes().add(buttonTypeOk);
         dialog.getDialogPane().getButtonTypes().add(buttonTypeCancel);
         ButtonType finalButtonTypeOk = buttonTypeOk;
-        dialog.setResultConverter(new Callback<ButtonType, TableView<ProfileToDisplay>>() {
+        dialog.setResultConverter(new Callback<ButtonType, TableView<PlatformProfileToDisplay>>() {
             @Override
             public TableView call(ButtonType b) {
                 if (b == finalButtonTypeOk) {
@@ -777,7 +810,7 @@ public class Utils {
             }
         });
 
-        Optional<TableView<ProfileToDisplay>> result = dialog.showAndWait();
+        Optional<TableView<PlatformProfileToDisplay>> result = dialog.showAndWait();
         if (result.isPresent()) {
             return Optional.ofNullable(result.get().getSelectionModel().getSelectedItem());
         }

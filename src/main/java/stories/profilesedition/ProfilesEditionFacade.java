@@ -3,7 +3,7 @@ package stories.profilesedition;
 import dtos.ProfileDto;
 import entities.Profile;
 import javafx.scene.control.ButtonType;
-import pojos.ProfileToDisplay;
+import pojos.PlatformProfileToDisplay;
 import javafx.collections.ObservableList;
 
 import java.io.File;
@@ -19,8 +19,8 @@ public interface ProfilesEditionFacade {
     ProfileDto updateChangedProfile(String oldProfileName, String newProfileName) throws SQLException;
     String findConfigPropertyValue(String key) throws Exception;
     ProfileDto cloneSelectedProfile(String profileName, String newProfileName) throws Exception;
-    void exportProfilesToFile(List<ProfileToDisplay> profilesToExportDto, File file) throws Exception;
-    List<ProfileToDisplay> selectProfilesToBeExported(String message) throws SQLException;
+    void exportProfilesToFile(List<PlatformProfileToDisplay> profilesToExportDto, File file) throws Exception;
+    List<PlatformProfileToDisplay> selectProfilesToBeExported(String message) throws SQLException;
     Optional<ButtonType> questionToImportEntitiesFromFile() throws Exception;
     Properties importEntitiesFromFile(File file) throws Exception;
     List<Profile> questionToImportProfilesFromFile(Properties properties, String message) throws Exception;

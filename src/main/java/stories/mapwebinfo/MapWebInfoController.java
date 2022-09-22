@@ -1,11 +1,7 @@
 package stories.mapwebinfo;
 
-import daos.EpicPlatformDao;
-import daos.SteamPlatformDao;
 import dtos.CustomMapModDto;
-import entities.AbstractPlatform;
-import entities.EpicPlatform;
-import entities.SteamPlatform;
+import dtos.PlatformProfileMapDto;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -23,7 +19,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import pojos.ProfileToDisplay;
+import pojos.PlatformProfileToDisplay;
 import pojos.enums.EnumPlatform;
 import pojos.session.Session;
 import services.PropertyService;
@@ -131,12 +127,12 @@ public class MapWebInfoController implements Initializable {
                                 }
                             }
                             mapNameLabel.setText(mapName);
-                            List<ProfileToDisplay> profilesWithoutMap = facade.getProfilesWithoutMap(idWorkShop);
-                            if (idWorkShop != null && (profilesWithoutMap == null || profilesWithoutMap.isEmpty())) {
+                            List<PlatformProfileToDisplay> platformProfilesWithoutMap = facade.getPlatformProfilesWithoutMap(idWorkShop);
+                            if (idWorkShop != null && (platformProfilesWithoutMap == null || platformProfilesWithoutMap.isEmpty())) {
                                 addMap.setVisible(false);
                                 alreadyInLauncher.setVisible(true);
                             } else {
-                                addMap.setVisible(StringUtils.isNotBlank(urlWorkShop) && StringUtils.isNotBlank(mapName) && profilesWithoutMap != null && !profilesWithoutMap.isEmpty());
+                                addMap.setVisible(StringUtils.isNotBlank(urlWorkShop) && StringUtils.isNotBlank(mapName) && platformProfilesWithoutMap != null && !platformProfilesWithoutMap.isEmpty());
                                 alreadyInLauncher.setVisible(false);
                             }
                         }
@@ -174,64 +170,94 @@ public class MapWebInfoController implements Initializable {
     @FXML
     private void addMapOnAction() {
         try {
-            String installationFolder;
-            if (EnumPlatform.STEAM.name().equalsIgnoreCase(Session.getInstance().getPlatform().getKey())) {
-                installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
-            } else {
-                installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
-            }
-            if (!facade.isCorrectInstallationFolder(installationFolder)) {
+            if (!facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name()) && !facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
                 String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
                 Utils.warningDialog(headerText, contentText);
                 return;
             }
 
-            List<ProfileToDisplay> profilesWithoutMap = facade.getProfilesWithoutMap(idWorkShop);
+            List<PlatformProfileToDisplay> platformProfileListWithoutMap = facade.getPlatformProfilesWithoutMap(idWorkShop);
             String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfiles");
-            List<ProfileToDisplay> selectedProfiles = Utils.selectProfilesDialog(headerText + ":", profilesWithoutMap);
+            List<PlatformProfileToDisplay> selectedProfiles = Utils.selectPlatformProfilesDialog(headerText + ":", platformProfileListWithoutMap);
             if (selectedProfiles != null && !selectedProfiles.isEmpty()) {
                 List<String> selectedProfileNameList = selectedProfiles.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
                 CustomMapModDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
 
-                List<String> platformNameList = new ArrayList<String>();
-                platformNameList.add(EnumPlatform.STEAM.name());
-                platformNameList.add(EnumPlatform.EPIC.name());
+                for (String selectedProfileName: selectedProfileNameList) {
+                    try {
+                        Optional<String> platformNameOptional = selectedProfiles.stream().
+                                filter(p -> p.getProfileName().equals(selectedProfileName)).
+                                map(PlatformProfileToDisplay::getPlatformName).
+                                findFirst();
 
-                if (mapModInDataBase == null) {
-                    CustomMapModDto customMap = facade.createNewCustomMapFromWorkshop(
-                            platformNameList,
-                            idWorkShop,
-                            mapName,
-                            strUrlMapImage,
-                            selectedProfileNameList
-                    );
-                    if (customMap != null) {
-                        if (profilesWithoutMap.size() - selectedProfiles.size() == 0) {
-                            addMap.setVisible(false);
-                            alreadyInLauncher.setVisible(true);
+                        if (!platformNameOptional.isPresent()) {
+                            logger.error("The platform could not be found for the profile " + selectedProfileName);
+                            continue;
                         }
-                        headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
-                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                        Utils.infoDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
-                    } else {
-                        headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                        Utils.warningDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+
+                        List<String> platformNameList = new ArrayList<String>();
+                        switch (platformNameOptional.get()) {
+                            case "Steam":
+                                platformNameList.add(EnumPlatform.STEAM.name());
+                                break;
+
+                            case "Epic Games":
+                                platformNameList.add(EnumPlatform.EPIC.name());
+                                break;
+
+                            case "All platforms":
+                                platformNameList.add(EnumPlatform.STEAM.name());
+                                platformNameList.add(EnumPlatform.EPIC.name());
+                                break;
+                        }
+
+                        List<String> profileNameList = new ArrayList<String>();
+                        profileNameList.add(selectedProfileName);
+
+                        if (mapModInDataBase == null) {
+                            CustomMapModDto customMap = facade.createNewCustomMapFromWorkshop(
+                                    platformNameList,
+                                    idWorkShop,
+                                    mapName,
+                                    strUrlMapImage,
+                                    profileNameList
+                            );
+
+                            if (customMap != null) {
+                                if (platformProfileListWithoutMap.size() - selectedProfiles.size() == 0) {
+                                    addMap.setVisible(false);
+                                    alreadyInLauncher.setVisible(true);
+                                }
+                                headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                                Utils.infoDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+                            } else {
+                                headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                                Utils.warningDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+                            }
+
+                        } else {
+
+                            facade.addProfilesToMap(
+                                    platformNameList,
+                                    mapModInDataBase.getKey(),
+                                    profileNameList
+                            );
+                            if (platformProfileListWithoutMap.size() - selectedProfiles.size() == 0) {
+                                addMap.setVisible(false);
+                                alreadyInLauncher.setVisible(true);
+                            }
+                            headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                            Utils.infoDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+                        }
+                    } catch (Exception e) {
+                        String message = "Error adding map/mod to the launcher";
+                        logger.error(message, e);
+                        Utils.errorDialog(message, e);
                     }
-                } else {
-                    facade.addProfilesToMap(
-                            platformNameList,
-                            mapModInDataBase.getKey(),
-                            selectedProfileNameList
-                    );
-                    if (profilesWithoutMap.size() - selectedProfiles.size() == 0) {
-                        addMap.setVisible(false);
-                        alreadyInLauncher.setVisible(true);
-                    }
-                    headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                    Utils.infoDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
                 }
             }
         } catch (Exception e) {

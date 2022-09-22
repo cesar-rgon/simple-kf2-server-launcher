@@ -10,8 +10,8 @@ import javafx.scene.control.ButtonType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.ProfileToDisplay;
-import pojos.ProfileToDisplayFactory;
+import pojos.PlatformProfileToDisplay;
+import pojos.PlatformProfileToDisplayFactory;
 import services.*;
 import stories.AbstractFacade;
 import utils.Utils;
@@ -27,7 +27,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
     private static final Logger logger = LogManager.getLogger(ProfilesEditionFacadeImpl.class);
     private final ProfileDtoFactory profileDtoFactory;
     private final PropertyService propertyService;
-    private final ProfileToDisplayFactory profileToDisplayFactory;
+    private final PlatformProfileToDisplayFactory platformProfileToDisplayFactory;
     private final ProfileService profileService;
     private final AbstractMapService officialMapService;
     private final PlatformProfileMapService platformProfileMapService;
@@ -35,7 +35,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
     public ProfilesEditionFacadeImpl() {
         profileDtoFactory = new ProfileDtoFactory();
         propertyService = new PropertyServiceImpl();
-        profileToDisplayFactory = new ProfileToDisplayFactory();
+        platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory();
         this.profileService = new ProfileServiceImpl();
         this.officialMapService = new OfficialMapServiceImpl();
         this.platformProfileMapService = new PlatformProfileMapServiceImpl();
@@ -163,7 +163,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
     }
 
     @Override
-    public void exportProfilesToFile(List<ProfileToDisplay> profilesToExportDto, File file) throws Exception {
+    public void exportProfilesToFile(List<PlatformProfileToDisplay> profilesToExportDto, File file) throws Exception {
         List<Profile> profilesToExport = profilesToExportDto.stream().map(dto -> {
             try {
                 Optional<Profile> profileOpt = profileService.findProfileByCode(dto.getProfileName());
@@ -225,10 +225,10 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
     }
 
     @Override
-    public List<ProfileToDisplay> selectProfilesToBeExported(String message) throws SQLException {
-        List<Profile> allProfiles = profileService.listAllProfiles();
-        List<ProfileToDisplay> allProfilesToDisplay = profileToDisplayFactory.newOnes(allProfiles);
+    public List<PlatformProfileToDisplay> selectProfilesToBeExported(String message) throws SQLException {
+        List<PlatformProfileMap> platformProfileMapList = PlatformProfileMapDao.getInstance().listPlatformProfileMaps();
+        List<PlatformProfileToDisplay> allProfilesToDisplay = platformProfileToDisplayFactory.newOnes(platformProfileMapList);
         allProfilesToDisplay.stream().forEach(p -> p.setSelected(true));
-        return Utils.selectProfilesDialog(message + ":", allProfilesToDisplay);
+        return Utils.selectPlatformProfilesDialog(message + ":", allProfilesToDisplay);
     }
 }

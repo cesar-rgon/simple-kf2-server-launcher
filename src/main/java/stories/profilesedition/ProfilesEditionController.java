@@ -14,7 +14,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.ProfileToDisplay;
+import pojos.PlatformProfileToDisplay;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import pojos.session.Session;
@@ -457,7 +457,7 @@ public class ProfilesEditionController implements Initializable {
     private void exportProfileOnAction() {
         try {
             String message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfilesToExport");
-            List<ProfileToDisplay> selectedProfiles = facade.selectProfilesToBeExported(message);
+            List<PlatformProfileToDisplay> selectedProfiles = facade.selectProfilesToBeExported(message);
 
             if (selectedProfiles != null && !selectedProfiles.isEmpty()) {
                 FileChooser fileChooser = new FileChooser();

@@ -8,7 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.MapToDisplay;
-import pojos.ProfileToDisplay;
+import pojos.PlatformProfileToDisplay;
 import pojos.enums.EnumPlatform;
 import pojos.session.Session;
 import utils.Utils;
@@ -488,7 +488,7 @@ public class ProfileServiceImpl implements ProfileService {
     public List<Profile> selectProfilesToBeImported(Properties properties, String message) throws Exception {
         int numberOfProfiles = Integer.parseInt(properties.getProperty("exported.profiles.number"));
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-        List<ProfileToDisplay> profileToDisplayList = new ArrayList<ProfileToDisplay>();
+        List<PlatformProfileToDisplay> platformProfileToDisplayList = new ArrayList<PlatformProfileToDisplay>();
 
         for (int profileIndex = 1; profileIndex <= numberOfProfiles; profileIndex++) {
             String profileName = properties.getProperty("exported.profile" + profileIndex + ".name");
@@ -501,14 +501,14 @@ public class ProfileServiceImpl implements ProfileService {
                 String lengthDescription = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.length." + lengthCode);
                 String mapName = properties.getProperty("exported.profile" + profileIndex + ".map");
 
-                ProfileToDisplay profileToDisplay = new ProfileToDisplay(profileIndex, profileName, gameTypeDescription, mapName, difficultyDescription, lengthDescription);
-                profileToDisplay.setSelected(true);
-                profileToDisplayList.add(profileToDisplay);
+                PlatformProfileToDisplay platformProfileToDisplay = new PlatformProfileToDisplay(profileIndex, profileName, gameTypeDescription, mapName, difficultyDescription, lengthDescription);
+                platformProfileToDisplay.setSelected(true);
+                platformProfileToDisplayList.add(platformProfileToDisplay);
             } catch (Exception e) {
                 logger.error("Error reading the profile " + profileName + " from exported file", e);
             }
         }
-        return Utils.selectProfilesDialog(message + ":", profileToDisplayList)
+        return Utils.selectPlatformProfilesDialog(message + ":", platformProfileToDisplayList)
                 .stream()
                 .map(ptd -> getProfileFromFile(ptd.getProfileFileIndex(), properties))
                 .collect(Collectors.toList());
