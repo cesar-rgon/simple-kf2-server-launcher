@@ -5,6 +5,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
@@ -191,8 +192,8 @@ public class MainContentController implements Initializable {
     @FXML private ImageView friendlyFirePercentageImg;
     @FXML private Label friendlyFirePercentageLabel;
     @FXML private TextField friendlyFirePercentage;
-
     @FXML private ImageView noSelectedMapImage;
+    @FXML ProgressIndicator progressIndicator;
 
     public MainContentController() {
         super();
@@ -205,42 +206,66 @@ public class MainContentController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
+        progressIndicator.setVisible(true);
+
         try {
-            ObservableList<ProfileDto> profileOptions = facade.listAllProfiles();
-            profileSelect.setItems(profileOptions);
-            if (!profileOptions.isEmpty()) {
-                profileSelect.setValue(Session.getInstance().getActualProfile() != null? Session.getInstance().getActualProfile(): facade.getLastSelectedProfile());
-            } else {
-                profileSelect.setValue(null);
-                profileMapSelect.setItems(null);
-                noSelectedMapImage.setVisible(true);
-            }
-            Session.getInstance().setActualProfile(profileSelect.getValue());
-            languageSelect.setItems(facade.listAllLanguages());
-            gameTypeSelect.setItems(facade.listAllGameTypes());
-            difficultySelect.setItems(facade.listAllDifficulties());
-            lengthSelect.setItems(facade.listAllLengths());
-            maxPlayersSelect.setItems(facade.listAllPlayers());
-            platformSelect.setItems(facade.listAllPlatforms());
-            platformSelect.getSelectionModel().select(1);
+            Task<Void> task = new Task<Void>() {
 
-            if (profileSelect.getValue() != null) {
-                profileOnAction();
-            } else {
-                File file = new File(System.getProperty("user.dir") + "/external-images/photo-borders.png");
-                if (file.exists()) {
-                    imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/photo-borders.png");
-                } else {
-                    imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/photo-borders.png").getPath());
+                @Override
+                protected Void call() throws Exception {
+                    ObservableList<ProfileDto> profileOptions = facade.listAllProfiles();
+                    profileSelect.setItems(profileOptions);
+                    if (!profileOptions.isEmpty()) {
+                        profileSelect.setValue(Session.getInstance().getActualProfile() != null ? Session.getInstance().getActualProfile() : facade.getLastSelectedProfile());
+                    } else {
+                        profileSelect.setValue(null);
+                        profileMapSelect.setItems(null);
+                        noSelectedMapImage.setVisible(true);
+                    }
+
+                    Session.getInstance().setActualProfile(profileSelect.getValue());
+                    languageSelect.setItems(facade.listAllLanguages());
+                    gameTypeSelect.setItems(facade.listAllGameTypes());
+                    difficultySelect.setItems(facade.listAllDifficulties());
+                    lengthSelect.setItems(facade.listAllLengths());
+                    maxPlayersSelect.setItems(facade.listAllPlayers());
+                    platformSelect.setItems(facade.listAllPlatforms());
+                    platformSelect.getSelectionModel().select(1);
+
+                    if (profileSelect.getValue() == null) {
+                        File file = new File(System.getProperty("user.dir") + "/external-images/photo-borders.png");
+                        if (file.exists()) {
+                            imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/photo-borders.png");
+                        } else {
+                            imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/photo-borders.png").getPath());
+                        }
+                    }
+
+                    if (profileSelect.getValue() != null) {
+                        profileOnAction();
+                    }
+                    loadLanguageTexts(languageSelect.getValue() != null ? languageSelect.getValue().getKey() : "en");
+
+                    return null;
                 }
-            }
+            };
 
-            loadLanguageTexts(languageSelect.getValue() != null? languageSelect.getValue().getKey(): "en");
+            task.setOnSucceeded(wse -> {
+                progressIndicator.setVisible(false);
+            });
+            task.setOnFailed(wse -> {
+                progressIndicator.setVisible(false);
+            });
+
+            Thread thread = new Thread(task);
+            thread.run();
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
         }
+
+
 
         platformSelect.setCellFactory(new Callback<ListView<PlatformDto>, ListCell<PlatformDto>>() {
             @Override

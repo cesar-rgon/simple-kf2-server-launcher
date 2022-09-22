@@ -105,156 +105,187 @@ public class MapsEditionController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        progressIndicator.setVisible(true);
+
         try {
-            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-            selectMaps = true;
-            String profileLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profile");
-            profileLabel.setText(profileLabelText);
+            Task<Void> task = new Task<Void>() {
 
-            String actionsLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.actions");
-            actionsLabel.setText(actionsLabelText);
+                @Override
+                protected Void call() throws Exception {
 
-            ObservableList<ProfileDto> profileOptions = facade.listAllProfiles();
-            profileSelect.setItems(profileOptions);
-            if (!profileOptions.isEmpty()) {
-                profileSelect.setValue(Session.getInstance().getMapsProfile() != null?
-                        Session.getInstance().getMapsProfile():
-                        Session.getInstance().getActualProfile() != null?
-                                Session.getInstance().getActualProfile():
-                                profileSelect.getItems().get(0));
+                    languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+                    selectMaps = true;
+                    String profileLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profile");
+                    profileLabel.setText(profileLabelText);
 
-                if (facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
-                    steamPlatformProfileMapDtoList = facade.listPlatformProfileMaps(
-                            EnumPlatform.STEAM.name(),
-                            profileSelect.getValue().getName()
+                    String actionsLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.actions");
+                    actionsLabel.setText(actionsLabelText);
+
+                    ObservableList<ProfileDto> profileOptions = facade.listAllProfiles();
+                    profileSelect.setItems(profileOptions);
+                    if (!profileOptions.isEmpty()) {
+                        profileSelect.setValue(Session.getInstance().getMapsProfile() != null?
+                                Session.getInstance().getMapsProfile():
+                                Session.getInstance().getActualProfile() != null?
+                                        Session.getInstance().getActualProfile():
+                                        profileSelect.getItems().get(0));
+
+                        if (facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
+                            steamPlatformProfileMapDtoList = facade.listPlatformProfileMaps(
+                                    EnumPlatform.STEAM.name(),
+                                    profileSelect.getValue().getName()
+                            );
+                        }
+
+                        if (facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
+                            epicPlatformProfileMapDtoList = facade.listPlatformProfileMaps(
+                                    EnumPlatform.EPIC.name(),
+                                    profileSelect.getValue().getName()
+                            );
+                        }
+                    } else {
+                        profileSelect.setValue(null);
+                        steamPlatformProfileMapDtoList = null;
+                        epicPlatformProfileMapDtoList = null;
+                    }
+                    Session.getInstance().setMapsProfile(profileSelect.getValue());
+
+                    SingleSelectionModel<Tab> selectionModel = mapsTabPane.getSelectionModel();
+                    switch (Session.getInstance().getSelectedMapTab()) {
+                        case STEAM_OFFICIAL_MAPS_TAB:
+                            selectionModel.select(steamOfficialMapsTab);
+                            break;
+
+                        case STEAM_CUSTOM_MAPS_TAB:
+                            selectionModel.select(steamCustomMapsTab);
+                            break;
+
+                        case EPIC_OFFICIAL_MAPS_TAB:
+                            selectionModel.select(epicOfficialMapsTab);
+                            break;
+
+                        case EPIC_CUSTOM_MAPS_TAB:
+                            selectionModel.select(epicCustomMapsTab);
+                            break;
+                    }
+
+
+                    Double tooltipDuration = Double.parseDouble(
+                            propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
                     );
+
+                    Tooltip searchTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.searchMaps"));
+                    searchTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+                    searchMaps.setTooltip(searchTooltip);
+                    Tooltip.install(searchImg, searchTooltip);
+
+                    String addNewMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addMaps");
+                    addNewMaps.setText(addNewMapsText);
+
+                    String searchInWorkShopText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.searchInWorkShop");
+                    searchInWorkShop.setText(searchInWorkShopText);
+
+                    String removeMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeMaps");
+                    removeMaps.setText(removeMapsText);
+
+                    String selectAllMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.selectMaps");
+                    selectAllMaps.setText(selectAllMapsText);
+                    Tooltip selectAllMapsTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.selectAllMaps"));
+                    selectAllMapsTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+                    selectAllMaps.setTooltip(selectAllMapsTooltip);
+
+                    String importMapsFromServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importMaps");
+                    importMapsFromServer.setText(importMapsFromServerText);
+
+                    String orderMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMaps");
+                    orderMaps.setText(orderMapsText);
+
+                    String orderMapsByAliasText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByAlias");
+                    orderMapsByAlias.setText(orderMapsByAliasText);
+
+                    String orderMapsByNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByName");
+                    orderMapsByName.setText(orderMapsByNameText);
+
+                    String orderMapsByReleaseDateText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByReleaseDate");
+                    orderMapsByReleaseDate.setText(orderMapsByReleaseDateText);
+
+                    String orderMapsByImportedDateText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByImportedDate");
+                    orderMapsByImportedDate.setText(orderMapsByImportedDateText);
+
+                    String orderMapsByDownloadText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByDownload");
+                    orderMapsByDownload.setText(orderMapsByDownloadText);
+
+                    String editMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.editMaps");
+                    editMaps.setText(editMapsText);
+
+                    String sliderLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.slider");
+                    sliderLabel.setText(sliderLabelText);
+                    Tooltip sliderTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.slide"));
+                    sliderTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+                    sliderLabel.setTooltip(sliderTooltip);
+                    Double sliderColumns = Double.parseDouble(facade.findConfigPropertyValue("prop.config.mapSliderValue"));
+                    mapsSlider.setValue(sliderColumns);
+                    mapsSlider.setTooltip(sliderTooltip);
+
+                    return null;
+                }
+            };
+
+            task.setOnSucceeded(wse -> {
+                if (!profileSelect.getItems().isEmpty()) {
+                    orderMapsByNameOnAction();
                 }
 
-                if (facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
-                    epicPlatformProfileMapDtoList = facade.listPlatformProfileMaps(
-                            EnumPlatform.EPIC.name(),
-                            profileSelect.getValue().getName()
-                    );
+                try {
+                    if (facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
+                        steamOfficialMapsTab.setDisable(false);
+                        steamCustomMapsTab.setDisable(false);
+
+                        String steamOfficialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamOfficiaslMaps");
+                        steamOfficialMapsTab.setGraphic(createTabTitle(steamOfficialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
+                        steamOfficialMapsTab.setText("");
+
+                        String steamCustomMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamCustomMaps");
+                        steamCustomMapsTab.setGraphic(createTabTitle(steamCustomMapsTabText, steamCustomMapsFlowPane.getChildren().size()));
+                        steamCustomMapsTab.setText("");
+
+                    } else {
+                        steamOfficialMapsTab.setDisable(true);
+                        steamCustomMapsTab.setDisable(true);
+                    }
+
+                    if (facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
+                        steamOfficialMapsTab.setDisable(false);
+                        steamCustomMapsTab.setDisable(false);
+
+                        String epicOfficialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.epicOfficiaslMaps");
+                        epicOfficialMapsTab.setGraphic(createTabTitle(epicOfficialMapsTabText, epicOfficialMapsFlowPane.getChildren().size()));
+                        epicOfficialMapsTab.setText("");
+
+                        String epicCustomMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.epicCustomMaps");
+                        epicCustomMapsTab.setGraphic(createTabTitle(epicCustomMapsTabText, epicCustomMapsFlowPane.getChildren().size()));
+                        epicCustomMapsTab.setText("");
+                    } else {
+                        epicOfficialMapsTab.setDisable(true);
+                        epicCustomMapsTab.setDisable(true);
+                    }
+
+                    mapsSliderOnMouseClicked();
+                    progressIndicator.setVisible(false);
+
+                } catch (Exception e) {
+                    String message = "Error getting map list";
+                    logger.error(message, e);
+                    Utils.errorDialog(message, e);
                 }
+            });
+            task.setOnFailed(wse -> {
+                progressIndicator.setVisible(false);
+            });
 
-                orderMapsByNameOnAction();
-            } else {
-                profileSelect.setValue(null);
-                steamPlatformProfileMapDtoList = null;
-                epicPlatformProfileMapDtoList = null;
-            }
-            Session.getInstance().setMapsProfile(profileSelect.getValue());
-
-            if (facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
-                steamOfficialMapsTab.setDisable(false);
-                steamCustomMapsTab.setDisable(false);
-
-                String steamOfficialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamOfficiaslMaps");
-                steamOfficialMapsTab.setGraphic(createTabTitle(steamOfficialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
-                steamOfficialMapsTab.setText("");
-
-                String steamCustomMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamCustomMaps");
-                steamCustomMapsTab.setGraphic(createTabTitle(steamCustomMapsTabText, steamCustomMapsFlowPane.getChildren().size()));
-                steamCustomMapsTab.setText("");
-
-            } else {
-                steamOfficialMapsTab.setDisable(true);
-                steamCustomMapsTab.setDisable(true);
-            }
-
-            if (facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
-                steamOfficialMapsTab.setDisable(false);
-                steamCustomMapsTab.setDisable(false);
-
-                String epicOfficialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.epicOfficiaslMaps");
-                epicOfficialMapsTab.setGraphic(createTabTitle(epicOfficialMapsTabText, epicOfficialMapsFlowPane.getChildren().size()));
-                epicOfficialMapsTab.setText("");
-
-                String epicCustomMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.epicCustomMaps");
-                epicCustomMapsTab.setGraphic(createTabTitle(epicCustomMapsTabText, epicCustomMapsFlowPane.getChildren().size()));
-                epicCustomMapsTab.setText("");
-            } else {
-                epicOfficialMapsTab.setDisable(true);
-                epicCustomMapsTab.setDisable(true);
-            }
-
-            SingleSelectionModel<Tab> selectionModel = mapsTabPane.getSelectionModel();
-            switch (Session.getInstance().getSelectedMapTab()) {
-                case STEAM_OFFICIAL_MAPS_TAB:
-                    selectionModel.select(steamOfficialMapsTab);
-                    break;
-
-                case STEAM_CUSTOM_MAPS_TAB:
-                    selectionModel.select(steamCustomMapsTab);
-                    break;
-
-                case EPIC_OFFICIAL_MAPS_TAB:
-                    selectionModel.select(epicOfficialMapsTab);
-                    break;
-
-                case EPIC_CUSTOM_MAPS_TAB:
-                    selectionModel.select(epicCustomMapsTab);
-                    break;
-            }
-
-
-            Double tooltipDuration = Double.parseDouble(
-                    propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
-            );
-
-            Tooltip searchTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.searchMaps"));
-            searchTooltip.setShowDuration(Duration.seconds(tooltipDuration));
-            searchMaps.setTooltip(searchTooltip);
-            Tooltip.install(searchImg, searchTooltip);
-
-            String addNewMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addMaps");
-            addNewMaps.setText(addNewMapsText);
-
-            String searchInWorkShopText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.searchInWorkShop");
-            searchInWorkShop.setText(searchInWorkShopText);
-
-            String removeMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeMaps");
-            removeMaps.setText(removeMapsText);
-
-            String selectAllMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.selectMaps");
-            selectAllMaps.setText(selectAllMapsText);
-            Tooltip selectAllMapsTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.selectAllMaps"));
-            selectAllMapsTooltip.setShowDuration(Duration.seconds(tooltipDuration));
-            selectAllMaps.setTooltip(selectAllMapsTooltip);
-
-            String importMapsFromServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importMaps");
-            importMapsFromServer.setText(importMapsFromServerText);
-
-            String orderMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMaps");
-            orderMaps.setText(orderMapsText);
-
-            String orderMapsByAliasText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByAlias");
-            orderMapsByAlias.setText(orderMapsByAliasText);
-
-            String orderMapsByNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByName");
-            orderMapsByName.setText(orderMapsByNameText);
-
-            String orderMapsByReleaseDateText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByReleaseDate");
-            orderMapsByReleaseDate.setText(orderMapsByReleaseDateText);
-
-            String orderMapsByImportedDateText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByImportedDate");
-            orderMapsByImportedDate.setText(orderMapsByImportedDateText);
-
-            String orderMapsByDownloadText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByDownload");
-            orderMapsByDownload.setText(orderMapsByDownloadText);
-
-            String editMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.editMaps");
-            editMaps.setText(editMapsText);
-
-            String sliderLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.slider");
-            sliderLabel.setText(sliderLabelText);
-            Tooltip sliderTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.slide"));
-            sliderTooltip.setShowDuration(Duration.seconds(tooltipDuration));
-            sliderLabel.setTooltip(sliderTooltip);
-            Double sliderColumns = Double.parseDouble(facade.findConfigPropertyValue("prop.config.mapSliderValue"));
-            mapsSlider.setValue(sliderColumns);
-            mapsSlider.setTooltip(sliderTooltip);
-            mapsSliderOnMouseClicked();
+            Thread thread = new Thread(task);
+            thread.start();
 
             MainApplication.getPrimaryStage().widthProperty().addListener(new ChangeListener<Number>() {
                 @Override

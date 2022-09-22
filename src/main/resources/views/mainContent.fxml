@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.*?>
 
-<fx:root id="centerPane" fx:id="mainContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maincontent.MainContentController">
+<fx:root id="centerPane" fx:id="mainContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maincontent.MainContentController">
     <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="10.0" />
         <ColumnConstraints minWidth="10.0" prefWidth="180.0" />
@@ -611,7 +611,6 @@
                             </GridPane.margin>
                       </Label>
                       <TextField fx:id="friendlyFirePercentage" alignment="CENTER_RIGHT" opacity="0.75" GridPane.columnIndex="3" GridPane.rowIndex="8" GridPane.valignment="CENTER" />
-
                     </children>
 
                   </GridPane>
@@ -641,6 +640,6 @@
          <GridPane.margin>
             <Insets right="5.0" top="70.0" />
          </GridPane.margin></Button>
-
+        <ProgressIndicator fx:id="progressIndicator" maxHeight="150.0" maxWidth="150.0" visible="false" GridPane.columnSpan="7" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
     </children>
 </fx:root>
