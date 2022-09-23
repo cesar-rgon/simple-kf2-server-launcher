@@ -347,8 +347,8 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     @Override
     public List<String> selectProfiles(String message, String actualProfileName) throws SQLException {
         PlatformProfileToDisplayFactory platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory();
-        List<PlatformProfileMap> platformProfileMapList = PlatformProfileMapDao.getInstance().listPlatformProfileMaps();
-        List<PlatformProfileToDisplay> allProfilesToDisplay = platformProfileToDisplayFactory.newOnes(platformProfileMapList);
+        List<Profile> allProfiles = profileService.listAllProfiles();
+        List<PlatformProfileToDisplay> allProfilesToDisplay = platformProfileToDisplayFactory.newOnes(allProfiles);
 
         Optional<PlatformProfileToDisplay> actualProfile = allProfilesToDisplay.stream().filter(p -> p.getProfileName().equalsIgnoreCase(actualProfileName)).findFirst();
         if (actualProfile.isPresent()) {
@@ -363,8 +363,8 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     @Override
     public String selectProfile(String message, String actualProfileName) throws SQLException {
         PlatformProfileToDisplayFactory platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory();
-        List<PlatformProfileMap> platformProfileMapList = PlatformProfileMapDao.getInstance().listPlatformProfileMaps();
-        List<PlatformProfileToDisplay> allProfilesToDisplay = platformProfileToDisplayFactory.newOnes(platformProfileMapList);
+        List<Profile> allProfiles = profileService.listAllProfiles();
+        List<PlatformProfileToDisplay> allProfilesToDisplay = platformProfileToDisplayFactory.newOnes(allProfiles);
 
         Optional<PlatformProfileToDisplay> actualProfile = allProfilesToDisplay.stream().filter(p -> p.getProfileName().equalsIgnoreCase(actualProfileName)).findFirst();
         if (actualProfile.isPresent()) {

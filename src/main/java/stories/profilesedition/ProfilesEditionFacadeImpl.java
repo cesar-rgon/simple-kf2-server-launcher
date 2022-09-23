@@ -226,8 +226,8 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
 
     @Override
     public List<PlatformProfileToDisplay> selectProfilesToBeExported(String message) throws SQLException {
-        List<PlatformProfileMap> platformProfileMapList = PlatformProfileMapDao.getInstance().listPlatformProfileMaps();
-        List<PlatformProfileToDisplay> allProfilesToDisplay = platformProfileToDisplayFactory.newOnes(platformProfileMapList);
+        List<Profile> allProfiles = profileService.listAllProfiles();
+        List<PlatformProfileToDisplay> allProfilesToDisplay = platformProfileToDisplayFactory.newOnes(allProfiles);
         allProfilesToDisplay.stream().forEach(p -> p.setSelected(true));
         return Utils.selectPlatformProfilesDialog(message + ":", allProfilesToDisplay);
     }

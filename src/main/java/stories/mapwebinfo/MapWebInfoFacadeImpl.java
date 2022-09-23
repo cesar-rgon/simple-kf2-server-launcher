@@ -1,15 +1,14 @@
 package stories.mapwebinfo;
 
-import daos.CustomMapModDao;
-import daos.EpicPlatformDao;
-import daos.PlatformProfileMapDao;
-import daos.SteamPlatformDao;
+import daos.*;
 import dtos.CustomMapModDto;
 import dtos.factories.MapDtoFactory;
 import entities.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Hibernate;
+import pojos.ImportMapResultToDisplay;
 import pojos.PlatformProfileToDisplay;
 import pojos.PlatformProfileToDisplayFactory;
 import pojos.enums.EnumPlatform;
@@ -22,6 +21,8 @@ import utils.Utils;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -170,40 +171,60 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
             return;
         }
 
-        /*
+        AbstractMap map = null;
         Optional officialMapOptional = officialMapService.findMapByCode(mapName);
+        Optional customMapModOptional = customMapModService.findMapByCode(mapName);
+        if (officialMapOptional.isPresent()) {
+            map = (AbstractMap) officialMapOptional.get();
+        } else {
+            if (customMapModOptional.isPresent()) {
+                map = (AbstractMap) customMapModOptional.get();
+            }
+        }
+
+        List<PlatformProfileMap> platformProfileMapListToAdd = new ArrayList<PlatformProfileMap>();
+        for (Profile profile: profileList) {
+            for (AbstractPlatform platform: platformList) {
+                platformProfileMapListToAdd.add(new PlatformProfileMap(platform, profile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), map.isOfficial()));
+            }
+        }
+
         if (officialMapOptional.isPresent()) {
             officialMapService.addPlatformProfileMapList(
-                    platformList,
-                    (OfficialMap) officialMapOptional.get(),
-                    profileList,
+                    platformProfileMapListToAdd,
                     null);
         }
 
-        Optional customMapModOptional = customMapModService.findMapByCode(mapName);
         if (customMapModOptional.isPresent()) {
             customMapModService.addPlatformProfileMapList(
-                    platformList,
-                    (CustomMapMod) customMapModOptional.get(),
-                    profileList,
+                    platformProfileMapListToAdd,
                     null);
         }
-         */
     }
 
     @Override
-    public List<PlatformProfileToDisplay> getPlatformProfilesWithoutMap(Long idWorkShop) throws SQLException {
+    public List<PlatformProfileToDisplay> getPlatformProfileListWithoutMap(Long idWorkShop) throws SQLException {
 
-        List<PlatformProfileMap> platformProfileMapList = PlatformProfileMapDao.getInstance().listPlatformProfileMaps();
+        List<AbstractPlatform> fullPlatformList = AbstractPlatformDao.getInstance().listAll();
+        List<Profile> fullProfileList = profileService.listAllProfiles();
+        List<Profile> profileListWithoutMapInPlatform = new ArrayList<>();
 
-        List<PlatformProfileMap> platformProfileMapListWithIdWorkshop = platformProfileMapList.stream().
-                filter(ppm -> !ppm.getMap().isOfficial()).
-                filter(ppm -> idWorkShop.equals(((CustomMapMod) ppm.getMap()).getIdWorkShop())).
-                collect(Collectors.toList());
+        for (Profile profile: fullProfileList) {
+            for (AbstractPlatform platform: fullPlatformList) {
+                Optional<PlatformProfileMap> platformProfileMapOptional = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(platform, profile).stream().
+                        filter(ppm -> !ppm.getMap().isOfficial()).
+                        filter(ppm -> {
+                            CustomMapMod customMapMod = (CustomMapMod) Hibernate.unproxy(ppm.getMap());
+                            return idWorkShop.equals(customMapMod.getIdWorkShop());
+                        }).findFirst();
 
-        platformProfileMapList.removeAll(platformProfileMapListWithIdWorkshop);
-        List<PlatformProfileMap> platformProfileMapListWithoutIdWorkshop = platformProfileMapList;
+                if (!platformProfileMapOptional.isPresent()) {
+                    profileListWithoutMapInPlatform.add(profile);
+                    break;
+                }
+            }
+        }
 
-        return platformProfileToDisplayFactory.newOnes(platformProfileMapListWithoutIdWorkshop);
+        return platformProfileToDisplayFactory.newOnes(profileListWithoutMapInPlatform);
     }
 }

@@ -301,17 +301,17 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
     @Override
     public List<String> selectProfilesToImport(String defaultSelectedProfileName) throws Exception {
-        List<PlatformProfileMap> platformProfileMapList = PlatformProfileMapDao.getInstance().listPlatformProfileMaps();
-        if (platformProfileMapList == null || platformProfileMapList.isEmpty()) {
+        List<Profile> allProfiles = profileService.listAllProfiles();
+        if (allProfiles == null || allProfiles.isEmpty()) {
             return new ArrayList<String>();
         }
-        List<PlatformProfileToDisplay> selectedProfiles = selectProfilesToImport(platformProfileMapList, defaultSelectedProfileName);
+        List<PlatformProfileToDisplay> selectedProfiles = selectProfilesToImport(allProfiles, defaultSelectedProfileName);
         return selectedProfiles.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
     }
 
 
-    public List<PlatformProfileToDisplay> selectProfilesToImport(List<PlatformProfileMap> platformProfileMapList, String defaultSelectedProfileName) throws Exception {
-        List<PlatformProfileToDisplay> allProfilesToDisplay = platformProfileToDisplayFactory.newOnes(platformProfileMapList);
+    public List<PlatformProfileToDisplay> selectProfilesToImport(List<Profile> allProfiles, String defaultSelectedProfileName) throws Exception {
+        List<PlatformProfileToDisplay> allProfilesToDisplay = platformProfileToDisplayFactory.newOnes(allProfiles);
         allProfilesToDisplay.stream().filter(p -> p.getProfileName().equalsIgnoreCase(defaultSelectedProfileName)).forEach(profile -> profile.setSelected(true));
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
         String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfiles");

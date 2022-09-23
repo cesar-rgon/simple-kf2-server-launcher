@@ -45,6 +45,14 @@ public class PlatformProfileMapDao extends AbstractDao<PlatformProfileMap> {
         return list(query, parameters);
     }
 
+    public List<PlatformProfileMap> listPlatformProfileMaps(List<AbstractPlatform> platformList, List<Profile> profileList) throws SQLException {
+        String query = "select ppm from entities.PlatformProfileMap ppm where ppm.platform in (:PLATFORM) and ppm.profile in (:PROFILE)";
+        java.util.Map<String,Object> parameters = new HashMap<String,Object>();
+        parameters.put("PLATFORM", platformList);
+        parameters.put("PROFILE", profileList);
+        return list(query, parameters);
+    }
+
     public List<PlatformProfileMap> listPlatformProfileMaps(AbstractMap map) throws SQLException {
         String query = "select ppm from entities.PlatformProfileMap ppm where ppm.map = :MAP";
         java.util.Map<String,Object> parameters = new HashMap<String,Object>();

@@ -1,7 +1,6 @@
 package stories.mapwebinfo;
 
 import dtos.CustomMapModDto;
-import dtos.PlatformProfileMapDto;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -127,7 +126,7 @@ public class MapWebInfoController implements Initializable {
                                 }
                             }
                             mapNameLabel.setText(mapName);
-                            List<PlatformProfileToDisplay> platformProfilesWithoutMap = facade.getPlatformProfilesWithoutMap(idWorkShop);
+                            List<PlatformProfileToDisplay> platformProfilesWithoutMap = facade.getPlatformProfileListWithoutMap(idWorkShop);
                             if (idWorkShop != null && (platformProfilesWithoutMap == null || platformProfilesWithoutMap.isEmpty())) {
                                 addMap.setVisible(false);
                                 alreadyInLauncher.setVisible(true);
@@ -177,7 +176,7 @@ public class MapWebInfoController implements Initializable {
                 return;
             }
 
-            List<PlatformProfileToDisplay> platformProfileListWithoutMap = facade.getPlatformProfilesWithoutMap(idWorkShop);
+            List<PlatformProfileToDisplay> platformProfileListWithoutMap = facade.getPlatformProfileListWithoutMap(idWorkShop);
             String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfiles");
             List<PlatformProfileToDisplay> selectedProfiles = Utils.selectPlatformProfilesDialog(headerText + ":", platformProfileListWithoutMap);
             if (selectedProfiles != null && !selectedProfiles.isEmpty()) {
@@ -199,16 +198,24 @@ public class MapWebInfoController implements Initializable {
                         List<String> platformNameList = new ArrayList<String>();
                         switch (platformNameOptional.get()) {
                             case "Steam":
-                                platformNameList.add(EnumPlatform.STEAM.name());
+                                if (facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
+                                    platformNameList.add(EnumPlatform.STEAM.name());
+                                }
                                 break;
 
                             case "Epic Games":
-                                platformNameList.add(EnumPlatform.EPIC.name());
+                                if (facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
+                                    platformNameList.add(EnumPlatform.EPIC.name());
+                                }
                                 break;
 
                             case "All platforms":
-                                platformNameList.add(EnumPlatform.STEAM.name());
-                                platformNameList.add(EnumPlatform.EPIC.name());
+                                if (facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
+                                    platformNameList.add(EnumPlatform.STEAM.name());
+                                }
+                                if (facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
+                                    platformNameList.add(EnumPlatform.EPIC.name());
+                                }
                                 break;
                         }
 
