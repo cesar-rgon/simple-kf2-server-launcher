@@ -1,6 +1,7 @@
 package stories.mapwebinfo;
 
 import dtos.CustomMapModDto;
+import dtos.ProfileDto;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -18,9 +19,11 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import pojos.PlatformProfile;
 import pojos.PlatformProfileToDisplay;
 import pojos.enums.EnumPlatform;
 import pojos.session.Session;
+import services.ProfileService;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
@@ -126,7 +129,7 @@ public class MapWebInfoController implements Initializable {
                                 }
                             }
                             mapNameLabel.setText(mapName);
-                            List<PlatformProfileToDisplay> platformProfilesWithoutMap = facade.getPlatformProfileListWithoutMap(idWorkShop);
+                            List<PlatformProfile> platformProfilesWithoutMap = facade.getPlatformProfileListWithoutMap(idWorkShop);
                             if (idWorkShop != null && (platformProfilesWithoutMap == null || platformProfilesWithoutMap.isEmpty())) {
                                 addMap.setVisible(false);
                                 alreadyInLauncher.setVisible(true);
@@ -176,9 +179,13 @@ public class MapWebInfoController implements Initializable {
                 return;
             }
 
-            List<PlatformProfileToDisplay> platformProfileListWithoutMap = facade.getPlatformProfileListWithoutMap(idWorkShop);
+            List<PlatformProfile> platformProfileListWithoutMap = facade.getPlatformProfileListWithoutMap(idWorkShop);
             String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfiles");
-            List<PlatformProfileToDisplay> selectedProfiles = Utils.selectPlatformProfilesDialog(headerText + ":", platformProfileListWithoutMap);
+
+            List<ProfileDto> fullProfileList = facade.getAllProfileList();
+            List<String> fullProfileNameList = fullProfileList.stream().map(ProfileDto::getName).collect(Collectors.toList());
+
+            List<PlatformProfileToDisplay> selectedProfiles = Utils.selectPlatformProfilesDialog(headerText + ":", platformProfileListWithoutMap, fullProfileNameList);
             if (selectedProfiles != null && !selectedProfiles.isEmpty()) {
                 List<String> selectedProfileNameList = selectedProfiles.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
                 CustomMapModDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
@@ -232,7 +239,7 @@ public class MapWebInfoController implements Initializable {
                             );
 
                             if (customMap != null) {
-                                if (platformProfileListWithoutMap.size() - selectedProfiles.size() == 0) {
+                                if (platformProfileListWithoutMap.stream().map(PlatformProfile::getProfile).distinct().collect(Collectors.toList()).size() - selectedProfiles.size() == 0) {
                                     addMap.setVisible(false);
                                     alreadyInLauncher.setVisible(true);
                                 }
@@ -252,7 +259,7 @@ public class MapWebInfoController implements Initializable {
                                     mapModInDataBase.getKey(),
                                     profileNameList
                             );
-                            if (platformProfileListWithoutMap.size() - selectedProfiles.size() == 0) {
+                            if (platformProfileListWithoutMap.stream().map(PlatformProfile::getProfile).distinct().collect(Collectors.toList()).size() - selectedProfiles.size() == 0) {
                                 addMap.setVisible(false);
                                 alreadyInLauncher.setVisible(true);
                             }

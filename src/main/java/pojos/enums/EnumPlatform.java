@@ -3,6 +3,9 @@ package pojos.enums;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 public enum EnumPlatform {
     STEAM("Steam", "images/steam-logo.png", "images/steam-small-logo.png"),
     EPIC("Epic Games", "images/epic-logo.png", "images/epic-small-logo.png"),
@@ -40,6 +43,10 @@ public enum EnumPlatform {
     }
 
     public static ObservableList<EnumPlatform> listAll() {
-        return FXCollections.observableArrayList(EnumPlatform.values());
+        return FXCollections.observableArrayList(
+                Arrays.stream(EnumPlatform.values()).
+                        filter(ep -> !ep.equals(ALL)).
+                        collect(Collectors.toList())
+        );
     }
 }

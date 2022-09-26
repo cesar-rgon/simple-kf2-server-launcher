@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.ImportMapResultToDisplay;
+import pojos.PlatformProfile;
 import pojos.PlatformProfileToDisplay;
 import pojos.PlatformProfileToDisplayFactory;
 import pojos.enums.EnumPlatform;
@@ -311,11 +312,19 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
 
     public List<PlatformProfileToDisplay> selectProfilesToImport(List<Profile> allProfiles, String defaultSelectedProfileName) throws Exception {
-        List<PlatformProfileToDisplay> allProfilesToDisplay = platformProfileToDisplayFactory.newOnes(allProfiles);
-        allProfilesToDisplay.stream().filter(p -> p.getProfileName().equalsIgnoreCase(defaultSelectedProfileName)).forEach(profile -> profile.setSelected(true));
+        List<AbstractPlatform> allPlatformList = AbstractPlatformDao.getInstance().listAll();
+        List<Profile> allProfileList = profileService.listAllProfiles();
+        List<PlatformProfile> platformProfileList = new ArrayList<PlatformProfile>();
+        for (Profile profile: allProfileList) {
+            for (AbstractPlatform platform: allPlatformList) {
+                platformProfileList.add(new PlatformProfile(platform, profile));
+            }
+        }
+        List<String> fullProfileNameList = EnumPlatform.listAll().stream().map(EnumPlatform::name).collect(Collectors.toList());
+
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
         String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfiles");
-        return Utils.selectPlatformProfilesDialog(headerText + ":", allProfilesToDisplay);
+        return Utils.selectPlatformProfilesDialog(headerText + ":", platformProfileList, fullProfileNameList);
     }
 
     @Override

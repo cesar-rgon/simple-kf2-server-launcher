@@ -501,17 +501,23 @@ public class ProfileServiceImpl implements ProfileService {
                 String lengthDescription = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.length." + lengthCode);
                 String mapName = properties.getProperty("exported.profile" + profileIndex + ".map");
 
+                /*
                 PlatformProfileToDisplay platformProfileToDisplay = new PlatformProfileToDisplay(profileIndex, profileName, gameTypeDescription, mapName, difficultyDescription, lengthDescription);
                 platformProfileToDisplay.setSelected(true);
                 platformProfileToDisplayList.add(platformProfileToDisplay);
+                 */
+
             } catch (Exception e) {
                 logger.error("Error reading the profile " + profileName + " from exported file", e);
             }
         }
+        /*
         return Utils.selectPlatformProfilesDialog(message + ":", platformProfileToDisplayList)
                 .stream()
                 .map(ptd -> getProfileFromFile(ptd.getProfileFileIndex(), properties))
                 .collect(Collectors.toList());
+         */
+        return null;
     }
 
 

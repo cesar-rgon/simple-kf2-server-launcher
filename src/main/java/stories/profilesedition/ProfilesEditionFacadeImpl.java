@@ -10,8 +10,10 @@ import javafx.scene.control.ButtonType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.PlatformProfile;
 import pojos.PlatformProfileToDisplay;
 import pojos.PlatformProfileToDisplayFactory;
+import pojos.enums.EnumPlatform;
 import services.*;
 import stories.AbstractFacade;
 import utils.Utils;
@@ -226,9 +228,16 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
 
     @Override
     public List<PlatformProfileToDisplay> selectProfilesToBeExported(String message) throws SQLException {
-        List<Profile> allProfiles = profileService.listAllProfiles();
-        List<PlatformProfileToDisplay> allProfilesToDisplay = platformProfileToDisplayFactory.newOnes(allProfiles);
-        allProfilesToDisplay.stream().forEach(p -> p.setSelected(true));
-        return Utils.selectPlatformProfilesDialog(message + ":", allProfilesToDisplay);
+        List<AbstractPlatform> allPlatformList = AbstractPlatformDao.getInstance().listAll();
+        List<Profile> allProfileList = profileService.listAllProfiles();
+        List<PlatformProfile> platformProfileList = new ArrayList<PlatformProfile>();
+        for (Profile profile: allProfileList) {
+            for (AbstractPlatform platform: allPlatformList) {
+                platformProfileList.add(new PlatformProfile(platform, profile));
+            }
+        }
+        List<String> fullProfileNameList = EnumPlatform.listAll().stream().map(EnumPlatform::name).collect(Collectors.toList());
+
+        return Utils.selectPlatformProfilesDialog(message + ":", platformProfileList, fullProfileNameList);
     }
 }

@@ -2,13 +2,18 @@ package stories.mapwebinfo;
 
 import daos.*;
 import dtos.CustomMapModDto;
+import dtos.ProfileDto;
+import dtos.factories.AbstractDtoFactory;
 import dtos.factories.MapDtoFactory;
+import dtos.factories.ProfileDtoFactory;
 import entities.*;
+import entities.AbstractMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Hibernate;
 import pojos.ImportMapResultToDisplay;
+import pojos.PlatformProfile;
 import pojos.PlatformProfileToDisplay;
 import pojos.PlatformProfileToDisplayFactory;
 import pojos.enums.EnumPlatform;
@@ -21,10 +26,7 @@ import utils.Utils;
 
 import java.io.File;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFacade {
@@ -37,6 +39,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
     private final CustomMapModServiceImpl customMapModService;
     private final PlatformProfileToDisplayFactory platformProfileToDisplayFactory;
     private final ProfileService profileService;
+    private final ProfileDtoFactory profileDtoFactory;
 
     public MapWebInfoFacadeImpl() {
         super();
@@ -46,6 +49,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         this.customMapModService = new CustomMapModServiceImpl();
         this.platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory();
         this.profileService = new ProfileServiceImpl();
+        this.profileDtoFactory = new ProfileDtoFactory();
     }
 
     @Override
@@ -99,7 +103,15 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         }
         List<AbstractPlatform> platformList = platformNameList.stream().map(pn -> {
             try {
-                return findPlatformByCode(pn);
+                Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(pn);
+                if (steamPlatformOptional.isPresent()) {
+                    return steamPlatformOptional.get();
+                }
+                Optional<EpicPlatform> epicPlatformOptional = EpicPlatformDao.getInstance().findByCode(pn);
+                if (epicPlatformOptional.isPresent()) {
+                    return epicPlatformOptional.get();
+                }
+                return null;
             } catch (SQLException e) {
                 logger.error("Error finding a platform by name " + pn, e);
                 return null;
@@ -156,19 +168,27 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
             }
         }).collect(Collectors.toList());
         if (profileList == null || profileList.isEmpty()) {
-            return;
+            throw new RuntimeException("No profiles were found.");
         }
 
         List<AbstractPlatform> platformList = platformNameList.stream().map(pn -> {
             try {
-                return findPlatformByCode(pn);
+                Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(pn);
+                if (steamPlatformOptional.isPresent()) {
+                    return steamPlatformOptional.get();
+                }
+                Optional<EpicPlatform> epicPlatformOptional = EpicPlatformDao.getInstance().findByCode(pn);
+                if (epicPlatformOptional.isPresent()) {
+                    return epicPlatformOptional.get();
+                }
+                return null;
             } catch (SQLException e) {
                 logger.error("Error finding a platform by name " + pn, e);
                 return null;
             }
         }).collect(Collectors.toList());
         if (platformList == null || platformList.isEmpty()) {
-            return;
+            throw new RuntimeException("No platforms were found.");
         }
 
         AbstractMap map = null;
@@ -203,11 +223,11 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
     }
 
     @Override
-    public List<PlatformProfileToDisplay> getPlatformProfileListWithoutMap(Long idWorkShop) throws SQLException {
+    public List<PlatformProfile> getPlatformProfileListWithoutMap(Long idWorkShop) throws SQLException {
 
         List<AbstractPlatform> fullPlatformList = AbstractPlatformDao.getInstance().listAll();
         List<Profile> fullProfileList = profileService.listAllProfiles();
-        List<Profile> profileListWithoutMapInPlatform = new ArrayList<>();
+        List<PlatformProfile> platformProfileListWithoutMap = new ArrayList<PlatformProfile>();
 
         for (Profile profile: fullProfileList) {
             for (AbstractPlatform platform: fullPlatformList) {
@@ -219,12 +239,16 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
                         }).findFirst();
 
                 if (!platformProfileMapOptional.isPresent()) {
-                    profileListWithoutMapInPlatform.add(profile);
-                    break;
+                    platformProfileListWithoutMap.add(new PlatformProfile(platform, profile));
                 }
             }
         }
 
-        return platformProfileToDisplayFactory.newOnes(profileListWithoutMapInPlatform);
+        return platformProfileListWithoutMap;
+    }
+
+    @Override
+    public List<ProfileDto> getAllProfileList() throws SQLException {
+        return profileDtoFactory.newDtos(profileService.listAllProfiles());
     }
 }

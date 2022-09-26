@@ -29,10 +29,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
-import pojos.AddMapsToPlatformProfile;
-import pojos.ImportMapResultToDisplay;
-import pojos.MapToDisplay;
-import pojos.PlatformProfileToDisplay;
+import pojos.*;
 import pojos.enums.EnumPlatform;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -391,7 +388,7 @@ public class Utils {
     }
 
 
-    public static List<PlatformProfileToDisplay> selectPlatformProfilesDialog(String headerText, List<PlatformProfileToDisplay> platformProfileList) {
+    public static List<PlatformProfileToDisplay> selectPlatformProfilesDialog(String headerText, List<PlatformProfile> platformProfileList, List<String> selectedProfileNameList) {
         Dialog<TableView<PlatformProfileToDisplay>> dialog = new Dialog<TableView<PlatformProfileToDisplay>>();
         PropertyService propertyService = new PropertyServiceImpl();
         String selectText = "";
@@ -506,7 +503,23 @@ public class Utils {
         tableView.getColumns().add(mapNameColumn);
         tableView.getColumns().add(difficultyColumn);
         tableView.getColumns().add(lengthColumn);
-        tableView.setItems(FXCollections.observableArrayList(platformProfileList));
+
+        PlatformProfileToDisplayFactory platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory();
+        List<PlatformProfileToDisplay> platformProfileToDisplayList = platformProfileToDisplayFactory.newOnes(platformProfileList);
+        tableView.setItems(FXCollections.observableArrayList(platformProfileToDisplayList));
+        boolean firstProfile = true;
+        for (String selectedProfileName: selectedProfileNameList) {
+            Optional<PlatformProfileToDisplay> selectedProfileOptional = platformProfileToDisplayList.stream().filter(p -> p.getProfileName().equals(selectedProfileName)).findFirst();
+            if (selectedProfileOptional.isPresent()) {
+                selectedProfileOptional.get().setSelected(true);
+                selectColumn.getCellData(selectedProfileOptional.get());
+                if (firstProfile) {
+                    tableView.scrollTo(selectedProfileOptional.get());
+                    firstProfile = false;
+                }
+            }
+        }
+
         tableView.setEditable(true);
 
         dialog.getDialogPane().setContent(tableView);
@@ -542,11 +555,11 @@ public class Utils {
                 return tableView;
             }
             if (b.equals(finalUnselectAll)) {
-                platformProfileList.stream().forEach(p -> p.setSelected(false));
+                platformProfileToDisplayList.stream().forEach(p -> p.setSelected(false));
                 dialog.showAndWait();
             }
             if (b.equals(finalSelectAll)) {
-                platformProfileList.stream().forEach(p -> p.setSelected(true));
+                platformProfileToDisplayList.stream().forEach(p -> p.setSelected(true));
                 dialog.showAndWait();
             }
             return null;
@@ -555,7 +568,7 @@ public class Utils {
         Optional<TableView<PlatformProfileToDisplay>> result = dialog.showAndWait();
         if (result.isPresent() && result.get() != null && result.get().getItems() != null && !result.get().getItems().isEmpty()) {
             List<PlatformProfileToDisplay> selectedProfiles = new ArrayList<PlatformProfileToDisplay>();
-            for (PlatformProfileToDisplay platformProfileToDisplay : platformProfileList) {
+            for (PlatformProfileToDisplay platformProfileToDisplay : platformProfileToDisplayList) {
                 Boolean isSelected = selectColumn.getCellData(platformProfileToDisplay);
                 if (isSelected != null && isSelected) {
                     selectedProfiles.add(platformProfileToDisplay);
@@ -706,7 +719,7 @@ public class Utils {
         return new ArrayList<MapToDisplay>();
     }
 
-    public static Optional<PlatformProfileToDisplay> selectProfileDialog(String headerText, List<PlatformProfileToDisplay> profileList) {
+    public static Optional<PlatformProfileToDisplay> selectProfileDialog(String headerText, List<PlatformProfile> platformProfileList, List<String> selectedProfileNameList) {
         Dialog<TableView<PlatformProfileToDisplay>> dialog = new Dialog<TableView<PlatformProfileToDisplay>>();
         PropertyService propertyService = new PropertyServiceImpl();
         String profileNameText = "";
@@ -771,12 +784,22 @@ public class Utils {
         tableView.getColumns().add(mapNameColumn);
         tableView.getColumns().add(difficultyColumn);
         tableView.getColumns().add(lengthColumn);
-        tableView.setItems(FXCollections.observableArrayList(profileList));
+
+        PlatformProfileToDisplayFactory platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory();
+        List<PlatformProfileToDisplay> platformProfileToDisplayList = platformProfileToDisplayFactory.newOnes(platformProfileList);
+        tableView.setItems(FXCollections.observableArrayList(platformProfileToDisplayList));
         tableView.setEditable(false);
-        Optional<PlatformProfileToDisplay> selectedProfile = profileList.stream().filter(p -> p.isSelected()).findFirst();
-        if (selectedProfile.isPresent()) {
-            tableView.getSelectionModel().select(selectedProfile.get());
-            tableView.scrollTo(selectedProfile.get());
+
+        boolean firstProfile = true;
+        for (String selectedProfileName: selectedProfileNameList) {
+            Optional<PlatformProfileToDisplay> selectedProfileOptional = platformProfileToDisplayList.stream().filter(p -> p.getProfileName().equals(selectedProfileName)).findFirst();
+            if (selectedProfileOptional.isPresent()) {
+                tableView.getSelectionModel().select(selectedProfileOptional.get());
+                if (firstProfile) {
+                    tableView.scrollTo(selectedProfileOptional.get());
+                    firstProfile = false;
+                }
+            }
         }
 
         dialog.getDialogPane().setContent(tableView);

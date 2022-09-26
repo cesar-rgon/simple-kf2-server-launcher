@@ -19,7 +19,8 @@ public class PlatformProfileToDisplay {
     private StringProperty difficultyDescription;
     private StringProperty lengthDescription;
 
-    public PlatformProfileToDisplay(int profileFileIndex,
+    public PlatformProfileToDisplay(EnumPlatform enumPlatform,
+                                    int profileFileIndex,
                                     String profileName,
                                     String gameTypeDescription,
                                     String mapName,
@@ -27,10 +28,10 @@ public class PlatformProfileToDisplay {
                                     String lengthDescription) {
 
         super();
+        this.platformName = new SimpleStringProperty(enumPlatform.getDescripcion());
         this.selected = new SimpleBooleanProperty(false);
         this.profileFileIndex = profileFileIndex;
         this.profileName = new SimpleStringProperty(profileName);
-        this.platformName = new SimpleStringProperty(EnumPlatform.ALL.getDescripcion());
         this.gameTypeDescription = new SimpleStringProperty(gameTypeDescription);
         this.mapName = new SimpleStringProperty(mapName);
         this.difficultyDescription = new SimpleStringProperty(difficultyDescription);
