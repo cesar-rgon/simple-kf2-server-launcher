@@ -158,7 +158,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
     }
 
     @Override
-    public void addProfilesToMap(List<String> platformNameList, String mapName, List<String> profileNameList) throws SQLException {
+    public void addProfilesToMap(List<String> platformNameList, String mapName, String strUrlMapImage, List<String> profileNameList) throws Exception {
         List<Profile> profileList = profileNameList.stream().map(pn -> {
             try {
                 return findProfileByCode(pn);
@@ -219,6 +219,13 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
             customMapModService.addPlatformProfileMapList(
                     platformProfileMapListToAdd,
                     null);
+        }
+
+        String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
+
+        for (AbstractPlatform platform: platformList) {
+            String absoluteTargetFolder = platform.getInstallationFolder() + customMapLocalFolder;
+            Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
         }
     }
 

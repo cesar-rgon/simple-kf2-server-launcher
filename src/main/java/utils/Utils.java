@@ -463,6 +463,7 @@ public class Utils {
         profileNameColumn.setSortable(false);
         profileNameColumn.setEditable(false);
         profileNameColumn.setMinWidth(150);
+        profileNameColumn.setStyle("-fx-alignment: CENTER;");
 
         // Fourth Column
         TableColumn<PlatformProfileToDisplay, String> gameTypeColumn = new TableColumn<PlatformProfileToDisplay, String>();
@@ -471,6 +472,7 @@ public class Utils {
         gameTypeColumn.setSortable(false);
         gameTypeColumn.setEditable(false);
         gameTypeColumn.setMinWidth(150);
+        gameTypeColumn.setStyle("-fx-alignment: CENTER;");
 
         // Fifth Column
         TableColumn<PlatformProfileToDisplay, String> mapNameColumn = new TableColumn<PlatformProfileToDisplay, String>();
@@ -479,6 +481,7 @@ public class Utils {
         mapNameColumn.setSortable(false);
         mapNameColumn.setEditable(false);
         mapNameColumn.setMinWidth(150);
+        mapNameColumn.setStyle("-fx-alignment: CENTER;");
 
         // Sixth Column
         TableColumn<PlatformProfileToDisplay, String> difficultyColumn = new TableColumn<PlatformProfileToDisplay, String>();
@@ -487,6 +490,7 @@ public class Utils {
         difficultyColumn.setSortable(false);
         difficultyColumn.setEditable(false);
         difficultyColumn.setMinWidth(150);
+        difficultyColumn.setStyle("-fx-alignment: CENTER;");
 
         // Seventh Column
         TableColumn<PlatformProfileToDisplay, String> lengthColumn = new TableColumn<PlatformProfileToDisplay, String>();
@@ -495,6 +499,7 @@ public class Utils {
         lengthColumn.setSortable(false);
         lengthColumn.setEditable(false);
         lengthColumn.setMinWidth(150);
+        lengthColumn.setStyle("-fx-alignment: CENTER;");
 
         tableView.getColumns().add(selectColumn);
         tableView.getColumns().add(profileNameColumn);
