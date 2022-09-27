@@ -95,7 +95,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
                 return findProfileByCode(pn);
             } catch (SQLException e) {
                 logger.error("Error finding a profile by name " + pn, e);
-                return null;
+                throw new RuntimeException("Error finding a profile by name " + pn, e);
             }
         }).collect(Collectors.toList());
         if (profileList == null || profileList.isEmpty()) {
@@ -114,7 +114,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
                 return null;
             } catch (SQLException e) {
                 logger.error("Error finding a platform by name " + pn, e);
-                return null;
+                throw new RuntimeException("Error finding a platform by name " + pn, e);
             }
         }).collect(Collectors.toList());
         if (platformList == null || platformList.isEmpty()) {
@@ -257,5 +257,22 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
     @Override
     public List<ProfileDto> getAllProfileList() throws SQLException {
         return profileDtoFactory.newDtos(profileService.listAllProfiles());
+    }
+
+    @Override
+    public int countPlatformsProfilesForMap(String customMapName) {
+        try {
+            Optional<AbstractMap> mapOptional = customMapModService.findMapByCode(customMapName);
+            if (mapOptional.isPresent()) {
+                List<PlatformProfileMap> platformProfileMapList = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(mapOptional.get());
+                if (platformProfileMapList != null && !platformProfileMapList.isEmpty()) {
+                    return platformProfileMapList.size();
+                }
+            }
+            return 0;
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            return 0;
+        }
     }
 }

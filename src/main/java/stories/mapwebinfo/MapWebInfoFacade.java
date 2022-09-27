@@ -16,4 +16,5 @@ public interface MapWebInfoFacade {
     void addProfilesToMap(List<String> platformNameList, String mapName, String strUrlMapImage, List<String> profileNameList) throws Exception;
     List<PlatformProfile> getPlatformProfileListWithoutMap(Long idWorkShop) throws SQLException;
     List<ProfileDto> getAllProfileList() throws SQLException;
+    int countPlatformsProfilesForMap(String customMapName);
 }

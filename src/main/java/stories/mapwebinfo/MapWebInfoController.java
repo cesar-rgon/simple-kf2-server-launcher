@@ -186,11 +186,16 @@ public class MapWebInfoController implements Initializable {
             List<String> fullProfileNameList = fullProfileList.stream().map(ProfileDto::getName).collect(Collectors.toList());
 
             List<PlatformProfileToDisplay> selectedProfiles = Utils.selectPlatformProfilesDialog(headerText + ":", platformProfileListWithoutMap, fullProfileNameList);
+            StringBuffer errors = new StringBuffer();
             if (selectedProfiles != null && !selectedProfiles.isEmpty()) {
                 List<String> selectedProfileNameList = selectedProfiles.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
                 CustomMapModDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
 
-                int countSelectedPlatformsProfiles = 0;
+                int countPlatformsProfilesForMap = 0;
+                if (mapModInDataBase != null) {
+                    countPlatformsProfilesForMap = facade.countPlatformsProfilesForMap(mapModInDataBase.getKey());
+                }
+
                 for (String selectedProfileName: selectedProfileNameList) {
                     try {
                         Optional<String> platformNameOptional = selectedProfiles.stream().
@@ -208,25 +213,21 @@ public class MapWebInfoController implements Initializable {
                             case "Steam":
                                 if (facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
                                     platformNameList.add(EnumPlatform.STEAM.name());
-                                    countSelectedPlatformsProfiles++;
                                 }
                                 break;
 
                             case "Epic Games":
                                 if (facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
                                     platformNameList.add(EnumPlatform.EPIC.name());
-                                    countSelectedPlatformsProfiles++;
                                 }
                                 break;
 
                             case "All platforms":
                                 if (facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
                                     platformNameList.add(EnumPlatform.STEAM.name());
-                                    countSelectedPlatformsProfiles++;
                                 }
                                 if (facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
                                     platformNameList.add(EnumPlatform.EPIC.name());
-                                    countSelectedPlatformsProfiles++;
                                 }
                                 break;
                         }
@@ -235,7 +236,7 @@ public class MapWebInfoController implements Initializable {
                         profileNameList.add(selectedProfileName);
 
                         if (mapModInDataBase == null) {
-                            CustomMapModDto customMap = facade.createNewCustomMapFromWorkshop(
+                            mapModInDataBase = facade.createNewCustomMapFromWorkshop(
                                     platformNameList,
                                     idWorkShop,
                                     mapName,
@@ -243,13 +244,9 @@ public class MapWebInfoController implements Initializable {
                                     profileNameList
                             );
 
-                            // TODO: Sacar fuera del bucle for
-                            if (customMap == null) {
-                                headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                                Utils.warningDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+                            if (mapModInDataBase == null) {
+                                throw new RuntimeException("Error adding map/mod with name " + mapName);
                             }
-
                         } else {
                             facade.addProfilesToMap(
                                     platformNameList,
@@ -266,11 +263,22 @@ public class MapWebInfoController implements Initializable {
                     }
                 }
 
-                if (platformProfileListWithoutMap.size() - countSelectedPlatformsProfiles <= 0) {
+                int countPlatformsProfilesForMapAfterProcess = 0;
+                if (mapModInDataBase != null) {
+                    countPlatformsProfilesForMapAfterProcess = facade.countPlatformsProfilesForMap(mapModInDataBase.getKey());
+                }
+                int countNewPlatformsProfilesForMap = countPlatformsProfilesForMapAfterProcess - countPlatformsProfilesForMap;
+
+                if (platformProfileListWithoutMap.size() - countNewPlatformsProfilesForMap == 0) {
                     addMap.setVisible(false);
                     alreadyInLauncher.setVisible(true);
                 }
-                headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+
+                if (StringUtils.isBlank(errors)) {
+                    headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                } else {
+                    headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                }
                 String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
                 Utils.infoDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
             }
