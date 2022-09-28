@@ -68,7 +68,7 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
         return mapList;
     }
 
-    public AbstractMap createMap(List<AbstractPlatform> platformList, AbstractMap map, List<Profile> profileList, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
+    public AbstractMap createMap(List<AbstractPlatform> platformList, AbstractMap map, List<Profile> profileList, StringBuffer success, StringBuffer errors) {
         AbstractMap insertedMap = null;
         try {
             List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
@@ -80,106 +80,48 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
             insertedMap = createItem(map);
             if (insertedMap == null) {
                 String errorMessage = "Map to be created not found: " + map.getCode();
+                errors.append(errorMessage + "\n");
                 logger.error(errorMessage);
-                if (importMapResultToDisplayList != null) {
-                    profileList.stream().forEach(profile -> {
-                        importMapResultToDisplayList.add(new ImportMapResultToDisplay(
-                                profile.getName(),
-                                map.getCode(),
-                                map.isOfficial(),
-                                null,
-                                errorMessage
-                        ));
-                    });
-                }
                 return null;
             }
         } catch (Exception e) {
             String errorMessage = "Error creating the map: " + map.getCode();
+            errors.append(errorMessage + "\n");
             logger.error(errorMessage, e);
-            if (importMapResultToDisplayList != null) {
-                profileList.stream().forEach(profile -> {
-                    importMapResultToDisplayList.add(new ImportMapResultToDisplay(
-                            profile.getName(),
-                            map.getCode(),
-                            map.isOfficial(),
-                            null,
-                            errorMessage
-                    ));
-                });
-            }
             return null;
         }
 
         AbstractMap finalInsertedMap = insertedMap;
         profileList.stream().forEach(profile -> {
-            try {
-                boolean downloaded = map.isOfficial();
-                platformList.stream().forEach(platform -> {
-                    try {
-                        PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(platform, profile, finalInsertedMap, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), downloaded);
-                        platformProfileMapService.createItem(newPlatformProfileMap);
-                    } catch (Exception e) {
-                        logger.error(e.getMessage(), e);
-                    }
-                });
+            boolean downloaded = map.isOfficial();
+            platformList.stream().forEach(platform -> {
+                try {
+                    PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(platform, profile, finalInsertedMap, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), downloaded);
+                    platformProfileMapService.createItem(newPlatformProfileMap);
 
-                if (importMapResultToDisplayList != null) {
-                    importMapResultToDisplayList.add(new ImportMapResultToDisplay(
-                            profile.getName(),
-                            finalInsertedMap.getCode(),
-                            finalInsertedMap.isOfficial(),
-                            new Date(),
-                            StringUtils.EMPTY
-                    ));
+                    String successMessage = "The relation between the map " + map.getCode() + ", the profile " + profile.getCode() + " and the platform " + platform.getDescription() + " has been created";
+                    success.append(successMessage + "\n");
+                } catch (Exception e) {
+                    String errorMessage = "Error creating the relation between the map " + map.getCode() + ", the profile " + profile.getCode() + " and the platform " + platform.getDescription();
+                    errors.append(errorMessage + "\n");
+                    logger.error(errorMessage, e);
                 }
-            } catch (Exception e) {
-                String errorMessage = "Error creating the relation between the profile: " + profile.getCode() + " and the new map: " + map.getCode();
-                logger.error(errorMessage, e);
-
-                if (importMapResultToDisplayList != null) {
-                    importMapResultToDisplayList.add(new ImportMapResultToDisplay(
-                            profile.getName(),
-                            map.getCode(),
-                            map.isOfficial(),
-                            null,
-                            errorMessage
-                    ));
-                }
-            }
+            });
         });
 
         return insertedMap;
     }
 
-    public void addPlatformProfileMapList(List<PlatformProfileMap> platformProfileMapListToAdd, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
-
+    public void addPlatformProfileMapList(List<PlatformProfileMap> platformProfileMapListToAdd, StringBuffer success, StringBuffer errors) {
         platformProfileMapListToAdd.stream().forEach(ppm -> {
             try {
                 platformProfileMapService.createItem(ppm);
-
-                if (importMapResultToDisplayList != null) {
-                    importMapResultToDisplayList.add(new ImportMapResultToDisplay(
-                            ppm.getProfile().getName(),
-                            ppm.getMap().getCode(),
-                            ppm.getMap().isOfficial(),
-                            new Date(),
-                            StringUtils.EMPTY
-                    ));
-                }
+                String successMessage = "The relation between the map " + ppm.getMap().getCode() + ", the profile " + ppm.getProfile().getCode() + " and the platform " + ppm.getPlatform().getDescription() + " has been created";
+                success.append(successMessage + "\n");
             } catch (Exception e) {
-                String errorMessage = "Error creating the relation between the platform: " + ppm.getPlatform().getDescription() + ", the profile: " + ppm.getProfile().getCode() + " and the new map: " + ppm.getMap().getCode();
+                String errorMessage = "Error creating the relation between the map " + ppm.getMap().getCode() + ", the profile " + ppm.getProfile().getCode() + " and the platform " + ppm.getPlatform().getDescription();
+                errors.append(errorMessage + "\n");
                 logger.error(errorMessage, e);
-
-                if (importMapResultToDisplayList != null) {
-                    importMapResultToDisplayList.add(new ImportMapResultToDisplay(
-                            ppm.getProfile().getName(),
-                            ppm.getMap().getCode(),
-                            ppm.getMap().isOfficial(),
-                            null,
-                            errorMessage
-                    ));
-                }
             }
         });
     }

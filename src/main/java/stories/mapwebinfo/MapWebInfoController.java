@@ -186,6 +186,7 @@ public class MapWebInfoController implements Initializable {
             List<String> fullProfileNameList = fullProfileList.stream().map(ProfileDto::getName).collect(Collectors.toList());
 
             List<PlatformProfileToDisplay> selectedProfiles = Utils.selectPlatformProfilesDialog(headerText + ":", platformProfileListWithoutMap, fullProfileNameList);
+            StringBuffer success = new StringBuffer();
             StringBuffer errors = new StringBuffer();
             if (selectedProfiles != null && !selectedProfiles.isEmpty()) {
                 List<String> selectedProfileNameList = selectedProfiles.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
@@ -241,7 +242,9 @@ public class MapWebInfoController implements Initializable {
                                     idWorkShop,
                                     mapName,
                                     strUrlMapImage,
-                                    profileNameList
+                                    profileNameList,
+                                    success,
+                                    errors
                             );
 
                             if (mapModInDataBase == null) {
@@ -252,7 +255,9 @@ public class MapWebInfoController implements Initializable {
                                     platformNameList,
                                     mapModInDataBase.getKey(),
                                     strUrlMapImage,
-                                    profileNameList
+                                    profileNameList,
+                                    success,
+                                    errors
                             );
 
                         }
@@ -274,13 +279,15 @@ public class MapWebInfoController implements Initializable {
                     alreadyInLauncher.setVisible(true);
                 }
 
-                if (StringUtils.isBlank(errors)) {
+                if (StringUtils.isNotBlank(success)) {
                     headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
-                } else {
-                    headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                    Utils.infoDialog(headerText, success.toString());
                 }
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                Utils.infoDialog(headerText, contentText + ": " + mapName + "\nURL/Id WorkShop: " + idWorkShop);
+
+                if (StringUtils.isNotBlank(errors)) {
+                    headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                    Utils.infoDialog(headerText, errors.toString());
+                }
             }
         } catch (Exception e) {
             String message = "Error adding map/mod to the launcher";

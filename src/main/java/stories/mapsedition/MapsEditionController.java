@@ -1214,6 +1214,7 @@ public class MapsEditionController implements Initializable {
         platformNameList.add(EnumPlatform.EPIC.name());
 
         for (MapToDisplay customMapModToDisplay: customMapModList) {
+            /*
             CustomMapModDto customMapModImportedDto = facade.importCustomMapModFromServer(
                     platformNameList,
                     mapNameLabel,
@@ -1232,6 +1233,7 @@ public class MapsEditionController implements Initializable {
                             profileSelect.getValue().getName(),
                             customMapModImportedDto.getKey()
                     );
+
                     if (profileMapDtoOptional.isPresent()) {
                         steamPlatformProfileMapDtoList.add(profileMapDtoOptional.get());
                     }
@@ -1239,6 +1241,7 @@ public class MapsEditionController implements Initializable {
                     logger.error(e.getMessage(), e);
                 }
             }
+             */
         }
     }
 

@@ -88,20 +88,28 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         }
     }
 
-    @Override
-    public CustomMapModDto createNewCustomMapFromWorkshop(List<String> platformNameList, Long idWorkShop, String mapName, String strUrlMapImage, List<String> profileNameList) throws Exception {
+    private List<Profile> getProfileListByNames(List<String> profileNameList, StringBuffer success, StringBuffer errors) {
         List<Profile> profileList = profileNameList.stream().map(pn -> {
             try {
                 return findProfileByCode(pn);
             } catch (SQLException e) {
-                logger.error("Error finding a profile by name " + pn, e);
-                throw new RuntimeException("Error finding a profile by name " + pn, e);
+                String message = "Error finding the profile with name" + pn;
+                errors.append(message + "\n");
+                logger.error(message, e);
+                throw new RuntimeException(message, e);
             }
         }).collect(Collectors.toList());
         if (profileList == null || profileList.isEmpty()) {
-            throw new RuntimeException("No profiles were found.");
+            String message = "No profiles were found";
+            errors.append(message + "\n");
+            throw new RuntimeException(message);
         }
+        return profileList;
+    }
+
+    private List<AbstractPlatform> getPlatformListByNames(List<String> platformNameList, StringBuffer success, StringBuffer errors) {
         List<AbstractPlatform> platformList = platformNameList.stream().map(pn -> {
+            String message = "Error finding the platform with name" + pn;
             try {
                 Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(pn);
                 if (steamPlatformOptional.isPresent()) {
@@ -111,15 +119,30 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
                 if (epicPlatformOptional.isPresent()) {
                     return epicPlatformOptional.get();
                 }
+
+                errors.append(message + "\n");
                 return null;
+
             } catch (SQLException e) {
-                logger.error("Error finding a platform by name " + pn, e);
-                throw new RuntimeException("Error finding a platform by name " + pn, e);
+                errors.append(message + "\n");
+                logger.error(message, e);
+                throw new RuntimeException(message, e);
             }
         }).collect(Collectors.toList());
         if (platformList == null || platformList.isEmpty()) {
-            throw new RuntimeException("No platforms were found.");
+            String message = "No platforms were found";
+            errors.append(message + "\n");
+            throw new RuntimeException(message);
         }
+
+        return platformList;
+    }
+
+    @Override
+    public CustomMapModDto createNewCustomMapFromWorkshop(List<String> platformNameList, Long idWorkShop, String mapName, String strUrlMapImage, List<String> profileNameList, StringBuffer success, StringBuffer errors) throws Exception {
+
+        List<Profile> profileList = getProfileListByNames(profileNameList, success, errors);
+        List<AbstractPlatform> platformList = getPlatformListByNames(platformNameList, success, errors);
 
         String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
 
@@ -131,13 +154,23 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
 
         if (localfile != null) {
             String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
-            CustomMapMod insertedMap = createNewCustomMap(platformList, mapName, idWorkShop, relativeTargetFolder, profileList);
-            return insertedMap != null ? (CustomMapModDto) mapDtoFactory.newDto(insertedMap): null;
+            CustomMapMod insertedMap = createNewCustomMap(platformList, mapName, idWorkShop, relativeTargetFolder, profileList, success, errors);
+            if (insertedMap == null) {
+                String message = "The map with name " + mapName + " could not be added to the launcher";
+                errors.append(message + "\n");
+                return null;
+            }
+
+            success.append("The map with name " + mapName + " was added to all selected profiles and platforms" + "\n");
+            return (CustomMapModDto) mapDtoFactory.newDto(insertedMap);
         }
+
+        String message = "The map with name " + mapName + " could not be added to all selected profiles and platforms";
+        errors.append(message + "\n");
         return null;
     }
 
-    private CustomMapMod createNewCustomMap(List<AbstractPlatform> platformList, String mapName, Long idWorkShop, String urlPhoto, List<Profile> profileList) throws Exception {
+    private CustomMapMod createNewCustomMap(List<AbstractPlatform> platformList, String mapName, Long idWorkShop, String urlPhoto, List<Profile> profileList, StringBuffer success, StringBuffer errors) throws Exception {
         if (platformList.isEmpty() || StringUtils.isBlank(mapName) || idWorkShop == null) {
             return null;
         }
@@ -145,7 +178,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         String urlInfo = baseUrlWorkshop + idWorkShop;
         CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop);
 
-        return (CustomMapMod) customMapModService.createMap(platformList, customMap, profileList, null);
+        return (CustomMapMod) customMapModService.createMap(platformList, customMap, profileList, success, errors);
     }
 
     @Override
@@ -158,38 +191,10 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
     }
 
     @Override
-    public void addProfilesToMap(List<String> platformNameList, String mapName, String strUrlMapImage, List<String> profileNameList) throws Exception {
-        List<Profile> profileList = profileNameList.stream().map(pn -> {
-            try {
-                return findProfileByCode(pn);
-            } catch (SQLException e) {
-                logger.error("Error finding a profile by name " + pn, e);
-                return null;
-            }
-        }).collect(Collectors.toList());
-        if (profileList == null || profileList.isEmpty()) {
-            throw new RuntimeException("No profiles were found.");
-        }
+    public void addProfilesToMap(List<String> platformNameList, String mapName, String strUrlMapImage, List<String> profileNameList, StringBuffer success, StringBuffer errors) throws Exception {
 
-        List<AbstractPlatform> platformList = platformNameList.stream().map(pn -> {
-            try {
-                Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(pn);
-                if (steamPlatformOptional.isPresent()) {
-                    return steamPlatformOptional.get();
-                }
-                Optional<EpicPlatform> epicPlatformOptional = EpicPlatformDao.getInstance().findByCode(pn);
-                if (epicPlatformOptional.isPresent()) {
-                    return epicPlatformOptional.get();
-                }
-                return null;
-            } catch (SQLException e) {
-                logger.error("Error finding a platform by name " + pn, e);
-                return null;
-            }
-        }).collect(Collectors.toList());
-        if (platformList == null || platformList.isEmpty()) {
-            throw new RuntimeException("No platforms were found.");
-        }
+        List<Profile> profileList = getProfileListByNames(profileNameList, success, errors);
+        List<AbstractPlatform> platformList = getPlatformListByNames(platformNameList, success, errors);
 
         AbstractMap map = null;
         Optional officialMapOptional = officialMapService.findMapByCode(mapName);
@@ -212,13 +217,15 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         if (officialMapOptional.isPresent()) {
             officialMapService.addPlatformProfileMapList(
                     platformProfileMapListToAdd,
-                    null);
+                    success,
+                    errors);
         }
 
         if (customMapModOptional.isPresent()) {
             customMapModService.addPlatformProfileMapList(
                     platformProfileMapListToAdd,
-                    null);
+                    success,
+                    errors);
         }
 
         String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
@@ -239,10 +246,16 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         for (Profile profile: fullProfileList) {
             for (AbstractPlatform platform: fullPlatformList) {
                 Optional<PlatformProfileMap> platformProfileMapOptional = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(platform, profile).stream().
-                        filter(ppm -> !ppm.getMap().isOfficial()).
                         filter(ppm -> {
-                            CustomMapMod customMapMod = (CustomMapMod) Hibernate.unproxy(ppm.getMap());
-                            return idWorkShop.equals(customMapMod.getIdWorkShop());
+                            try {
+                                Optional<CustomMapMod> customMapModOptional = CustomMapModDao.getInstance().findByCode(ppm.getMap().getCode());
+                                if (customMapModOptional.isPresent()) {
+                                    return idWorkShop.equals(customMapModOptional.get().getIdWorkShop());
+                                }
+                            } catch (Exception e) {
+                                logger.error(e.getMessage(), e);
+                            }
+                            return false;
                         }).findFirst();
 
                 if (!platformProfileMapOptional.isPresent()) {
