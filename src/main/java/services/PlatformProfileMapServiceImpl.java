@@ -26,32 +26,11 @@ public class PlatformProfileMapServiceImpl implements PlatformProfileMapService 
 
     @Override
     public Optional<PlatformProfileMap> findPlatformProfileMapByNames(String platformName, String profileName, String mapName) throws SQLException {
-        Optional<PlatformProfileMap> platformProfileMapOpt = PlatformProfileMapDao.getInstance().findByPlatformNameProfileNameMapName(platformName, profileName, mapName);
-        List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
-        if (platformProfileMapOpt.isPresent()) {
-            if (idsMapasOficiales.contains(platformProfileMapOpt.get().getMap().getId())) {
-                platformProfileMapOpt.get().getMap().setOfficial(true);
-            } else {
-                platformProfileMapOpt.get().getMap().setOfficial(false);
-            }
-        }
-        return platformProfileMapOpt;
+        return PlatformProfileMapDao.getInstance().findByPlatformNameProfileNameMapName(platformName, profileName, mapName);
     }
 
     @Override
     public List<PlatformProfileMap> listPlatformProfileMaps(AbstractPlatform platform, Profile profile) throws SQLException {
-        List<PlatformProfileMap> platformProfileMapList = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(platform, profile);
-        List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
-        if (platformProfileMapList != null && !platformProfileMapList.isEmpty()) {
-
-            platformProfileMapList.forEach(ppm -> {
-                if (idsMapasOficiales.contains(ppm.getMap().getId())) {
-                    ppm.getMap().setOfficial(true);
-                } else {
-                    ppm.getMap().setOfficial(false);
-                }
-            });
-        }
-        return platformProfileMapList;
+        return PlatformProfileMapDao.getInstance().listPlatformProfileMaps(platform, profile);
     }
 }

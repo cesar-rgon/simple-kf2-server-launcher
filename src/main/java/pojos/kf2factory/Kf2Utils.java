@@ -1,5 +1,7 @@
 package pojos.kf2factory;
 
+import daos.CustomMapModDao;
+import daos.OfficialMapDao;
 import daos.PlatformProfileMapDao;
 import entities.AbstractMap;
 import entities.CustomMapMod;
@@ -219,7 +221,14 @@ public class Kf2Utils {
 
             List<AbstractMap> customMapsMods = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profile).stream().
                     map(PlatformProfileMap::getMap).
-                    filter(m -> !m.isOfficial()).
+                    filter(m -> {
+                        try {
+                            return CustomMapModDao.getInstance().findByCode(m.getCode()).isPresent();
+                        } catch (SQLException e) {
+                            logger.error(e.getMessage(), e);
+                            throw new RuntimeException(e.getMessage(), e);
+                        }
+                    }).
                     collect(Collectors.toList());
 
             if (customMapsMods != null && !customMapsMods.isEmpty()) {
@@ -261,7 +270,8 @@ public class Kf2Utils {
                             filter(m -> m.getCode().equals(mapName)).
                             findFirst();
 
-                    if (map.isPresent() && map.get().isOfficial() || line.contains("[KF-Default KFMapSummary]")) {
+
+                    if (map.isPresent() && OfficialMapDao.getInstance().findByCode(map.get().getCode()).isPresent() || line.contains("[KF-Default KFMapSummary]")) {
                         pw.println(line);
                         while (!line.contains("MapName=")) {
                             line = br.readLine();
@@ -286,7 +296,14 @@ public class Kf2Utils {
 
             List<AbstractMap> customMaps = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profile).stream().
                     map(PlatformProfileMap::getMap).
-                    filter(m -> !m.isOfficial()).
+                    filter(m -> {
+                        try {
+                            return CustomMapModDao.getInstance().findByCode(m.getCode()).isPresent();
+                        } catch (SQLException e) {
+                            logger.error(e.getMessage(), e);
+                            throw new RuntimeException(e.getMessage(), e);
+                        }
+                    }).
                     collect(Collectors.toList());
 
             if (customMaps != null && !customMaps.isEmpty()) {
@@ -354,14 +371,28 @@ public class Kf2Utils {
 
                     List<AbstractMap> officialMaps = platformProfileMapListForProfile.stream().
                             map(PlatformProfileMap::getMap).
-                            filter(m -> m.isOfficial()).
+                            filter(m -> {
+                                try {
+                                    return OfficialMapDao.getInstance().findByCode(m.getCode()).isPresent();
+                                } catch (SQLException e) {
+                                    logger.error(e.getMessage(), e);
+                                    throw new RuntimeException(e.getMessage(), e);
+                                }
+                            }).
                             sorted((o1, o2) -> o1.getCode().compareTo(o2.getCode())).
                             collect(Collectors.toList());
 
                     List<AbstractMap> downloadedCustomMaps = platformProfileMapListForProfile.stream().
                             filter(ppm -> ppm.isDownloaded()).
                             map(PlatformProfileMap::getMap).
-                            filter(m -> !m.isOfficial()).
+                            filter(m -> {
+                                try {
+                                    return CustomMapModDao.getInstance().findByCode(m.getCode()).isPresent();
+                                } catch (SQLException e) {
+                                    logger.error(e.getMessage(), e);
+                                    throw new RuntimeException(e.getMessage(), e);
+                                }
+                            }).
                             sorted((o1, o2) -> o1.getCode().compareTo(o2.getCode())).
                             collect(Collectors.toList());
 

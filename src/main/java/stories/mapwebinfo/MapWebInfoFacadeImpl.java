@@ -210,7 +210,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         List<PlatformProfileMap> platformProfileMapListToAdd = new ArrayList<PlatformProfileMap>();
         for (Profile profile: profileList) {
             for (AbstractPlatform platform: platformList) {
-                platformProfileMapListToAdd.add(new PlatformProfileMap(platform, profile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), map.isOfficial()));
+                platformProfileMapListToAdd.add(new PlatformProfileMap(platform, profile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), officialMapOptional.isPresent()));
             }
         }
 

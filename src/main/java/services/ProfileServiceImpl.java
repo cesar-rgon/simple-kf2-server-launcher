@@ -75,7 +75,7 @@ public class ProfileServiceImpl implements ProfileService {
             try {
                 platformProfileMapService.deleteItem(ppm);
 
-                if (!ppm.getMap().isOfficial()) {
+                if (CustomMapModDao.getInstance().findByCode(ppm.getMap().getCode()).isPresent()) {
                     CustomMapMod customMapMod = (CustomMapMod) ppm.getMap();
 
                     List<PlatformProfileMap> platformProfileMapListForMap = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(customMapMod);
@@ -714,7 +714,7 @@ public class ProfileServiceImpl implements ProfileService {
 
     private AbstractMap getImportedMap(Optional<AbstractMap> mapInDataBaseOpt, Profile profile, Properties properties, int profileIndex, Integer mapIndex, String mapName, Long idWorkShop, boolean official) throws Exception {
         if (mapInDataBaseOpt.isPresent()) {
-            if (mapInDataBaseOpt.get().isOfficial()) {
+            if (OfficialMapDao.getInstance().findByCode(mapInDataBaseOpt.get().getCode()).isPresent()) {
                 if (OfficialMapDao.getInstance().update((OfficialMap) mapInDataBaseOpt.get())) {
                     return mapInDataBaseOpt.get();
                 }

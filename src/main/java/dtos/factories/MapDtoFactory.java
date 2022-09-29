@@ -99,10 +99,8 @@ public class MapDtoFactory {
             List<PlatformProfileMap> platformProfileMapListForNewMap = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(map);
             List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
             if (idsMapasOficiales.contains(map.getId())) {
-                map.setOfficial(true);
                 return newOfficialMapDto(map, platformProfileMapListForNewMap);
             } else {
-                map.setOfficial(false);
                 return newCustomMapModDto(map, platformProfileMapListForNewMap);
             }
         } catch (SQLException e) {

@@ -28,20 +28,15 @@ public abstract class AbstractMap extends AbstractExtendedEntity {
     @Column(name="RELEASE_DATE")
     private Date releaseDate;
 
-    // Not mapped attribute
-    @Transient
-    private boolean official;
-
     protected AbstractMap() {
         super();
     }
 
-    protected AbstractMap(String code, String urlInfo, String urlPhoto, boolean official, Date releaseDate) {
+    protected AbstractMap(String code, String urlInfo, String urlPhoto, Date releaseDate) {
         this();
         this.code = code;
         this.urlInfo = urlInfo;
         this.urlPhoto = urlPhoto;
-        this.official = official;
         this.releaseDate = releaseDate;
     }
 
@@ -88,14 +83,6 @@ public abstract class AbstractMap extends AbstractExtendedEntity {
 
     public void setUrlPhoto(String urlPhoto) {
         this.urlPhoto = urlPhoto;
-    }
-
-    public boolean isOfficial() {
-        return official;
-    }
-
-    public void setOfficial(boolean official) {
-        this.official = official;
     }
 
     public Date getReleaseDate() {

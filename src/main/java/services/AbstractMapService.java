@@ -41,42 +41,17 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
 
 
     public Optional<AbstractMap> findMapByCode(String mapName) throws SQLException {
-        Optional<AbstractMap> mapOpt = findByCode(mapName);
-        List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
-        if (mapOpt.isPresent()) {
-            if (idsMapasOficiales.contains(mapOpt.get().getId())) {
-                mapOpt.get().setOfficial(true);
-            } else {
-                mapOpt.get().setOfficial(false);
-            }
-        }
-        return mapOpt;
+        return findByCode(mapName);
     }
 
     public List<AbstractMap> listAllMaps() throws SQLException {
-        List<AbstractMap> mapList = listAll();
-        List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
-        if (mapList != null && !mapList.isEmpty()) {
-            mapList.forEach(m -> {
-                if (idsMapasOficiales.contains(m.getId())) {
-                    m.setOfficial(true);
-                } else {
-                    m.setOfficial(false);
-                }
-            });
-        }
-        return mapList;
+        return listAll();
     }
 
     public AbstractMap createMap(List<AbstractPlatform> platformList, AbstractMap map, List<Profile> profileList, StringBuffer success, StringBuffer errors) {
         AbstractMap insertedMap = null;
+        boolean downloaded = false;
         try {
-            List<Integer> idsMapasOficiales = OfficialMapDao.getInstance().listAll().stream().map(OfficialMap::getId).collect(Collectors.toList());
-            if (idsMapasOficiales.contains(map.getId())) {
-                map.setOfficial(true);
-            } else {
-                map.setOfficial(false);
-            }
             insertedMap = createItem(map);
             if (insertedMap == null) {
                 String errorMessage = "Map to be created not found: " + map.getCode();
@@ -84,6 +59,7 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
                 logger.error(errorMessage);
                 return null;
             }
+            downloaded = OfficialMapDao.getInstance().findByCode(map.getCode()).isPresent();
         } catch (Exception e) {
             String errorMessage = "Error creating the map: " + map.getCode();
             errors.append(errorMessage + "\n");
@@ -92,11 +68,11 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
         }
 
         AbstractMap finalInsertedMap = insertedMap;
+        boolean finalDownloaded = downloaded;
         profileList.stream().forEach(profile -> {
-            boolean downloaded = map.isOfficial();
             platformList.stream().forEach(platform -> {
                 try {
-                    PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(platform, profile, finalInsertedMap, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), downloaded);
+                    PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(platform, profile, finalInsertedMap, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), finalDownloaded);
                     platformProfileMapService.createItem(newPlatformProfileMap);
 
                     String successMessage = "The relation between the map " + map.getCode() + ", the profile " + profile.getCode() + " and the platform " + platform.getDescription() + " has been created";

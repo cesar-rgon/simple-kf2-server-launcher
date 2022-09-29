@@ -15,7 +15,7 @@ public class CustomMapMod extends AbstractMap {
     }
 
     public CustomMapMod(String code, String urlInfo, String urlPhoto, Long idWorkShop) {
-        super(code, urlInfo, urlPhoto,false, null);
+        super(code, urlInfo, urlPhoto, null);
         this.idWorkShop = idWorkShop;
     }
 
