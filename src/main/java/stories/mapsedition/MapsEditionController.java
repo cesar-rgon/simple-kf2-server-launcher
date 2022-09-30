@@ -687,9 +687,6 @@ public class MapsEditionController implements Initializable {
                 @Override
                 protected List<PlatformProfileMapDto> call() throws Exception {
 
-                    String platformNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.platformName");
-                    String profileNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileName");
-
                     List<PlatformProfileMapDto> mapAddedListToActualPlatformProfile = new ArrayList<PlatformProfileMapDto>();
                     for (AddMapsToPlatformProfile addMapsToPlatformProfile: finalAddMapsToPlatformProfileList) {
 
@@ -711,10 +708,8 @@ public class MapsEditionController implements Initializable {
                                         mapAddedListToActualPlatformProfile.addAll(mapAddedList);
                                     }
                                 } else {
-                                    String[] idUrlWorkShopArray = addMapsToPlatformProfile.getMapList().replaceAll(" ", "").split(",");
-                                    for (String idUrlWorkShop: idUrlWorkShopArray) {
-                                        errors.append(platformNameMessage + ": ").append(EnumPlatform.STEAM.getDescripcion()).append(" - " + profileNameMessage + ": ").append(addMapsToPlatformProfile.getProfileName()).append(" - url/id WorkShop: ").append(idUrlWorkShop).append("\n");
-                                    }
+                                    String errorMessage = "The platform " + EnumPlatform.STEAM.getDescripcion() + " has not a correct installation folder";
+                                    errors.append(errorMessage + "\n");
                                 }
                                 break;
 
@@ -734,27 +729,26 @@ public class MapsEditionController implements Initializable {
                                         mapAddedListToActualPlatformProfile.addAll(mapAddedList);
                                     }
                                 } else {
-                                    String[] idUrlWorkShopArray = addMapsToPlatformProfile.getMapList().replaceAll(" ", "").split(",");
-                                    for (String idUrlWorkShop: idUrlWorkShopArray) {
-                                        errors.append(platformNameMessage + ": ").append(EnumPlatform.EPIC.getDescripcion()).append(" - " + profileNameMessage + ": ").append(addMapsToPlatformProfile.getProfileName()).append(" - url/id WorkShop: ").append(idUrlWorkShop).append("\n");
-                                    }
+                                    String errorMessage = "The platform " + EnumPlatform.EPIC.getDescripcion() + " has not a correct installation folder";
+                                    errors.append(errorMessage + "\n");
                                 }
                                 break;
 
                             case "All platforms":
                                 if (facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
                                     platformNameList.add(EnumPlatform.STEAM.name());
-                                }
-                                if (facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
-                                    platformNameList.add(EnumPlatform.EPIC.name());
+                                } else {
+                                    String errorMessage = "The platform " + EnumPlatform.STEAM.getDescripcion() + " has not a correct installation folder";
+                                    errors.append(errorMessage + "\n");
                                 }
 
-                                if (platformNameList.isEmpty()) {
-                                    String[] idUrlWorkShopArray = addMapsToPlatformProfile.getMapList().replaceAll(" ", "").split(",");
-                                    for (String idUrlWorkShop: idUrlWorkShopArray) {
-                                        errors.append(platformNameMessage + ": ").append(EnumPlatform.EPIC.getDescripcion()).append(" - " + profileNameMessage + ": ").append(addMapsToPlatformProfile.getProfileName()).append(" - url/id WorkShop: ").append(idUrlWorkShop).append("\n");
-                                    }
+                                if (facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
+                                    platformNameList.add(EnumPlatform.EPIC.name());
+                                } else {
+                                    String errorMessage = "The platform " + EnumPlatform.EPIC.getDescripcion() + " has not a correct installation folder";
+                                    errors.append(errorMessage + "\n");
                                 }
+
                                 List<PlatformProfileMapDto> mapAddedList = facade.addCustomMapsToProfile(
                                         platformNameList,
                                         addMapsToPlatformProfile.getProfileName(),
@@ -824,6 +818,7 @@ public class MapsEditionController implements Initializable {
                 progressIndicator.setVisible(false);
 
                 try {
+                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfiles");
                     if (StringUtils.isNotBlank(success)) {
                         String steamCustomMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamCustomMaps");
                         steamCustomMapsTab.setGraphic(createTabTitle(steamCustomMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
@@ -831,18 +826,15 @@ public class MapsEditionController implements Initializable {
                         String epicCustomMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.epicCustomMaps");
                         epicCustomMapsTab.setGraphic(createTabTitle(epicCustomMapsModsTabText, epicCustomMapsFlowPane.getChildren().size()));
 
-                        String message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapsAdded");
-                        Utils.infoDialog(message + ":", success.toString());
-                    } else {
-                        String mapsNotAddedText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapsNotAdded");
-                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.checkUrlIdWorkshop");
-                        Utils.infoDialog(mapsNotAddedText, contentText);
+                        headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                        Utils.infoDialog(headerText, success.toString());
                     }
+
                     if (StringUtils.isNotBlank(errors)) {
-                        logger.warn("Error adding next maps/mods to the launcher: " + errors.toString());
-                        String message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapsNotAddedError");
-                        Utils.warningDialog(message + ":", errors.toString());
+                        headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                        Utils.infoDialog(headerText, errors.toString());
                     }
+
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 }

@@ -27,4 +27,5 @@ public interface MapsEditionFacade {
     Optional<PlatformProfileMapDto> findPlatformProfileMapDtoByNames(String platformName, String profileName, String mapName) throws SQLException;
     Optional<PlatformProfileMap> findPlatformProfileMapByNames(String platformName, String profileName, String mapName) throws SQLException;
     List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws SQLException;
+    String[] getMapNameAndUrlImage(Long idWorkShop) throws Exception;
 }

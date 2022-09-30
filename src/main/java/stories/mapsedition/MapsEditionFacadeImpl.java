@@ -70,30 +70,8 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     }
 
 
-    private CustomMapMod createNewCustomMapFromWorkshop(List<String> platformNameList, Long idWorkShop, List<String> profileNameList, StringBuffer success, StringBuffer errors) throws Exception {
-        List<Profile> profileList = profileNameList.stream().map(pn -> {
-            try {
-                return findProfileByCode(pn);
-            } catch (SQLException e) {
-                logger.error("Error finding a profile by name " + pn, e);
-                return null;
-            }
-        }).collect(Collectors.toList());
-        if (profileList == null || profileList.isEmpty()) {
-            return null;
-        }
-        List<AbstractPlatform> platformList = platformNameList.stream().map(pn -> {
-            try {
-                return findPlatformByCode(pn);
-            } catch (SQLException e) {
-                logger.error("Error finding a platform by name " + pn, e);
-                return null;
-            }
-        }).collect(Collectors.toList());
-        if (platformList == null || platformList.isEmpty()) {
-            return null;
-        }
-
+    @Override
+    public String[] getMapNameAndUrlImage(Long idWorkShop) throws Exception {
         URL urlWorkShop = null;
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         urlWorkShop = new URL(baseUrlWorkshop + idWorkShop);
@@ -117,6 +95,33 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
             }
         }
         reader.close();
+        return new String[]{mapName, strUrlMapImage};
+    }
+
+    private CustomMapMod createNewCustomMapFromWorkshop(List<String> platformNameList, Long idWorkShop, List<String> profileNameList, String mapName, String strUrlMapImage, StringBuffer success, StringBuffer errors) throws Exception {
+        List<Profile> profileList = profileNameList.stream().map(pn -> {
+            try {
+                return findProfileByCode(pn);
+            } catch (SQLException e) {
+                logger.error("Error finding a profile by name " + pn, e);
+                return null;
+            }
+        }).collect(Collectors.toList());
+        if (profileList == null || profileList.isEmpty()) {
+            return null;
+        }
+        List<AbstractPlatform> platformList = platformNameList.stream().map(pn -> {
+            try {
+                return findPlatformByCode(pn);
+            } catch (SQLException e) {
+                logger.error("Error finding a platform by name " + pn, e);
+                return null;
+            }
+        }).collect(Collectors.toList());
+        if (platformList == null || platformList.isEmpty()) {
+            return null;
+        }
+
         String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
 
         File localfile = new File(StringUtils.EMPTY);
@@ -336,42 +341,97 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         return kf2Common.runServer(profileOpt.isPresent()? profileOpt.get(): null);
     }
 
-    @Override
-    public List<PlatformProfileMapDto> addCustomMapsToProfile(List<String> platformNameList, String profileName, String mapNameList, String languageCode, String actualSelectedProfile, StringBuffer success, StringBuffer errors) {
-
-        List<AbstractPlatform> platformList = platformNameList.stream().map(pn -> {
-            try {
-                return findPlatformByCode(pn);
-            } catch (SQLException e) {
-                logger.error("Error finding a platform by name " + pn, e);
-                return null;
-            }
-        }).collect(Collectors.toList());
-        if (platformList == null || platformList.isEmpty()) {
-            return null;
-        }
+    private Profile getProfileByName(String profileName, StringBuffer success, StringBuffer errors) {
         Profile profile = null;
         try {
             profile = findProfileByCode(profileName);
         } catch (SQLException e) {
-            logger.error("Error finding a profile by name " + profileName, e);
-            return null;
+            String message = "Error finding the profile with name" + profileName;
+            errors.append(message + "\n");
+            logger.error(message, e);
+            throw new RuntimeException(message, e);
         }
         if (profile == null) {
-            return null;
+            String message = "No profiles were found";
+            errors.append(message + "\n");
+            throw new RuntimeException(message);
+        }
+        return profile;
+    }
+
+    private List<AbstractPlatform> getPlatformListByNames(List<String> platformNameList, StringBuffer success, StringBuffer errors) {
+        List<AbstractPlatform> platformList = platformNameList.stream().map(pn -> {
+            String message = "Error finding the platform with name" + pn;
+            try {
+                Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(pn);
+                if (steamPlatformOptional.isPresent()) {
+                    return steamPlatformOptional.get();
+                }
+                Optional<EpicPlatform> epicPlatformOptional = EpicPlatformDao.getInstance().findByCode(pn);
+                if (epicPlatformOptional.isPresent()) {
+                    return epicPlatformOptional.get();
+                }
+
+                errors.append(message + "\n");
+                return null;
+
+            } catch (SQLException e) {
+                errors.append(message + "\n");
+                logger.error(message, e);
+                throw new RuntimeException(message, e);
+            }
+        }).collect(Collectors.toList());
+        if (platformList == null || platformList.isEmpty()) {
+            String message = "No platforms were found";
+            errors.append(message + "\n");
+            throw new RuntimeException(message);
         }
 
-        List<PlatformProfileMapDto> mapAddedList = new ArrayList<PlatformProfileMapDto>();
+        return platformList;
+    }
 
+    private List<PlatformProfile> getPlatformProfileListWithoutMap(Long idWorkShop) throws SQLException {
+
+        List<AbstractPlatform> fullPlatformList = AbstractPlatformDao.getInstance().listAll();
+        List<Profile> fullProfileList = profileService.listAllProfiles();
+        List<PlatformProfile> platformProfileListWithoutMap = new ArrayList<PlatformProfile>();
+
+        for (Profile profile: fullProfileList) {
+            for (AbstractPlatform platform: fullPlatformList) {
+                Optional<PlatformProfileMap> platformProfileMapOptional = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(platform, profile).stream().
+                        filter(ppm -> {
+                            try {
+                                Optional<CustomMapMod> customMapModOptional = CustomMapModDao.getInstance().findByCode(ppm.getMap().getCode());
+                                if (customMapModOptional.isPresent()) {
+                                    return idWorkShop.equals(customMapModOptional.get().getIdWorkShop());
+                                }
+                            } catch (Exception e) {
+                                logger.error(e.getMessage(), e);
+                            }
+                            return false;
+                        }).findFirst();
+
+                if (!platformProfileMapOptional.isPresent()) {
+                    platformProfileListWithoutMap.add(new PlatformProfile(platform, profile));
+                }
+            }
+        }
+
+        return platformProfileListWithoutMap;
+    }
+
+    @Override
+    public List<PlatformProfileMapDto> addCustomMapsToProfile(List<String> platformNameList, String profileName, String mapNameList, String languageCode, String actualSelectedProfile, StringBuffer success, StringBuffer errors) {
+
+        Profile profile = getProfileByName(profileName, success, errors);
+        List<AbstractPlatform> platformList = getPlatformListByNames(platformNameList, success, errors);
+
+        List<PlatformProfileMapDto> mapAddedList = new ArrayList<PlatformProfileMapDto>();
         if (StringUtils.isNotBlank(mapNameList)) {
             String[] idUrlWorkShopArray = mapNameList.replaceAll(" ", "").split(",");
 
             for (int i = 0; i < idUrlWorkShopArray.length; i++) {
-                String profileNameMessage = StringUtils.EMPTY;
-                String platformNameMessage = StringUtils.EMPTY;
                 try {
-                    platformNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.platformName");
-                    profileNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileName");
                     Long idWorkShop = null;
                     if (idUrlWorkShopArray[i].contains("http")) {
                         String[] array = idUrlWorkShopArray[i].split("=");
@@ -380,13 +440,17 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
                         idWorkShop = Long.parseLong(idUrlWorkShopArray[i]);
                     }
 
+                    String[] result = getMapNameAndUrlImage(idWorkShop);
+                    String mapName = result[0];
+                    String strUrlMapImage = result[1];
+
                     Optional<CustomMapMod> mapModInDataBase = CustomMapModDao.getInstance().findByIdWorkShop(idWorkShop);
                     if (!mapModInDataBase.isPresent()) {
                         // The map is not in dabatabase, create a new map for actual profile
                         List<String> profileNameList = new ArrayList<String>();
                         profileNameList.add(profileName);
 
-                        CustomMapMod customMap = createNewCustomMapFromWorkshop(platformNameList, idWorkShop, profileNameList, success, errors);
+                        CustomMapMod customMap = createNewCustomMapFromWorkshop(platformNameList, idWorkShop, profileNameList, mapName, strUrlMapImage, success, errors);
                         if (customMap != null) {
                             if (profileName.equalsIgnoreCase(actualSelectedProfile)) {
                                 Optional<Profile> profileOptional = ProfileDao.getInstance().findByCode(profileName);
@@ -394,48 +458,37 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
                                     for (AbstractPlatform platform: platformList) {
                                         PlatformProfileMap platformProfileMap = new PlatformProfileMap(platform, profileOptional.get(), customMap, customMap.getReleaseDate(), customMap.getUrlInfo(), customMap.getUrlPhoto(), false);
                                         mapAddedList.add(platformProfileMapDtoFactory.newDto(platformProfileMap));
-                                        String mapNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-                                        success.append(platformNameMessage + ": ").append(platform.getDescription()).append(" - " + profileNameMessage + ": ").append(profileName).append(" - " + mapNameMessage + ": ").append(customMap.getCode()).append(" - id WorkShop: ").append(customMap.getIdWorkShop()).append("\n");
                                     }
                                 }
                             }
                         } else {
-                            for (String platformName: platformNameList) {
-                                errors.append(platformNameMessage + ": ").append(platformName).append(" - " + profileNameMessage + ": ").append(profileName).append(" - url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
-                            }
+                            throw new RuntimeException("Error adding map/mod with name with idWorkshop " + idWorkShop);
                         }
                     } else {
-                        List<PlatformProfileMap> platformProfileMapListForProfile = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profile);
-
-                        List<AbstractPlatform> platformListContainingMap = platformProfileMapListForProfile.stream().
-                                filter(ppm -> ppm.getMap().equals(mapModInDataBase.get())).
-                                filter(ppm -> platformList.contains(ppm.getPlatform())).
-                                map(PlatformProfileMap::getPlatform).
-                                collect(Collectors.toList());
-
-                        platformList.removeAll(platformListContainingMap);
-                        List<AbstractPlatform> platformListNotContainingMap = platformList;
-
-                        String mapNameMessage = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+                        List<AbstractPlatform> platformListForProfileWithoutMap = getPlatformProfileListWithoutMap(idWorkShop).stream().map(PlatformProfile::getPlatform).collect(Collectors.toList());
                         List<PlatformProfileMap> ppmList = new ArrayList<PlatformProfileMap>();
-                        for (AbstractPlatform platformNotContainingMap: platformListNotContainingMap) {
-                            PlatformProfileMap ppm = new PlatformProfileMap(platformNotContainingMap, profile, mapModInDataBase.get(), mapModInDataBase.get().getReleaseDate(), mapModInDataBase.get().getUrlInfo(), mapModInDataBase.get().getUrlPhoto(), false);
-                            ppmList.add(ppm);
-                            success.append(platformNameMessage + ": ").append(platformNotContainingMap.getDescription()).append(" - " + profileNameMessage + ": ").append(profileName).append(" - " + mapNameMessage + ": ").append(mapModInDataBase.get().getCode()).append(" - id WorkShop: ").append(mapModInDataBase.get().getIdWorkShop()).append("\n");
+                        String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
+
+                        for (AbstractPlatform platform: platformList) {
+                            if (platformListForProfileWithoutMap.contains(platform)) {
+                                PlatformProfileMap ppm = new PlatformProfileMap(platform, profile, mapModInDataBase.get(), mapModInDataBase.get().getReleaseDate(), mapModInDataBase.get().getUrlInfo(), mapModInDataBase.get().getUrlPhoto(), false);
+                                ppmList.add(ppm);
+
+                                String absoluteTargetFolder = ppm.getPlatform().getInstallationFolder() + customMapLocalFolder;
+                                Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapModInDataBase.get().getCode());
+                            } else {
+                                String errorMessage = "Error creating the relation between the map " + mapName + ", the profile " + profile.getCode() + " and the platform " + platform.getDescription();
+                                errors.append(errorMessage + "\n");
+                            }
                         }
 
                         addPlatformProfileMapList(ppmList, success, errors);
                         mapAddedList.addAll(platformProfileMapDtoFactory.newDtos(ppmList));
-
-                        for (AbstractPlatform platformContainingMap: platformListContainingMap) {
-                            errors.append(platformNameMessage + ": ").append(platformContainingMap.getDescription()).append(" - " + profileNameMessage + ": ").append(profileName).append(" - url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
-                        }
                     }
 
                 } catch (Exception e) {
-                    for (AbstractPlatform platform: platformList) {
-                        errors.append(platformNameMessage + ": ").append(platform.getDescription()).append(" - " + profileNameMessage + ": ").append(profileName).append(" - url/id WorkShop: ").append(idUrlWorkShopArray[i]).append("\n");
-                    }
+                    String message = "Error adding map/mod to the launcher";
+                    logger.error(message, e);
                 }
             }
         }
