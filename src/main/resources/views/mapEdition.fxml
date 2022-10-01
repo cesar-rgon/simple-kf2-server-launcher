@@ -7,7 +7,7 @@
 <?import javafx.scene.text.*?>
 <?import javafx.scene.web.*?>
 
-<fx:root fx:id="mapEdition" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapedition.MapEditionController">
+<fx:root fx:id="mapEdition" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapedition.MapEditionController">
     <children>
         <ImageView fitHeight="660.0" pickOnBounds="true" preserveRatio="true" GridPane.columnSpan="4" GridPane.halignment="CENTER" GridPane.rowSpan="15" GridPane.valignment="CENTER">
             <image>
@@ -85,18 +85,18 @@
             </GridPane.margin>
         </Label>
 
-        <ImageView fx:id="idWorkShopImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
+        <ImageView fx:id="platformImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/label-inverted.png" />
             </image>
         </ImageView>
-        <Label fx:id="idWorkShopLabel" alignment="CENTER_RIGHT" styleClass="width150" text="ID WORKSHOP" textFill="WHITE" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
+        <Label fx:id="platformLabel" alignment="CENTER_RIGHT" styleClass="width150" text="PLATFORM" textFill="WHITE" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
 
-        <Label fx:id="idWorkShopValue" style="-fx-font-weight: bold;" text="Id WorkShop Value" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
+        <Label fx:id="platformValue" style="-fx-font-weight: bold;" text="Platform Value" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font>
@@ -105,18 +105,38 @@
             </GridPane.margin>
         </Label>
 
-        <ImageView fx:id="importationDateImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
+        <ImageView fx:id="idWorkShopImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/label-inverted.png" />
             </image>
         </ImageView>
-        <Label fx:id="importationDateLabel" alignment="CENTER_RIGHT" styleClass="width150" text="IMPORTATION DATE" textFill="WHITE" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
+        <Label fx:id="idWorkShopLabel" alignment="CENTER_RIGHT" styleClass="width150" text="ID WORKSHOP" textFill="WHITE" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
             <GridPane.margin>
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
 
-        <Label fx:id="importationDateValue" style="-fx-font-weight: bold;" text="Date Value" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
+        <Label fx:id="idWorkShopValue" style="-fx-font-weight: bold;" text="Id WorkShop Value" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
+            <font>
+                <Font size="16.0" />
+            </font>
+            <GridPane.margin>
+                <Insets bottom="2.0" right="170.0" />
+            </GridPane.margin>
+        </Label>
+
+        <ImageView fx:id="importationDateImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="12" GridPane.valignment="CENTER">
+            <image>
+                <Image url="@../images/label-inverted.png" />
+            </image>
+        </ImageView>
+        <Label fx:id="importationDateLabel" alignment="CENTER_RIGHT" styleClass="width150" text="IMPORTATION DATE" textFill="WHITE" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="12" GridPane.valignment="CENTER">
+            <GridPane.margin>
+                <Insets right="10.0" />
+            </GridPane.margin>
+        </Label>
+
+        <Label fx:id="importationDateValue" style="-fx-font-weight: bold;" text="Date Value" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="12" GridPane.valignment="CENTER">
             <font>
                 <Font size="16.0" />
             </font>

@@ -41,8 +41,6 @@ public class MapEditionController implements Initializable {
 
     private final MapEditionFacade facade;
     private final PropertyService propertyService;
-
-    private String installationFolder;
     private String languageCode;
     private int profileMapIndex;
 
@@ -53,6 +51,9 @@ public class MapEditionController implements Initializable {
     @FXML private Label officialValue;
     @FXML private ImageView downloadedImg;
     @FXML private Label downloadedValue;
+    @FXML private ImageView platformImg;
+    @FXML private Label platformLabel;
+    @FXML private Label platformValue;
     @FXML private ImageView idWorkShopImg;
     @FXML private Label idWorkShopLabel;
     @FXML private Label idWorkShopValue;
@@ -91,11 +92,6 @@ public class MapEditionController implements Initializable {
 
         try {
             languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-            if (EnumPlatform.STEAM.equals(Session.getInstance().getPlatform())) {
-                installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
-            } else {
-                installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
-            }
             String editMapText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.editMap");
             titleConfigLabel.setText(editMapText);
 
@@ -138,6 +134,10 @@ public class MapEditionController implements Initializable {
             String downloadedText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.downloaded");
             downloadedLabel.setText(downloadedText);
             loadTooltip(languageCode, "prop.tooltip.downloaded", downloadedImg, downloadedLabel, downloadedValue);
+
+            String platformText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.platform");
+            platformLabel.setText(platformText);
+            loadTooltip(languageCode, "prop.tooltip.platform", platformImg, platformLabel, platformValue);
 
             loadTooltip(languageCode, "prop.tooltip.idWorkShop", idWorkShopImg, idWorkShopLabel, idWorkShopValue);
 
@@ -219,12 +219,12 @@ public class MapEditionController implements Initializable {
                         String relativeTargetFolder = StringUtils.EMPTY;
                         if (mapPreviewUrlTextField.getText() != null && mapPreviewUrlTextField.getText().startsWith("http")) {
                             String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
-                            String absoluteTargetFolder = installationFolder + customMapLocalFolder;
+                            String absoluteTargetFolder = edittedPlatformProfileMap.getPlatform().getInstallationFolder() + customMapLocalFolder;
                             File localfile = Utils.downloadImageFromUrlToFile(mapPreviewUrlTextField.getText(), absoluteTargetFolder, edittedPlatformProfileMap.getMap().getCode());
                             relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
 
                         } else if (mapPreviewUrlTextField.getText() != null && mapPreviewUrlTextField.getText().startsWith("file:")) {
-                            relativeTargetFolder = mapPreviewUrlTextField.getText().replace("file:", "").replace(installationFolder, "");
+                            relativeTargetFolder = mapPreviewUrlTextField.getText().replace("file:", "").replace(edittedPlatformProfileMap.getPlatform().getInstallationFolder(), "");
                         }
 
                         if (facade.updateMapSetUrlPhoto(edittedPlatformProfileMap, relativeTargetFolder)) {
@@ -361,6 +361,7 @@ public class MapEditionController implements Initializable {
 
                 officialValue.setText(platformProfileMapDto.getMapDto().isOfficial() ? yesText : noText);
                 downloadedValue.setText(platformProfileMapDto.getMapDto().isOfficial() ? yesText : platformProfileMapDto.isDownloaded() ? yesText : noText);
+                platformValue.setText(platformProfileMapDto.getPlatformDto().getValue());
                 idWorkShopValue.setText(platformProfileMapDto.getMapDto().isOfficial() ? StringUtils.EMPTY : String.valueOf(((CustomMapModDto) platformProfileMapDto.getMapDto()).getIdWorkShop()));
                 String unknownStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unknown");
                 String dateHourPattern = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.code.dateHourPattern");
@@ -374,8 +375,8 @@ public class MapEditionController implements Initializable {
                 );
 
                 if (StringUtils.isNotBlank(platformProfileMapDto.getUrlPhoto())) {
-                    webEngine.load("file:" + installationFolder + platformProfileMapDto.getUrlPhoto());
-                    mapPreviewUrlTextField.setText("file:" + installationFolder + platformProfileMapDto.getUrlPhoto());
+                    webEngine.load("file:" + platformProfileMapDto.getPlatformDto().getInstallationFolder() + platformProfileMapDto.getUrlPhoto());
+                    mapPreviewUrlTextField.setText("file:" + platformProfileMapDto.getPlatformDto().getInstallationFolder() + platformProfileMapDto.getUrlPhoto());
                 } else {
                     File file = new File(System.getProperty("user.dir") + "/external-images/no-photo.png");
                     if (file.exists()) {

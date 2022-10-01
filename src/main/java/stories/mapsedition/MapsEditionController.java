@@ -1507,26 +1507,19 @@ public class MapsEditionController implements Initializable {
         }
     }
 
-    @FXML
-    private void editMapsOnAction() {
-        try {/*
-            if (!facade.isCorrectInstallationFolder(installationFolder)) {
-                logger.warn("Installation folder can not be empty and can not contains whitespaces. Define in Install/Update section: " + installationFolder);
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
-                Utils.warningDialog(headerText, contentText);
-                return;
-            }
-            */
+    private List<PlatformProfileMap> getSteamEditList() throws SQLException {
 
-            ObservableList<Node> nodeList = null;
-            List<PlatformProfileMap> editList = new ArrayList<PlatformProfileMap>();
-            if (steamOfficialMapsTab.isSelected()) {
-                nodeList = steamOfficialMapsFlowPane.getChildren();
-            } else {
+        List<PlatformProfileMap> editList = new ArrayList<PlatformProfileMap>();
+
+        ObservableList<Node> nodeList = null;
+        if (steamOfficialMapsTab.isSelected()) {
+            nodeList = steamOfficialMapsFlowPane.getChildren();
+        } else {
+            if (steamCustomMapsTab.isSelected()) {
                 nodeList = steamCustomMapsFlowPane.getChildren();
             }
-
+        }
+        if (nodeList != null && !nodeList.isEmpty()) {
             for (Node node : nodeList) {
                 GridPane gridpane = (GridPane) node;
                 Label aliasLabel = (Label) gridpane.getChildren().get(1);
@@ -1536,7 +1529,7 @@ public class MapsEditionController implements Initializable {
                 if (checkbox.isSelected()) {
                     String mapName = mapNameLabel.getText();
                     Optional<PlatformProfileMap> profileMapOptional = facade.findPlatformProfileMapByNames(
-                            Session.getInstance().getPlatform().getKey(),
+                            EnumPlatform.STEAM.name(),
                             profileSelect.getValue().getName(),
                             mapName
                     );
@@ -1545,6 +1538,62 @@ public class MapsEditionController implements Initializable {
                     }
                 }
             }
+        }
+
+        if (!editList.isEmpty() && !facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
+            String errorMessage = "Invalid Steam installation folder was found. Define in Install/Update section.";
+            throw new RuntimeException(errorMessage);
+        }
+
+        return editList;
+    }
+
+    private List<PlatformProfileMap> getEpicEditList() throws Exception {
+        List<PlatformProfileMap> editList = new ArrayList<PlatformProfileMap>();
+
+        ObservableList<Node> nodeList = null;
+        if (epicOfficialMapsTab.isSelected()) {
+            nodeList = epicOfficialMapsFlowPane.getChildren();
+        } else {
+            if (epicCustomMapsTab.isSelected()) {
+                nodeList = epicCustomMapsFlowPane.getChildren();
+            }
+        }
+
+        if (nodeList != null && !nodeList.isEmpty()) {
+            for (Node node : nodeList) {
+                GridPane gridpane = (GridPane) node;
+                Label aliasLabel = (Label) gridpane.getChildren().get(1);
+                Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                CheckBox checkbox = (CheckBox) aliasLabel.getGraphic();
+
+                if (checkbox.isSelected()) {
+                    String mapName = mapNameLabel.getText();
+                    Optional<PlatformProfileMap> profileMapOptional = facade.findPlatformProfileMapByNames(
+                            EnumPlatform.EPIC.name(),
+                            profileSelect.getValue().getName(),
+                            mapName
+                    );
+                    if (profileMapOptional.isPresent()) {
+                        editList.add(profileMapOptional.get());
+                    }
+                }
+            }
+        }
+
+        if (!editList.isEmpty() && !facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
+            String errorMessage = "Invalid Epic Games installation folder was found. Define in Install/Update section.";
+            throw new RuntimeException(errorMessage);
+        }
+
+        return editList;
+    }
+
+    @FXML
+    private void editMapsOnAction() {
+        try {
+            List<PlatformProfileMap> editList = getSteamEditList();
+            editList.addAll(getEpicEditList());
 
             if (editList.isEmpty()) {
                 logger.warn("No selected maps/mods to edit. You must select at least one item to be editted");
