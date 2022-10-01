@@ -9,6 +9,7 @@ import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class CustomMapModServiceImpl extends AbstractMapService {
 
@@ -44,15 +45,19 @@ public class CustomMapModServiceImpl extends AbstractMapService {
     public CustomMapMod deleteMap(AbstractPlatform platform, CustomMapMod map, Profile profile) throws Exception {
         super.deleteMap(platform, map, profile);
 
-        List<PlatformProfileMap> platformProfileMapListForMap = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(map);
-        if (platformProfileMapListForMap.isEmpty()) {
-            deleteItem(map);
+        List<PlatformProfileMap> ppmListForMap = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(map);
+
+        List<PlatformProfileMap> ppmListForPlatformMap = ppmListForMap.stream().filter(ppm -> ppm.getPlatform().equals(platform)).collect(Collectors.toList());
+        if (ppmListForPlatformMap.isEmpty()) {
             File photo = new File(platform.getInstallationFolder() + map.getUrlPhoto());
             photo.delete();
             File cacheFolder = new File(platform.getInstallationFolder() + "/KFGame/Cache/" + map.getIdWorkShop());
             FileUtils.deleteDirectory(cacheFolder);
         }
 
+        if (ppmListForMap.isEmpty()) {
+            deleteItem(map);
+        }
         return map;
     }
 }

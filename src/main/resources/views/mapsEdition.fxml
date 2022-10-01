@@ -145,10 +145,6 @@
             <Insets right="112.0" top="20.0" />
          </GridPane.margin>
       </MenuBar>
-      <CheckBox fx:id="selectAllMaps" alignment="CENTER" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#selectAllMapsOnAction" text="Select all" GridPane.columnIndex="4" GridPane.halignment="RIGHT">
-         <GridPane.margin>
-            <Insets left="10.0" top="104.0" />
-         </GridPane.margin></CheckBox>
    </children>
    <columnConstraints>
       <ColumnConstraints maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />

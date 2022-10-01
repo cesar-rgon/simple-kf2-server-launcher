@@ -63,7 +63,6 @@ public class MapsEditionController implements Initializable {
     protected String languageCode;
     private List<PlatformProfileMapDto> steamPlatformProfileMapDtoList;
     private List<PlatformProfileMapDto> epicPlatformProfileMapDtoList;
-    private boolean selectMaps;
 
     @FXML private Slider mapsSlider;
     @FXML private FlowPane steamOfficialMapsFlowPane;
@@ -74,7 +73,6 @@ public class MapsEditionController implements Initializable {
     @FXML private MenuItem addNewMaps;
     @FXML private MenuItem searchInWorkShop;
     @FXML private MenuItem removeMaps;
-    @FXML private CheckBox selectAllMaps;
     @FXML private MenuItem importMapsFromServer;
     @FXML private TabPane mapsTabPane;
     @FXML private Tab steamOfficialMapsTab;
@@ -124,7 +122,6 @@ public class MapsEditionController implements Initializable {
                 protected Void call() throws Exception {
 
                     languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-                    selectMaps = true;
                     String profileLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profile");
                     profileLabel.setText(profileLabelText);
 
@@ -190,12 +187,6 @@ public class MapsEditionController implements Initializable {
                     String removeMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeMaps");
                     removeMaps.setText(removeMapsText);
 
-                    String selectAllMapsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.selectMaps");
-                    selectAllMaps.setText(selectAllMapsText);
-                    Tooltip selectAllMapsTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.selectAllMaps"));
-                    selectAllMapsTooltip.setShowDuration(Duration.seconds(tooltipDuration));
-                    selectAllMaps.setTooltip(selectAllMapsTooltip);
-
                     String importMapsFromServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importMaps");
                     importMapsFromServer.setText(importMapsFromServerText);
 
@@ -239,16 +230,17 @@ public class MapsEditionController implements Initializable {
                 }
 
                 try {
+                    String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
+                    String customMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
+
                     if (facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
                         steamOfficialMapsTab.setDisable(false);
                         steamCustomMapsTab.setDisable(false);
 
-                        String steamOfficialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamOfficiaslMaps");
-                        steamOfficialMapsTab.setGraphic(createTabTitle(steamOfficialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
+                        steamOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, true, officialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
                         steamOfficialMapsTab.setText("");
 
-                        String steamCustomMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamCustomMaps");
-                        steamCustomMapsTab.setGraphic(createTabTitle(steamCustomMapsTabText, steamCustomMapsFlowPane.getChildren().size()));
+                        steamCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, false, customMapsTabText, steamCustomMapsFlowPane.getChildren().size()));
                         steamCustomMapsTab.setText("");
 
                     } else {
@@ -260,12 +252,10 @@ public class MapsEditionController implements Initializable {
                         steamOfficialMapsTab.setDisable(false);
                         steamCustomMapsTab.setDisable(false);
 
-                        String epicOfficialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.epicOfficiaslMaps");
-                        epicOfficialMapsTab.setGraphic(createTabTitle(epicOfficialMapsTabText, epicOfficialMapsFlowPane.getChildren().size()));
+                        epicOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.EPIC, true, officialMapsTabText, epicOfficialMapsFlowPane.getChildren().size()));
                         epicOfficialMapsTab.setText("");
 
-                        String epicCustomMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.epicCustomMaps");
-                        epicCustomMapsTab.setGraphic(createTabTitle(epicCustomMapsTabText, epicCustomMapsFlowPane.getChildren().size()));
+                        epicCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.EPIC, false, customMapsTabText, epicCustomMapsFlowPane.getChildren().size()));
                         epicCustomMapsTab.setText("");
                     } else {
                         epicOfficialMapsTab.setDisable(true);
@@ -318,33 +308,60 @@ public class MapsEditionController implements Initializable {
                         if (newTab.equals(epicCustomMapsTab)) {
                             Session.getInstance().setSelectedMapTab(EnumMapsTab.EPIC_CUSTOM_MAPS_TAB);
                         }
-
-                        if (selectAllMaps != null && selectAllMaps.isSelected()) {
-                            selectAllMaps.setSelected(false);
-                            selectAllMapsOnAction();
-                        }
                     }
                 }
         );
     }
 
 
-    private HBox createTabTitle(String text, int numberOfMaps) {
+    private HBox createTabTitle(EnumPlatform enumPlatform, boolean officialMaps, String text, int numberOfMaps) {
 
-        Circle circle = new Circle(0,0, 12, Color.LIGHTBLUE);
+        CheckBox tabCheckbox = new CheckBox();
+        tabCheckbox.setId("selectAll");
+        tabCheckbox.setPrefWidth(20);
+        tabCheckbox.setOnAction((ActionEvent event) -> {
+            ObservableList<Node> nodes = null;
+
+            if (EnumPlatform.STEAM.equals(enumPlatform)) {
+                if (officialMaps) {
+                    nodes = steamOfficialMapsFlowPane.getChildren();
+                } else {
+                    nodes = steamCustomMapsFlowPane.getChildren();
+                }
+            }
+            if (EnumPlatform.EPIC.equals(enumPlatform)) {
+                if (officialMaps) {
+                    nodes = epicOfficialMapsFlowPane.getChildren();
+                } else {
+                    nodes = epicCustomMapsFlowPane.getChildren();
+                }
+            }
+
+            for (Node node: nodes) {
+                GridPane gridpane = (GridPane) node;
+                Label aliasLabel = (Label) gridpane.getChildren().get(1);
+                CheckBox checkbox = (CheckBox) aliasLabel.getGraphic();
+                checkbox.setSelected(tabCheckbox.isSelected());
+                if (checkbox.isSelected()) {
+                    checkbox.setOpacity(1);
+                } else {
+                    checkbox.setOpacity(0.5);
+                }
+            }
+        });
+
+        Circle circle = new Circle(0,0, 10, Color.LIGHTBLUE);
         Text numberOfMapsText = new Text(String.valueOf(numberOfMaps));
         numberOfMapsText.setFont(Font.loadFont(getClass().getClassLoader().getResource("fonts/Ubuntu-B.ttf").toExternalForm(), 11));
         numberOfMapsText.setFill(Color.DARKBLUE);
         StackPane stackPane = new StackPane(circle, numberOfMapsText);
+        stackPane.setPrefWidth(30);
 
-        Text title = new Text(text);
+        Text title = new Text(enumPlatform.getDescripcion() + ". " + text);
         title.setFill(Color.WHITE);
 
-        HBox separator = new HBox();
-        separator.setPrefWidth(5);
-
         HBox contentPane = new HBox();
-        contentPane.getChildren().addAll(title,separator,stackPane);
+        contentPane.getChildren().addAll(tabCheckbox, stackPane, title);
 
         return contentPane;
     }
@@ -452,6 +469,14 @@ public class MapsEditionController implements Initializable {
         importedDateText.setAlignment(Pos.BOTTOM_CENTER);
         importedDateText.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
         gridpane.add(importedDateText, 1, 5);
+
+        Label platformNameText = new Label(platformProfileMapDto.getPlatformDto().getKey());
+        platformNameText.setVisible(false);
+        gridpane.add(platformNameText, 1, 1);
+
+        Label isOfficialText = new Label(String.valueOf(platformProfileMapDto.getMapDto().isOfficial()));
+        isOfficialText.setVisible(false);
+        gridpane.add(isOfficialText, 1, 1);
 
         int rowIndex = 6;
         if (platformProfileMapDto.getMapDto().isOfficial()) {
@@ -611,14 +636,6 @@ public class MapsEditionController implements Initializable {
 
     @FXML
     private void searchMapsKeyReleased() {
-        if (StringUtils.isNotBlank(searchMaps.getText())) {
-            selectAllMaps.setSelected(false);
-            selectAllMapsOnAction();
-            selectAllMaps.setVisible(false);
-        } else {
-            selectAllMaps.setVisible(true);
-        }
-
         steamOfficialMapsFlowPane.getChildren().clear();
         steamCustomMapsFlowPane.getChildren().clear();
         epicOfficialMapsFlowPane.getChildren().clear();
@@ -821,10 +838,10 @@ public class MapsEditionController implements Initializable {
                     String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfiles");
                     if (StringUtils.isNotBlank(success)) {
                         String steamCustomMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamCustomMaps");
-                        steamCustomMapsTab.setGraphic(createTabTitle(steamCustomMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
+                        steamCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, false, steamCustomMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
 
                         String epicCustomMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.epicCustomMaps");
-                        epicCustomMapsTab.setGraphic(createTabTitle(epicCustomMapsModsTabText, epicCustomMapsFlowPane.getChildren().size()));
+                        epicCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.EPIC, false, epicCustomMapsModsTabText, epicCustomMapsFlowPane.getChildren().size()));
 
                         headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
                         Utils.infoDialog(headerText, success.toString());
@@ -848,46 +865,33 @@ public class MapsEditionController implements Initializable {
         }
     }
 
-    @FXML
+    private Node getNodeIfSelected(Node node, StringBuffer message) {
+        GridPane gridpane = (GridPane) node;
+        Label aliasLabel = (Label) gridpane.getChildren().get(1);
+        Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+        CheckBox checkbox = (CheckBox) aliasLabel.getGraphic();
+
+        if (checkbox.isSelected()) {
+            message.append(mapNameLabel.getText()).append("\n");
+            return gridpane;
+        }
+        return null;
+    }
+
+     @FXML
     private void removeMapsOnAction() {
         try {
-            /*
-            if (!facade.isCorrectInstallationFolder(installationFolder)) {
-                logger.warn("Installation folder can not be empty and can not contains whitespaces. Define in Install/Update section: " + installationFolder);
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
-                Utils.warningDialog(headerText, contentText);
-                return;
-            }
-            */
-            List<Node> removeList = new ArrayList<Node>();
             StringBuffer message = new StringBuffer();
-            ObservableList<Node> officialNodes = steamOfficialMapsFlowPane.getChildren();
-            ObservableList<Node> customNodes = steamCustomMapsFlowPane.getChildren();
+            ObservableList<Node> nodeList = FXCollections.concat(steamOfficialMapsFlowPane.getChildren(), steamCustomMapsFlowPane.getChildren(), epicOfficialMapsFlowPane.getChildren(), epicCustomMapsFlowPane.getChildren());
 
-            for (Node node : officialNodes) {
-                GridPane gridpane = (GridPane) node;
-                Label aliasLabel = (Label) gridpane.getChildren().get(1);
-                Label mapNameLabel = (Label) gridpane.getChildren().get(2);
-                CheckBox checkbox = (CheckBox) aliasLabel.getGraphic();
-
-                if (checkbox.isSelected()) {
-                    removeList.add(gridpane);
-                    message.append(mapNameLabel.getText()).append("\n");
+            List<Node> removeList = new ArrayList<Node>();
+            for (Node node : nodeList) {
+                Node selectedNode = getNodeIfSelected(node, message);
+                if (selectedNode != null) {
+                    removeList.add(selectedNode);
                 }
             }
 
-            for (Node node : customNodes) {
-                GridPane gridpane = (GridPane) node;
-                Label aliasLabel = (Label) gridpane.getChildren().get(1);
-                Label mapNameLabel = (Label) gridpane.getChildren().get(2);
-                CheckBox checkbox = (CheckBox) aliasLabel.getGraphic();
-
-                if (checkbox.isSelected()) {
-                    removeList.add(gridpane);
-                    message.append(mapNameLabel.getText()).append("\n");
-                }
-            }
             if (removeList.isEmpty()) {
                 logger.warn("No selected maps/mods to delete. You must select at least one item to be deleted");
                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapsNotSelected");
@@ -910,11 +914,9 @@ public class MapsEditionController implements Initializable {
                                 try {
                                     GridPane gridpane = (GridPane) node;
                                     Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                                    Label platformNameLabel = (Label) gridpane.getChildren().get(5);
 
-                                    if (profileSelect.getValue().getMap() != null && mapNameLabel.getText().equalsIgnoreCase(profileSelect.getValue().getMap().getKey())) {
-                                        facade.unselectProfileMap(profileSelect.getValue().getName());
-                                    }
-                                    AbstractMapDto map = facade.deleteMapFromProfile(Session.getInstance().getPlatform().getKey(), mapNameLabel.getText(), profileSelect.getValue().getName());
+                                    AbstractMapDto map = facade.deleteMapFromPlatformProfile(platformNameLabel.getText(), mapNameLabel.getText(), profileSelect.getValue().getName());
                                     if (map != null) {
                                         gridpaneToRemoveList.add(gridpane);
                                     } else {
@@ -934,19 +936,41 @@ public class MapsEditionController implements Initializable {
                         try {
                             if (!gridpaneToRemoveList.isEmpty()) {
 
-                                    if (steamOfficialMapsTab.isSelected()) {
-                                        steamOfficialMapsFlowPane.getChildren().removeAll(gridpaneToRemoveList);
-                                    } else {
-                                        steamCustomMapsFlowPane.getChildren().removeAll(gridpaneToRemoveList);
-                                    }
+                                for (Node node : gridpaneToRemoveList) {
+                                    GridPane gridpane = (GridPane) node;
+                                    Label platformNameLabel = (Label) gridpane.getChildren().get(5);
+                                    Label isOfficialMapLabel = (Label) gridpane.getChildren().get(6);
 
-                                    steamPlatformProfileMapDtoList.clear();
-                                    steamPlatformProfileMapDtoList = facade.listPlatformProfileMaps(Session.getInstance().getPlatform().getKey(), profileSelect.getValue().getName());;
-                                    String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
-                                    steamOfficialMapsTab.setGraphic(createTabTitle(officialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
-                                    String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamCustomMaps");
-                                    steamCustomMapsTab.setGraphic(createTabTitle(customMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
-                            }
+                                    if (EnumPlatform.STEAM.name().equals(platformNameLabel.getText())) {
+                                        if (Boolean.parseBoolean(isOfficialMapLabel.getText())) {
+                                            steamOfficialMapsFlowPane.getChildren().remove(node);
+                                        } else {
+                                            steamCustomMapsFlowPane.getChildren().remove(node);
+                                        }
+                                    }
+                                    if (EnumPlatform.EPIC.name().equals(platformNameLabel.getText())) {
+                                        if (Boolean.parseBoolean(isOfficialMapLabel.getText())) {
+                                            epicOfficialMapsFlowPane.getChildren().remove(node);
+                                        } else {
+                                            epicCustomMapsFlowPane.getChildren().remove(node);
+                                        }
+                                    }
+                                }
+
+                                steamPlatformProfileMapDtoList.clear();
+                                steamPlatformProfileMapDtoList = facade.listPlatformProfileMaps(EnumPlatform.STEAM.name(), profileSelect.getValue().getName());
+                                epicPlatformProfileMapDtoList.clear();
+                                epicPlatformProfileMapDtoList = facade.listPlatformProfileMaps(EnumPlatform.EPIC.name(), profileSelect.getValue().getName());
+
+                                String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
+                                steamOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, true, officialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
+                                String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
+                                steamCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, false, customMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
+
+                                epicOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.EPIC, true, officialMapsTabText, epicOfficialMapsFlowPane.getChildren().size()));
+                                epicCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.EPIC, false, customMapsModsTabText, epicCustomMapsFlowPane.getChildren().size()));
+
+                        }
                             if (StringUtils.isNotBlank(errors[0].toString())) {
                                 logger.warn("Next maps/mods could not be deleted: " + errors[0].toString());
                                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapsNotDeleted");
@@ -1097,9 +1121,9 @@ public class MapsEditionController implements Initializable {
                     });
 
                     String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
-                    steamOfficialMapsTab.setGraphic(createTabTitle(officialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
+                    steamOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, true, officialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
                     String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamCustomMaps");
-                    steamCustomMapsTab.setGraphic(createTabTitle(customMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
+                    steamCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, false, customMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
 
                     progressIndicator.setVisible(false);
                     logger.info("The process to import maps and mods from the server to the launcher has finished.");
@@ -1246,44 +1270,6 @@ public class MapsEditionController implements Initializable {
     }
 
     @FXML
-    private void selectAllMapsOnAction() {
-        ObservableList<Node> nodes = null;
-        if (selectAllMaps.isSelected()) {
-            if (steamOfficialMapsTab.isSelected()) {
-                nodes = steamOfficialMapsFlowPane.getChildren();
-            } else {
-                nodes = steamCustomMapsFlowPane.getChildren();
-            }
-        } else {
-            nodes = FXCollections.concat(steamOfficialMapsFlowPane.getChildren(), steamCustomMapsFlowPane.getChildren());
-        }
-
-        for (Node node: nodes) {
-            GridPane gridpane = (GridPane) node;
-            Label aliasLabel = (Label) gridpane.getChildren().get(1);
-            CheckBox checkbox = (CheckBox) aliasLabel.getGraphic();
-            checkbox.setSelected(selectMaps);
-            if (checkbox.isSelected()) {
-                checkbox.setOpacity(1);
-            } else {
-                checkbox.setOpacity(0.5);
-            }
-        }
-        try {
-            String labelText = "";
-            if (selectMaps) {
-                labelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unselectMaps");
-            } else {
-                labelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.selectMaps");
-            }
-            selectMaps = !selectMaps;
-            selectAllMaps.setText(labelText);
-        } catch (Exception e) {
-            Utils.errorDialog(e.getMessage(), e);
-        }
-    }
-
-    @FXML
     private void profileOnAction() {
         try {
             steamCustomMapsFlowPane.getChildren().clear();
@@ -1324,19 +1310,15 @@ public class MapsEditionController implements Initializable {
             }
 
             String steamOfficialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamOfficiaslMaps");
-            steamOfficialMapsTab.setGraphic(createTabTitle(steamOfficialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
+            steamOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, true, steamOfficialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
             String steamCustomMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamCustomMaps");
-            steamCustomMapsTab.setGraphic(createTabTitle(steamCustomMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
+            steamCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, false, steamCustomMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
 
             String epicOfficialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.epicOfficiaslMaps");
-            epicOfficialMapsTab.setGraphic(createTabTitle(epicOfficialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
+            epicOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.EPIC, true, epicOfficialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
             String epicCustomMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.epicCustomMaps");
-            epicCustomMapsTab.setGraphic(createTabTitle(epicCustomMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
+            epicCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.EPIC, true, epicCustomMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
 
-            if (selectAllMaps.isSelected()) {
-                selectAllMaps.setSelected(false);
-                selectAllMapsOnAction();
-            }
             Session.getInstance().setMapsProfile(profileSelect.getValue());
         } catch (Exception e) {
             Utils.errorDialog(e.getMessage(), e);
@@ -1510,15 +1492,8 @@ public class MapsEditionController implements Initializable {
     private List<PlatformProfileMap> getSteamEditList() throws SQLException {
 
         List<PlatformProfileMap> editList = new ArrayList<PlatformProfileMap>();
+        ObservableList<Node> nodeList = FXCollections.concat(steamOfficialMapsFlowPane.getChildren(), steamCustomMapsFlowPane.getChildren());
 
-        ObservableList<Node> nodeList = null;
-        if (steamOfficialMapsTab.isSelected()) {
-            nodeList = steamOfficialMapsFlowPane.getChildren();
-        } else {
-            if (steamCustomMapsTab.isSelected()) {
-                nodeList = steamCustomMapsFlowPane.getChildren();
-            }
-        }
         if (nodeList != null && !nodeList.isEmpty()) {
             for (Node node : nodeList) {
                 GridPane gridpane = (GridPane) node;
@@ -1549,16 +1524,9 @@ public class MapsEditionController implements Initializable {
     }
 
     private List<PlatformProfileMap> getEpicEditList() throws Exception {
-        List<PlatformProfileMap> editList = new ArrayList<PlatformProfileMap>();
 
-        ObservableList<Node> nodeList = null;
-        if (epicOfficialMapsTab.isSelected()) {
-            nodeList = epicOfficialMapsFlowPane.getChildren();
-        } else {
-            if (epicCustomMapsTab.isSelected()) {
-                nodeList = epicCustomMapsFlowPane.getChildren();
-            }
-        }
+        List<PlatformProfileMap> editList = new ArrayList<PlatformProfileMap>();
+        ObservableList<Node> nodeList = FXCollections.concat(epicOfficialMapsFlowPane.getChildren(), epicCustomMapsFlowPane.getChildren());
 
         if (nodeList != null && !nodeList.isEmpty()) {
             for (Node node : nodeList) {

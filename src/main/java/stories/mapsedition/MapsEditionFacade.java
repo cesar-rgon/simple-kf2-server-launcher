@@ -16,7 +16,7 @@ public interface MapsEditionFacade {
     boolean isCorrectInstallationFolder(String platformName);
     ObservableList<ProfileDto> listAllProfiles() throws SQLException;
     public void addPlatformProfileMapList(List<PlatformProfileMap> platformProfileMapListToAdd, StringBuffer success, StringBuffer errors) throws SQLException;
-    AbstractMapDto deleteMapFromProfile(String platformName, String mapName, String profileName) throws Exception;
+    AbstractMapDto deleteMapFromPlatformProfile(String platformName, String mapName, String profileName) throws Exception;
     void unselectProfileMap(String profileName) throws SQLException;
     List<String> selectProfilesToImport(String defaultSelectedProfileName) throws Exception;
     String runServer(String profileName) throws SQLException;

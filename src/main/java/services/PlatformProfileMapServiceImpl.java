@@ -1,16 +1,13 @@
 package services;
 
-import daos.OfficialMapDao;
 import daos.PlatformProfileMapDao;
-import entities.OfficialMap;
 import entities.AbstractPlatform;
-import entities.Profile;
 import entities.PlatformProfileMap;
+import entities.Profile;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class PlatformProfileMapServiceImpl implements PlatformProfileMapService {
 

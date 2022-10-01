@@ -10,6 +10,7 @@ import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Hibernate;
 import pojos.ImportMapResultToDisplay;
 import pojos.PlatformProfile;
 import pojos.PlatformProfileToDisplay;
@@ -265,7 +266,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
 
     @Override
-    public AbstractMapDto deleteMapFromProfile(String platformName, String mapName, String profileName) throws Exception {
+    public AbstractMapDto deleteMapFromPlatformProfile(String platformName, String mapName, String profileName) throws Exception {
 
         Optional<PlatformProfileMap> platformProfileMapOptional = PlatformProfileMapDao.getInstance().findByPlatformNameProfileNameMapName(platformName, profileName, mapName);
         if (!platformProfileMapOptional.isPresent()) {
@@ -274,13 +275,15 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
         Optional officialMapOptional = officialMapService.findMapByCode(mapName);
         if (officialMapOptional.isPresent()) {
-            OfficialMap deletedMap = (OfficialMap) officialMapService.deleteMap(platformProfileMapOptional.get().getPlatform(), (OfficialMap) platformProfileMapOptional.get().getMap(), platformProfileMapOptional.get().getProfile());
+            OfficialMap officialMap = (OfficialMap) Hibernate.unproxy(platformProfileMapOptional.get().getMap());
+            OfficialMap deletedMap = (OfficialMap) officialMapService.deleteMap(platformProfileMapOptional.get().getPlatform(), officialMap, platformProfileMapOptional.get().getProfile());
             return mapDtoFactory.newDto(deletedMap);
         }
 
         Optional customMapModOptional = customMapModService.findMapByCode(mapName);
         if (customMapModOptional.isPresent()) {
-            CustomMapMod deletedMap = customMapModService.deleteMap(platformProfileMapOptional.get().getPlatform(), (CustomMapMod) platformProfileMapOptional.get().getMap(), platformProfileMapOptional.get().getProfile());
+            CustomMapMod customMapMod = (CustomMapMod) Hibernate.unproxy(platformProfileMapOptional.get().getMap());
+            CustomMapMod deletedMap = customMapModService.deleteMap(platformProfileMapOptional.get().getPlatform(), customMapMod, platformProfileMapOptional.get().getProfile());
             return mapDtoFactory.newDto(deletedMap);
         }
         return null;
