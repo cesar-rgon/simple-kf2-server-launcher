@@ -914,6 +914,7 @@ public class Utils {
 
         String languageCode = StringUtils.EMPTY;
         String importMapsFromServerText = StringUtils.EMPTY;
+        String platformText = StringUtils.EMPTY;
         String profileText = StringUtils.EMPTY;
         String importSuccessText = StringUtils.EMPTY;
         String categoryText = StringUtils.EMPTY;
@@ -931,6 +932,7 @@ public class Utils {
             languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             importMapsFromServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importMaps");
             profileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profile");
+            platformText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.platform");
             importSuccessText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.importSuccess");
             categoryText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.category");
             mapNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
@@ -965,6 +967,13 @@ public class Utils {
         successCategory.setStyle("-fx-alignment: CENTER;");
         successCategory.setMinWidth(150);
 
+        TableColumn<ImportMapResultToDisplay, String> successPlatform = new TableColumn<ImportMapResultToDisplay, String>();
+        successPlatform.setText(platformText);
+        successPlatform.setCellValueFactory(cellData -> cellData.getValue().platformNameProperty());
+        successPlatform.setSortable(true);
+        successPlatform.setStyle("-fx-alignment: CENTER;");
+        successPlatform.setMinWidth(150);
+
         TableColumn<ImportMapResultToDisplay, String> successMapName = new TableColumn<ImportMapResultToDisplay, String>();
         successMapName.setText(mapNameText);
         successMapName.setCellValueFactory(cellData -> cellData.getValue().mapNameProperty());
@@ -979,6 +988,7 @@ public class Utils {
         successImportedDate.setMinWidth(200);
 
         successImportationTable.getColumns().add(successCategory);
+        successImportationTable.getColumns().add(successPlatform);
         successImportationTable.getColumns().add(successMapName);
         successImportationTable.getColumns().add(successImportedDate);
         successImportationTable.setItems(FXCollections.observableArrayList(
@@ -1002,6 +1012,12 @@ public class Utils {
         failedCategory.setSortable(true);
         failedCategory.setMinWidth(100);
 
+        TableColumn<ImportMapResultToDisplay, String> failedPlatform = new TableColumn<ImportMapResultToDisplay, String>();
+        failedPlatform.setText(platformText);
+        failedPlatform.setCellValueFactory(cellData -> cellData.getValue().platformNameProperty());
+        failedPlatform.setSortable(true);
+        failedPlatform.setMinWidth(100);
+
         TableColumn<ImportMapResultToDisplay, String> failedMapName = new TableColumn<ImportMapResultToDisplay, String>();
         failedMapName.setText(mapNameText);
         failedMapName.setCellValueFactory(cellData -> cellData.getValue().mapNameProperty());
@@ -1012,9 +1028,10 @@ public class Utils {
         failedErrorMessage.setText(errorMessageText);
         failedErrorMessage.setCellValueFactory(cellData -> cellData.getValue().errorMessageProperty());
         failedErrorMessage.setSortable(true);
-        failedErrorMessage.setMinWidth(400);
+        failedErrorMessage.setMinWidth(450);
 
         failedImportationTable.getColumns().add(failedCategory);
+        failedImportationTable.getColumns().add(failedPlatform);
         failedImportationTable.getColumns().add(failedMapName);
         failedImportationTable.getColumns().add(failedErrorMessage);
         failedImportationTable.setItems(FXCollections.observableArrayList(

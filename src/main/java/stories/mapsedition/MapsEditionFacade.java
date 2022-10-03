@@ -4,7 +4,9 @@ import dtos.*;
 import entities.AbstractMap;
 import entities.PlatformProfileMap;
 import javafx.collections.ObservableList;
-import pojos.ImportMapResultToDisplay;
+import pojos.MapToDisplay;
+import pojos.PlatformProfileMapToImport;
+import pojos.PlatformProfileToDisplay;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -18,14 +20,19 @@ public interface MapsEditionFacade {
     public void addPlatformProfileMapList(List<PlatformProfileMap> platformProfileMapListToAdd, StringBuffer success, StringBuffer errors) throws SQLException;
     AbstractMapDto deleteMapFromPlatformProfile(String platformName, String mapName, String profileName) throws Exception;
     void unselectProfileMap(String profileName) throws SQLException;
-    List<String> selectProfilesToImport(String defaultSelectedProfileName) throws Exception;
+    List<PlatformProfileToDisplay> selectProfilesToImport(String defaultSelectedProfileName) throws Exception;
     String runServer(String profileName) throws SQLException;
     List<PlatformProfileMapDto> addCustomMapsToProfile(List<String> platformNameList, String profileName, String mapNameList, String languageCode, String actualSelectedProfile, StringBuffer success, StringBuffer errors);
-    CustomMapModDto importCustomMapModFromServer(List<String> platformNameList, String mapNameLabel, Long idWorkShop, String commentary, List<String> selectedProfileNameList, StringBuffer success, StringBuffer errors);
-    OfficialMapDto importOfficialMapFromServer(List<String> platformNameList, String officialMapName, List<String> selectedProfileNameList, String actualSelectedProfile, String mapNameLabel, List<ImportMapResultToDisplay> importMapResultToDisplayList);
+    PlatformProfileMapToImport importCustomMapModFromServer(PlatformProfileMapToImport ppmToImport, String selectedProfileName) throws Exception;
+    PlatformProfileMapToImport importOfficialMapFromServer(PlatformProfileMapToImport ppmToImport, String selectedProfileName) throws Exception;
     Optional<AbstractMap> findMapByName(String mapName) throws SQLException;
     Optional<PlatformProfileMapDto> findPlatformProfileMapDtoByNames(String platformName, String profileName, String mapName) throws SQLException;
     Optional<PlatformProfileMap> findPlatformProfileMapByNames(String platformName, String profileName, String mapName) throws SQLException;
     List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws SQLException;
     String[] getMapNameAndUrlImage(Long idWorkShop) throws Exception;
+    List<PlatformDto> listAllPlatforms() throws SQLException;
+    String getPropertyValue(String propFileRelativePath, String propKey, String profileParam, String platformParam) throws Exception;
+    AbstractMapDto getMapByIdWorkShop(Long idWorkShop) throws SQLException;
+    AbstractMapDto getOfficialMapByName(String mapName) throws SQLException ;
+    List<MapToDisplay> getNotPresentOfficialMapList(List<String> officialMapNameList, String platformName, String profileName) throws Exception;
 }

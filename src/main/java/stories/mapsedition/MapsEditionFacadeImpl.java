@@ -3,18 +3,17 @@ package stories.mapsedition;
 import daos.*;
 import dtos.*;
 import dtos.factories.MapDtoFactory;
+import dtos.factories.PlatformDtoFactory;
 import dtos.factories.PlatformProfileMapDtoFactory;
 import dtos.factories.ProfileDtoFactory;
 import entities.*;
+import entities.AbstractMap;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Hibernate;
-import pojos.ImportMapResultToDisplay;
-import pojos.PlatformProfile;
-import pojos.PlatformProfileToDisplay;
-import pojos.PlatformProfileToDisplayFactory;
+import pojos.*;
 import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
@@ -23,14 +22,11 @@ import services.*;
 import stories.AbstractFacade;
 import utils.Utils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.text.MessageFormat;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEditionFacade {
@@ -45,7 +41,9 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     private final PlatformProfileToDisplayFactory platformProfileToDisplayFactory;
     private final ProfileService profileService;
     private final PlatformProfileMapDtoFactory platformProfileMapDtoFactory;
-    private PlatformProfileMapService platformProfileMapService;
+    private final PlatformProfileMapService platformProfileMapService;
+    private final PlatformDtoFactory platformDtoFactory;
+    private final CustomMapModServiceImpl customMapService;
 
     public MapsEditionFacadeImpl() {
         super();
@@ -58,6 +56,8 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         this.profileService = new ProfileServiceImpl();
         this.platformProfileMapDtoFactory = new PlatformProfileMapDtoFactory();
         this.platformProfileMapService = new PlatformProfileMapServiceImpl();
+        this.platformDtoFactory = new PlatformDtoFactory();
+        this.customMapService = new CustomMapModServiceImpl();
     }
 
     private CustomMapMod createNewCustomMap(List<AbstractPlatform> platformList, String mapName, Long idWorkShop, String urlPhoto, List<Profile> profileList, StringBuffer success, StringBuffer errors) throws Exception {
@@ -220,35 +220,39 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     }
 
 
-    private OfficialMap insertOfficialMap(List<String> platformNameList, String mapName, List<String> profileNameList, StringBuffer success, StringBuffer errors) {
-        try {
-            List<Profile> profileList = profileNameList.stream().map(pn -> {
-                try {
-                    return findProfileByCode(pn);
-                } catch (SQLException e) {
-                    logger.error("Error finding a profile by name " + pn, e);
-                    return null;
-                }
-            }).collect(Collectors.toList());
+    private OfficialMap insertOfficialMap(List<String> platformNameList, String mapName, List<String> profileNameList) throws Exception {
 
-            List<AbstractPlatform> platformList = platformNameList.stream().map(pn -> {
-                try {
-                    return findPlatformByCode(pn);
-                } catch (SQLException e) {
-                    logger.error("Error finding a platform by name " + pn, e);
-                    return null;
-                }
-            }).collect(Collectors.toList());
+        List<Profile> profileList = profileNameList.stream().map(pn -> {
+            try {
+                return findProfileByCode(pn);
+            } catch (SQLException e) {
+                logger.error("Error finding a profile by name " + pn, e);
+                return null;
+            }
+        }).collect(Collectors.toList());
 
-            OfficialMap newOfficialMap = new OfficialMap(mapName, "", "/KFGame/Web/images/maps/" + mapName + ".jpg", null);
-            OfficialMap insertedMap = (OfficialMap) officialMapService.createMap(platformList, newOfficialMap, profileList, success, errors);
+        List<AbstractPlatform> platformList = platformNameList.stream().map(pn -> {
+            try {
+                return findPlatformByCode(pn);
+            } catch (SQLException e) {
+                logger.error("Error finding a platform by name " + pn, e);
+                return null;
+            }
+        }).collect(Collectors.toList());
 
-            return insertedMap;
+        StringBuffer success = new StringBuffer();
+        StringBuffer errors = new StringBuffer();
 
-        } catch (Exception e) {
-            logger.error("Error finding a platform by name ", e);
-            return null;
+        OfficialMap newOfficialMap = new OfficialMap(mapName, "", "/KFGame/Web/images/maps/" + mapName + ".jpg", null);
+        OfficialMap insertedMap = (OfficialMap) officialMapService.createMap(platformList, newOfficialMap, profileList, success, errors);
+
+        if (StringUtils.isNotBlank(errors)) {
+            throw new RuntimeException(errors.toString());
         }
+
+        return insertedMap;
+
+
     }
 
     @Override
@@ -309,13 +313,12 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     }
 
     @Override
-    public List<String> selectProfilesToImport(String defaultSelectedProfileName) throws Exception {
+    public List<PlatformProfileToDisplay> selectProfilesToImport(String defaultSelectedProfileName) throws Exception {
         List<Profile> allProfiles = profileService.listAllProfiles();
         if (allProfiles == null || allProfiles.isEmpty()) {
-            return new ArrayList<String>();
+            return new ArrayList<PlatformProfileToDisplay>();
         }
-        List<PlatformProfileToDisplay> selectedProfiles = selectProfilesToImport(allProfiles, defaultSelectedProfileName);
-        return selectedProfiles.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
+        return selectProfilesToImport(allProfiles, defaultSelectedProfileName);
     }
 
 
@@ -499,46 +502,115 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     }
 
     @Override
-    public CustomMapModDto importCustomMapModFromServer(List<String> platformNameList, String mapNameLabel, Long idWorkShop, String commentary, List<String> selectedProfileNameList, StringBuffer success, StringBuffer errors) {
+    public PlatformProfileMapToImport importCustomMapModFromServer(PlatformProfileMapToImport ppmToImport, String selectedProfileName) throws Exception {
 
-        try {
-            Optional<CustomMapMod> mapInDataBase = CustomMapModDao.getInstance().findByIdWorkShop(idWorkShop);
-            if (!mapInDataBase.isPresent()) {
-                CustomMapMod customMap = createNewCustomMapFromWorkshop(
-                        platformNameList,
-                        idWorkShop,
-                        commentary,
-                        selectedProfileNameList,
-                        success,
-                        errors
-                );
-                return (CustomMapModDto) mapDtoFactory.newDto(customMap);
-
-            } else {
-                // return (CustomMapModDto) addPlatformProfileMapList(platformNameList, mapInDataBase.get().getCode(), selectedProfileNameList, importMapResultToDisplayList);
-            }
-        } catch (Exception e) {
-            logger.error("Error importing the custom map/mod with idWorkShop: " + idWorkShop + " from server", e);
+        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(ppmToImport.getPlatformName());
+        if (!platformOptional.isPresent()) {
+            String message = "No platform was found: " + ppmToImport.getPlatformName();
+            throw new RuntimeException(message);
         }
-        return null;
+
+        Optional<Profile> profileOptional = profileService.findProfileByCode(ppmToImport.getProfileName());
+        if (!profileOptional.isPresent()) {
+            String message = "No profile was found: " + ppmToImport.getProfileName();
+            throw new RuntimeException(message);
+        }
+
+        List<String> platformNameList = new ArrayList<String>();
+        platformNameList.add(ppmToImport.getPlatformName());
+        List<String> selectedProfileNameList = new ArrayList<String>();
+        selectedProfileNameList.add(selectedProfileName);
+
+
+        Optional mapInDataBase = customMapModService.findByIdWorkShop(ppmToImport.getMapToDisplay().getIdWorkShop());
+        if (!mapInDataBase.isPresent()) {
+            StringBuffer success = new StringBuffer();
+            StringBuffer errors = new StringBuffer();
+
+            CustomMapMod customMap = createNewCustomMapFromWorkshop(
+                    platformNameList,
+                    ppmToImport.getMapToDisplay().getIdWorkShop(),
+                    ppmToImport.getMapToDisplay().getCommentary(),
+                    selectedProfileNameList,
+                    success,
+                    errors
+            );
+            if (customMap == null) {
+                throw new RuntimeException(errors.toString());
+            }
+
+        } else {
+            CustomMapMod customMap = (CustomMapMod) mapInDataBase.get();
+            List<PlatformProfileMap> platformProfileMapListToAdd = new ArrayList<PlatformProfileMap>();
+            platformProfileMapListToAdd.add(
+                new PlatformProfileMap(platformOptional.get(), profileOptional.get(), customMap, customMap.getReleaseDate(), customMap.getUrlInfo(), customMap.getUrlPhoto(), false)
+            );
+
+            StringBuffer success = new StringBuffer();
+            StringBuffer errors = new StringBuffer();
+            addPlatformProfileMapList(platformProfileMapListToAdd, success, errors);
+
+            if (StringUtils.isNotBlank(errors)) {
+                throw new RuntimeException(errors.toString());
+            }
+        }
+
+        return ppmToImport;
     }
 
     @Override
-    public OfficialMapDto importOfficialMapFromServer(List<String> platformNameList, String officialMapName, List<String> selectedProfileNameList, String actualSelectedProfile, String mapNameLabel, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
+    public PlatformProfileMapToImport importOfficialMapFromServer(PlatformProfileMapToImport ppmToImport, String selectedProfileName) throws Exception {
 
-        try {
-            Optional<AbstractMap> mapInDataBase = findMapByName(officialMapName);
-            if (!mapInDataBase.isPresent()) {
-                //OfficialMap insertedMap = insertOfficialMap(platformNameList, officialMapName, selectedProfileNameList, importMapResultToDisplayList);
-                //return (OfficialMapDto) mapDtoFactory.newDto(insertedMap);
-
-             } else {
-                //return (OfficialMapDto) addPlatformProfileMapList(platformNameList, mapInDataBase.get().getCode(), selectedProfileNameList, importMapResultToDisplayList);
-            }
-        } catch (Exception e) {
-            logger.error("Error importing the official map with name: " + officialMapName + " from server", e);
+        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(ppmToImport.getPlatformName());
+        if (!platformOptional.isPresent()) {
+            String message = "No platform was found: " + ppmToImport.getPlatformName();
+            throw new RuntimeException(message);
         }
-        return null;
+
+        Optional<Profile> profileOptional = profileService.findProfileByCode(ppmToImport.getProfileName());
+        if (!profileOptional.isPresent()) {
+            String message = "No profile was found: " + ppmToImport.getProfileName();
+            throw new RuntimeException(message);
+        }
+
+        List<String> platformNameList = new ArrayList<String>();
+        platformNameList.add(ppmToImport.getPlatformName());
+        String officialMapName = ppmToImport.getMapToDisplay().getCommentary();
+        List<String> selectedProfileNameList = new ArrayList<String>();
+        selectedProfileNameList.add(selectedProfileName);
+
+        Optional<AbstractMap> mapInDataBase = findMapByName(officialMapName);
+        if (!mapInDataBase.isPresent()) {
+
+            OfficialMap insertedMap = insertOfficialMap(
+                    platformNameList,
+                    officialMapName,
+                    selectedProfileNameList
+            );
+
+            if (insertedMap == null) {
+                String errorMessage = "Error creating the relation between the map " + officialMapName + ", the profile " + ppmToImport.getProfileName() + " and the platform " + ppmToImport.getPlatformName();
+                throw new RuntimeException(errorMessage);
+            }
+
+        } else {
+            OfficialMap officialMap = (OfficialMap) mapInDataBase.get();
+
+            List<PlatformProfileMap> platformProfileMapListToAdd = new ArrayList<PlatformProfileMap>();
+            platformProfileMapListToAdd.add(
+                    new PlatformProfileMap(platformOptional.get(), profileOptional.get(), officialMap, officialMap.getReleaseDate(), officialMap.getUrlInfo(), officialMap.getUrlPhoto(), true)
+            );
+
+            StringBuffer success = new StringBuffer();
+            StringBuffer errors = new StringBuffer();
+            addPlatformProfileMapList(platformProfileMapListToAdd, success, errors);
+
+            if (StringUtils.isNotBlank(errors)) {
+                throw new RuntimeException(errors.toString());
+            }
+        }
+
+        return ppmToImport;
     }
 
     public Optional<PlatformProfileMap> findPlatformProfileMapByNames(String platformName, String profileName, String mapName) throws SQLException {
@@ -565,5 +637,78 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         Profile profile = profileOpt.get();
         List<PlatformProfileMap> platformProfileMapList = platformProfileMapService.listPlatformProfileMaps(platformOpt.get(), profile);
         return platformProfileMapDtoFactory.newDtos(platformProfileMapList);
+    }
+
+    @Override
+    public List<PlatformDto> listAllPlatforms() throws SQLException {
+        List<AbstractPlatform> allPlatforms = new ArrayList<AbstractPlatform>();
+        Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
+        if (steamPlatformOptional.isPresent()) {
+            allPlatforms.add(steamPlatformOptional.get());
+        }
+        Optional<EpicPlatform> epicPlatformOptional = EpicPlatformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
+        if (epicPlatformOptional.isPresent()) {
+            allPlatforms.add(epicPlatformOptional.get());
+        }
+        return platformDtoFactory.newDtos(allPlatforms);
+    }
+
+    @Override
+    public String getPropertyValue(String propFileRelativePath, String propKey, String profileParam, String platformParam) throws Exception {
+        Properties prop = new Properties();
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream("./" + propFileRelativePath);
+        } catch (FileNotFoundException e) {
+            inputStream = getClass().getClassLoader().getResourceAsStream(propFileRelativePath);
+        }
+        prop.load(inputStream);
+        inputStream.close();
+
+        return MessageFormat.format(prop.getProperty(propKey), profileParam, platformParam);
+    }
+
+    @Override
+    public AbstractMapDto getMapByIdWorkShop(Long idWorkShop) throws SQLException {
+        Optional<AbstractMap> mapOptional = customMapService.findByIdWorkShop(idWorkShop);
+        if (mapOptional.isPresent()) {
+            return mapDtoFactory.newDto(mapOptional.get());
+        }
+        return null;
+    }
+
+    public AbstractMapDto getOfficialMapByName(String mapName) throws SQLException {
+        Optional<AbstractMap> mapOptional = officialMapService.findMapByCode(mapName);
+        if (mapOptional.isPresent()) {
+            return mapDtoFactory.newDto(mapOptional.get());
+        }
+        return null;
+    }
+
+    @Override
+    public List<MapToDisplay> getNotPresentOfficialMapList(List<String> officialMapNameList, String platformName, String profileName) throws Exception {
+        AbstractPlatform platform = findPlatformByCode(platformName);
+        if (platform == null) {
+            throw new RuntimeException("No platform was found: " + platformName);
+        }
+        Profile profile = findProfileByCode(profileName);
+        if (profile == null) {
+            throw new RuntimeException("No profile was found: " + profileName);
+        }
+
+        List<String> mapListInPlatformProfile = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(platform, profile).stream().
+                map(ppm -> ppm.getMap().getCode()).
+                collect(Collectors.toList());
+
+        List<String> result = new ArrayList<>(officialMapNameList);
+        result.removeAll(mapListInPlatformProfile);
+
+        List<MapToDisplay> mapListNotInPlatformProfile = result.stream().
+                map(mapName -> {
+                    return new MapToDisplay(mapName);
+                }).
+                collect(Collectors.toList());
+
+        return mapListNotInPlatformProfile;
     }
 }

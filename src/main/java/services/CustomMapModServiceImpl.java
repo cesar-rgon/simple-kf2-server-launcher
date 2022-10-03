@@ -60,4 +60,8 @@ public class CustomMapModServiceImpl extends AbstractMapService {
         }
         return map;
     }
+
+    public Optional findByIdWorkShop(Long idWorkShop) throws SQLException {
+        return CustomMapModDao.getInstance().findByIdWorkShop(idWorkShop);
+    }
 }

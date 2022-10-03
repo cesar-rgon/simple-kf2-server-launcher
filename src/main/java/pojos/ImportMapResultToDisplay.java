@@ -14,6 +14,7 @@ import java.util.Date;
 public class ImportMapResultToDisplay {
 
     private String profileName;
+    private StringProperty platformName;
     private StringProperty mapName;
     private BooleanProperty isOfficial;
     private StringProperty importedDate;
@@ -23,6 +24,7 @@ public class ImportMapResultToDisplay {
 
     public ImportMapResultToDisplay(
             String profileName,
+            String platformName,
             String mapName,
             boolean isOfficial,
             Date importedDate,
@@ -30,6 +32,7 @@ public class ImportMapResultToDisplay {
 
 
         this.profileName = profileName;
+        this.platformName = new SimpleStringProperty(platformName);
         this.mapName = new SimpleStringProperty(mapName);
         this.isOfficial = new SimpleBooleanProperty(isOfficial);
         this.errorMessage = new SimpleStringProperty(errorMessage);
@@ -46,10 +49,14 @@ public class ImportMapResultToDisplay {
             datePattern = "yyyy-MM-dd HH:mm";
         }
 
-        DateFormat importedDateFormat = new SimpleDateFormat(datePattern);
-        this.importedDate = new SimpleStringProperty(
-                importedDateFormat.format(importedDate)
-        );
+        if (importedDate != null) {
+            DateFormat importedDateFormat = new SimpleDateFormat(datePattern);
+            this.importedDate = new SimpleStringProperty(
+                    importedDateFormat.format(importedDate)
+            );
+        } else {
+            this.importedDate = new SimpleStringProperty();
+        }
     }
 
     public String getProfileName() {
@@ -58,6 +65,18 @@ public class ImportMapResultToDisplay {
 
     public void setProfileName(String profileName) {
         this.profileName = profileName;
+    }
+
+    public String getPlatformName() {
+        return platformName.get();
+    }
+
+    public StringProperty platformNameProperty() {
+        return platformName;
+    }
+
+    public void setPlatformName(String platformName) {
+        this.platformName.set(platformName);
     }
 
     public String getMapName() {

@@ -230,7 +230,7 @@ public class MainContentController implements Initializable {
                     lengthSelect.setItems(facade.listAllLengths());
                     maxPlayersSelect.setItems(facade.listAllPlayers());
                     platformSelect.setItems(facade.listAllPlatforms());
-                    platformSelect.getSelectionModel().select(1);
+                    platformSelect.getSelectionModel().select(0);
 
                     if (profileSelect.getValue() == null) {
                         File file = new File(System.getProperty("user.dir") + "/external-images/photo-borders.png");
@@ -321,7 +321,6 @@ public class MainContentController implements Initializable {
                 if (platform != null) {
                     setGraphic(createHBox(platform));
                     setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-                    noSelectedMapImage.setVisible(false);
                 }
             }
         });
@@ -1276,6 +1275,7 @@ public class MainContentController implements Initializable {
         languageSelect.setValue(profile.getLanguage());
         previousSelectedLanguageCode = profile.getLanguage().getKey();
         gameTypeSelect.setValue(profile.getGametype());
+        platformSelect.setValue(platformDto);
 
         List<PlatformProfileMapDto> platformProfileMapList = facade.listPlatformProfileMaps(platformDto.getKey(), profile.getName());
 
@@ -1309,7 +1309,6 @@ public class MainContentController implements Initializable {
             noSelectedMapImage.setVisible(true);
         }
 
-        platformSelect.setValue(platformDto);
         joinServerVisibility();
         difficultySelect.setValue(profile.getDifficulty());
         difficultySelect.setDisable(gameTypeSelect.getValue() != null ? !gameTypeSelect.getValue().isDifficultyEnabled(): false);
@@ -1926,9 +1925,10 @@ public class MainContentController implements Initializable {
     private void platformOnAction() {
         joinServerVisibility();
         try {
-            if (profileSelect.getValue() != null) {
+            ProfileDto databaseProfile = facade.findProfileDtoByName(profileSelect.getValue().getName());
+            if (databaseProfile != null) {
                 Session.getInstance().setPlatform(platformSelect.getValue());
-                loadActualProfile(platformSelect.getValue(), profileSelect.getValue());
+                loadActualProfile(platformSelect.getValue(), databaseProfile);
             }
         } catch (Exception e) {
             String headerText = "The platform value could not be saved!";

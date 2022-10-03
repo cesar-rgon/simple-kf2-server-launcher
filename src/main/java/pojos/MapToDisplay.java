@@ -32,6 +32,11 @@ public class MapToDisplay {
         this.commentary = new SimpleStringProperty(commentary);
     }
 
+    public MapToDisplay(String commentary) {
+        super();
+        this.commentary = new SimpleStringProperty(commentary);
+    }
+
     public boolean isSelected() {
         return selected.get();
     }

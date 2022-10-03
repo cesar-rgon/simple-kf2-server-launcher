@@ -29,13 +29,10 @@ import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.AddMapsToPlatformProfile;
-import pojos.ImportMapResultToDisplay;
-import pojos.MapToDisplay;
+import pojos.*;
 import pojos.enums.EnumMapsTab;
 import pojos.enums.EnumPlatform;
 import pojos.enums.EnumSortedMapsCriteria;
-import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import pojos.session.Session;
 import services.PropertyService;
@@ -868,11 +865,13 @@ public class MapsEditionController implements Initializable {
     private Node getNodeIfSelected(Node node, StringBuffer message) {
         GridPane gridpane = (GridPane) node;
         Label aliasLabel = (Label) gridpane.getChildren().get(1);
-        Label mapNameLabel = (Label) gridpane.getChildren().get(2);
         CheckBox checkbox = (CheckBox) aliasLabel.getGraphic();
+        Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+        Label platformNameLabel = (Label) gridpane.getChildren().get(5);
 
         if (checkbox.isSelected()) {
-            message.append(mapNameLabel.getText()).append("\n");
+            String platformDescription = EnumPlatform.getByName(platformNameLabel.getText()).getDescripcion();
+            message.append("[" + platformDescription + "] " + mapNameLabel.getText()).append("\n");
             return gridpane;
         }
         return null;
@@ -1000,21 +999,7 @@ public class MapsEditionController implements Initializable {
     @FXML
     private void importMapsFromServerOnAction() {
 
-        List<String> officialMapNameList = new ArrayList<String>();
-        List<MapToDisplay> selectedCustomMapModList = new ArrayList<MapToDisplay>();
-        List<String> selectedProfileNameList = new ArrayList<String>();
-        Optional<ButtonType> result = Optional.empty();
-
         try {
-            /*
-            if (!facade.isCorrectInstallationFolder(installationFolder)) {
-                logger.warn("Installation folder can not be empty and can not contains whitespaces. Define in Install/Update section: " + installationFolder);
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
-                Utils.warningDialog(headerText, contentText);
-                return;
-            }
-             */
             if (profileSelect.getValue() == null) {
                 logger.warn("No profiles defined. Import operation aborted");
                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
@@ -1023,20 +1008,45 @@ public class MapsEditionController implements Initializable {
                 return;
             }
 
-            selectedProfileNameList = facade.selectProfilesToImport(profileSelect.getValue().getName());
-            if (selectedProfileNameList == null || selectedProfileNameList.isEmpty()) {
+            List<PlatformDto> allPlatforms = facade.listAllPlatforms();
+
+            boolean invalidInstallationFolderFound = false;
+            for (PlatformDto platform: allPlatforms) {
+                if (facade.isCorrectInstallationFolder(platform.getKey())) {
+                    if (!Files.exists(Paths.get(platform.getInstallationFolder() + "/KFGame/Cache"))) {
+                        Files.createDirectory(Paths.get(platform.getInstallationFolder() + "/KFGame/Cache"));
+                    }
+                } else {
+                    logger.warn("Invalid " + platform.getValue() + " installation folder was found. Define in Install/Update section:" + platform.getInstallationFolder());
+                    invalidInstallationFolderFound = true;
+                }
+
+            }
+            if (invalidInstallationFolderFound) {
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
+                Utils.warningDialog(headerText, contentText);
                 return;
             }
 
-            if (!Files.exists(Paths.get(Session.getInstance().getPlatform().getInstallationFolder() + "/KFGame/Cache"))) {
-                Files.createDirectory(Paths.get(Session.getInstance().getPlatform().getInstallationFolder() + "/KFGame/Cache"));
+            List<PlatformProfileToDisplay> selectedPlatformProfileList = facade.selectProfilesToImport(profileSelect.getValue().getName());
+            if (selectedPlatformProfileList == null || selectedPlatformProfileList.isEmpty()) {
+                return;
             }
 
-            // CUSTOM MAP LIST
-            Kf2Common kf2Common = Kf2Factory.getInstance(
-                    Session.getInstance().getPlatform().getKey()
-            );
-            List<MapToDisplay> customMapModList = Files.walk(Paths.get(Session.getInstance().getPlatform().getInstallationFolder() + "/KFGame/Cache"))
+            Optional<PlatformDto> steamPlatformDtoOptional = allPlatforms.stream().filter(p -> p.getKey().equals(EnumPlatform.STEAM.name())).findFirst();
+            Optional<PlatformDto> epicPlatformDtoOptional = allPlatforms.stream().filter(p -> p.getKey().equals(EnumPlatform.EPIC.name())).findFirst();
+            if (!steamPlatformDtoOptional.isPresent() || !epicPlatformDtoOptional.isPresent()) {
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.PlatformNotFound");
+                Utils.warningDialog(headerText, contentText);
+                return;
+            }
+            PlatformDto steamPlatform = steamPlatformDtoOptional.get();
+            PlatformDto epicPlatform = epicPlatformDtoOptional.get();
+
+            // CUSTOM MAP / MOD LIST FOR STEAM
+            List<MapToDisplay> steamCustomMapModList = Files.walk(Paths.get(steamPlatform.getInstallationFolder() + "/KFGame/Cache"))
                     .filter(Files::isRegularFile)
                     .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
                     .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
@@ -1044,32 +1054,59 @@ public class MapsEditionController implements Initializable {
                         String filenameWithExtension = path.getFileName().toString();
                         String[] array = filenameWithExtension.split("\\.");
                         String mapName = array[0];
-                        Long idWorkShop = kf2Common.getIdWorkShopFromPath(path.getParent(), Session.getInstance().getPlatform().getInstallationFolder());
+                        Long idWorkShop = Kf2Factory.getInstance(steamPlatform.getKey()).getIdWorkShopFromPath(path.getParent(), steamPlatform.getInstallationFolder());
                         return new MapToDisplay(idWorkShop, mapName);
                     })
                     .collect(Collectors.toList());
 
-            // MOD LIST
-            File[] cacheFolderList = new File(Session.getInstance().getPlatform().getInstallationFolder() + "/KFGame/Cache").listFiles();
-            if (cacheFolderList != null && cacheFolderList.length > 0) {
-                List<Long> idWorkShopCustomMapList = customMapModList.stream().map(MapToDisplay::getIdWorkShop).collect(Collectors.toList());
-                customMapModList.addAll(
-                        Arrays.stream(cacheFolderList)
-                        .filter(file -> file.isDirectory())
-                        .map(file -> file.toPath())
-                        .filter(path -> !idWorkShopCustomMapList.contains(kf2Common.getIdWorkShopFromPath(path, Session.getInstance().getPlatform().getInstallationFolder())))
-                        .map(path -> {
-                            Long idWorkShop = Long.parseLong(path.getFileName().toString());
-                            return new MapToDisplay(idWorkShop, "MOD [" + idWorkShop + "]");
-                        })
-                        .collect(Collectors.toList())
+            File[] steamCacheFolderList = new File(steamPlatform.getInstallationFolder() + "/KFGame/Cache").listFiles();
+            if (steamCacheFolderList != null && steamCacheFolderList.length > 0) {
+                List<Long> idWorkShopCustomMapList = steamCustomMapModList.stream().map(MapToDisplay::getIdWorkShop).collect(Collectors.toList());
+                steamCustomMapModList.addAll(
+                        Arrays.stream(steamCacheFolderList)
+                                .filter(file -> file.isDirectory())
+                                .map(file -> file.toPath())
+                                .filter(path -> !idWorkShopCustomMapList.contains(Kf2Factory.getInstance(steamPlatform.getKey()).getIdWorkShopFromPath(path, steamPlatform.getInstallationFolder())))
+                                .map(path -> {
+                                    Long idWorkShop = Long.parseLong(path.getFileName().toString());
+                                    return new MapToDisplay(idWorkShop, "MOD [" + idWorkShop + "]");
+                                })
+                                .collect(Collectors.toList())
                 );
             }
 
-            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectCustomMaps");
-            selectedCustomMapModList = Utils.selectMapsDialog(headerText, customMapModList);
+            // CUSTOM MAP / MOD LIST FOR EPIC
+            List<MapToDisplay> epicCustomMapModList = Files.walk(Paths.get(epicPlatform.getInstallationFolder() + "/KFGame/Cache"))
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
+                    .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
+                    .map(path -> {
+                        String filenameWithExtension = path.getFileName().toString();
+                        String[] array = filenameWithExtension.split("\\.");
+                        String mapName = array[0];
+                        Long idWorkShop = Kf2Factory.getInstance(epicPlatform.getKey()).getIdWorkShopFromPath(path.getParent(), epicPlatform.getInstallationFolder());
+                        return new MapToDisplay(idWorkShop, mapName);
+                    })
+                    .collect(Collectors.toList());
 
-            officialMapNameList = Files.walk(Paths.get(Session.getInstance().getPlatform().getInstallationFolder() + "/KFGame/BrewedPC/Maps"))
+            File[] epicCacheFolderList = new File(epicPlatform.getInstallationFolder() + "/KFGame/Cache").listFiles();
+            if (epicCacheFolderList != null && epicCacheFolderList.length > 0) {
+                List<Long> idWorkShopCustomMapList = epicCustomMapModList.stream().map(MapToDisplay::getIdWorkShop).collect(Collectors.toList());
+                epicCustomMapModList.addAll(
+                        Arrays.stream(epicCacheFolderList)
+                                .filter(file -> file.isDirectory())
+                                .map(file -> file.toPath())
+                                .filter(path -> !idWorkShopCustomMapList.contains(Kf2Factory.getInstance(epicPlatform.getKey()).getIdWorkShopFromPath(path, epicPlatform.getInstallationFolder())))
+                                .map(path -> {
+                                    Long idWorkShop = Long.parseLong(path.getFileName().toString());
+                                    return new MapToDisplay(idWorkShop, "MOD [" + idWorkShop + "]");
+                                })
+                                .collect(Collectors.toList())
+                );
+            }
+
+            // OFFICIAL MAP LIST FOR STEAM
+            List<String> steamOfficialMapNameList = Files.walk(Paths.get( steamPlatform.getInstallationFolder() + "/KFGame/BrewedPC/Maps"))
                     .filter(Files::isRegularFile)
                     .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
                     .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
@@ -1080,9 +1117,191 @@ public class MapsEditionController implements Initializable {
                     })
                     .collect(Collectors.toList());
 
-            headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.importOperation");
+            // OFFICIAL MAP LIST FOR EPIC
+            List<String> epicOfficialMapNameList = Files.walk(Paths.get(epicPlatform.getInstallationFolder() + "/KFGame/BrewedPC/Maps"))
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
+                    .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
+                    .map(path -> {
+                        String filenameWithExtension = path.getFileName().toString();
+                        String[] array = filenameWithExtension.split("\\.");
+                        return array[0];
+                    })
+                    .collect(Collectors.toList());
+
+
+            List<PlatformProfileMapToImport> officialMapPpmToImportList = new ArrayList<PlatformProfileMapToImport>();
+            List<PlatformProfileMapToImport> customMapPpmToImportList = new ArrayList<PlatformProfileMapToImport>();
+            for (PlatformProfileToDisplay selectedPlatformProfile: selectedPlatformProfileList) {
+                List<PlatformDto> platformList = new ArrayList<PlatformDto>();
+
+                switch (selectedPlatformProfile.getPlatformName()) {
+                    case "Steam":
+                        if (steamPlatformDtoOptional.isPresent()) {
+                            platformList.add(steamPlatformDtoOptional.get());
+                        }
+                        break;
+
+                    case "Epic Games":
+                        if (epicPlatformDtoOptional.isPresent()) {
+                            platformList.add(epicPlatformDtoOptional.get());
+                        }
+                        break;
+
+                    case "All platforms":
+                        if (steamPlatformDtoOptional.isPresent()) {
+                            platformList.add(steamPlatformDtoOptional.get());
+                        }
+                        if (epicPlatformDtoOptional.isPresent()) {
+                            platformList.add(epicPlatformDtoOptional.get());
+                        }
+                        break;
+                }
+
+                for (PlatformDto platform: platformList) {
+                    try {
+                        String headerText = facade.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectCustomMaps",
+                                selectedPlatformProfile.getProfileName(),
+                                platform.getValue());
+
+
+                        // Not present Official Maps
+                        List<MapToDisplay> notPresentOfficialMapList = new ArrayList<MapToDisplay>();
+                        if (EnumPlatform.STEAM.name().equals(platform.getKey())) {
+                            notPresentOfficialMapList = facade.getNotPresentOfficialMapList(steamOfficialMapNameList, platform.getKey(), selectedPlatformProfile.getProfileName());
+                        } else {
+                            notPresentOfficialMapList = facade.getNotPresentOfficialMapList(epicOfficialMapNameList, platform.getKey(), selectedPlatformProfile.getProfileName());
+                        }
+
+                        for (MapToDisplay map : notPresentOfficialMapList) {
+                            officialMapPpmToImportList.add(
+                                    new PlatformProfileMapToImport(
+                                            platform.getKey(),
+                                            selectedPlatformProfile.getProfileName(),
+                                            map
+                                    )
+                            );
+                        }
+
+                        // Selected Custom Maps
+                        List<MapToDisplay> selectedCustomMapModList = new ArrayList<MapToDisplay>();
+                        if (EnumPlatform.STEAM.name().equals(platform.getKey())) {
+                            selectedCustomMapModList = Utils.selectMapsDialog(headerText, steamCustomMapModList);
+                        } else {
+                            selectedCustomMapModList = Utils.selectMapsDialog(headerText, epicCustomMapModList);
+                        }
+
+                        for (MapToDisplay map : selectedCustomMapModList) {
+                            customMapPpmToImportList.add(
+                                    new PlatformProfileMapToImport(
+                                            platform.getKey(),
+                                            selectedPlatformProfile.getProfileName(),
+                                            map
+                                    )
+                            );
+                        }
+                    } catch (Exception e) {
+                        String message = "Error importing maps and mods from server to the launcher";
+                        logger.error(message, e);
+                    }
+                }
+            }
+
+            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.importOperation");
             String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.confirmImportOperation");
-            result = Utils.questionDialog(headerText, contentText);
+            Optional<ButtonType> result = Utils.questionDialog(headerText, contentText);
+
+            if (result.isPresent() && result.get().equals(ButtonType.OK)) {
+                progressIndicator.setVisible(true);
+                Task<List<ImportMapResultToDisplay>> task = new Task<List<ImportMapResultToDisplay>>() {
+                    @Override
+                    protected List<ImportMapResultToDisplay> call() throws Exception {
+                        logger.info("Starting the process to import maps and mods from the server to the launcher");
+                        List<ImportMapResultToDisplay> importMapResultToDisplayList = importCustomMapsModsFromServer(customMapPpmToImportList);
+                        importMapResultToDisplayList.addAll(importOfficialMapsFromServer(officialMapPpmToImportList));
+                        return importMapResultToDisplayList;
+                    }
+                };
+
+                task.setOnSucceeded(wse -> {
+                    try {
+                        List<ImportMapResultToDisplay> importMapResultToDisplayList = task.getValue();
+                        steamOfficialMapsFlowPane.getChildren().clear();
+                        steamCustomMapsFlowPane.getChildren().clear();
+                        epicOfficialMapsFlowPane.getChildren().clear();
+                        epicCustomMapsFlowPane.getChildren().clear();
+
+                        steamPlatformProfileMapDtoList.stream().forEach(profileMapDto -> {
+                            GridPane gridpane = createMapGridPane(profileMapDto);
+                            if (profileMapDto.getMapDto().isOfficial()) {
+                                steamOfficialMapsFlowPane.getChildren().add(gridpane);
+                            } else {
+                                steamCustomMapsFlowPane.getChildren().add(gridpane);
+                            }
+                        });
+
+                        epicPlatformProfileMapDtoList.stream().forEach(profileMapDto -> {
+                            GridPane gridpane = createMapGridPane(profileMapDto);
+                            if (profileMapDto.getMapDto().isOfficial()) {
+                                epicOfficialMapsFlowPane.getChildren().add(gridpane);
+                            } else {
+                                epicCustomMapsFlowPane.getChildren().add(gridpane);
+                            }
+                        });
+
+                        String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
+                        String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
+
+                        steamOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, true, officialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
+                        epicOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.EPIC, true, officialMapsTabText, epicOfficialMapsFlowPane.getChildren().size()));
+                        steamCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, false, customMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
+                        epicCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.EPIC, false, customMapsModsTabText, epicCustomMapsFlowPane.getChildren().size()));
+
+                        progressIndicator.setVisible(false);
+                        logger.info("The process to import maps and mods from the server to the launcher has finished.");
+
+
+                        List<String> profileNameList = importMapResultToDisplayList.stream().map(ImportMapResultToDisplay::getProfileName).distinct().collect(Collectors.toList());
+                        if (profileNameList == null || profileNameList.isEmpty()) {
+                            String importMapsFromServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importMaps");
+                            String noNewMapsFromServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.noMapsImportedWarning");
+                            Utils.infoDialog(importMapsFromServerText, noNewMapsFromServerText);
+
+                        } else {
+                            Optional<VBox> importDialogResult = Optional.empty();
+                            Integer profileIndex = 0;
+                            do {
+                                importDialogResult = Utils.importMapsResultDialog(importMapResultToDisplayList, profileNameList.get(profileIndex));
+
+                                if (importDialogResult.isPresent()) {
+                                    String action = ((Text) importDialogResult.get().getChildren().get(5)).getText();
+                                    if (action.equals("PREVIOUS")) {
+                                        if (profileIndex > 0) {
+                                            profileIndex--;
+                                        } else {
+                                            profileIndex = profileNameList.size() - 1;
+                                        }
+                                    }
+                                    if (action.equals("NEXT")) {
+                                        if (profileIndex < (profileNameList.size() - 1)) {
+                                            profileIndex++;
+                                        } else {
+                                            profileIndex = 0;
+                                        }
+                                    }
+                                }
+                            } while (importDialogResult.isPresent());
+                        }
+
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                });
+                task.setOnFailed(wse -> {
+                    progressIndicator.setVisible(false);
+                });
+                new Thread(task).start();
+            }
 
         } catch (Exception e) {
             String message = "Error importing maps and mods from server to the launcher";
@@ -1090,175 +1309,198 @@ public class MapsEditionController implements Initializable {
             Utils.errorDialog(message, e);
         }
 
-        if (result.isPresent() && result.get().equals(ButtonType.OK)) {
-            progressIndicator.setVisible(true);
-            List<ImportMapResultToDisplay> importMapResultToDisplayList = new ArrayList<ImportMapResultToDisplay>();
-
-            List<MapToDisplay> finalSelectedCustomMapModList = selectedCustomMapModList;
-            List<String> finalSelectedProfileNameList = selectedProfileNameList;
-            List<String> finalOfficialMapNameList = officialMapNameList;
-
-            Task<Void> task = new Task<Void>() {
-                @Override
-                protected Void call() throws Exception {
-                    logger.info("Starting the process to import maps and mods from the server to the launcher");
-                    importCustomMapsModsFromServer(finalSelectedCustomMapModList, finalSelectedProfileNameList, importMapResultToDisplayList);
-                    importOfficialMapsFromServer(finalOfficialMapNameList, finalSelectedProfileNameList, importMapResultToDisplayList);
-                    return null;
-                }
-            };
-            task.setOnSucceeded(wse -> {
-                try {
-                    steamOfficialMapsFlowPane.getChildren().clear();
-                    steamCustomMapsFlowPane.getChildren().clear();
-                    steamPlatformProfileMapDtoList.stream().forEach(profileMapDto -> {
-                        GridPane gridpane = createMapGridPane(profileMapDto);
-                        if (profileMapDto.getMapDto().isOfficial()) {
-                            steamOfficialMapsFlowPane.getChildren().add(gridpane);
-                        } else {
-                            steamCustomMapsFlowPane.getChildren().add(gridpane);
-                        }
-                    });
-
-                    String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
-                    steamOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, true, officialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
-                    String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamCustomMaps");
-                    steamCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, false, customMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
-
-                    progressIndicator.setVisible(false);
-                    logger.info("The process to import maps and mods from the server to the launcher has finished.");
-
-                    List<String> profileNameList = importMapResultToDisplayList.stream().map(ImportMapResultToDisplay::getProfileName).distinct().collect(Collectors.toList());
-                    if (profileNameList == null || profileNameList.isEmpty()) {
-
-                        String importMapsFromServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importMaps");
-                        String noNewMapsFromServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.noMapsImportedWarning");
-                        Utils.infoDialog(importMapsFromServerText, noNewMapsFromServerText);
-
-                    } else {
-                        Optional<VBox> importDialogResult = Optional.empty();
-                        Integer profileIndex = 0;
-                        do {
-                            importDialogResult = Utils.importMapsResultDialog(importMapResultToDisplayList, profileNameList.get(profileIndex));
-
-                            if (importDialogResult.isPresent()) {
-                                String action = ((Text) importDialogResult.get().getChildren().get(5)).getText();
-                                if (action.equals("PREVIOUS")) {
-                                    if (profileIndex > 0) {
-                                        profileIndex--;
-                                    } else {
-                                        profileIndex = profileNameList.size() - 1;
-                                    }
-                                }
-                                if (action.equals("NEXT")) {
-                                    if (profileIndex < (profileNameList.size() - 1)) {
-                                        profileIndex++;
-                                    } else {
-                                        profileIndex = 0;
-                                    }
-                                }
-                            }
-                        } while (importDialogResult.isPresent());
-                    }
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                }
-            });
-            task.setOnFailed(wse -> {
-                progressIndicator.setVisible(false);
-            });
-            new Thread(task).start();
-        }
-
     }
 
-    private void importOfficialMapsFromServer(List<String> officialMapNameList, List<String> selectedProfileNameList, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
-        if (officialMapNameList == null || officialMapNameList.isEmpty()) {
-            return;
-        }
-        String mapNameLabel = "";
-        try {
-            mapNameLabel = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-        } catch (Exception e) {
-            mapNameLabel = "Map name";
-        }
-        List<String> platformNameList = new ArrayList<String>();
-        platformNameList.add(EnumPlatform.STEAM.name());
-        platformNameList.add(EnumPlatform.EPIC.name());
+    private void addOfficialMapToPlatformTabs(PlatformProfileMapToImport importedPpm, String mapName) throws SQLException {
 
-        for (String officialMapName: officialMapNameList) {
-            OfficialMapDto officialMapImportedDto = facade.importOfficialMapFromServer(
-                    platformNameList,
-                    officialMapName,
-                    selectedProfileNameList,
-                    profileSelect.getValue().getName(),
-                    mapNameLabel,
-                    importMapResultToDisplayList
+        if (EnumPlatform.STEAM.name().equals(importedPpm.getPlatformName()) &&
+                !steamPlatformProfileMapDtoList.stream().
+                        filter(ppm -> ppm.getMapDto().isOfficial() && ppm.getMapDto().getKey().equals(mapName)).
+                        findFirst().
+                        isPresent()) {
+
+            Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByNames(
+                    importedPpm.getPlatformName(),
+                    importedPpm.getProfileName(),
+                    mapName
             );
 
+            if (profileMapDtoOptional.isPresent()) {
+                steamPlatformProfileMapDtoList.add(profileMapDtoOptional.get());
+            }
+        }
 
-            if (selectedProfileNameList.contains(profileSelect.getValue().getName()) &&
-                    !steamPlatformProfileMapDtoList.stream().filter(pm -> pm.getMapDto().isOfficial() && pm.getMapDto().getKey().equalsIgnoreCase(officialMapImportedDto.getKey())).findFirst().isPresent()) {
-                try {
-                    Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByNames(
-                            Session.getInstance().getPlatform().getKey(),
-                            profileSelect.getValue().getName(),
-                            officialMapImportedDto.getKey()
-                    );
-                    if (profileMapDtoOptional.isPresent()) {
-                        steamPlatformProfileMapDtoList.add(profileMapDtoOptional.get());
-                    }
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                }
+        if (EnumPlatform.EPIC.name().equals(importedPpm.getPlatformName()) &&
+                !epicPlatformProfileMapDtoList.stream().
+                        filter(ppm -> ppm.getMapDto().isOfficial() && ppm.getMapDto().getKey().equals(mapName)).
+                        findFirst().
+                        isPresent()) {
+
+            Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByNames(
+                    importedPpm.getPlatformName(),
+                    importedPpm.getProfileName(),
+                    mapName
+            );
+
+            if (profileMapDtoOptional.isPresent()) {
+                epicPlatformProfileMapDtoList.add(profileMapDtoOptional.get());
             }
         }
     }
 
-    private void importCustomMapsModsFromServer(List<MapToDisplay> customMapModList, List<String> selectedProfileNameList, List<ImportMapResultToDisplay> importMapResultToDisplayList) {
-        if (customMapModList == null || customMapModList.isEmpty()) {
-            return;
-        }
-        String mapNameLabel = "";
-        try {
-            mapNameLabel = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-        } catch (Exception e) {
-            mapNameLabel = "Map name";
-        }
-        List<String> platformNameList = new ArrayList<String>();
-        platformNameList.add(EnumPlatform.STEAM.name());
-        platformNameList.add(EnumPlatform.EPIC.name());
+    private void addCustomMapToPlatformTabs(PlatformProfileMapToImport importedPpm, String mapName) throws SQLException {
 
-        for (MapToDisplay customMapModToDisplay: customMapModList) {
-            /*
-            CustomMapModDto customMapModImportedDto = facade.importCustomMapModFromServer(
-                    platformNameList,
-                    mapNameLabel,
-                    customMapModToDisplay.getIdWorkShop(),
-                    customMapModToDisplay.getCommentary(),
-                    selectedProfileNameList,
-                    profileSelect.getValue().getName(),
-                    importMapResultToDisplayList
+        PlatformProfileMapToImport finalImportedPpm = importedPpm;
+        if (EnumPlatform.STEAM.name().equals(importedPpm.getPlatformName()) &&
+                !steamPlatformProfileMapDtoList.stream().
+                        filter(ppm -> !ppm.getMapDto().isOfficial() && ((CustomMapModDto) ppm.getMapDto()).getIdWorkShop().equals(finalImportedPpm.getMapToDisplay().getIdWorkShop())).
+                        findFirst().
+                        isPresent()) {
+
+            Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByNames(
+                    importedPpm.getPlatformName(),
+                    importedPpm.getProfileName(),
+                    mapName
             );
 
-            if (selectedProfileNameList.contains(profileSelect.getValue().getName()) &&
-                    !steamPlatformProfileMapDtoList.stream().filter(pm -> !pm.getMapDto().isOfficial() && ((CustomMapModDto) pm.getMapDto()).getIdWorkShop().equals(customMapModImportedDto.getIdWorkShop())).findFirst().isPresent()) {
-                try {
-                    Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByNames(
-                            Session.getInstance().getPlatform().getKey(),
-                            profileSelect.getValue().getName(),
-                            customMapModImportedDto.getKey()
-                    );
+            if (profileMapDtoOptional.isPresent()) {
+                steamPlatformProfileMapDtoList.add(profileMapDtoOptional.get());
+            }
+        }
 
-                    if (profileMapDtoOptional.isPresent()) {
-                        steamPlatformProfileMapDtoList.add(profileMapDtoOptional.get());
-                    }
+        if (EnumPlatform.EPIC.name().equals(importedPpm.getPlatformName()) &&
+                !epicPlatformProfileMapDtoList.stream().
+                        filter(ppm -> !ppm.getMapDto().isOfficial() && ((CustomMapModDto) ppm.getMapDto()).getIdWorkShop().equals(finalImportedPpm.getMapToDisplay().getIdWorkShop())).
+                        findFirst().
+                        isPresent()) {
+
+            Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByNames(
+                    importedPpm.getPlatformName(),
+                    importedPpm.getProfileName(),
+                    mapName
+            );
+
+            if (profileMapDtoOptional.isPresent()) {
+                epicPlatformProfileMapDtoList.add(profileMapDtoOptional.get());
+            }
+        }
+    }
+
+    private List<ImportMapResultToDisplay> importOfficialMapsFromServer(List<PlatformProfileMapToImport> ppmToImportList) {
+        if (ppmToImportList == null || ppmToImportList.isEmpty()) {
+            return new ArrayList<ImportMapResultToDisplay>();
+        }
+
+        PlatformProfileMapToImport importedPpm = null;
+
+        AbstractMapDto mapDto = null;
+        List<ImportMapResultToDisplay> importMapResultToDisplayList = new ArrayList<ImportMapResultToDisplay>();
+        for (PlatformProfileMapToImport ppmToImport: ppmToImportList) {
+            try {
+                importedPpm = facade.importOfficialMapFromServer(
+                        ppmToImport,
+                        profileSelect.getValue().getName()
+                );
+
+                mapDto = facade.getOfficialMapByName(importedPpm.getMapToDisplay().getCommentary());
+                if (mapDto == null) {
+                    String errorMessage = "Can not find the map with name: " + importedPpm.getMapToDisplay().getCommentary();
+                    logger.error(errorMessage);
+                    throw new RuntimeException(errorMessage);
+                }
+
+                importMapResultToDisplayList.add(new ImportMapResultToDisplay(
+                        importedPpm.getProfileName(),
+                        importedPpm.getPlatformName(),
+                        mapDto.getKey(),
+                        mapDto.isOfficial(),
+                        new Date(),
+                        StringUtils.EMPTY
+                ));
+
+            } catch (Exception e) {
+                String errorMessage = "Error importing the official map with name: " + ppmToImport.getMapToDisplay().getCommentary() + " for platform " + ppmToImport.getPlatformName() + " and profile " + ppmToImport.getProfileName();
+                logger.error(errorMessage, e);
+                importMapResultToDisplayList.add(new ImportMapResultToDisplay(
+                        ppmToImport.getProfileName(),
+                        ppmToImport.getPlatformName(),
+                        ppmToImport.getMapToDisplay().getCommentary(),
+                        true,
+                        null,
+                        errorMessage
+                ));
+                continue;
+            }
+
+            if (importedPpm.getProfileName().equals(profileSelect.getValue().getName())) {
+                try {
+                    addOfficialMapToPlatformTabs(importedPpm, mapDto.getKey());
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
+                    String errorMessage = "Can not show the imported official map with name " + importedPpm.getMapToDisplay().getCommentary() + " in the platform " + importedPpm.getPlatformName();
+                    logger.error(errorMessage, e);
                 }
             }
-             */
         }
+
+        return importMapResultToDisplayList;
+    }
+
+    private List<ImportMapResultToDisplay> importCustomMapsModsFromServer(List<PlatformProfileMapToImport> ppmToImportList) {
+        if (ppmToImportList == null || ppmToImportList.isEmpty()) {
+            return new ArrayList<ImportMapResultToDisplay>();
+        }
+        PlatformProfileMapToImport importedPpm = null;
+
+        AbstractMapDto mapDto = null;
+        List<ImportMapResultToDisplay> importMapResultToDisplayList = new ArrayList<ImportMapResultToDisplay>();
+        for (PlatformProfileMapToImport ppmToImport: ppmToImportList) {
+            try {
+                importedPpm = facade.importCustomMapModFromServer(
+                        ppmToImport,
+                        profileSelect.getValue().getName()
+                );
+
+                mapDto = facade.getMapByIdWorkShop(importedPpm.getMapToDisplay().getIdWorkShop());
+                if (mapDto == null) {
+                    String errorMessage = "Can not find the map with idWorkShop: " + importedPpm.getMapToDisplay().getIdWorkShop();
+                    logger.error(errorMessage);
+                    throw new RuntimeException(errorMessage);
+                }
+
+                importMapResultToDisplayList.add(new ImportMapResultToDisplay(
+                        importedPpm.getProfileName(),
+                        importedPpm.getPlatformName(),
+                        mapDto.getKey(),
+                        mapDto.isOfficial(),
+                        new Date(),
+                        StringUtils.EMPTY
+                ));
+
+            } catch (Exception e) {
+                String errorMessage = "Error importing the custom map/mod with idWorkShop: " + ppmToImport.getMapToDisplay().getIdWorkShop() + " for platform " + ppmToImport.getPlatformName() + " and profile " + ppmToImport.getProfileName();
+                logger.error(errorMessage, e);
+                importMapResultToDisplayList.add(new ImportMapResultToDisplay(
+                        ppmToImport.getProfileName(),
+                        ppmToImport.getPlatformName(),
+                        ppmToImport.getMapToDisplay().getCommentary(),
+                        false,
+                        null,
+                        errorMessage
+                ));
+                continue;
+            }
+
+            if (importedPpm.getProfileName().equals(profileSelect.getValue().getName())) {
+                try {
+                    addCustomMapToPlatformTabs(importedPpm, mapDto.getKey());
+                } catch (Exception e) {
+                    String errorMessage = "Can not show the imported custom map / mod with name " + importedPpm.getMapToDisplay().getCommentary() + " in the platform " + importedPpm.getPlatformName();
+                    logger.error(errorMessage, e);
+                }
+            }
+        }
+
+        return importMapResultToDisplayList;
     }
 
 
@@ -1309,15 +1551,13 @@ public class MapsEditionController implements Initializable {
                 }
             }
 
-            String steamOfficialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamOfficiaslMaps");
-            steamOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, true, steamOfficialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
-            String steamCustomMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamCustomMaps");
-            steamCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, false, steamCustomMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
+            String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
+            String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
 
-            String epicOfficialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.epicOfficiaslMaps");
-            epicOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.EPIC, true, epicOfficialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
-            String epicCustomMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.epicCustomMaps");
-            epicCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.EPIC, true, epicCustomMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
+            steamOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, true, officialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
+            steamCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, false, customMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
+            epicOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.EPIC, true, officialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
+            epicCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.EPIC, true, customMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
 
             Session.getInstance().setMapsProfile(profileSelect.getValue());
         } catch (Exception e) {
