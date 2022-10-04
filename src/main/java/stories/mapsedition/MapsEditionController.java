@@ -1569,12 +1569,16 @@ public class MapsEditionController implements Initializable {
     private void orderMapsByAliasOnAction() {
         steamCustomMapsFlowPane.getChildren().clear();
         steamOfficialMapsFlowPane.getChildren().clear();
+        epicOfficialMapsFlowPane.getChildren().clear();
+        epicCustomMapsFlowPane.getChildren().clear();
 
         if (EnumSortedMapsCriteria.ALIAS_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
             steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm1.getAlias().compareTo(pm2.getAlias())).collect(Collectors.toList());
+            epicPlatformProfileMapDtoList = epicPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm1.getAlias().compareTo(pm2.getAlias())).collect(Collectors.toList());
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.ALIAS_ASC);
         } else {
             steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm2.getAlias().compareTo(pm1.getAlias())).collect(Collectors.toList());
+            epicPlatformProfileMapDtoList = epicPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm2.getAlias().compareTo(pm1.getAlias())).collect(Collectors.toList());
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.ALIAS_DESC);
         }
 
@@ -1584,6 +1588,15 @@ public class MapsEditionController implements Initializable {
                 steamOfficialMapsFlowPane.getChildren().add(gridpane);
             } else {
                 steamCustomMapsFlowPane.getChildren().add(gridpane);
+            }
+        }
+
+        for (PlatformProfileMapDto platformProfileMapDto : epicPlatformProfileMapDtoList) {
+            GridPane gridpane = createMapGridPane(platformProfileMapDto);
+            if (platformProfileMapDto.getMapDto().isOfficial()) {
+                epicOfficialMapsFlowPane.getChildren().add(gridpane);
+            } else {
+                epicCustomMapsFlowPane.getChildren().add(gridpane);
             }
         }
     }
@@ -1628,38 +1641,72 @@ public class MapsEditionController implements Initializable {
     private void orderMapsByReleaseDateOnAction() {
         steamCustomMapsFlowPane.getChildren().clear();
         steamOfficialMapsFlowPane.getChildren().clear();
+        epicOfficialMapsFlowPane.getChildren().clear();
+        epicCustomMapsFlowPane.getChildren().clear();
 
         if (EnumSortedMapsCriteria.RELEASE_DATE_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
-            List<PlatformProfileMapDto> sortedMapList = new ArrayList<PlatformProfileMapDto>(
+            List<PlatformProfileMapDto> steamSortedMapList = new ArrayList<PlatformProfileMapDto>(
                     steamPlatformProfileMapDtoList.stream()
                             .filter(pm -> pm.getReleaseDate() != null)
                             .sorted((pm1, pm2) -> pm1.getReleaseDate().compareTo(pm2.getReleaseDate()))
                             .collect(Collectors.toList())
+
             );
-            List<PlatformProfileMapDto> mapWithoutReleaseDateList = new ArrayList<PlatformProfileMapDto>(
+            List<PlatformProfileMapDto> steamMapWithoutReleaseDateList = new ArrayList<PlatformProfileMapDto>(
                     steamPlatformProfileMapDtoList.stream()
                             .filter(pm -> pm.getReleaseDate() == null)
                             .collect(Collectors.toList())
             );
+            List<PlatformProfileMapDto> epicSortedMapList = new ArrayList<PlatformProfileMapDto>(
+                    epicPlatformProfileMapDtoList.stream()
+                            .filter(pm -> pm.getReleaseDate() != null)
+                            .sorted((pm1, pm2) -> pm1.getReleaseDate().compareTo(pm2.getReleaseDate()))
+                            .collect(Collectors.toList())
 
-            sortedMapList.addAll(mapWithoutReleaseDateList);
-            steamPlatformProfileMapDtoList = sortedMapList;
+            );
+            List<PlatformProfileMapDto> epicMapWithoutReleaseDateList = new ArrayList<PlatformProfileMapDto>(
+                    epicPlatformProfileMapDtoList.stream()
+                            .filter(pm -> pm.getReleaseDate() == null)
+                            .collect(Collectors.toList())
+            );
+
+            steamSortedMapList.addAll(steamMapWithoutReleaseDateList);
+            steamPlatformProfileMapDtoList = steamSortedMapList;
+
+            epicSortedMapList.addAll(epicMapWithoutReleaseDateList);
+            epicPlatformProfileMapDtoList = epicSortedMapList;
+
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.RELEASE_DATE_ASC);
         } else {
-            List<PlatformProfileMapDto> sortedMapList = new ArrayList<PlatformProfileMapDto>(
+            List<PlatformProfileMapDto> steamSortedMapList = new ArrayList<PlatformProfileMapDto>(
                     steamPlatformProfileMapDtoList.stream()
                             .filter(pm -> pm.getReleaseDate() != null)
                             .sorted((pm1, pm2) -> pm2.getReleaseDate().compareTo(pm1.getReleaseDate()))
                             .collect(Collectors.toList())
             );
-            List<PlatformProfileMapDto> mapWithoutReleaseDateList = new ArrayList<PlatformProfileMapDto>(
+            List<PlatformProfileMapDto> steamMapWithoutReleaseDateList = new ArrayList<PlatformProfileMapDto>(
                     steamPlatformProfileMapDtoList.stream()
                             .filter(pm -> pm.getReleaseDate() == null)
                             .collect(Collectors.toList())
             );
+            List<PlatformProfileMapDto> epicSortedMapList = new ArrayList<PlatformProfileMapDto>(
+                    epicPlatformProfileMapDtoList.stream()
+                            .filter(pm -> pm.getReleaseDate() != null)
+                            .sorted((pm1, pm2) -> pm2.getReleaseDate().compareTo(pm1.getReleaseDate()))
+                            .collect(Collectors.toList())
+            );
+            List<PlatformProfileMapDto> epicMapWithoutReleaseDateList = new ArrayList<PlatformProfileMapDto>(
+                    epicPlatformProfileMapDtoList.stream()
+                            .filter(pm -> pm.getReleaseDate() == null)
+                            .collect(Collectors.toList())
+            );
 
-            sortedMapList.addAll(mapWithoutReleaseDateList);
-            steamPlatformProfileMapDtoList = sortedMapList;
+            steamSortedMapList.addAll(steamMapWithoutReleaseDateList);
+            steamPlatformProfileMapDtoList = steamSortedMapList;
+
+            epicSortedMapList.addAll(epicMapWithoutReleaseDateList);
+            epicPlatformProfileMapDtoList = epicSortedMapList;
+
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.RELEASE_DATE_DESC);
         }
 
@@ -1671,18 +1718,31 @@ public class MapsEditionController implements Initializable {
                 steamCustomMapsFlowPane.getChildren().add(gridpane);
             }
         }
+
+         for (PlatformProfileMapDto platformProfileMapDto : epicPlatformProfileMapDtoList) {
+             GridPane gridpane = createMapGridPane(platformProfileMapDto);
+             if (platformProfileMapDto.getMapDto().isOfficial()) {
+                 epicOfficialMapsFlowPane.getChildren().add(gridpane);
+             } else {
+                 epicCustomMapsFlowPane.getChildren().add(gridpane);
+             }
+         }
     }
 
     @FXML
     private void orderMapsByImportedDateOnAction() {
         steamCustomMapsFlowPane.getChildren().clear();
         steamOfficialMapsFlowPane.getChildren().clear();
+        epicCustomMapsFlowPane.getChildren().clear();
+        epicOfficialMapsFlowPane.getChildren().clear();
 
         if (EnumSortedMapsCriteria.IMPORTED_DATE_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
             steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm1.getImportedDate().compareTo(pm2.getImportedDate())).collect(Collectors.toList());
+            epicPlatformProfileMapDtoList = epicPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm1.getImportedDate().compareTo(pm2.getImportedDate())).collect(Collectors.toList());
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.IMPORTED_DATE_ASC);
         } else {
             steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm2.getImportedDate().compareTo(pm1.getImportedDate())).collect(Collectors.toList());
+            epicPlatformProfileMapDtoList = epicPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm2.getImportedDate().compareTo(pm1.getImportedDate())).collect(Collectors.toList());
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.IMPORTED_DATE_DESC);
         }
 
@@ -1694,14 +1754,24 @@ public class MapsEditionController implements Initializable {
                 steamCustomMapsFlowPane.getChildren().add(gridpane);
             }
         }
+
+        for (PlatformProfileMapDto platformProfileMapDto : epicPlatformProfileMapDtoList) {
+            GridPane gridpane = createMapGridPane(platformProfileMapDto);
+            if (platformProfileMapDto.getMapDto().isOfficial()) {
+                epicOfficialMapsFlowPane.getChildren().add(gridpane);
+            } else {
+                epicCustomMapsFlowPane.getChildren().add(gridpane);
+            }
+        }
     }
 
     @FXML
     private void orderMapsByDownloadOnAction() {
-        if (steamOfficialMapsTab.isSelected()) {
+        if (steamOfficialMapsTab.isSelected() || epicOfficialMapsTab.isSelected()) {
             return;
         }
         steamCustomMapsFlowPane.getChildren().clear();
+        epicCustomMapsFlowPane.getChildren().clear();
 
         if (EnumSortedMapsCriteria.DOWNLOAD_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
             steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().
@@ -1711,6 +1781,14 @@ public class MapsEditionController implements Initializable {
                 Boolean map2Downloaded = ppm2.isDownloaded();
                 return map1Downloaded.compareTo(map2Downloaded);
             }).collect(Collectors.toList());
+            epicPlatformProfileMapDtoList = epicPlatformProfileMapDtoList.stream().
+                    filter(ppm -> !ppm.getMapDto().isOfficial()).
+                    sorted((ppm1, ppm2) -> {
+                        Boolean map1Downloaded = ppm1.isDownloaded();
+                        Boolean map2Downloaded = ppm2.isDownloaded();
+                        return map1Downloaded.compareTo(map2Downloaded);
+                    }).collect(Collectors.toList());
+
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.DOWNLOAD_ASC);
         } else {
             steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().
@@ -1720,12 +1798,24 @@ public class MapsEditionController implements Initializable {
                 Boolean map2Downloaded = ppm2.isDownloaded();
                 return map2Downloaded.compareTo(map1Downloaded);
             }).collect(Collectors.toList());
+            epicPlatformProfileMapDtoList = epicPlatformProfileMapDtoList.stream().
+                    filter(ppm -> !ppm.getMapDto().isOfficial()).
+                    sorted((ppm1, ppm2) -> {
+                        Boolean map1Downloaded = ppm1.isDownloaded();
+                        Boolean map2Downloaded = ppm2.isDownloaded();
+                        return map2Downloaded.compareTo(map1Downloaded);
+                    }).collect(Collectors.toList());
+
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.DOWNLOAD_DESC);
         }
 
         for (PlatformProfileMapDto platformProfileMapDto : steamPlatformProfileMapDtoList) {
             GridPane gridpane = createMapGridPane(platformProfileMapDto);
             steamCustomMapsFlowPane.getChildren().add(gridpane);
+        }
+        for (PlatformProfileMapDto platformProfileMapDto : epicPlatformProfileMapDtoList) {
+            GridPane gridpane = createMapGridPane(platformProfileMapDto);
+            epicCustomMapsFlowPane.getChildren().add(gridpane);
         }
     }
 
