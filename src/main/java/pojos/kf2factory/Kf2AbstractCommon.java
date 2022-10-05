@@ -1,5 +1,6 @@
 package pojos.kf2factory;
 
+import entities.AbstractPlatform;
 import entities.Profile;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -13,30 +14,30 @@ public abstract class Kf2AbstractCommon extends Kf2Utils implements Kf2Common {
 
     private static final Logger logger = LogManager.getLogger(Kf2Common.class);
 
+    protected AbstractPlatform platform;
+
     protected Kf2AbstractCommon() {
         super();
     }
 
-    public abstract boolean isValid(String installationFolder);
-    protected abstract String runKf2Server(String installationFolder, Profile profile);
+    public abstract boolean isValidInstallationFolder();
+    protected abstract String runKf2Server(Profile profile);
     protected abstract void executeFileBeforeRunServer(File fileToBeExecuted) throws Exception;
-    public abstract Long getIdWorkShopFromPath(Path path, String installationFolder);
-    protected abstract String getInstallationFolder() throws Exception;
+    public abstract Long getIdWorkShopFromPath(Path path);
     public abstract String joinServer(Profile profile);
     protected abstract boolean prepareSteamCmd();
 
-    protected boolean prerequisitesAreValid(String installationFolder) {
-        return isValid(installationFolder) && prepareSteamCmd();
+    protected boolean prerequisitesAreValid() {
+        return isValidInstallationFolder() && prepareSteamCmd();
     }
 
     public String runServer(Profile profile) {
         try {
             String errorMessage = validateParameters(profile);
             if (StringUtils.isEmpty(errorMessage)) {
-                String installationFolder = getInstallationFolder();;
-                if (prerequisitesAreValid(installationFolder)) {
-                    createConfigFolder(installationFolder, profile.getCode());
-                    return runKf2Server(installationFolder, profile);
+                if (prerequisitesAreValid()) {
+                    createConfigFolder(this.platform.getInstallationFolder(), profile.getCode());
+                    return runKf2Server(profile);
                 } else {
                     installationFolderNotValid();
                 }

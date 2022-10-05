@@ -355,7 +355,7 @@ public class MainContentController implements Initializable {
                         ImageView mapPreview = new ImageView();
                         try {
                             Image image;
-                            if (facade.isCorrectInstallationFolder(platformSelect.getValue()) && StringUtils.isNotBlank(profileMapDto.getUrlPhoto())) {
+                            if (facade.isCorrectInstallationFolder(platformSelect.getValue().getKey()) && StringUtils.isNotBlank(profileMapDto.getUrlPhoto())) {
                                 image = new Image("file:" + platformSelect.getValue().getInstallationFolder() + "/" + profileMapDto.getUrlPhoto());
                             } else {
                                 File file = new File(System.getProperty("user.dir") + "/external-images/no-photo.png");
@@ -406,7 +406,7 @@ public class MainContentController implements Initializable {
                 ImageView mapPreview = new ImageView();
                 try {
                     Image image;
-                    if (facade.isCorrectInstallationFolder(platformSelect.getValue()) && StringUtils.isNotBlank(platformProfileMapDto.getUrlPhoto())) {
+                    if (facade.isCorrectInstallationFolder(platformSelect.getValue().getKey()) && StringUtils.isNotBlank(platformProfileMapDto.getUrlPhoto())) {
                         image = new Image("file:" + platformSelect.getValue().getInstallationFolder() + "/" + platformProfileMapDto.getUrlPhoto());
                     } else {
                         File file = new File(System.getProperty("user.dir") + "/external-images/no-photo.png");
@@ -1609,10 +1609,10 @@ public class MainContentController implements Initializable {
                     selectedProfileNameList = facade.selectProfiles(message, profileSelect.getValue().getName());
             }
 
-            facade.runExecutableFile(platformSelect.getValue());
+            facade.runExecutableFile(platformSelect.getValue().getKey());
             for (String profileName: selectedProfileNameList) {
                 Session.getInstance().setConsole((StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
-                        "< " + new Date() + " - Run Server >\n" + facade.runServer(platformSelect.getValue(), profileName));
+                        "< " + new Date() + " - Run Server >\n" + facade.runServer(platformSelect.getValue().getKey(), profileName));
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -1640,7 +1640,7 @@ public class MainContentController implements Initializable {
             }
             if (StringUtils.isNotBlank(selectedProfileName)) {
                 Session.getInstance().setConsole((StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n": "") +
-                        "< " + new Date() + " - Join Server >\n" + facade.joinServer(platformSelect.getValue(), selectedProfileName));
+                        "< " + new Date() + " - Join Server >\n" + facade.joinServer(platformSelect.getValue().getKey(), selectedProfileName));
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

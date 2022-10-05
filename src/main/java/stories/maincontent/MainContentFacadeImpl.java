@@ -5,9 +5,9 @@ import dtos.*;
 import dtos.factories.*;
 import entities.*;
 import javafx.collections.ObservableList;
+import org.apache.commons.lang3.StringUtils;
 import pojos.PlatformProfile;
 import pojos.PlatformProfileToDisplay;
-import pojos.PlatformProfileToDisplayFactory;
 import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
@@ -86,7 +86,17 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     public ObservableList<PlatformDto> listAllPlatforms() throws SQLException {
-        List<AbstractPlatform> platformList = AbstractPlatformDao.getInstance().listAll();
+        Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
+        Optional<EpicPlatform> epicPlatformOptional = EpicPlatformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
+
+        List<AbstractPlatform> platformList = new ArrayList<AbstractPlatform>();
+        if (steamPlatformOptional.isPresent()) {
+            platformList.add(steamPlatformOptional.get());
+        }
+        if (epicPlatformOptional.isPresent()) {
+            platformList.add(epicPlatformOptional.get());
+        }
+
         return platformDtoFactory.newDtos(platformList);
     }
 
@@ -310,22 +320,32 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public String runServer(PlatformDto platform, String profileName) throws SQLException {
+    public String runServer(String platformName, String profileName) throws SQLException {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        Kf2Common kf2Common = Kf2Factory.getInstance(platform.getKey());
-        return kf2Common.runServer(profileOpt.isPresent()? profileOpt.get(): null);
+        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
+        if (!platformOptional.isPresent()) {
+            Utils.warningDialog("Run operation aborted!", "The platform can not be found");
+            return StringUtils.EMPTY;
+        }
+        Kf2Common kf2Common = Kf2Factory.getInstance(platformOptional.get());
+        return kf2Common.runServer(profileOpt.isPresent() ? profileOpt.get() : null);
     }
 
     @Override
-    public String joinServer(PlatformDto platform, String profileName) throws SQLException {
+    public String joinServer(String platformName, String profileName) throws SQLException {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
+        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
+        if (!platformOptional.isPresent()) {
+            Utils.warningDialog("Join operation aborted!", "The platform can not be found");
+            return StringUtils.EMPTY;
+        }
         if (profileOpt.isPresent()) {
-            Kf2Common kf2Common = Kf2Factory.getInstance(platform.getKey());
-            return ((Kf2Steam)kf2Common).joinServer(profileOpt.get());
+            Kf2Common kf2Common = Kf2Factory.getInstance(platformOptional.get());
+            return kf2Common.joinServer(profileOpt.get());
         } else {
             Utils.warningDialog("Join operation aborted!", "The profile name can not be empty");
         }
-        return "";
+        return StringUtils.EMPTY;
     }
 
     @Override
@@ -385,9 +405,14 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean isCorrectInstallationFolder(PlatformDto platform) {
-        Kf2Common kf2Common = Kf2Factory.getInstance(platform.getKey());
-        return kf2Common.isValid(platform.getInstallationFolder());
+    public boolean isCorrectInstallationFolder(String platformName) throws SQLException {
+        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
+        if (!platformOptional.isPresent()) {
+            Utils.warningDialog("Operation aborted!", "The platform can not be found");
+            return false;
+        }
+        Kf2Common kf2Common = Kf2Factory.getInstance(platformOptional.get());
+        return kf2Common.isValidInstallationFolder();
     }
 
     @Override
@@ -688,8 +713,13 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public void runExecutableFile(PlatformDto platform) {
-        Kf2Common kf2Common = Kf2Factory.getInstance(platform.getKey());
+    public void runExecutableFile(String platformName) throws SQLException {
+        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
+        if (!platformOptional.isPresent()) {
+            Utils.warningDialog("Run operation aborted!", "The platform can not be found");
+            return;
+        }
+        Kf2Common kf2Common = Kf2Factory.getInstance(platformOptional.get());
         kf2Common.runExecutableFile();
     }
 

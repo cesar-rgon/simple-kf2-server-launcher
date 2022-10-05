@@ -33,6 +33,7 @@ import pojos.*;
 import pojos.enums.EnumMapsTab;
 import pojos.enums.EnumPlatform;
 import pojos.enums.EnumSortedMapsCriteria;
+import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import pojos.session.Session;
 import services.PropertyService;
@@ -513,7 +514,7 @@ public class MapsEditionController implements Initializable {
                     public void handle(ActionEvent e) {
                         try {
                             Session.getInstance().setConsole((StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
-                                    "< " + new Date() + " - Run Server >\n" + facade.runServer(profileSelect.getValue().getName()));
+                                    "< " + new Date() + " - Run Server >\n" + facade.runServer(platformProfileMapDto.getPlatformDto().getKey(), profileSelect.getValue().getName()));
                         } catch (SQLException ex) {
                             logger.error(ex.getMessage(), ex);
                             Utils.errorDialog(ex.getMessage(), ex);
@@ -1042,8 +1043,11 @@ public class MapsEditionController implements Initializable {
                 Utils.warningDialog(headerText, contentText);
                 return;
             }
+
             PlatformDto steamPlatform = steamPlatformDtoOptional.get();
             PlatformDto epicPlatform = epicPlatformDtoOptional.get();
+            Kf2Common steamKf2Common = facade.getKf2Common(steamPlatform.getKey());
+            Kf2Common epicKf2Common = facade.getKf2Common(epicPlatform.getKey());
 
             // CUSTOM MAP / MOD LIST FOR STEAM
             List<MapToDisplay> steamCustomMapModList = Files.walk(Paths.get(steamPlatform.getInstallationFolder() + "/KFGame/Cache"))
@@ -1054,7 +1058,7 @@ public class MapsEditionController implements Initializable {
                         String filenameWithExtension = path.getFileName().toString();
                         String[] array = filenameWithExtension.split("\\.");
                         String mapName = array[0];
-                        Long idWorkShop = Kf2Factory.getInstance(steamPlatform.getKey()).getIdWorkShopFromPath(path.getParent(), steamPlatform.getInstallationFolder());
+                        Long idWorkShop = steamKf2Common.getIdWorkShopFromPath(path.getParent());
                         return new MapToDisplay(idWorkShop, mapName);
                     })
                     .collect(Collectors.toList());
@@ -1066,7 +1070,7 @@ public class MapsEditionController implements Initializable {
                         Arrays.stream(steamCacheFolderList)
                                 .filter(file -> file.isDirectory())
                                 .map(file -> file.toPath())
-                                .filter(path -> !idWorkShopCustomMapList.contains(Kf2Factory.getInstance(steamPlatform.getKey()).getIdWorkShopFromPath(path, steamPlatform.getInstallationFolder())))
+                                .filter(path -> !idWorkShopCustomMapList.contains(steamKf2Common.getIdWorkShopFromPath(path)))
                                 .map(path -> {
                                     Long idWorkShop = Long.parseLong(path.getFileName().toString());
                                     return new MapToDisplay(idWorkShop, "MOD [" + idWorkShop + "]");
@@ -1084,7 +1088,7 @@ public class MapsEditionController implements Initializable {
                         String filenameWithExtension = path.getFileName().toString();
                         String[] array = filenameWithExtension.split("\\.");
                         String mapName = array[0];
-                        Long idWorkShop = Kf2Factory.getInstance(epicPlatform.getKey()).getIdWorkShopFromPath(path.getParent(), epicPlatform.getInstallationFolder());
+                        Long idWorkShop = epicKf2Common.getIdWorkShopFromPath(path.getParent());
                         return new MapToDisplay(idWorkShop, mapName);
                     })
                     .collect(Collectors.toList());
@@ -1096,7 +1100,7 @@ public class MapsEditionController implements Initializable {
                         Arrays.stream(epicCacheFolderList)
                                 .filter(file -> file.isDirectory())
                                 .map(file -> file.toPath())
-                                .filter(path -> !idWorkShopCustomMapList.contains(Kf2Factory.getInstance(epicPlatform.getKey()).getIdWorkShopFromPath(path, epicPlatform.getInstallationFolder())))
+                                .filter(path -> !idWorkShopCustomMapList.contains(epicKf2Common.getIdWorkShopFromPath(path)))
                                 .map(path -> {
                                     Long idWorkShop = Long.parseLong(path.getFileName().toString());
                                     return new MapToDisplay(idWorkShop, "MOD [" + idWorkShop + "]");

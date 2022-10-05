@@ -23,9 +23,13 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
 
     private static final Logger logger = LogManager.getLogger(Kf2EpicWindowsImpl.class);
 
+    public Kf2EpicWindowsImpl() {
+        super();
+    }
+
     @Override
-    public boolean isValid(String installationFolder) {
-        return !StringUtils.isBlank(installationFolder) && (Files.exists(Paths.get(installationFolder + "/Binaries/Win64/KFServer.exe")));
+    public boolean isValidInstallationFolder() {
+        return !StringUtils.isBlank(this.platform.getInstallationFolder()) && (Files.exists(Paths.get(this.platform.getInstallationFolder() + "/Binaries/Win64/KFServer.exe")));
     }
 
     @Override
@@ -63,11 +67,11 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
     }
 
     @Override
-    protected String runKf2Server(String installationFolder, Profile profile) {
+    protected String runKf2Server(Profile profile) {
         try {
             StringBuffer command = new StringBuffer();
             command.append("cmd /C \"");
-            command.append(installationFolder).append("\\Binaries\\Win64\\KFServer.exe\" ");
+            command.append(this.platform.getInstallationFolder()).append("\\Binaries\\Win64\\KFServer.exe\" ");
             command.append(profile.getMap().getCode());
             command.append("?Game=").append(profile.getGametype().getCode());
             if (profile.getGametype().isDifficultyEnabled()) {
@@ -89,12 +93,12 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
             }
             command.append("?ConfigSubDir=").append(profile.getCode());
 
-            replaceInFileKfEngineIni(installationFolder, profile, "PCServer-KFEngine.ini");
-            replaceInFileKfWebIni(installationFolder, profile, StandardCharsets.ISO_8859_1);
-            replaceInFileKfGameIni(installationFolder, profile, "PCServer-KFGame.ini");
-            replaceInFileKfWebAdminIni(installationFolder, profile);
+            replaceInFileKfEngineIni(this.platform.getInstallationFolder(), profile, "PCServer-KFEngine.ini");
+            replaceInFileKfWebIni(this.platform.getInstallationFolder(), profile, StandardCharsets.ISO_8859_1);
+            replaceInFileKfGameIni(this.platform.getInstallationFolder(), profile, "PCServer-KFGame.ini");
+            replaceInFileKfWebAdminIni(this.platform.getInstallationFolder(), profile);
 
-            Process process = Runtime.getRuntime().exec(command.toString(),null, new File(installationFolder));
+            Process process = Runtime.getRuntime().exec(command.toString(),null, new File(this.platform.getInstallationFolder()));
             Session.getInstance().getProcessList().add(process);
             return command.toString();
         } catch (Exception e) {
@@ -110,9 +114,9 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
     }
 
     @Override
-    public Long getIdWorkShopFromPath(Path path, String installationFolder) {
+    public Long getIdWorkShopFromPath(Path path) {
         try {
-            String[] array = path.toString().replace(installationFolder, "").replace("\\KFGame\\Cache\\", "").split("\\\\");
+            String[] array = path.toString().replace(this.platform.getInstallationFolder(), "").replace("\\KFGame\\Cache\\", "").split("\\\\");
             return Long.parseLong(array[0]);
         } catch (Exception e) {
             logger.error("Error getting idWorkShop from path: " + path.toString(), e);
@@ -138,7 +142,7 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
     }
 
     @Override
-    protected void installUpdateKf2Server(String installationFolder) throws Exception {
+    protected void installUpdateKf2Server() throws Exception {
         String tempFolderString = System.getProperty("java.io.tmpdir") + "Kf2_Webadmin_temp_folder";
         File tempFolder = new File(tempFolderString);
 
@@ -176,7 +180,7 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
                     Task<Void> moveFolderTask = new Task<Void>() {
                         @Override
                         protected Void call() throws Exception {
-                            File destFolder = new File(installationFolder + "\\KFGame\\Web");
+                            File destFolder = new File(platform.getInstallationFolder() + "\\KFGame\\Web");
                             FileUtils.moveDirectory(webAdminFolder, destFolder );
                             return null;
                         }
@@ -218,7 +222,7 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
     }
 
     @Override
-    protected void applyPatchToDownloadMaps(String installationFolder) throws Exception {
+    protected void applyPatchToDownloadMaps() throws Exception {
         String tempFolder = System.getProperty("java.io.tmpdir");
 
         StringBuffer command = new StringBuffer("cmd /C start /wait ");
@@ -233,7 +237,7 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
         applyPatch.waitFor();
 
         File srcFolder = new File(tempFolder + "KillingFloor2_patch\\Binaries\\Win64");
-        File targetFolder = new File(installationFolder + "\\Binaries\\Win64");
+        File targetFolder = new File(this.platform.getInstallationFolder() + "\\Binaries\\Win64");
         File[] sourceDllFiles = srcFolder.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {

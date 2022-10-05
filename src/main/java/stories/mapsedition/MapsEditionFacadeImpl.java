@@ -193,10 +193,10 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
                 }
 
                 Kf2Common steamKf2Common = Kf2Factory.getInstance(
-                        steamPlatformOptional.get().getCode()
+                        steamPlatformOptional.get()
                 );
 
-                return steamKf2Common.isValid(steamPlatformOptional.get().getInstallationFolder());
+                return steamKf2Common.isValidInstallationFolder();
             }
 
             if (EnumPlatform.EPIC.name().equals(platformName)) {
@@ -206,10 +206,10 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
                 }
 
                 Kf2Common epicKf2Common = Kf2Factory.getInstance(
-                        epicPlatformOptional.get().getCode()
+                        epicPlatformOptional.get()
                 );
 
-                return epicKf2Common.isValid(epicPlatformOptional.get().getInstallationFolder());
+                return epicKf2Common.isValidInstallationFolder();
             }
 
             return false;
@@ -339,11 +339,14 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     }
 
     @Override
-    public String runServer(String profileName) throws SQLException {
+    public String runServer(String platformName, String profileName) throws SQLException {
+        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
+        if (!platformOptional.isPresent()) {
+            throw new RuntimeException("The platform can not be found!");
+        }
+        Kf2Common kf2Common = Kf2Factory.getInstance(platformOptional.get());
+
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        Kf2Common kf2Common = Kf2Factory.getInstance(
-                Session.getInstance().getPlatform().getKey()
-        );
         return kf2Common.runServer(profileOpt.isPresent()? profileOpt.get(): null);
     }
 
@@ -710,5 +713,14 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
                 collect(Collectors.toList());
 
         return mapListNotInPlatformProfile;
+    }
+
+    @Override
+    public Kf2Common getKf2Common(String platformName) throws Exception {
+        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
+        if (!platformOptional.isPresent()) {
+            throw new RuntimeException("The platform can not be found!");
+        }
+        return Kf2Factory.getInstance(platformOptional.get());
     }
 }

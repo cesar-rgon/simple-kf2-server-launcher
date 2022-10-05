@@ -7,6 +7,7 @@ import javafx.collections.ObservableList;
 import pojos.MapToDisplay;
 import pojos.PlatformProfileMapToImport;
 import pojos.PlatformProfileToDisplay;
+import pojos.kf2factory.Kf2Common;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -21,7 +22,7 @@ public interface MapsEditionFacade {
     AbstractMapDto deleteMapFromPlatformProfile(String platformName, String mapName, String profileName) throws Exception;
     void unselectProfileMap(String profileName) throws SQLException;
     List<PlatformProfileToDisplay> selectProfilesToImport(String defaultSelectedProfileName) throws Exception;
-    String runServer(String profileName) throws SQLException;
+    String runServer(String platformName, String profileName) throws SQLException;
     List<PlatformProfileMapDto> addCustomMapsToProfile(List<String> platformNameList, String profileName, String mapNameList, String languageCode, String actualSelectedProfile, StringBuffer success, StringBuffer errors);
     PlatformProfileMapToImport importCustomMapModFromServer(PlatformProfileMapToImport ppmToImport, String selectedProfileName) throws Exception;
     PlatformProfileMapToImport importOfficialMapFromServer(PlatformProfileMapToImport ppmToImport, String selectedProfileName) throws Exception;
@@ -35,4 +36,5 @@ public interface MapsEditionFacade {
     AbstractMapDto getMapByIdWorkShop(Long idWorkShop) throws SQLException;
     AbstractMapDto getOfficialMapByName(String mapName) throws SQLException ;
     List<MapToDisplay> getNotPresentOfficialMapList(List<String> officialMapNameList, String platformName, String profileName) throws Exception;
+    Kf2Common getKf2Common(String platformName) throws Exception;
 }

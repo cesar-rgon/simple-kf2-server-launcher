@@ -1,12 +1,12 @@
 package pojos.listener;
 
 import daos.CustomMapModDao;
-import entities.CustomMapMod;
-import entities.AbstractPlatform;
-import entities.EpicPlatform;
-import entities.SteamPlatform;
+import daos.OfficialMapDao;
+import daos.PlatformProfileMapDao;
+import entities.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Hibernate;
 import pojos.enums.EnumPlatform;
 import pojos.session.Session;
 import services.AbstractMapService;
@@ -36,21 +36,17 @@ public class TimeListener extends TimerTask {
     public void run() {
         logger.info("Starting the process of checking downloaded custom maps and mods.");
         try {
-            List mapList = customMapModService.listAllMaps();;
-            if (mapList != null && !mapList.isEmpty()) {
-                PropertyService propertyService = new PropertyServiceImpl();
+            List<Integer> customIdMapList = CustomMapModDao.getInstance().listAll().stream().map(CustomMapMod::getId).collect(Collectors.toList());
+            List<PlatformProfileMap> platformProfileCustomMapList = PlatformProfileMapDao.getInstance().listPlatformProfileMaps().stream().
+                    filter(ppm -> customIdMapList.contains(ppm.getMap().getId())).
+                    collect(Collectors.toList());
 
-                String installationFolder;
-                if (EnumPlatform.STEAM.equals(Session.getInstance().getPlatform())) {
-                    installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
-                } else {
-                    installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
-                }
+            if (platformProfileCustomMapList != null && !platformProfileCustomMapList.isEmpty()) {
 
-                for (Object item : mapList) {
-                    CustomMapMod map = (CustomMapMod) item;
+                for (PlatformProfileMap ppm : platformProfileCustomMapList) {
+                    CustomMapMod customMap = (CustomMapMod) Hibernate.unproxy(ppm.getMap());
                     try {
-                        List<Path> kfmFilesPath = Files.walk(Paths.get(installationFolder + "/KFGame/Cache/" + map.getIdWorkShop()))
+                        List<Path> kfmFilesPath = Files.walk(Paths.get(ppm.getPlatform().getInstallationFolder() + "/KFGame/Cache/" + customMap.getIdWorkShop()))
                                 .filter(Files::isRegularFile)
                                 .filter(f -> f.getFileName().toString().toUpperCase().startsWith("KF-"))
                                 .filter(f -> f.getFileName().toString().toUpperCase().endsWith(".KFM"))
@@ -60,18 +56,19 @@ public class TimeListener extends TimerTask {
                             String filenameWithExtension = kfmFilesPath.get(0).getFileName().toString();
                             String[] array = filenameWithExtension.split("\\.");
                             String filenameWithoutExtension = array[0];
-                            map.setCode(filenameWithoutExtension);
-                            //map.getDownnloadedMap().add(new SteamPlatform(EnumPlatform.STEAM));
-                            CustomMapModDao.getInstance().update(map);
+                            customMap.setCode(filenameWithoutExtension);
+                            CustomMapModDao.getInstance().update(customMap);
+                            ppm.setDownloaded(true);
+                            PlatformProfileMapDao.getInstance().update(ppm);
                         } else {
-                            File folder = new File(installationFolder + "/KFGame/Cache/" + map.getIdWorkShop());
+                            File folder = new File(ppm.getPlatform().getInstallationFolder() + "/KFGame/Cache/" + customMap.getIdWorkShop());
                             if (folder.exists()) {
-                                //map.getDownnloadedMap().add(new SteamPlatform(EnumPlatform.STEAM));
-                                CustomMapModDao.getInstance().update(map);
+                                ppm.setDownloaded(true);
+                                PlatformProfileMapDao.getInstance().update(ppm);
                             }
                         }
                     } catch (Exception ex) {
-                        String message = "The custom map/mod: " + map.getCode() + " with idWorkShop: " + map.getIdWorkShop() + " could not be checked as 'Downloaded'.\nSee stacktrace for more details:";
+                        String message = "The custom map/mod: " + customMap.getCode() + " with idWorkShop: " + customMap.getIdWorkShop() + " could not be checked as 'Downloaded'.\nSee stacktrace for more details:";
                         logger.error(message, ex);
                     }
                 }

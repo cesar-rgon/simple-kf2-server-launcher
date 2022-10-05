@@ -18,9 +18,13 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
 
     private static final Logger logger = LogManager.getLogger(Kf2SteamLinuxImpl.class);
 
+    public Kf2SteamLinuxImpl() {
+        super();
+    }
+
     @Override
-    public boolean isValid(String installationFolder) {
-        return !StringUtils.isBlank(installationFolder) && (Files.exists(Paths.get(installationFolder + "/Binaries/Win64/KFGameSteamServer.bin.x86_64")));
+    public boolean isValidInstallationFolder() {
+        return !StringUtils.isBlank(this.platform.getInstallationFolder()) && (Files.exists(Paths.get(this.platform.getInstallationFolder() + "/Binaries/Win64/KFGameSteamServer.bin.x86_64")));
     }
 
     @Override
@@ -52,13 +56,13 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
     }
 
     @Override
-    protected void installUpdateKf2Server(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) throws Exception {
-        File cacheFolder = new File(installationFolder + "/KFGame/Cache");
+    protected void installUpdateKf2Server(boolean validateFiles, boolean isBeta, String betaBrunch) throws Exception {
+        File cacheFolder = new File(this.platform.getInstallationFolder() + "/KFGame/Cache");
         if (!cacheFolder.exists()) {
             cacheFolder.mkdir();
         }
         StringBuffer command = new StringBuffer("/usr/games/steamcmd +force_install_dir ");
-        command.append(installationFolder);
+        command.append(this.platform.getInstallationFolder());
         command.append(" +login anonymous +app_update 232130 ");
         if (validateFiles) {
             command.append(" validate ");
@@ -81,8 +85,8 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
         process.waitFor();
 
         // If it's the first time, run the server to create needed config files
-        File kfEngineIni = new File(installationFolder + "/KFGame/Config/LinuxServer-KFEngine.ini");
-        File kfGameIni = new File(installationFolder + "/KFGame/Config/LinuxServer-KFGame.ini");
+        File kfEngineIni = new File(this.platform.getInstallationFolder() + "/KFGame/Config/LinuxServer-KFEngine.ini");
+        File kfGameIni = new File(this.platform.getInstallationFolder() + "/KFGame/Config/LinuxServer-KFGame.ini");
         if (!kfEngineIni.exists() || !kfGameIni.exists()) {
             Process processTwo = Runtime.getRuntime().exec(new String[]{"xterm",
                             "-T", "Wait until config files are generated",
@@ -90,8 +94,8 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
                             "-fs", "11",
                             "-geometry", "120x25+0-0",
                             "-xrm", "XTerm.vt100.allowTitleOps: false",
-                            "-e", installationFolder + "/Binaries/Win64/KFGameSteamServer.bin.x86_64 KF-BioticsLab"},
-                    null, new File(installationFolder));
+                            "-e", this.platform.getInstallationFolder() + "/Binaries/Win64/KFGameSteamServer.bin.x86_64 KF-BioticsLab"},
+                    null, new File(this.platform.getInstallationFolder()));
             while (processTwo.isAlive() && (!kfEngineIni.exists() || !kfGameIni.exists())) {
                 processTwo.waitFor(5, TimeUnit.SECONDS);
             }
@@ -102,15 +106,15 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
     }
 
     @Override
-    protected void applyPatchToDownloadMaps(String installationFolder) throws Exception {
+    protected void applyPatchToDownloadMaps() throws Exception {
 
     }
 
     @Override
-    protected String runKf2Server(String installationFolder, Profile profile) {
+    protected String runKf2Server(Profile profile) {
         try {
             StringBuffer command = new StringBuffer();
-            command.append(installationFolder).append("/Binaries/Win64/KFGameSteamServer.bin.x86_64 ");
+            command.append(this.platform.getInstallationFolder()).append("/Binaries/Win64/KFGameSteamServer.bin.x86_64 ");
             command.append(profile.getMap().getCode());
             command.append("?Game=").append(profile.getGametype().getCode());
             if (profile.getGametype().isDifficultyEnabled()) {
@@ -132,10 +136,10 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
             }
             command.append("?ConfigSubDir=").append(profile.getCode());
 
-            replaceInFileKfEngineIni(installationFolder, profile, "LinuxServer-KFEngine.ini");
-            replaceInFileKfWebIni(installationFolder, profile, StandardCharsets.UTF_8);
-            replaceInFileKfGameIni(installationFolder, profile, "LinuxServer-KFGame.ini");
-            replaceInFileKfWebAdminIni(installationFolder, profile);
+            replaceInFileKfEngineIni(this.platform.getInstallationFolder(), profile, "LinuxServer-KFEngine.ini");
+            replaceInFileKfWebIni(this.platform.getInstallationFolder(), profile, StandardCharsets.UTF_8);
+            replaceInFileKfGameIni(this.platform.getInstallationFolder(), profile, "LinuxServer-KFGame.ini");
+            replaceInFileKfWebAdminIni(this.platform.getInstallationFolder(), profile);
 
             Process proccess = null;
             if (!byConsole) {
@@ -146,9 +150,9 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
                                 "-geometry", "120x25+0-0",
                                 "-xrm", "XTerm.vt100.allowTitleOps: false",
                                 "-e", command.toString()},
-                        null, new File(installationFolder));
+                        null, new File(this.platform.getInstallationFolder()));
             } else {
-                proccess = Runtime.getRuntime().exec(command.toString(), null, new File(installationFolder));
+                proccess = Runtime.getRuntime().exec(command.toString(), null, new File(this.platform.getInstallationFolder()));
             }
             Session.getInstance().getProcessList().add(proccess);
 
@@ -171,9 +175,9 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
     }
 
     @Override
-    public Long getIdWorkShopFromPath(Path path, String installationFolder) {
+    public Long getIdWorkShopFromPath(Path path) {
         try {
-            String[] array = path.toString().replace(installationFolder, "").replace("/KFGame/Cache/", "").split("/");
+            String[] array = path.toString().replace(this.platform.getInstallationFolder(), "").replace("/KFGame/Cache/", "").split("/");
             return Long.parseLong(array[0]);
         } catch (Exception e) {
             logger.error("Error getting idWorkShop from path: " + path.toString(), e);

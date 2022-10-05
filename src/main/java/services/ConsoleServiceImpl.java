@@ -25,10 +25,12 @@ public class ConsoleServiceImpl implements ConsoleService {
                 try {
                     Optional<Profile> profileOpt = profileService.findProfileByCode(parameter);
                     if (profileOpt.isPresent()) {
+                        /*
                         Kf2Common kf2Common = Kf2Factory.getInstance(
-                                Session.getInstance().getPlatform().getKey()
+                                Session.getInstance().getPlatform()
                         );
                         kf2Common.runServerByConsole(profileOpt.get());
+                        */
                     } else {
                         System.out.println("\n--> Wrong profile name: " + parameter + ". Can not find in database.\n");
                     }

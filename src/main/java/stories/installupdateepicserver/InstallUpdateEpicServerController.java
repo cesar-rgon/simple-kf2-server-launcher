@@ -1,5 +1,7 @@
 package stories.installupdateepicserver;
 
+import daos.EpicPlatformDao;
+import entities.EpicPlatform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
@@ -22,6 +24,7 @@ import utils.Utils;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class InstallUpdateEpicServerController implements Initializable {
@@ -128,8 +131,11 @@ public class InstallUpdateEpicServerController implements Initializable {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                Kf2Common kf2Common = Kf2Factory.getInstance(EnumPlatform.STEAM.name());
-                ((Kf2Epic)kf2Common).installOrUpdateServer(installationFolder.getText());
+                Optional<EpicPlatform> epicPlatformOptional = EpicPlatformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
+                if (epicPlatformOptional.isPresent()) {
+                    Kf2Common kf2Common = Kf2Factory.getInstance(epicPlatformOptional.get());
+                    ((Kf2Epic) kf2Common).installOrUpdateServer();
+                }
                 return null;
             }
         };

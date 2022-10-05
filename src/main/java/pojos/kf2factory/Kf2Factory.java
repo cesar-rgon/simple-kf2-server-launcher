@@ -1,6 +1,9 @@
 package pojos.kf2factory;
 
+import entities.AbstractPlatform;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pojos.enums.EnumPlatform;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -8,17 +11,19 @@ import utils.Utils;
 
 public class Kf2Factory {
 
-    public static Kf2Common getInstance(String platformName) {
-        if (StringUtils.isBlank(platformName)) {
-            showDialog(null);
+    private static final Logger logger = LogManager.getLogger(Kf2Factory.class);
+
+    public static Kf2Common getInstance(AbstractPlatform platform) {
+        if (platform == null || StringUtils.isBlank(platform.getCode())) {
+            logger.error("The platform can not be empty");
             return null;
         }
-        if (EnumPlatform.EPIC.name().equals(platformName)) {
+        if (EnumPlatform.EPIC.name().equals(platform.getCode())) {
             return new Kf2EpicWindowsImpl();
         }
         String os = System.getProperty("os.name");
         if (StringUtils.isEmpty(os)) {
-            showDialog(EnumPlatform.STEAM);
+            logger.error("Operating System not detected");
             return null;
         }
 
@@ -30,22 +35,5 @@ public class Kf2Factory {
             }
         }
         return null;
-    }
-
-    private static void showDialog(EnumPlatform platform) {
-        try {
-            PropertyService propertyService = new PropertyServiceImpl();
-            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-            String contentText = StringUtils.EMPTY;
-            if (platform == null) {
-                contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profileNotEmpty");
-            } else if (EnumPlatform.STEAM.equals(platform)) {
-                contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.osNotDetected");
-            }
-            Utils.warningDialog(headerText, contentText);
-        } catch (Exception e) {
-            Utils.errorDialog(e.getMessage(), e);
-        }
     }
 }

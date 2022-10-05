@@ -142,6 +142,7 @@ public class ProfilesEditionController implements Initializable {
                             propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", profilesTable.getItems().get(0).getName());
                         }
 
+                        /*
                         Kf2Common kf2Common = Kf2Factory.getInstance(
                                 Session.getInstance().getPlatform().getKey()
                         );
@@ -151,6 +152,7 @@ public class ProfilesEditionController implements Initializable {
                         if (StringUtils.isNotBlank(epicInstallationFolder)) {
                             kf2Common.createConfigFolder(epicInstallationFolder, newProfile.getName());
                         }
+                        */
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);
                     }
@@ -199,6 +201,7 @@ public class ProfilesEditionController implements Initializable {
                             ProfileDto clonedProfile = task.getValue();
                             if (clonedProfile != null) {
                                 profilesTable.getItems().add(clonedProfile);
+                                /*
                                 Kf2Common kf2Common = Kf2Factory.getInstance(
                                         Session.getInstance().getPlatform().getKey()
                                 );
@@ -208,6 +211,7 @@ public class ProfilesEditionController implements Initializable {
                                 if (StringUtils.isNotBlank(epicInstallationFolder)) {
                                     kf2Common.createConfigFolder(epicInstallationFolder, clonedProfile.getName());
                                 }
+                                */
                             } else {
                                 logger.warn("The profile can not be cloned in database. Selected profile: " + selectedProfile.getName() + ". New profile name: " + clonedProfile.getName());
                                 String notOperationDoneText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
@@ -413,6 +417,7 @@ public class ProfilesEditionController implements Initializable {
 
                         for (ProfileDto importedProfile: importedProfiles) {
                             profilesTable.getItems().add(importedProfile);
+                            /*
                             Kf2Common kf2Common = Kf2Factory.getInstance(
                                     Session.getInstance().getPlatform().getKey()
                             );
@@ -422,6 +427,7 @@ public class ProfilesEditionController implements Initializable {
                             if (StringUtils.isNotBlank(epicInstallationFolder)) {
                                 kf2Common.createConfigFolder(epicInstallationFolder, importedProfile.getName());
                             }
+                            */
                         }
 
                         if (StringUtils.isBlank(errorMessage)) {

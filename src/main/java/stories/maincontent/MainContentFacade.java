@@ -35,12 +35,12 @@ public interface MainContentFacade {
     boolean updateProfileSetCustomParameters(String profileName, String customParameters) throws SQLException;
     boolean updateProfileSetWebPage(String profileName, boolean isSelected) throws SQLException;
     ProfileDto findProfileDtoByName(String name) throws SQLException;
-    String runServer(PlatformDto platform, String profileName) throws SQLException;
-    String joinServer(PlatformDto platform, String profileName) throws SQLException;
+    String runServer(String platformName, String profileName) throws SQLException;
+    String joinServer(String platformName, String profileName) throws SQLException;
     ProfileDto getLastSelectedProfile() throws Exception;
     List<String> selectProfiles(String message, String actualProfileName) throws SQLException;
     String selectProfile(String message, String actualProfileName) throws SQLException;
-    boolean isCorrectInstallationFolder(PlatformDto platform);
+    boolean isCorrectInstallationFolder(String platformName) throws SQLException;
     boolean updateProfileSetTakeover(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetMapVoting(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetKickVoting(String profileName, boolean isSelected) throws SQLException;
@@ -65,6 +65,6 @@ public interface MainContentFacade {
     boolean updateProfileSetPickupItems(String profileName, boolean isSelected) throws SQLException;
     boolean updateProfileSetFriendlyFirePercentage(String profileName, Double friendlyFirePercentage) throws Exception;
     List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws SQLException;
-    void runExecutableFile(PlatformDto platform);
+    void runExecutableFile(String platformName) throws SQLException;
     PlatformDto getPlatform(EnumPlatform enumPlatform) throws SQLException;
 }

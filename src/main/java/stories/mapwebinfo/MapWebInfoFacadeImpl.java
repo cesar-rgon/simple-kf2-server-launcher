@@ -3,7 +3,6 @@ package stories.mapwebinfo;
 import daos.*;
 import dtos.CustomMapModDto;
 import dtos.ProfileDto;
-import dtos.factories.AbstractDtoFactory;
 import dtos.factories.MapDtoFactory;
 import dtos.factories.ProfileDtoFactory;
 import entities.*;
@@ -11,15 +10,11 @@ import entities.AbstractMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.Hibernate;
-import pojos.ImportMapResultToDisplay;
 import pojos.PlatformProfile;
-import pojos.PlatformProfileToDisplay;
 import pojos.PlatformProfileToDisplayFactory;
 import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
-import pojos.session.Session;
 import services.*;
 import stories.AbstractFacade;
 import utils.Utils;
@@ -62,10 +57,10 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
                 }
 
                 Kf2Common steamKf2Common = Kf2Factory.getInstance(
-                        steamPlatformOptional.get().getCode()
+                        steamPlatformOptional.get()
                 );
 
-                return steamKf2Common.isValid(steamPlatformOptional.get().getInstallationFolder());
+                return steamKf2Common.isValidInstallationFolder();
             }
 
             if (EnumPlatform.EPIC.name().equals(platformName)) {
@@ -75,10 +70,10 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
                 }
 
                 Kf2Common epicKf2Common = Kf2Factory.getInstance(
-                        epicPlatformOptional.get().getCode()
+                        epicPlatformOptional.get()
                 );
 
-                return epicKf2Common.isValid(epicPlatformOptional.get().getInstallationFolder());
+                return epicKf2Common.isValidInstallationFolder();
             }
 
             return false;

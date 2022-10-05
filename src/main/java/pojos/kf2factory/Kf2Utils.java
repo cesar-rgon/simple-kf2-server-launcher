@@ -11,6 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Hibernate;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import utils.Utils;
@@ -219,22 +220,17 @@ public class Kf2Utils {
                 }
             }
 
+            List<CustomMapMod> allCustomMapModList = CustomMapModDao.getInstance().listAll();
             List<AbstractMap> customMapsMods = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profile).stream().
+                    filter(ppm -> allCustomMapModList.contains(ppm.getMap())).
                     map(PlatformProfileMap::getMap).
-                    filter(m -> {
-                        try {
-                            return CustomMapModDao.getInstance().findByCode(m.getCode()).isPresent();
-                        } catch (SQLException e) {
-                            logger.error(e.getMessage(), e);
-                            throw new RuntimeException(e.getMessage(), e);
-                        }
-                    }).
                     collect(Collectors.toList());
 
             if (customMapsMods != null && !customMapsMods.isEmpty()) {
                 pw.println("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]");
-                for (AbstractMap customMapMod: customMapsMods) {
-                    pw.println("ServerSubscribedWorkshopItems=" + ((CustomMapMod) customMapMod).getIdWorkShop() + " // " + customMapMod.getCode());
+                for (AbstractMap map: customMapsMods) {
+                    CustomMapMod customMap = (CustomMapMod) Hibernate.unproxy(map);
+                    pw.println("ServerSubscribedWorkshopItems=" + customMap.getIdWorkShop() + " // " + customMap.getCode());
                 }
             }
 

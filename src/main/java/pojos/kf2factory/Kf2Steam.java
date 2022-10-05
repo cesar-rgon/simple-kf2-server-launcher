@@ -1,37 +1,48 @@
 package pojos.kf2factory;
 
+import daos.SteamPlatformDao;
 import entities.Profile;
+import entities.SteamPlatform;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.enums.EnumPlatform;
 import utils.Utils;
 
 import java.io.File;
+import java.sql.SQLException;
+import java.util.Optional;
 
 public abstract class Kf2Steam extends Kf2AbstractCommon {
 
     private static final Logger logger = LogManager.getLogger(Kf2Steam.class);
 
-    protected abstract File getExeFile();
-    protected abstract void installUpdateKf2Server(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) throws Exception;
-    protected abstract void applyPatchToDownloadMaps(String installationFolder) throws Exception;
+    protected Kf2Steam() {
+        super();
+        try {
+            Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
+            this.platform = steamPlatformOptional.isPresent() ? steamPlatformOptional.get() : null;
+        } catch (SQLException e) {
+            logger.error(e.getMessage(), e);
+            this.platform = null;
+        }
+    }
 
-    public void installOrUpdateServer(String installationFolder, boolean validateFiles, boolean isBeta, String betaBrunch) {
-        if (prerequisitesAreValid(installationFolder)) {
+    protected abstract File getExeFile();
+    protected abstract void installUpdateKf2Server(boolean validateFiles, boolean isBeta, String betaBrunch) throws Exception;
+    protected abstract void applyPatchToDownloadMaps() throws Exception;
+
+    public void installOrUpdateServer(boolean validateFiles, boolean isBeta, String betaBrunch) {
+        if (prerequisitesAreValid()) {
             try {
-                installUpdateKf2Server(installationFolder, validateFiles, isBeta, betaBrunch);
-                applyPatchToDownloadMaps(installationFolder);
+                installUpdateKf2Server(validateFiles, isBeta, betaBrunch);
+                applyPatchToDownloadMaps();
             } catch (Exception e) {
                 String message = "Error installing KF2 server";
                 logger.error(message, e);
                 Utils.errorDialog(message, e);
             }
         }
-    }
-
-    @Override
-    protected String getInstallationFolder() throws Exception {
-        return propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
     }
 
     @Override

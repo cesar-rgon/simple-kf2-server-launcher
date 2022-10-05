@@ -6,8 +6,8 @@ import java.nio.file.Path;
 
 public interface Kf2Common {
 
-    boolean isValid(String installationFolder);
-    Long getIdWorkShopFromPath(Path path, String installationFolder);
+    boolean isValidInstallationFolder();
+    Long getIdWorkShopFromPath(Path path);
     String joinServer(Profile profile);
     String runServer(Profile profile);
     String runServerByConsole(Profile profile);

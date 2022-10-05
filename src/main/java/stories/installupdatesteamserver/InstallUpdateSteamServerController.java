@@ -1,5 +1,9 @@
 package stories.installupdatesteamserver;
 
+import daos.EpicPlatformDao;
+import daos.SteamPlatformDao;
+import entities.EpicPlatform;
+import entities.SteamPlatform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
@@ -23,6 +27,7 @@ import utils.Utils;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class InstallUpdateSteamServerController implements Initializable {
@@ -229,16 +234,18 @@ public class InstallUpdateSteamServerController implements Initializable {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                Kf2Common kf2Common = Kf2Factory.getInstance(EnumPlatform.STEAM.name());
-                if (StringUtils.isNotBlank(installationFolder.getText())) {
-                    installationFolder.setText(installationFolder.getText().replaceAll(" ", "_"));
+                Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
+                if (steamPlatformOptional.isPresent()) {
+                    Kf2Common kf2Common = Kf2Factory.getInstance(steamPlatformOptional.get());
+                    if (StringUtils.isNotBlank(installationFolder.getText())) {
+                        installationFolder.setText(installationFolder.getText().replaceAll(" ", "_"));
+                    }
+                    ((Kf2Steam) kf2Common).installOrUpdateServer(
+                            validateFiles.isSelected(),
+                            isBeta.isSelected(),
+                            betaBrunch.getText()
+                    );
                 }
-                ((Kf2Steam)kf2Common).installOrUpdateServer(
-                        installationFolder.getText(),
-                        validateFiles.isSelected(),
-                        isBeta.isSelected(),
-                        betaBrunch.getText()
-                );
                 return null;
             }
         };
