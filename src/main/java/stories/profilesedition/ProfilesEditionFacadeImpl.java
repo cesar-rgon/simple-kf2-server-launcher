@@ -33,6 +33,12 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
     private final ProfileService profileService;
     private final AbstractMapService officialMapService;
     private final PlatformProfileMapService platformProfileMapService;
+    private final PlatformService platformService;
+    private final DifficultyServiceImpl difficultyService;
+    private final GameTypeServiceImpl gameTypeService;
+    private final LanguageServiceImpl languageService;
+    private final LengthServiceImpl lengthService;
+    private final MaxPlayersServiceImpl maxPlayersService;
 
     public ProfilesEditionFacadeImpl() {
         profileDtoFactory = new ProfileDtoFactory();
@@ -41,6 +47,12 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
         this.profileService = new ProfileServiceImpl();
         this.officialMapService = new OfficialMapServiceImpl();
         this.platformProfileMapService = new PlatformProfileMapServiceImpl();
+        this.platformService = new PlatformServiceImpl();
+        this.difficultyService = new DifficultyServiceImpl();
+        this.gameTypeService = new GameTypeServiceImpl();
+        this.languageService = new LanguageServiceImpl();
+        this.lengthService = new LengthServiceImpl();
+        this.maxPlayersService = new MaxPlayersServiceImpl();
     }
 
 
@@ -57,7 +69,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
         String defaultWebPort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultWebPort");
         String defaultGamePort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultGamePort");
         String defaultQueryPort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultQueryPort");
-        Optional<MaxPlayers> defaultMaxPlayers = MaxPlayersDao.getInstance().findByCode("6");
+        Optional<MaxPlayers> defaultMaxPlayers = maxPlayersService.findByCode("6");
 
         List<AbstractMap> officialMaps = officialMapService.listAllMaps();
         OfficialMap firstOfficialMap = null;
@@ -67,11 +79,11 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
 
         Profile newProfile = new Profile(
                 profileName,
-                LanguageDao.getInstance().listAll().get(0),
-                GameTypeDao.getInstance().listAll().get(0),
+                languageService.listAll().get(0),
+                gameTypeService.listAll().get(0),
                 firstOfficialMap,
-                DifficultyDao.getInstance().listAll().get(0),
-                LengthDao.getInstance().listAll().get(0),
+                difficultyService.listAll().get(0),
+                lengthService.listAll().get(0),
                 defaultMaxPlayers.isPresent()? defaultMaxPlayers.get(): null,
                 StringUtils.isNotBlank(defaultServername) ? defaultServername: "Killing Floor 2 Server",
                 null,
@@ -110,7 +122,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
                 0.0
         );
 
-        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
+        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(platformName);
         Profile savedProfile = profileService.createItem(newProfile);
 
 
@@ -136,7 +148,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
 
 
     @Override
-    public ProfileDto updateChangedProfile(String oldProfileName, String newProfileName) throws SQLException {
+    public ProfileDto updateChangedProfile(String oldProfileName, String newProfileName) throws Exception {
         if (StringUtils.isBlank(newProfileName) || newProfileName.equalsIgnoreCase(oldProfileName)) {
             return null;
         }
@@ -172,7 +184,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
                 if (profileOpt.isPresent()) {
                     return profileOpt.get();
                 }
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 logger.error("Error in operation of export profiles to file", e);
             }
             return null;
@@ -203,7 +215,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
     @Override
     public Properties importEntitiesFromFile(File file) throws Exception {
         Properties properties = propertyService.loadPropertiesFromFile(file);
-        List<Language> languageList = LanguageDao.getInstance().listAll();
+        List<Language> languageList = languageService.listAll();
         profileService.importGameTypesFromFile(properties, languageList);
         profileService.importDifficultiesFromFile(properties, languageList);
         profileService.importLengthsFromFile(properties, languageList);
@@ -218,7 +230,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
 
     @Override
     public ObservableList<ProfileDto> importProfilesFromFile(String platformName, List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) throws Exception {
-        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
+        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(platformName);
         if (!platformOptional.isPresent()) {
             return null;
         }
@@ -228,7 +240,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
 
     @Override
     public List<PlatformProfileToDisplay> selectProfilesToBeExported(String message) throws SQLException {
-        List<AbstractPlatform> allPlatformList = AbstractPlatformDao.getInstance().listAll();
+        List<AbstractPlatform> allPlatformList = platformService.listAllPlatforms();
         List<Profile> allProfileList = profileService.listAllProfiles();
         List<PlatformProfile> platformProfileList = new ArrayList<PlatformProfile>();
         for (Profile profile: allProfileList) {

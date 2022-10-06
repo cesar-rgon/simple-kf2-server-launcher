@@ -23,7 +23,6 @@ public class LengthEditionFacadeImpl extends AbstractEditionFacade<Length, Selec
     public LengthEditionFacadeImpl() {
         super(
                 Length.class,
-                LengthDao.getInstance(),
                 new LengthDtoFactory(),
                 new LengthServiceImpl()
         );
@@ -31,7 +30,7 @@ public class LengthEditionFacadeImpl extends AbstractEditionFacade<Length, Selec
     }
 
     @Override
-    public ProfileDto unselectLengthInProfile(String profileName) throws SQLException {
+    public ProfileDto unselectLengthInProfile(String profileName) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             profileOpt.get().setLength(null);

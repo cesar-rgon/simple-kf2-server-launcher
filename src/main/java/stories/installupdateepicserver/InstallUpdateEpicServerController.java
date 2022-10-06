@@ -131,7 +131,7 @@ public class InstallUpdateEpicServerController implements Initializable {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                Optional<EpicPlatform> epicPlatformOptional = EpicPlatformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
+                Optional<EpicPlatform> epicPlatformOptional = facade.findEpicPlatform();
                 if (epicPlatformOptional.isPresent()) {
                     Kf2Common kf2Common = Kf2Factory.getInstance(epicPlatformOptional.get());
                     ((Kf2Epic) kf2Common).installOrUpdateServer();

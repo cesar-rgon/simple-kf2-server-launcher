@@ -3,8 +3,7 @@ package pojos;
 import daos.*;
 import entities.*;
 import pojos.enums.EnumPlatform;
-import services.PropertyService;
-import services.PropertyServiceImpl;
+import services.*;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -14,14 +13,28 @@ import java.util.Optional;
 public abstract class AbstractPopulateDatabase {
 
     private final PropertyService propertyService;
+    private final PlatformService platformService;
+    protected final DifficultyServiceImpl difficultyService;
+    protected final GameTypeServiceImpl gameTypeService;
+    protected final LanguageServiceImpl languageService;
+    protected final LengthServiceImpl lengthService;
+    protected final MaxPlayersServiceImpl maxPlayersService;
+    protected final AbstractMapService officialMapService;
 
     protected AbstractPopulateDatabase() {
         super();
         this.propertyService = new PropertyServiceImpl();
+        this.platformService = new PlatformServiceImpl();
+        this.difficultyService = new DifficultyServiceImpl();
+        this.gameTypeService = new GameTypeServiceImpl();
+        this.languageService = new LanguageServiceImpl();
+        this.lengthService = new LengthServiceImpl();
+        this.maxPlayersService = new MaxPlayersServiceImpl();
+        this.officialMapService = new OfficialMapServiceImpl();
     }
 
     public abstract void start() throws Exception;
-    protected abstract void populateLanguages() throws SQLException;
+    protected abstract void populateLanguages() throws Exception;
     protected abstract void populateDifficulties() throws Exception;
     protected abstract void populateGameTypes() throws Exception;
     protected abstract void populateLengths() throws Exception;
@@ -30,14 +43,14 @@ public abstract class AbstractPopulateDatabase {
     protected abstract void populateProfiles() throws Exception;
     protected abstract void populatePlatforms() throws SQLException;
 
-    protected void populateLanguage(String code, String description) throws SQLException {
+    protected void populateLanguage(String code, String description) throws Exception {
         Language language = new Language(code, description);
-        LanguageDao.getInstance().insert(language);
+        languageService.createItem(language);
     }
 
     protected void populateDifficulty(String code, String englishDescription, String spanishDescription, String frenchDescription) throws Exception {
         Difficulty difficulty = new Difficulty(code);
-        DifficultyDao.getInstance().insert(difficulty);
+        difficultyService.createItem(difficulty);
         propertyService.setProperty("properties/languages/en.properties", "prop.difficulty." + code, englishDescription);
         propertyService.setProperty("properties/languages/es.properties", "prop.difficulty." + code, spanishDescription);
         propertyService.setProperty("properties/languages/fr.properties", "prop.difficulty." + code, frenchDescription);
@@ -47,7 +60,7 @@ public abstract class AbstractPopulateDatabase {
         GameType gameType = new GameType(code);
         gameType.setDifficultyEnabled(difficultyEnabled);;
         gameType.setLengthEnabled(lengthEnabled);
-        GameTypeDao.getInstance().insert(gameType);
+        gameTypeService.createItem(gameType);
         propertyService.setProperty("properties/languages/en.properties", "prop.gametype." + code, englishDescription);
         propertyService.setProperty("properties/languages/es.properties", "prop.gametype." + code, spanishDescription);
         propertyService.setProperty("properties/languages/fr.properties", "prop.gametype." + code, frenchDescription);
@@ -55,7 +68,7 @@ public abstract class AbstractPopulateDatabase {
 
     protected void populateLength(String code, String englishDescription, String spanishDescription, String frenchDescription) throws Exception {
         Length length = new Length(code);
-        LengthDao.getInstance().insert(length);
+        lengthService.createItem(length);
         propertyService.setProperty("properties/languages/en.properties", "prop.length." + code, englishDescription);
         propertyService.setProperty("properties/languages/es.properties", "prop.length." + code, spanishDescription);
         propertyService.setProperty("properties/languages/fr.properties", "prop.length." + code, frenchDescription);
@@ -63,7 +76,7 @@ public abstract class AbstractPopulateDatabase {
 
     protected void polulateMaximunPlayers(String code, String englishDescription, String spanishDescription, String frenchDescription) throws Exception {
         MaxPlayers maxPlayers = new MaxPlayers(code);
-        MaxPlayersDao.getInstance().insert(maxPlayers);
+        maxPlayersService.createItem(maxPlayers);
         propertyService.setProperty("properties/languages/en.properties", "prop.maxplayers." + code, englishDescription);
         propertyService.setProperty("properties/languages/es.properties", "prop.maxplayers." + code, spanishDescription);
         propertyService.setProperty("properties/languages/fr.properties", "prop.maxplayers." + code, frenchDescription);
@@ -96,10 +109,10 @@ public abstract class AbstractPopulateDatabase {
             throw new RuntimeException("The relation between the profile <NOT FOUND> and the map '" + officialMap.getDescription() + "' could not be persisted to database in populate process");
         }
 
-        Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
-        Optional<EpicPlatform> epicPlatformOptional = EpicPlatformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
+        Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();
+        Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
 
-        OfficialMapDao.getInstance().insert(officialMap);
+        officialMapService.createItem(officialMap);
         prepareAndPopulatePlatformProfileMap(profileOptional.get(), officialMap, steamPlatformOptional, epicPlatformOptional);
     }
 
@@ -111,12 +124,12 @@ public abstract class AbstractPopulateDatabase {
     protected void populatePlatform(EnumPlatform platform) throws SQLException {
         if (EnumPlatform.STEAM.name().equals(platform.name())) {
             SteamPlatform newPlatform = new SteamPlatform(platform, false, false, "preview");
-            SteamPlatformDao.getInstance().insert(newPlatform);
+            platformService.createSteamPlatform(newPlatform);
         }
 
         if (EnumPlatform.EPIC.name().equals(platform.name())) {
             EpicPlatform newPlatform = new EpicPlatform(platform);
-            EpicPlatformDao.getInstance().insert(newPlatform);
+            platformService.createEpicPlatform(newPlatform);
         }
     }
 

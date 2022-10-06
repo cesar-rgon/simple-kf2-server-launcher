@@ -1271,7 +1271,7 @@ public class MainContentController implements Initializable {
 
     }
 
-    private void loadActualProfile(PlatformDto platformDto, ProfileDto profile) throws SQLException {
+    private void loadActualProfile(PlatformDto platformDto, ProfileDto profile) throws Exception {
         languageSelect.setValue(profile.getLanguage());
         previousSelectedLanguageCode = profile.getLanguage().getKey();
         gameTypeSelect.setValue(profile.getGametype());

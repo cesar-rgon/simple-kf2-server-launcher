@@ -12,8 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Hibernate;
-import services.PropertyService;
-import services.PropertyServiceImpl;
+import services.*;
 import utils.Utils;
 
 import java.io.*;
@@ -34,10 +33,14 @@ public class Kf2Utils {
     protected final PropertyService propertyService;
     protected String languageCode;
     protected boolean byConsole;
+    private final AbstractMapService customMapService;
+    private final AbstractMapService officialMapService;
 
     protected Kf2Utils() {
         super();
         propertyService = new PropertyServiceImpl();
+        customMapService = new CustomMapModServiceImpl();
+        officialMapService = new OfficialMapServiceImpl();
         byConsole = false;
         try {
             languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
@@ -220,7 +223,7 @@ public class Kf2Utils {
                 }
             }
 
-            List<CustomMapMod> allCustomMapModList = CustomMapModDao.getInstance().listAll();
+            List<AbstractMap> allCustomMapModList = customMapService.listAllMaps();
             List<AbstractMap> customMapsMods = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profile).stream().
                     filter(ppm -> allCustomMapModList.contains(ppm.getMap())).
                     map(PlatformProfileMap::getMap).
@@ -266,8 +269,7 @@ public class Kf2Utils {
                             filter(m -> m.getCode().equals(mapName)).
                             findFirst();
 
-
-                    if (map.isPresent() && OfficialMapDao.getInstance().findByCode(map.get().getCode()).isPresent() || line.contains("[KF-Default KFMapSummary]")) {
+                    if (map.isPresent() && officialMapService.findByCode(map.get().getCode()).isPresent() || line.contains("[KF-Default KFMapSummary]")) {
                         pw.println(line);
                         while (!line.contains("MapName=")) {
                             line = br.readLine();
@@ -294,8 +296,8 @@ public class Kf2Utils {
                     map(PlatformProfileMap::getMap).
                     filter(m -> {
                         try {
-                            return CustomMapModDao.getInstance().findByCode(m.getCode()).isPresent();
-                        } catch (SQLException e) {
+                            return customMapService.findByCode(m.getCode()).isPresent();
+                        } catch (Exception e) {
                             logger.error(e.getMessage(), e);
                             throw new RuntimeException(e.getMessage(), e);
                         }
@@ -369,8 +371,8 @@ public class Kf2Utils {
                             map(PlatformProfileMap::getMap).
                             filter(m -> {
                                 try {
-                                    return OfficialMapDao.getInstance().findByCode(m.getCode()).isPresent();
-                                } catch (SQLException e) {
+                                    return officialMapService.findMapByCode(m.getCode()).isPresent();
+                                } catch (Exception e) {
                                     logger.error(e.getMessage(), e);
                                     throw new RuntimeException(e.getMessage(), e);
                                 }
@@ -383,8 +385,8 @@ public class Kf2Utils {
                             map(PlatformProfileMap::getMap).
                             filter(m -> {
                                 try {
-                                    return CustomMapModDao.getInstance().findByCode(m.getCode()).isPresent();
-                                } catch (SQLException e) {
+                                    return customMapService.findByCode(m.getCode()).isPresent();
+                                } catch (Exception e) {
                                     logger.error(e.getMessage(), e);
                                     throw new RuntimeException(e.getMessage(), e);
                                 }

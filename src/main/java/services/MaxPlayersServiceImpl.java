@@ -3,6 +3,9 @@ package services;
 import daos.MaxPlayersDao;
 import entities.MaxPlayers;
 
+import java.util.List;
+import java.util.Optional;
+
 public class MaxPlayersServiceImpl implements AbstractExtendedService<MaxPlayers> {
 
     private PropertyService propertyService;
@@ -18,6 +21,21 @@ public class MaxPlayersServiceImpl implements AbstractExtendedService<MaxPlayers
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
         propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.maxplayers." + maxPlayers.getCode(), maxPlayers.getDescription());
         return MaxPlayersDao.getInstance().insert(maxPlayers);
+    }
+
+    @Override
+    public boolean updateItem(MaxPlayers maxPlayers) throws Exception {
+        return MaxPlayersDao.getInstance().update(maxPlayers);
+    }
+
+    @Override
+    public List<MaxPlayers> listAll() throws Exception {
+        return MaxPlayersDao.getInstance().listAll();
+    }
+
+    @Override
+    public Optional<MaxPlayers> findByCode(String code) throws Exception {
+        return MaxPlayersDao.getInstance().findByCode(code);
     }
 
     @Override

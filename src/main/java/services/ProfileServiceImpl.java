@@ -29,6 +29,12 @@ public class ProfileServiceImpl implements ProfileService {
     private final AbstractMapService officialMapService;
     private final AbstractMapService customMapModService;
     private final PlatformProfileMapService platformProfileMapService;
+    private final AbstractMapService customMapService;
+    private final DifficultyServiceImpl difficultyService;
+    private final GameTypeServiceImpl gameTypeService;
+    private final LanguageServiceImpl languageService;
+    private final LengthServiceImpl lengthService;
+    private final MaxPlayersServiceImpl maxPlayersService;
 
     public ProfileServiceImpl() {
         super();
@@ -36,11 +42,17 @@ public class ProfileServiceImpl implements ProfileService {
         this.officialMapService = new OfficialMapServiceImpl();
         this.customMapModService = new CustomMapModServiceImpl();
         this.platformProfileMapService = new PlatformProfileMapServiceImpl();
+        this.customMapService = new CustomMapModServiceImpl();
+        this.difficultyService = new DifficultyServiceImpl();
+        this.gameTypeService = new GameTypeServiceImpl();
+        this.languageService = new LanguageServiceImpl();
+        this.lengthService = new LengthServiceImpl();
+        this.maxPlayersService = new MaxPlayersServiceImpl();
     }
 
     @Override
-    public Optional<Profile> findProfileByCode(String profileName) throws SQLException {
-        return ProfileDao.getInstance().findByCode(profileName);
+    public Optional<Profile> findProfileByCode(String profileName) throws Exception {
+        return findByCode(profileName);
     }
 
     @Override
@@ -51,6 +63,21 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public Profile createItem(Profile profile) throws Exception {
         return ProfileDao.getInstance().insert(profile);
+    }
+
+    @Override
+    public boolean updateItem(Profile profile) throws Exception {
+        return ProfileDao.getInstance().update(profile);
+    }
+
+    @Override
+    public List<Profile> listAll() throws Exception {
+        return ProfileDao.getInstance().listAll();
+    }
+
+    @Override
+    public Optional<Profile> findByCode(String code) throws Exception {
+        return ProfileDao.getInstance().findByCode(code);
     }
 
     @Override
@@ -75,12 +102,13 @@ public class ProfileServiceImpl implements ProfileService {
             try {
                 platformProfileMapService.deleteItem(ppm);
 
-                if (CustomMapModDao.getInstance().findByCode(ppm.getMap().getCode()).isPresent()) {
+                if (customMapService.findByCode(ppm.getMap().getCode()).isPresent()) {
                     CustomMapMod customMapMod = (CustomMapMod) ppm.getMap();
 
                     List<PlatformProfileMap> platformProfileMapListForMap = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(customMapMod);
                     if (platformProfileMapListForMap.isEmpty()) {
-                        if (CustomMapModDao.getInstance().remove(customMapMod)) {
+
+                        if (customMapService.deleteItem(customMapMod)) {
                             File steamMapPhoto = new File(steamInstallationFolder + customMapMod.getUrlPhoto());
                             if (steamMapPhoto.exists()) {
                                 steamMapPhoto.delete();
@@ -257,7 +285,7 @@ public class ProfileServiceImpl implements ProfileService {
             profileIndex ++;
         }
 
-        List<Language> languageList = LanguageDao.getInstance().listAll();
+        List<Language> languageList = languageService.listAll();
         exportGameTypesToFile(properties, languageList);
         exportDifficultiesToFile(properties, languageList);
         exportLengthsToFile(properties, languageList);
@@ -267,7 +295,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     private void exportGameTypesToFile(Properties properties, List<Language> languageList) throws Exception {
-        List<GameType> gameTypeList = GameTypeDao.getInstance().listAll();
+        List<GameType> gameTypeList = gameTypeService.listAll();
         properties.setProperty("exported.gameTypes.number", String.valueOf(gameTypeList.size()));
         int gameTypeIndex = 1;
 
@@ -286,7 +314,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     private void exportDifficultiesToFile(Properties properties, List<Language> languageList) throws Exception {
-        List<Difficulty> difficultyList = DifficultyDao.getInstance().listAll();
+        List<Difficulty> difficultyList = difficultyService.listAll();
         properties.setProperty("exported.difficulties.number", String.valueOf(difficultyList.size()));
         int difficultyIndex = 1;
 
@@ -303,7 +331,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     private void exportLengthsToFile(Properties properties, List<Language> languageList) throws Exception {
-        List<Length> lengthList = LengthDao.getInstance().listAll();
+        List<Length> lengthList = lengthService.listAll();
         properties.setProperty("exported.lengths.number", String.valueOf(lengthList.size()));
         int lengthIndex = 1;
 
@@ -320,7 +348,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     private void exportMaxPlayersToFile(Properties properties, List<Language> languageList) throws Exception {
-        List<MaxPlayers> maxPlayersList = MaxPlayersDao.getInstance().listAll();
+        List<MaxPlayers> maxPlayersList = maxPlayersService.listAll();
         properties.setProperty("exported.maxPlayers.number", String.valueOf(maxPlayersList.size()));
         int maxPlayersIndex = 1;
 
@@ -359,8 +387,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public void importGameTypesFromFile(Properties properties, List<Language> languageList) throws SQLException {
-        List<GameType> gameTypeListInDataBase = GameTypeDao.getInstance().listAll();
+    public void importGameTypesFromFile(Properties properties, List<Language> languageList) throws Exception {
+        List<GameType> gameTypeListInDataBase = gameTypeService.listAll();
         String strSize = properties.getProperty("exported.gameTypes.number");
         int size = StringUtils.isNotBlank(strSize) ? Integer.valueOf(strSize): 0;
 
@@ -383,7 +411,7 @@ public class ProfileServiceImpl implements ProfileService {
                 GameType newGameType = new GameType(code);
                 newGameType.setDifficultyEnabled(Boolean.parseBoolean(properties.getProperty("exported.gameType" + index + ".difficultyEnabled")));
                 newGameType.setLengthEnabled(Boolean.parseBoolean(properties.getProperty("exported.gameType" + index + ".lengthEnabled")));
-                GameTypeDao.getInstance().insert(newGameType);
+                gameTypeService.createItem(newGameType);
 
             } catch (Exception e) {
                 logger.error("Error saving the Game Type " + code + " to database.");
@@ -392,8 +420,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public void importDifficultiesFromFile(Properties properties, List<Language> languageList) throws SQLException {
-        List<Difficulty> difficultyListInDataBase = DifficultyDao.getInstance().listAll();
+    public void importDifficultiesFromFile(Properties properties, List<Language> languageList) throws Exception {
+        List<Difficulty> difficultyListInDataBase = difficultyService.listAll();
         String strSize = properties.getProperty("exported.difficulties.number");
         int size = StringUtils.isNotBlank(strSize) ? Integer.valueOf(strSize): 0;
 
@@ -414,7 +442,7 @@ public class ProfileServiceImpl implements ProfileService {
                 }
 
                 Difficulty newDifficulty = new Difficulty(code);
-                DifficultyDao.getInstance().insert(newDifficulty);
+                difficultyService.createItem(newDifficulty);
 
             } catch (Exception e) {
                 logger.error("Error saving the Difficulty " + code + " to database.");
@@ -423,8 +451,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public void importLengthsFromFile(Properties properties, List<Language> languageList) throws SQLException {
-        List<Length> lengthListInDataBase = LengthDao.getInstance().listAll();
+    public void importLengthsFromFile(Properties properties, List<Language> languageList) throws Exception {
+        List<Length> lengthListInDataBase = lengthService.listAll();
         String strSize = properties.getProperty("exported.lengths.number");
         int size = StringUtils.isNotBlank(strSize) ? Integer.valueOf(strSize): 0;
 
@@ -445,7 +473,7 @@ public class ProfileServiceImpl implements ProfileService {
                 }
 
                 Length newLength = new Length(code);
-                LengthDao.getInstance().insert(newLength);
+                lengthService.createItem(newLength);
 
             } catch (Exception e) {
                 logger.error("Error saving the Length " + code + " to database.");
@@ -454,8 +482,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public void importMaxPlayersFromFile(Properties properties, List<Language> languageList) throws SQLException {
-        List<MaxPlayers> maxPlayersListInDataBase = MaxPlayersDao.getInstance().listAll();
+    public void importMaxPlayersFromFile(Properties properties, List<Language> languageList) throws Exception {
+        List<MaxPlayers> maxPlayersListInDataBase = maxPlayersService.listAll();
         String strSize = properties.getProperty("exported.maxPlayers.number");
         int size = StringUtils.isNotBlank(strSize) ? Integer.valueOf(strSize): 0;
 
@@ -476,7 +504,7 @@ public class ProfileServiceImpl implements ProfileService {
                 }
 
                 MaxPlayers newMaxPlayers = new MaxPlayers(code);
-                MaxPlayersDao.getInstance().insert(newMaxPlayers);
+                maxPlayersService.createItem(newMaxPlayers);
 
             } catch (Exception e) {
                 logger.error("Error saving the Max.Players code " + code + " to database.");
@@ -524,11 +552,11 @@ public class ProfileServiceImpl implements ProfileService {
     private Profile getProfileFromFile(int profileIndex, Properties properties) {
         String profileName = properties.getProperty("exported.profile" + profileIndex + ".name");
         try {
-            Optional<Language> languageOpt = LanguageDao.getInstance().findByCode(properties.getProperty("exported.profile" + profileIndex + ".language"));
-            Optional<GameType> gameTypeOpt = GameTypeDao.getInstance().findByCode(properties.getProperty("exported.profile" + profileIndex + ".gameType"));
-            Optional<Difficulty> difficultyOpt = DifficultyDao.getInstance().findByCode(properties.getProperty("exported.profile" + profileIndex + ".difficulty"));
-            Optional<Length> lengthOpt = LengthDao.getInstance().findByCode(properties.getProperty("exported.profile" + profileIndex + ".length"));
-            Optional<MaxPlayers> maxPlayersOpt = MaxPlayersDao.getInstance().findByCode(properties.getProperty("exported.profile" + profileIndex + ".maxPlayers"));
+            Optional<Language> languageOpt = languageService.findByCode(properties.getProperty("exported.profile" + profileIndex + ".language"));
+            Optional<GameType> gameTypeOpt = gameTypeService.findByCode(properties.getProperty("exported.profile" + profileIndex + ".gameType"));
+            Optional<Difficulty> difficultyOpt = difficultyService.findByCode(properties.getProperty("exported.profile" + profileIndex + ".difficulty"));
+            Optional<Length> lengthOpt = lengthService.findByCode(properties.getProperty("exported.profile" + profileIndex + ".length"));
+            Optional<MaxPlayers> maxPlayersOpt = maxPlayersService.findByCode(properties.getProperty("exported.profile" + profileIndex + ".maxPlayers"));
             String webPortStr = properties.getProperty("exported.profile" + profileIndex + ".webPort");
             String gamePortStr = properties.getProperty("exported.profile" + profileIndex + ".gamePort");
             String queryPortStr = properties.getProperty("exported.profile" + profileIndex + ".queryPort");
@@ -601,7 +629,7 @@ public class ProfileServiceImpl implements ProfileService {
                     StringUtils.isNotBlank(pickupItemsStr) ? Boolean.parseBoolean(pickupItemsStr): true,
                     StringUtils.isNotBlank(friendlyFirePercentageStr) ? Double.parseDouble(friendlyFirePercentageStr): 0
             );
-        } catch (SQLException e) {
+        } catch (Exception e) {
             logger.error("Error getting the profile " + profileName + " from file", e);
             return null;
         }
@@ -678,7 +706,7 @@ public class ProfileServiceImpl implements ProfileService {
         for (MapToDisplay customMap: selectedCustomMapList) {
             Integer mapIndex = customMapsIndex.get(customMap.getIdWorkShop());
             try {
-                Optional mapInDataBaseOpt = CustomMapModDao.getInstance().findByIdWorkShop(customMap.getIdWorkShop());
+                Optional mapInDataBaseOpt = ((CustomMapModServiceImpl) customMapService).findByIdWorkShop(customMap.getIdWorkShop());
                 AbstractMap map = getImportedMap(mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, customMap.getCommentary(), customMap.getIdWorkShop(), false);
                 if (map != null) {
                     mapList.add(map);
@@ -714,12 +742,12 @@ public class ProfileServiceImpl implements ProfileService {
 
     private AbstractMap getImportedMap(Optional<AbstractMap> mapInDataBaseOpt, Profile profile, Properties properties, int profileIndex, Integer mapIndex, String mapName, Long idWorkShop, boolean official) throws Exception {
         if (mapInDataBaseOpt.isPresent()) {
-            if (OfficialMapDao.getInstance().findByCode(mapInDataBaseOpt.get().getCode()).isPresent()) {
-                if (OfficialMapDao.getInstance().update((OfficialMap) mapInDataBaseOpt.get())) {
+            if (officialMapService.findByCode(mapInDataBaseOpt.get().getCode()).isPresent()) {
+                if (officialMapService.updateItem(mapInDataBaseOpt.get())) {
                     return mapInDataBaseOpt.get();
                 }
             } else {
-                if (CustomMapModDao.getInstance().update((CustomMapMod) mapInDataBaseOpt.get())) {
+                if (customMapService.updateItem(mapInDataBaseOpt.get())) {
                     return mapInDataBaseOpt.get();
                 }
             }

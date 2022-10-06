@@ -23,7 +23,6 @@ public class DifficultiesEditionFacadeImpl extends AbstractEditionFacade<Difficu
     public DifficultiesEditionFacadeImpl() {
         super(
                 Difficulty.class,
-                DifficultyDao.getInstance(),
                 new DifficultyDtoFactory(),
                 new DifficultyServiceImpl()
         );
@@ -32,7 +31,7 @@ public class DifficultiesEditionFacadeImpl extends AbstractEditionFacade<Difficu
 
 
     @Override
-    public ProfileDto unselectDifficultyInProfile(String profileName) throws SQLException {
+    public ProfileDto unselectDifficultyInProfile(String profileName) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             profileOpt.get().setDifficulty(null);

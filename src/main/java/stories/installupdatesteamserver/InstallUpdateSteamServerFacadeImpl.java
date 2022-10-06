@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.enums.EnumPlatform;
+import services.PlatformService;
+import services.PlatformServiceImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 
@@ -18,10 +20,12 @@ public class InstallUpdateSteamServerFacadeImpl implements InstallUpdateSteamSer
     private static final Logger logger = LogManager.getLogger(InstallUpdateSteamServerFacadeImpl.class);
 
     private final PropertyService propertyService;
+    private final PlatformService platformService;
 
     public InstallUpdateSteamServerFacadeImpl() {
         super();
         propertyService = new PropertyServiceImpl();
+        this.platformService = new PlatformServiceImpl();
     }
 
     @Override
@@ -37,7 +41,7 @@ public class InstallUpdateSteamServerFacadeImpl implements InstallUpdateSteamSer
 
     @Override
     public String getPlatformInstallationFolder() throws SQLException {
-        Optional<SteamPlatform> platformOptional = SteamPlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
+        Optional<SteamPlatform> platformOptional = platformService.findSteamPlatform();
         if (!platformOptional.isPresent()) {
             logger.error("The platform Steam has not been found in database");
             return StringUtils.EMPTY;
@@ -47,12 +51,17 @@ public class InstallUpdateSteamServerFacadeImpl implements InstallUpdateSteamSer
 
     @Override
     public boolean updatePlatformInstallationFolder(String installationFolder) throws SQLException {
-        Optional<SteamPlatform> platformOptional = SteamPlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
+        Optional<SteamPlatform> platformOptional = platformService.findSteamPlatform();
         if (!platformOptional.isPresent()) {
             logger.error("The platform Steam has not been found in database");
             return false;
         }
         platformOptional.get().setInstallationFolder(installationFolder);
-        return SteamPlatformDao.getInstance().update(platformOptional.get());
+        return platformService.updateSteamPlatform(platformOptional.get());
+    }
+
+    @Override
+    public Optional<SteamPlatform> findSteamPlatform() throws SQLException {
+        return platformService.findSteamPlatform();
     }
 }

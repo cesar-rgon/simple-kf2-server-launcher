@@ -3,6 +3,9 @@ package services;
 import daos.GameTypeDao;
 import entities.GameType;
 
+import java.util.List;
+import java.util.Optional;
+
 public class GameTypeServiceImpl implements AbstractExtendedService<GameType> {
 
     private PropertyService propertyService;
@@ -18,6 +21,21 @@ public class GameTypeServiceImpl implements AbstractExtendedService<GameType> {
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
         propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.gametype." + gameType.getCode(), gameType.getDescription());
         return GameTypeDao.getInstance().insert(gameType);
+    }
+
+    @Override
+    public boolean updateItem(GameType gameType) throws Exception {
+        return GameTypeDao.getInstance().update(gameType);
+    }
+
+    @Override
+    public List<GameType> listAll() throws Exception {
+        return GameTypeDao.getInstance().listAll();
+    }
+
+    @Override
+    public Optional<GameType> findByCode(String code) throws Exception {
+        return GameTypeDao.getInstance().findByCode(code);
     }
 
     @Override

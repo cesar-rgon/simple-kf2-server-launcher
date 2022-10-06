@@ -5,6 +5,8 @@ import entities.EpicPlatform;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.enums.EnumPlatform;
+import services.PlatformService;
+import services.PlatformServiceImpl;
 import utils.Utils;
 
 import java.sql.SQLException;
@@ -13,11 +15,13 @@ import java.util.Optional;
 public abstract class Kf2Epic extends Kf2AbstractCommon {
 
     private static final Logger logger = LogManager.getLogger(Kf2Epic.class);
+    private final PlatformService platformService;
 
     protected Kf2Epic() {
         super();
+        this.platformService = new PlatformServiceImpl();
         try {
-            Optional<EpicPlatform> epicPlatformOptional = EpicPlatformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
+            Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
             this.platform = epicPlatformOptional.isPresent() ? epicPlatformOptional.get() : null;
         } catch (SQLException e) {
             logger.error(e.getMessage(), e);

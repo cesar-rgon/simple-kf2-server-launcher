@@ -23,8 +23,12 @@ public class CustomMapModServiceImpl extends AbstractMapService {
     }
 
     @Override
-    public Optional findByCode(String mapName) throws SQLException {
-        return CustomMapModDao.getInstance().findByCode(mapName);
+    public Optional<AbstractMap> findByCode(String mapName) throws Exception {
+        Optional<CustomMapMod> customMapModOptional = CustomMapModDao.getInstance().findByCode(mapName);
+        if (!customMapModOptional.isPresent()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(customMapModOptional.get());
     }
 
     @Override

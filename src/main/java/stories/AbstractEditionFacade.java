@@ -15,19 +15,17 @@ import java.util.Optional;
 public abstract class AbstractEditionFacade<E extends AbstractExtendedEntity, D extends SelectDto> {
 
     private final Class<E> entityClass;
-    protected final AbstractExtendedDao dao;
     protected final AbstractDtoFactory dtoFactory;
     protected final AbstractExtendedService<E> abstractService;
 
-    protected AbstractEditionFacade(Class<E> entityClass, AbstractExtendedDao dao, AbstractDtoFactory dtoFactory, AbstractExtendedService<E> abstractService) {
+    protected AbstractEditionFacade(Class<E> entityClass, AbstractDtoFactory dtoFactory, AbstractExtendedService<E> abstractService) {
         this.entityClass = entityClass;
-        this.dao = dao;
         this.dtoFactory = dtoFactory;
         this.abstractService = abstractService;
     }
 
-    public ObservableList<D> listAllItems() throws SQLException {
-        List<E> itemList = dao.listAll();
+    public ObservableList<D> listAllItems() throws Exception {
+        List<E> itemList = abstractService.listAll();
         return dtoFactory.newDtos(itemList);
     }
 
@@ -43,7 +41,7 @@ public abstract class AbstractEditionFacade<E extends AbstractExtendedEntity, D 
 
 
     public boolean deleteItem(String code) throws Exception {
-        Optional<E> itemOptional = dao.findByCode(code);
+        Optional<E> itemOptional = abstractService.findByCode(code);
         if (itemOptional.isPresent()) {
             return abstractService.deleteItem(itemOptional.get());
         }
@@ -55,7 +53,7 @@ public abstract class AbstractEditionFacade<E extends AbstractExtendedEntity, D 
         if (StringUtils.isBlank(newCode) || newCode.equalsIgnoreCase(oldCode)) {
             return null;
         }
-        Optional<E> itemOptional = dao.findByCode(oldCode);
+        Optional<E> itemOptional = abstractService.findByCode(oldCode);
         if (itemOptional.isPresent()) {
             itemOptional.get().setCode(newCode);
             if (abstractService.updateItemCode(itemOptional.get(), oldCode)) {
@@ -69,7 +67,7 @@ public abstract class AbstractEditionFacade<E extends AbstractExtendedEntity, D 
         if (StringUtils.isBlank(newDescription) || newDescription.equalsIgnoreCase(oldDescription)) {
             return null;
         }
-        Optional<E> itemOptional = dao.findByCode(code);
+        Optional<E> itemOptional = abstractService.findByCode(code);
         if (itemOptional.isPresent()) {
             itemOptional.get().setDescription(newDescription);
             abstractService.updateItemDescription(itemOptional.get());

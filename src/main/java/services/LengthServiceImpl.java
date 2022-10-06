@@ -3,6 +3,9 @@ package services;
 import daos.LengthDao;
 import entities.Length;
 
+import java.util.List;
+import java.util.Optional;
+
 public class LengthServiceImpl implements AbstractExtendedService<Length> {
 
     private PropertyService propertyService;
@@ -17,6 +20,21 @@ public class LengthServiceImpl implements AbstractExtendedService<Length> {
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
         propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.length." + length.getCode(), length.getDescription());
         return LengthDao.getInstance().insert(length);
+    }
+
+    @Override
+    public boolean updateItem(Length length) throws Exception {
+        return LengthDao.getInstance().update(length);
+    }
+
+    @Override
+    public List<Length> listAll() throws Exception {
+        return LengthDao.getInstance().listAll();
+    }
+
+    @Override
+    public Optional<Length> findByCode(String code) throws Exception {
+        return LengthDao.getInstance().findByCode(code);
     }
 
     @Override

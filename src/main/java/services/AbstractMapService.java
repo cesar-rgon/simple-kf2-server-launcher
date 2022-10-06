@@ -17,11 +17,13 @@ import java.util.stream.Collectors;
 public abstract class AbstractMapService implements AbstractExtendedService<AbstractMap> {
 
     private static final Logger logger = LogManager.getLogger(AbstractMapService.class);
-    private PlatformProfileMapService platformProfileMapService;
+    private final PlatformProfileMapService platformProfileMapService;
+    private final AbstractMapService officialMapService;
 
     protected AbstractMapService() {
         super();
         this.platformProfileMapService = new PlatformProfileMapServiceImpl();
+        this.officialMapService = new OfficialMapServiceImpl();
     }
 
     @Override
@@ -34,13 +36,13 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
     }
 
     public abstract List<AbstractMap> listAll() throws SQLException;
-    public abstract Optional<AbstractMap> findByCode(String mapName) throws SQLException;
+    public abstract Optional<AbstractMap> findByCode(String mapName) throws Exception;
     public abstract AbstractMap createItem(AbstractMap map) throws Exception;
     public abstract boolean deleteItem(AbstractMap map) throws Exception;
     public abstract boolean updateItem(AbstractMap map) throws SQLException;
 
 
-    public Optional<AbstractMap> findMapByCode(String mapName) throws SQLException {
+    public Optional<AbstractMap> findMapByCode(String mapName) throws Exception {
         return findByCode(mapName);
     }
 
@@ -59,7 +61,7 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
                 logger.error(errorMessage);
                 return null;
             }
-            downloaded = OfficialMapDao.getInstance().findByCode(map.getCode()).isPresent();
+            downloaded = officialMapService.findByCode(map.getCode()).isPresent();
         } catch (Exception e) {
             String errorMessage = "Error creating the map: " + map.getCode();
             errors.append(errorMessage + "\n");

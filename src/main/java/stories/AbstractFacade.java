@@ -1,14 +1,10 @@
 package stories;
 
-import daos.AbstractPlatformDao;
 import dtos.ProfileDto;
 import dtos.factories.ProfileDtoFactory;
 import entities.AbstractPlatform;
 import entities.Profile;
-import services.ProfileService;
-import services.ProfileServiceImpl;
-import services.PropertyService;
-import services.PropertyServiceImpl;
+import services.*;
 
 import java.sql.SQLException;
 import java.util.Optional;
@@ -16,13 +12,15 @@ import java.util.Optional;
 public abstract class AbstractFacade {
 
     private final ProfileService profileService;
+    private final PlatformService platformService;
 
     protected AbstractFacade() {
         super();
         this.profileService = new ProfileServiceImpl();
+        this.platformService = new PlatformServiceImpl();
     }
 
-    public Profile findProfileByCode(String profileName) throws SQLException {
+    public Profile findProfileByCode(String profileName) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             return profileOpt.get();
@@ -31,14 +29,11 @@ public abstract class AbstractFacade {
     }
 
     public AbstractPlatform findPlatformByCode(String platformName) throws SQLException {
-        Optional<AbstractPlatform> platformOpt = AbstractPlatformDao.getInstance().findByCode(platformName);
-        if (platformOpt.isPresent()) {
-            return platformOpt.get();
-        }
-        return null;
+        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(platformName);
+        return platformOptional.isPresent() ? platformOptional.get(): null;
     }
 
-    public ProfileDto findProfileDtoByName(String profileName) throws SQLException {
+    public ProfileDto findProfileDtoByName(String profileName) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             ProfileDtoFactory profileDtoFactory = new ProfileDtoFactory();

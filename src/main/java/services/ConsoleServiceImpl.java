@@ -34,7 +34,7 @@ public class ConsoleServiceImpl implements ConsoleService {
                     } else {
                         System.out.println("\n--> Wrong profile name: " + parameter + ". Can not find in database.\n");
                     }
-                } catch (SQLException e) {
+                } catch (Exception e) {
                     System.out.println(e);
                 }
             }

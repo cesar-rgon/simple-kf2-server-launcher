@@ -19,23 +19,23 @@ import java.util.Optional;
 public class GameTypesEditionFacadeImpl extends AbstractEditionFacade<GameType, GameTypeDto> implements GameTypesEditionFacade {
 
     private final ProfileService profileService;
-
+    private final GameTypeServiceImpl gameTypeService;
     public GameTypesEditionFacadeImpl() {
         super(
                 GameType.class,
-                GameTypeDao.getInstance(),
                 new GameTypeDtoFactory(),
                 new GameTypeServiceImpl()
         );
         this.profileService = new ProfileServiceImpl();
+        this.gameTypeService = new GameTypeServiceImpl();
     }
 
     @Override
-    public GameTypeDto updateChangedDifficultiesEnabled(String code, Boolean newDifficultiesEnabled) throws SQLException {
-        Optional<GameType> gameTypeOpt = GameTypeDao.getInstance().findByCode(code);
+    public GameTypeDto updateChangedDifficultiesEnabled(String code, Boolean newDifficultiesEnabled) throws Exception {
+        Optional<GameType> gameTypeOpt = gameTypeService.findByCode(code);
         if (gameTypeOpt.isPresent()) {
             gameTypeOpt.get().setDifficultyEnabled(newDifficultiesEnabled);
-            if (GameTypeDao.getInstance().update(gameTypeOpt.get())) {
+            if (gameTypeService.updateItem(gameTypeOpt.get())) {
                 return (GameTypeDto) dtoFactory.newDto(gameTypeOpt.get());
             }
         }
@@ -43,11 +43,11 @@ public class GameTypesEditionFacadeImpl extends AbstractEditionFacade<GameType, 
     }
 
     @Override
-    public GameTypeDto updateChangedLengthsEnabled(String code, Boolean newLengthsEnabled) throws SQLException {
-        Optional<GameType> gameTypeOpt = GameTypeDao.getInstance().findByCode(code);
+    public GameTypeDto updateChangedLengthsEnabled(String code, Boolean newLengthsEnabled) throws Exception {
+        Optional<GameType> gameTypeOpt = gameTypeService.findByCode(code);
         if (gameTypeOpt.isPresent()) {
             gameTypeOpt.get().setLengthEnabled(newLengthsEnabled);
-            if (GameTypeDao.getInstance().update(gameTypeOpt.get())) {
+            if (gameTypeService.updateItem(gameTypeOpt.get())) {
                 return (GameTypeDto) dtoFactory.newDto(gameTypeOpt.get());
             }
         }
@@ -55,7 +55,7 @@ public class GameTypesEditionFacadeImpl extends AbstractEditionFacade<GameType, 
     }
 
     @Override
-    public ProfileDto unselectGametypeInProfile(String profileName) throws SQLException {
+    public ProfileDto unselectGametypeInProfile(String profileName) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             profileOpt.get().setGametype(null);

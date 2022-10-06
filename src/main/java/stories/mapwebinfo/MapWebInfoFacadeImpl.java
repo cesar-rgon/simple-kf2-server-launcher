@@ -10,6 +10,7 @@ import entities.AbstractMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Hibernate;
 import pojos.PlatformProfile;
 import pojos.PlatformProfileToDisplayFactory;
 import pojos.enums.EnumPlatform;
@@ -35,6 +36,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
     private final PlatformProfileToDisplayFactory platformProfileToDisplayFactory;
     private final ProfileService profileService;
     private final ProfileDtoFactory profileDtoFactory;
+    private final PlatformService platformService;
 
     public MapWebInfoFacadeImpl() {
         super();
@@ -45,13 +47,14 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         this.platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory();
         this.profileService = new ProfileServiceImpl();
         this.profileDtoFactory = new ProfileDtoFactory();
+        this.platformService = new PlatformServiceImpl();
     }
 
     @Override
     public boolean isCorrectInstallationFolder(String platformName) {
         try {
             if (EnumPlatform.STEAM.name().equals(platformName)) {
-                Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
+                Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();
                 if (!steamPlatformOptional.isPresent()) {
                     return false;
                 }
@@ -64,7 +67,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
             }
 
             if (EnumPlatform.EPIC.name().equals(platformName)) {
-                Optional<EpicPlatform> epicPlatformOptional = EpicPlatformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
+                Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
                 if (!epicPlatformOptional.isPresent()) {
                     return false;
                 }
@@ -87,7 +90,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         List<Profile> profileList = profileNameList.stream().map(pn -> {
             try {
                 return findProfileByCode(pn);
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 String message = "Error finding the profile with name" + pn;
                 errors.append(message + "\n");
                 logger.error(message, e);
@@ -106,15 +109,10 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         List<AbstractPlatform> platformList = platformNameList.stream().map(pn -> {
             String message = "Error finding the platform with name" + pn;
             try {
-                Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(pn);
+                Optional<AbstractPlatform> steamPlatformOptional = platformService.findPlatformByName(pn);
                 if (steamPlatformOptional.isPresent()) {
                     return steamPlatformOptional.get();
                 }
-                Optional<EpicPlatform> epicPlatformOptional = EpicPlatformDao.getInstance().findByCode(pn);
-                if (epicPlatformOptional.isPresent()) {
-                    return epicPlatformOptional.get();
-                }
-
                 errors.append(message + "\n");
                 return null;
 
@@ -178,7 +176,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
 
     @Override
     public CustomMapModDto findMapOrModByIdWorkShop(Long idWorkShop) throws SQLException {
-        Optional<CustomMapMod> mapOpt = CustomMapModDao.getInstance().findByIdWorkShop(idWorkShop);
+        Optional<CustomMapMod> mapOpt = customMapModService.findByIdWorkShop(idWorkShop);
         if (mapOpt.isPresent()) {
             return (CustomMapModDto) mapDtoFactory.newDto(mapOpt.get());
         }
@@ -233,8 +231,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
 
     @Override
     public List<PlatformProfile> getPlatformProfileListWithoutMap(Long idWorkShop) throws SQLException {
-
-        List<AbstractPlatform> fullPlatformList = AbstractPlatformDao.getInstance().listAll();
+        List<AbstractPlatform> fullPlatformList = platformService.listAllPlatforms();
         List<Profile> fullProfileList = profileService.listAllProfiles();
         List<PlatformProfile> platformProfileListWithoutMap = new ArrayList<PlatformProfile>();
 
@@ -243,9 +240,10 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
                 Optional<PlatformProfileMap> platformProfileMapOptional = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(platform, profile).stream().
                         filter(ppm -> {
                             try {
-                                Optional<CustomMapMod> customMapModOptional = CustomMapModDao.getInstance().findByCode(ppm.getMap().getCode());
+                                Optional<AbstractMap> customMapModOptional = customMapModService.findByCode(ppm.getMap().getCode());
                                 if (customMapModOptional.isPresent()) {
-                                    return idWorkShop.equals(customMapModOptional.get().getIdWorkShop());
+                                    CustomMapMod customMap = (CustomMapMod) Hibernate.unproxy(customMapModOptional.get());
+                                    return idWorkShop.equals(customMap.getIdWorkShop());
                                 }
                             } catch (Exception e) {
                                 logger.error(e.getMessage(), e);

@@ -20,6 +20,8 @@ import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import pojos.kf2factory.Kf2Steam;
+import services.PlatformService;
+import services.PlatformServiceImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
@@ -234,7 +236,7 @@ public class InstallUpdateSteamServerController implements Initializable {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
+                Optional<SteamPlatform> steamPlatformOptional = facade.findSteamPlatform();
                 if (steamPlatformOptional.isPresent()) {
                     Kf2Common kf2Common = Kf2Factory.getInstance(steamPlatformOptional.get());
                     if (StringUtils.isNotBlank(installationFolder.getText())) {

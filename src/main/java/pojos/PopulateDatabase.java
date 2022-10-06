@@ -29,7 +29,7 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
     }
 
     @Override
-    protected void populateLanguages() throws SQLException {
+    protected void populateLanguages() throws Exception {
         populateLanguage("en", "English");
         populateLanguage("es", "Español");
         populateLanguage("fr", "Français");
@@ -122,11 +122,11 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
     @Override
     protected void populateProfiles() throws Exception {
 
-        Optional<Language> languageOptional = LanguageDao.getInstance().findByCode("en");
-        Optional<GameType> gametypeOptional = GameTypeDao.getInstance().findByCode("KFGameContent.KFGameInfo_Survival");
-        Optional<Difficulty> difficultyOptional = DifficultyDao.getInstance().findByCode("0");
-        Optional<Length> lengthOptional = LengthDao.getInstance().findByCode("0");
-        Optional<MaxPlayers> maxPlayersOptional = MaxPlayersDao.getInstance().findByCode("6");
+        Optional<Language> languageOptional = languageService.findByCode("en");
+        Optional<GameType> gametypeOptional = gameTypeService.findByCode("KFGameContent.KFGameInfo_Survival");
+        Optional<Difficulty> difficultyOptional = difficultyService.findByCode("0");
+        Optional<Length> lengthOptional = lengthService.findByCode("0");
+        Optional<MaxPlayers> maxPlayersOptional = maxPlayersService.findByCode("6");
 
         if (languageOptional.isPresent() && gametypeOptional.isPresent() && difficultyOptional.isPresent() && lengthOptional.isPresent() && maxPlayersOptional.isPresent()) {
             populateProfile(
@@ -185,12 +185,12 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
         populatePlatform(EnumPlatform.EPIC);
     }
 
-    private void setDefaultMapInProfile() throws SQLException {
+    private void setDefaultMapInProfile() throws Exception {
         Optional<Profile> profileOptional = ProfileDao.getInstance().findByCode("Default");
         if (!profileOptional.isPresent()) {
             throw new RuntimeException("The profile 'Default' has not been found");
         }
-        Optional<OfficialMap> officialMapOptional = OfficialMapDao.getInstance().findByCode("KF-BurningParis");
+        Optional<AbstractMap> officialMapOptional = officialMapService.findByCode("KF-BurningParis");
         if (!officialMapOptional.isPresent()) {
             throw new RuntimeException("The official map 'KF-BurningParis' has not been found");
         }

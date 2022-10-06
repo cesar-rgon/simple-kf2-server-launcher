@@ -17,6 +17,21 @@ public class PlatformProfileMapServiceImpl implements PlatformProfileMapService 
     }
 
     @Override
+    public boolean updateItem(PlatformProfileMap platformProfileMap) throws Exception {
+        return PlatformProfileMapDao.getInstance().update(platformProfileMap);
+    }
+
+    @Override
+    public List<PlatformProfileMap> listAll() throws Exception {
+        return PlatformProfileMapDao.getInstance().listPlatformProfileMaps();
+    }
+
+    @Override
+    public Optional<PlatformProfileMap> findByCode(String code) throws Exception {
+        return Optional.empty();
+    }
+
+    @Override
     public boolean deleteItem(PlatformProfileMap entity) throws Exception {
         return PlatformProfileMapDao.getInstance().remove(entity);
     }

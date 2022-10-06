@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.enums.EnumPlatform;
+import services.PlatformService;
+import services.PlatformServiceImpl;
 import utils.Utils;
 
 import java.io.File;
@@ -16,11 +18,14 @@ import java.util.Optional;
 public abstract class Kf2Steam extends Kf2AbstractCommon {
 
     private static final Logger logger = LogManager.getLogger(Kf2Steam.class);
+    private final PlatformService platformService;
 
     protected Kf2Steam() {
         super();
+        this.platformService = new PlatformServiceImpl();
+
         try {
-            Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
+            Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();;
             this.platform = steamPlatformOptional.isPresent() ? steamPlatformOptional.get() : null;
         } catch (SQLException e) {
             logger.error(e.getMessage(), e);

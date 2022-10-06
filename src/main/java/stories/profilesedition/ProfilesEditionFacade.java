@@ -16,7 +16,7 @@ public interface ProfilesEditionFacade {
     ObservableList<ProfileDto> listAllProfiles() throws SQLException;
     ProfileDto createNewProfile(String platformName, String profileName) throws Exception;
     boolean deleteSelectedProfile(String profileName, String steamInstallationFolder, String epicInstallationFolder) throws Exception;
-    ProfileDto updateChangedProfile(String oldProfileName, String newProfileName) throws SQLException;
+    ProfileDto updateChangedProfile(String oldProfileName, String newProfileName) throws Exception;
     String findConfigPropertyValue(String key) throws Exception;
     ProfileDto cloneSelectedProfile(String profileName, String newProfileName) throws Exception;
     void exportProfilesToFile(List<PlatformProfileToDisplay> profilesToExportDto, File file) throws Exception;

@@ -515,7 +515,7 @@ public class MapsEditionController implements Initializable {
                         try {
                             Session.getInstance().setConsole((StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
                                     "< " + new Date() + " - Run Server >\n" + facade.runServer(platformProfileMapDto.getPlatformDto().getKey(), profileSelect.getValue().getName()));
-                        } catch (SQLException ex) {
+                        } catch (Exception ex) {
                             logger.error(ex.getMessage(), ex);
                             Utils.errorDialog(ex.getMessage(), ex);
                         }

@@ -44,6 +44,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     private final PlatformProfileMapService platformProfileMapService;
     private final PlatformDtoFactory platformDtoFactory;
     private final CustomMapModServiceImpl customMapService;
+    private final PlatformService platformService;
 
     public MapsEditionFacadeImpl() {
         super();
@@ -58,6 +59,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         this.platformProfileMapService = new PlatformProfileMapServiceImpl();
         this.platformDtoFactory = new PlatformDtoFactory();
         this.customMapService = new CustomMapModServiceImpl();
+        this.platformService = new PlatformServiceImpl();
     }
 
     private CustomMapMod createNewCustomMap(List<AbstractPlatform> platformList, String mapName, Long idWorkShop, String urlPhoto, List<Profile> profileList, StringBuffer success, StringBuffer errors) throws Exception {
@@ -103,7 +105,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         List<Profile> profileList = profileNameList.stream().map(pn -> {
             try {
                 return findProfileByCode(pn);
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 logger.error("Error finding a profile by name " + pn, e);
                 return null;
             }
@@ -139,7 +141,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         List<Profile> profileList = profileNameList.stream().map(pn -> {
             try {
                 return findProfileByCode(pn);
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 logger.error("Error finding a profile by name " + pn, e);
                 return null;
             }
@@ -150,7 +152,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         List<AbstractPlatform> platformList = platformNameList.stream().map(pn -> {
             try {
                 return findPlatformByCode(pn);
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 logger.error("Error finding a platform by name " + pn, e);
                 return null;
             }
@@ -187,7 +189,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     public boolean isCorrectInstallationFolder(String platformName) {
         try {
             if (EnumPlatform.STEAM.name().equals(platformName)) {
-                Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
+                Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();
                 if (!steamPlatformOptional.isPresent()) {
                     return false;
                 }
@@ -200,7 +202,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
             }
 
             if (EnumPlatform.EPIC.name().equals(platformName)) {
-                Optional<EpicPlatform> epicPlatformOptional = EpicPlatformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
+                Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
                 if (!epicPlatformOptional.isPresent()) {
                     return false;
                 }
@@ -225,7 +227,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         List<Profile> profileList = profileNameList.stream().map(pn -> {
             try {
                 return findProfileByCode(pn);
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 logger.error("Error finding a profile by name " + pn, e);
                 return null;
             }
@@ -234,7 +236,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         List<AbstractPlatform> platformList = platformNameList.stream().map(pn -> {
             try {
                 return findPlatformByCode(pn);
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 logger.error("Error finding a platform by name " + pn, e);
                 return null;
             }
@@ -294,7 +296,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     }
 
     @Override
-    public Optional<AbstractMap> findMapByName(String mapName) throws SQLException {
+    public Optional<AbstractMap> findMapByName(String mapName) throws Exception {
         Optional<AbstractMap> officialMapOptional = officialMapService.findMapByCode(mapName);
         if (officialMapOptional.isPresent()) {
             return officialMapOptional;
@@ -304,7 +306,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     }
 
     @Override
-    public void unselectProfileMap(String profileName) throws SQLException {
+    public void unselectProfileMap(String profileName) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             profileOpt.get().setMap(null);
@@ -323,7 +325,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
 
     public List<PlatformProfileToDisplay> selectProfilesToImport(List<Profile> allProfiles, String defaultSelectedProfileName) throws Exception {
-        List<AbstractPlatform> allPlatformList = AbstractPlatformDao.getInstance().listAll();
+        List<AbstractPlatform> allPlatformList = platformService.listAllPlatforms();
         List<Profile> allProfileList = profileService.listAllProfiles();
         List<PlatformProfile> platformProfileList = new ArrayList<PlatformProfile>();
         for (Profile profile: allProfileList) {
@@ -339,8 +341,8 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     }
 
     @Override
-    public String runServer(String platformName, String profileName) throws SQLException {
-        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
+    public String runServer(String platformName, String profileName) throws Exception {
+        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(profileName);
         if (!platformOptional.isPresent()) {
             throw new RuntimeException("The platform can not be found!");
         }
@@ -354,7 +356,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         Profile profile = null;
         try {
             profile = findProfileByCode(profileName);
-        } catch (SQLException e) {
+        } catch (Exception e) {
             String message = "Error finding the profile with name" + profileName;
             errors.append(message + "\n");
             logger.error(message, e);
@@ -372,15 +374,10 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         List<AbstractPlatform> platformList = platformNameList.stream().map(pn -> {
             String message = "Error finding the platform with name" + pn;
             try {
-                Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(pn);
-                if (steamPlatformOptional.isPresent()) {
-                    return steamPlatformOptional.get();
+                Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(pn);
+                if (platformOptional.isPresent()) {
+                    return platformOptional.get();
                 }
-                Optional<EpicPlatform> epicPlatformOptional = EpicPlatformDao.getInstance().findByCode(pn);
-                if (epicPlatformOptional.isPresent()) {
-                    return epicPlatformOptional.get();
-                }
-
                 errors.append(message + "\n");
                 return null;
 
@@ -400,8 +397,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     }
 
     private List<PlatformProfile> getPlatformProfileListWithoutMap(Long idWorkShop) throws SQLException {
-
-        List<AbstractPlatform> fullPlatformList = AbstractPlatformDao.getInstance().listAll();
+        List<AbstractPlatform> fullPlatformList = platformService.listAllPlatforms();
         List<Profile> fullProfileList = profileService.listAllProfiles();
         List<PlatformProfile> platformProfileListWithoutMap = new ArrayList<PlatformProfile>();
 
@@ -410,9 +406,10 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
                 Optional<PlatformProfileMap> platformProfileMapOptional = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(platform, profile).stream().
                         filter(ppm -> {
                             try {
-                                Optional<CustomMapMod> customMapModOptional = CustomMapModDao.getInstance().findByCode(ppm.getMap().getCode());
+                                Optional<AbstractMap> customMapModOptional = customMapService.findMapByCode(ppm.getMap().getCode());
                                 if (customMapModOptional.isPresent()) {
-                                    return idWorkShop.equals(customMapModOptional.get().getIdWorkShop());
+                                    CustomMapMod customMap = (CustomMapMod) Hibernate.unproxy(customMapModOptional.get());
+                                    return idWorkShop.equals(customMap.getIdWorkShop());
                                 }
                             } catch (Exception e) {
                                 logger.error(e.getMessage(), e);
@@ -453,7 +450,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
                     String mapName = result[0];
                     String strUrlMapImage = result[1];
 
-                    Optional<CustomMapMod> mapModInDataBase = CustomMapModDao.getInstance().findByIdWorkShop(idWorkShop);
+                    Optional<CustomMapMod> mapModInDataBase = customMapService.findByIdWorkShop(idWorkShop);
                     if (!mapModInDataBase.isPresent()) {
                         // The map is not in dabatabase, create a new map for actual profile
                         List<String> profileNameList = new ArrayList<String>();
@@ -506,8 +503,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
     @Override
     public PlatformProfileMapToImport importCustomMapModFromServer(PlatformProfileMapToImport ppmToImport, String selectedProfileName) throws Exception {
-
-        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(ppmToImport.getPlatformName());
+        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(ppmToImport.getPlatformName());
         if (!platformOptional.isPresent()) {
             String message = "No platform was found: " + ppmToImport.getPlatformName();
             throw new RuntimeException(message);
@@ -563,8 +559,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
     @Override
     public PlatformProfileMapToImport importOfficialMapFromServer(PlatformProfileMapToImport ppmToImport, String selectedProfileName) throws Exception {
-
-        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(ppmToImport.getPlatformName());
+        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(ppmToImport.getPlatformName());
         if (!platformOptional.isPresent()) {
             String message = "No platform was found: " + ppmToImport.getPlatformName();
             throw new RuntimeException(message);
@@ -630,8 +625,8 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     }
 
     @Override
-    public List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws SQLException {
-        Optional<AbstractPlatform> platformOpt = AbstractPlatformDao.getInstance().findByCode(platformName);
+    public List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws Exception {
+        Optional<AbstractPlatform> platformOpt = platformService.findPlatformByName(platformName);
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (!platformOpt.isPresent() || !profileOpt.isPresent()) {
             return new ArrayList<PlatformProfileMapDto>();
@@ -645,11 +640,11 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     @Override
     public List<PlatformDto> listAllPlatforms() throws SQLException {
         List<AbstractPlatform> allPlatforms = new ArrayList<AbstractPlatform>();
-        Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
+        Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();
         if (steamPlatformOptional.isPresent()) {
             allPlatforms.add(steamPlatformOptional.get());
         }
-        Optional<EpicPlatform> epicPlatformOptional = EpicPlatformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
+        Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
         if (epicPlatformOptional.isPresent()) {
             allPlatforms.add(epicPlatformOptional.get());
         }
@@ -680,7 +675,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         return null;
     }
 
-    public AbstractMapDto getOfficialMapByName(String mapName) throws SQLException {
+    public AbstractMapDto getOfficialMapByName(String mapName) throws Exception {
         Optional<AbstractMap> mapOptional = officialMapService.findMapByCode(mapName);
         if (mapOptional.isPresent()) {
             return mapDtoFactory.newDto(mapOptional.get());
@@ -717,7 +712,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
     @Override
     public Kf2Common getKf2Common(String platformName) throws Exception {
-        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
+        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(platformName);
         if (!platformOptional.isPresent()) {
             throw new RuntimeException("The platform can not be found!");
         }

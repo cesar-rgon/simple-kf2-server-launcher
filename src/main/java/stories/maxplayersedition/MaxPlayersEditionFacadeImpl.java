@@ -23,7 +23,6 @@ public class MaxPlayersEditionFacadeImpl extends AbstractEditionFacade<MaxPlayer
     public MaxPlayersEditionFacadeImpl() {
         super(
                 MaxPlayers.class,
-                MaxPlayersDao.getInstance(),
                 new MaxPlayersDtoFactory(),
                 new MaxPlayersServiceImpl()
         );
@@ -31,7 +30,7 @@ public class MaxPlayersEditionFacadeImpl extends AbstractEditionFacade<MaxPlayer
     }
 
     @Override
-    public ProfileDto unselectMaxPlayersInProfile(String profileName) throws SQLException {
+    public ProfileDto unselectMaxPlayersInProfile(String profileName) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             profileOpt.get().setMaxPlayers(null);

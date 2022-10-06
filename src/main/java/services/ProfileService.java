@@ -12,15 +12,15 @@ import java.util.Properties;
 
 public interface ProfileService extends AbstractExtendedService<Profile> {
 
-    Optional<Profile> findProfileByCode(String profileName) throws SQLException;
+    Optional<Profile> findProfileByCode(String profileName) throws Exception;
     List<Profile> listAllProfiles() throws SQLException;
     public boolean deleteProfile(Profile profile, String steamInstallationFolder, String epicInstallationFolder) throws Exception;
     Profile cloneProfile(Profile profileToBeCloned, String newProfileName) throws Exception;
     void exportProfilesToFile(List<Profile> profilesToExport, File file) throws Exception;
-    void importGameTypesFromFile(Properties properties, List<Language> languageList) throws SQLException;
-    void importDifficultiesFromFile(Properties properties, List<Language> languageList) throws SQLException;
-    void importLengthsFromFile(Properties properties, List<Language> languageList) throws SQLException;
-    void importMaxPlayersFromFile(Properties properties, List<Language> languageList) throws SQLException;
+    void importGameTypesFromFile(Properties properties, List<Language> languageList) throws Exception;
+    void importDifficultiesFromFile(Properties properties, List<Language> languageList) throws Exception;
+    void importLengthsFromFile(Properties properties, List<Language> languageList) throws Exception;
+    void importMaxPlayersFromFile(Properties properties, List<Language> languageList) throws Exception;
     List<Profile> selectProfilesToBeImported(Properties properties, String message) throws Exception;
     List<Profile> importProfilesFromFile(AbstractPlatform platform, List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage);
 }

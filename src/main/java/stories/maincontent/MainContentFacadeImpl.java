@@ -11,7 +11,6 @@ import pojos.PlatformProfileToDisplay;
 import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
-import pojos.kf2factory.Kf2Steam;
 import services.*;
 import stories.AbstractFacade;
 import utils.Utils;
@@ -34,6 +33,14 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     private final PlatformProfileMapDtoFactory platformProfileMapDtoFactory;
     private final PlatformProfileMapService platformProfileMapService;
     private final PlatformDtoFactory platformDtoFactory;
+    private final PlatformService platformService;
+    private final AbstractMapService officialMapService;
+    private final AbstractMapService customMapService;
+    private final DifficultyServiceImpl difficultyService;
+    private final GameTypeServiceImpl gameTypeService;
+    private final LanguageServiceImpl languageService;
+    private final LengthServiceImpl lengthService;
+    private final MaxPlayersServiceImpl maxPlayersService;
 
     public MainContentFacadeImpl() {
         super();
@@ -47,6 +54,14 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         platformProfileMapDtoFactory = new PlatformProfileMapDtoFactory();
         platformProfileMapService = new PlatformProfileMapServiceImpl();
         platformDtoFactory = new PlatformDtoFactory();
+        platformService = new PlatformServiceImpl();
+        officialMapService = new OfficialMapServiceImpl();
+        customMapService = new CustomMapModServiceImpl();
+        difficultyService = new DifficultyServiceImpl();
+        gameTypeService = new GameTypeServiceImpl();
+        languageService = new LanguageServiceImpl();
+        lengthService = new LengthServiceImpl();
+        maxPlayersService = new MaxPlayersServiceImpl();
     }
 
     @Override
@@ -56,38 +71,39 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public ObservableList<SelectDto> listAllLanguages() throws SQLException {
-        List<Language> languages = LanguageDao.getInstance().listAll();
+    public ObservableList<SelectDto> listAllLanguages() throws Exception {
+        List<Language> languages = languageService.listAll();
         return languageDtoFactory.newDtos(languages);
     }
 
     @Override
-    public ObservableList<GameTypeDto> listAllGameTypes() throws SQLException {
-        List<GameType> gameTypes = GameTypeDao.getInstance().listAll();
+    public ObservableList<GameTypeDto> listAllGameTypes() throws Exception {
+        List<GameType> gameTypes = gameTypeService.listAll();
         return gameTypeDtoFactory.newDtos(gameTypes);
     }
 
     @Override
-    public ObservableList<SelectDto> listAllDifficulties() throws SQLException {
-        List<Difficulty> difficulties = DifficultyDao.getInstance().listAll();
+    public ObservableList<SelectDto> listAllDifficulties() throws Exception {
+        List<Difficulty> difficulties = difficultyService.listAll();
         return difficultyDtoFactory.newDtos(difficulties);
     }
 
     @Override
-    public ObservableList<SelectDto> listAllLengths() throws SQLException {
-        List<Length> lengths = LengthDao.getInstance().listAll();
+    public ObservableList<SelectDto> listAllLengths() throws Exception {
+        List<Length> lengths = lengthService.listAll();
         return lengthDtoFactory.newDtos(lengths);
     }
 
     @Override
-    public ObservableList<SelectDto> listAllPlayers() throws SQLException {
-        List<MaxPlayers> playerList = MaxPlayersDao.getInstance().listAll();
+    public ObservableList<SelectDto> listAllPlayers() throws Exception {
+        List<MaxPlayers> playerList = maxPlayersService.listAll();
         return maxPlayersDtoFactory.newDtos(playerList);
     }
 
     public ObservableList<PlatformDto> listAllPlatforms() throws SQLException {
-        Optional<SteamPlatform> steamPlatformOptional = SteamPlatformDao.getInstance().findByCode(EnumPlatform.STEAM.name());
-        Optional<EpicPlatform> epicPlatformOptional = EpicPlatformDao.getInstance().findByCode(EnumPlatform.EPIC.name());
+
+        Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();
+        Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
 
         List<AbstractPlatform> platformList = new ArrayList<AbstractPlatform>();
         if (steamPlatformOptional.isPresent()) {
@@ -101,11 +117,11 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetGameType(String profileName, String gameTypeCode) throws SQLException {
+    public boolean updateProfileSetGameType(String profileName, String gameTypeCode) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
-            Optional<GameType> gameTypeOpt = GameTypeDao.getInstance().findByCode(gameTypeCode);
+            Optional<GameType> gameTypeOpt = gameTypeService.findByCode(gameTypeCode);
             if (gameTypeOpt.isPresent()) {
                 profile.setGametype(gameTypeOpt.get());
                 return ProfileDao.getInstance().update(profile);
@@ -115,13 +131,13 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetMap(String profileName, String mapCode, boolean isOfficial) throws SQLException {
+    public boolean updateProfileSetMap(String profileName, String mapCode, boolean isOfficial) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         Optional mapOptionaL;
         if (isOfficial) {
-            mapOptionaL = OfficialMapDao.getInstance().findByCode(mapCode);
+            mapOptionaL = officialMapService.findByCode(mapCode);
         } else {
-            mapOptionaL = CustomMapModDao.getInstance().findByCode(mapCode);
+            mapOptionaL = customMapService.findByCode(mapCode);
         }
 
         if (profileOpt.isPresent() && mapOptionaL.isPresent()) {
@@ -132,11 +148,11 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetDifficulty(String profileName, String difficultyCode) throws SQLException {
+    public boolean updateProfileSetDifficulty(String profileName, String difficultyCode) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
-            Optional<Difficulty> difficultyOpt = DifficultyDao.getInstance().findByCode(difficultyCode);
+            Optional<Difficulty> difficultyOpt = difficultyService.findByCode(difficultyCode);
             if (difficultyOpt.isPresent()) {
                 profile.setDifficulty(difficultyOpt.get());
                 return ProfileDao.getInstance().update(profile);
@@ -146,11 +162,11 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetLength(String profileName, String lengthCode) throws SQLException {
+    public boolean updateProfileSetLength(String profileName, String lengthCode) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
-            Optional<Length> lengthOpt = LengthDao.getInstance().findByCode(lengthCode);
+            Optional<Length> lengthOpt = lengthService.findByCode(lengthCode);
             if (lengthOpt.isPresent()) {
                 profile.setLength(lengthOpt.get());
                 return ProfileDao.getInstance().update(profile);
@@ -160,11 +176,11 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetMaxPlayers(String profileName, String maxPlayersCode) throws SQLException {
+    public boolean updateProfileSetMaxPlayers(String profileName, String maxPlayersCode) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
-            Optional<MaxPlayers> maxPlayersOpt = MaxPlayersDao.getInstance().findByCode(maxPlayersCode);
+            Optional<MaxPlayers> maxPlayersOpt = maxPlayersService.findByCode(maxPlayersCode);
             if (maxPlayersOpt.isPresent()) {
                 profile.setMaxPlayers(maxPlayersOpt.get());
                 return ProfileDao.getInstance().update(profile);
@@ -174,11 +190,11 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetLanguage(String profileName, String languageCode) throws SQLException {
+    public boolean updateProfileSetLanguage(String profileName, String languageCode) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
-            Optional<Language> languageOpt = LanguageDao.getInstance().findByCode(languageCode);
+            Optional<Language> languageOpt = languageService.findByCode(languageCode);
             if (languageOpt.isPresent()) {
                 profile.setLanguage(languageOpt.get());
                 return ProfileDao.getInstance().update(profile);
@@ -188,7 +204,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetServerName(String profileName, String serverName) throws SQLException {
+    public boolean updateProfileSetServerName(String profileName, String serverName) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -221,7 +237,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetWebPort(String profileName, Integer webPort) throws SQLException {
+    public boolean updateProfileSetWebPort(String profileName, Integer webPort) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -232,7 +248,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetGamePort(String profileName, Integer gamePort) throws SQLException {
+    public boolean updateProfileSetGamePort(String profileName, Integer gamePort) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -243,7 +259,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetQueryPort(String profileName, Integer queryPort) throws SQLException {
+    public boolean updateProfileSetQueryPort(String profileName, Integer queryPort) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -254,7 +270,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetYourClan(String profileName, String yourClan) throws SQLException {
+    public boolean updateProfileSetYourClan(String profileName, String yourClan) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -265,7 +281,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetYourWebLink(String profileName, String yourWebLink) throws SQLException {
+    public boolean updateProfileSetYourWebLink(String profileName, String yourWebLink) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -276,7 +292,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetUrlImageServer(String profileName, String urlImageServer) throws SQLException {
+    public boolean updateProfileSetUrlImageServer(String profileName, String urlImageServer) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -287,7 +303,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetWelcomeMessage(String profileName, String welcomeMessage) throws SQLException {
+    public boolean updateProfileSetWelcomeMessage(String profileName, String welcomeMessage) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -298,7 +314,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetCustomParameters(String profileName, String customParameters) throws SQLException {
+    public boolean updateProfileSetCustomParameters(String profileName, String customParameters) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -309,7 +325,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetWebPage(String profileName, boolean isSelected) throws SQLException {
+    public boolean updateProfileSetWebPage(String profileName, boolean isSelected) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -320,9 +336,9 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public String runServer(String platformName, String profileName) throws SQLException {
+    public String runServer(String platformName, String profileName) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
+        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(platformName);
         if (!platformOptional.isPresent()) {
             Utils.warningDialog("Run operation aborted!", "The platform can not be found");
             return StringUtils.EMPTY;
@@ -332,9 +348,9 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public String joinServer(String platformName, String profileName) throws SQLException {
+    public String joinServer(String platformName, String profileName) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
+        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(platformName);
         if (!platformOptional.isPresent()) {
             Utils.warningDialog("Join operation aborted!", "The platform can not be found");
             return StringUtils.EMPTY;
@@ -367,7 +383,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public List<String> selectProfiles(String message, String actualProfileName) throws SQLException {
-        List<AbstractPlatform> allPlatformList = AbstractPlatformDao.getInstance().listAll();
+        List<AbstractPlatform> allPlatformList = platformService.listAllPlatforms();
         List<Profile> allProfileList = profileService.listAllProfiles();
         List<PlatformProfile> platformProfileList = new ArrayList<PlatformProfile>();
         for (Profile profile: allProfileList) {
@@ -386,8 +402,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public String selectProfile(String message, String actualProfileName) throws SQLException {
-
-        List<AbstractPlatform> allPlatformList = AbstractPlatformDao.getInstance().listAll();
+        List<AbstractPlatform> allPlatformList = platformService.listAllPlatforms();
         List<Profile> allProfileList = profileService.listAllProfiles();
         List<PlatformProfile> platformProfileList = new ArrayList<PlatformProfile>();
         for (Profile profile: allProfileList) {
@@ -406,7 +421,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public boolean isCorrectInstallationFolder(String platformName) throws SQLException {
-        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
+        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(platformName);
         if (!platformOptional.isPresent()) {
             Utils.warningDialog("Operation aborted!", "The platform can not be found");
             return false;
@@ -416,7 +431,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetTakeover(String profileName, boolean isSelected) throws SQLException {
+    public boolean updateProfileSetTakeover(String profileName, boolean isSelected) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -427,7 +442,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetMapVoting(String profileName, boolean isSelected) throws SQLException {
+    public boolean updateProfileSetMapVoting(String profileName, boolean isSelected) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -438,7 +453,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetKickVoting(String profileName, boolean isSelected) throws SQLException {
+    public boolean updateProfileSetKickVoting(String profileName, boolean isSelected) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -449,7 +464,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetPublicTextChat(String profileName, boolean isSelected) throws SQLException {
+    public boolean updateProfileSetPublicTextChat(String profileName, boolean isSelected) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -460,7 +475,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetSpectatorsChat(String profileName, boolean isSelected) throws SQLException {
+    public boolean updateProfileSetSpectatorsChat(String profileName, boolean isSelected) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -471,7 +486,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetVoip(String profileName, boolean isSelected) throws SQLException {
+    public boolean updateProfileSetVoip(String profileName, boolean isSelected) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -482,7 +497,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetTeamCollision(String profileName, boolean isSelected) throws SQLException {
+    public boolean updateProfileSetTeamCollision(String profileName, boolean isSelected) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -493,7 +508,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetAdminCanPause(String profileName, boolean isSelected) throws SQLException {
+    public boolean updateProfileSetAdminCanPause(String profileName, boolean isSelected) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -504,7 +519,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetAnnounceAdminLogin(String profileName, boolean isSelected) throws SQLException {
+    public boolean updateProfileSetAnnounceAdminLogin(String profileName, boolean isSelected) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -515,7 +530,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetChatLogging(String profileName, boolean isSelected) throws SQLException {
+    public boolean updateProfileSetChatLogging(String profileName, boolean isSelected) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -556,7 +571,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetChatLoggingFile(String profileName, String chatLoggingFile) throws SQLException {
+    public boolean updateProfileSetChatLoggingFile(String profileName, String chatLoggingFile) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -567,7 +582,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetChatLoggingFileTimestamp(String profileName, boolean isSelected) throws SQLException {
+    public boolean updateProfileSetChatLoggingFileTimestamp(String profileName, boolean isSelected) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -608,7 +623,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetDeadPlayersCanTalk(String profileName, boolean isSelected) throws SQLException {
+    public boolean updateProfileSetDeadPlayersCanTalk(String profileName, boolean isSelected) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -664,7 +679,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetMapObjetives(String profileName, boolean isSelected) throws SQLException {
+    public boolean updateProfileSetMapObjetives(String profileName, boolean isSelected) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -675,7 +690,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public boolean updateProfileSetPickupItems(String profileName, boolean isSelected) throws SQLException {
+    public boolean updateProfileSetPickupItems(String profileName, boolean isSelected) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -701,8 +716,8 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
     }
 
     @Override
-    public List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws SQLException {
-        Optional<AbstractPlatform> platformOpt = AbstractPlatformDao.getInstance().findByCode(platformName);
+    public List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws Exception {
+        Optional<AbstractPlatform> platformOpt = platformService.findPlatformByName(platformName);
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (platformOpt.isPresent() && profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
@@ -714,7 +729,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public void runExecutableFile(String platformName) throws SQLException {
-        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(platformName);
+        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(platformName);
         if (!platformOptional.isPresent()) {
             Utils.warningDialog("Run operation aborted!", "The platform can not be found");
             return;
@@ -725,7 +740,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
     @Override
     public PlatformDto getPlatform(EnumPlatform enumPlatform) throws SQLException {
-        Optional<AbstractPlatform> platformOptional = AbstractPlatformDao.getInstance().findByCode(enumPlatform.name());
+        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(enumPlatform.name());
         return platformOptional.isPresent() ? platformDtoFactory.newSteamDto(platformOptional.get()): null;
     }
 }

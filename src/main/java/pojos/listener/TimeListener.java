@@ -36,7 +36,7 @@ public class TimeListener extends TimerTask {
     public void run() {
         logger.info("Starting the process of checking downloaded custom maps and mods.");
         try {
-            List<Integer> customIdMapList = CustomMapModDao.getInstance().listAll().stream().map(CustomMapMod::getId).collect(Collectors.toList());
+            List<Integer> customIdMapList = customMapModService.listAllMaps().stream().map(AbstractMap::getId).collect(Collectors.toList());
             List<PlatformProfileMap> platformProfileCustomMapList = PlatformProfileMapDao.getInstance().listPlatformProfileMaps().stream().
                     filter(ppm -> customIdMapList.contains(ppm.getMap().getId())).
                     collect(Collectors.toList());
@@ -57,7 +57,7 @@ public class TimeListener extends TimerTask {
                             String[] array = filenameWithExtension.split("\\.");
                             String filenameWithoutExtension = array[0];
                             customMap.setCode(filenameWithoutExtension);
-                            CustomMapModDao.getInstance().update(customMap);
+                            customMapModService.updateItem(customMap);
                             ppm.setDownloaded(true);
                             PlatformProfileMapDao.getInstance().update(ppm);
                         } else {

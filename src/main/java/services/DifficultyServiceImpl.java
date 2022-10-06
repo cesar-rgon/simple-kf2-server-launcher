@@ -3,6 +3,9 @@ package services;
 import daos.DifficultyDao;
 import entities.Difficulty;
 
+import java.util.List;
+import java.util.Optional;
+
 public class DifficultyServiceImpl implements AbstractExtendedService<Difficulty> {
 
     private PropertyService propertyService;
@@ -18,6 +21,21 @@ public class DifficultyServiceImpl implements AbstractExtendedService<Difficulty
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
         propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.difficulty." + difficulty.getCode(), difficulty.getDescription());
         return DifficultyDao.getInstance().insert(difficulty);
+    }
+
+    @Override
+    public boolean updateItem(Difficulty difficulty) throws Exception {
+        return DifficultyDao.getInstance().update(difficulty);
+    }
+
+    @Override
+    public List<Difficulty> listAll() throws Exception {
+        return DifficultyDao.getInstance().listAll();
+    }
+
+    @Override
+    public Optional<Difficulty> findByCode(String code) throws Exception {
+        return DifficultyDao.getInstance().findByCode(code);
     }
 
 
