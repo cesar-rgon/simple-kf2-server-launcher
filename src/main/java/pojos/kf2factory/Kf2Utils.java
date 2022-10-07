@@ -35,12 +35,14 @@ public class Kf2Utils {
     protected boolean byConsole;
     private final AbstractMapService customMapService;
     private final AbstractMapService officialMapService;
+    private final PlatformProfileMapService platformProfileMapService;
 
     protected Kf2Utils() {
         super();
         propertyService = new PropertyServiceImpl();
         customMapService = new CustomMapModServiceImpl();
         officialMapService = new OfficialMapServiceImpl();
+        platformProfileMapService = new PlatformProfileMapServiceImpl();
         byConsole = false;
         try {
             languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
@@ -224,7 +226,7 @@ public class Kf2Utils {
             }
 
             List<AbstractMap> allCustomMapModList = customMapService.listAllMaps();
-            List<AbstractMap> customMapsMods = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profile).stream().
+            List<AbstractMap> customMapsMods = platformProfileMapService.listPlatformProfileMaps(profile).stream().
                     filter(ppm -> allCustomMapModList.contains(ppm.getMap())).
                     map(PlatformProfileMap::getMap).
                     collect(Collectors.toList());
@@ -264,7 +266,7 @@ public class Kf2Utils {
                     String[] array = line.split(" ");
                     String mapName = array[0].replace("[", "");
 
-                    Optional<AbstractMap> map = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profile).stream().
+                    Optional<AbstractMap> map = platformProfileMapService.listPlatformProfileMaps(profile).stream().
                             map(PlatformProfileMap::getMap).
                             filter(m -> m.getCode().equals(mapName)).
                             findFirst();
@@ -292,7 +294,7 @@ public class Kf2Utils {
                 }
             }
 
-            List<AbstractMap> customMaps = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profile).stream().
+            List<AbstractMap> customMaps = platformProfileMapService.listPlatformProfileMaps(profile).stream().
                     map(PlatformProfileMap::getMap).
                     filter(m -> {
                         try {
@@ -364,7 +366,7 @@ public class Kf2Utils {
         if (line.contains("GameMapCycles=(Maps=(")) {
 
             try {
-                List<PlatformProfileMap> platformProfileMapListForProfile = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profile);
+                List<PlatformProfileMap> platformProfileMapListForProfile = platformProfileMapService.listPlatformProfileMaps(profile);
                 if (platformProfileMapListForProfile != null && !platformProfileMapListForProfile.isEmpty()) {
 
                     List<AbstractMap> officialMaps = platformProfileMapListForProfile.stream().

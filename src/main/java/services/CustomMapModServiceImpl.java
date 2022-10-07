@@ -13,8 +13,11 @@ import java.util.stream.Collectors;
 
 public class CustomMapModServiceImpl extends AbstractMapService {
 
+    private final PlatformProfileMapService platformProfileMapService;
+
     public CustomMapModServiceImpl() {
         super();
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
     }
 
     @Override
@@ -49,7 +52,7 @@ public class CustomMapModServiceImpl extends AbstractMapService {
     public CustomMapMod deleteMap(AbstractPlatform platform, CustomMapMod map, Profile profile) throws Exception {
         super.deleteMap(platform, map, profile);
 
-        List<PlatformProfileMap> ppmListForMap = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(map);
+        List<PlatformProfileMap> ppmListForMap = platformProfileMapService.listPlatformProfileMaps(map);
 
         List<PlatformProfileMap> ppmListForPlatformMap = ppmListForMap.stream().filter(ppm -> ppm.getPlatform().equals(platform)).collect(Collectors.toList());
         if (ppmListForPlatformMap.isEmpty()) {

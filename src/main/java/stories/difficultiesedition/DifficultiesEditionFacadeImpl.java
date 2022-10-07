@@ -35,7 +35,7 @@ public class DifficultiesEditionFacadeImpl extends AbstractEditionFacade<Difficu
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             profileOpt.get().setDifficulty(null);
-            ProfileDao.getInstance().update(profileOpt.get());
+            profileService.updateItem(profileOpt.get());
             ProfileDtoFactory profileDtoFactory = new ProfileDtoFactory();
             return profileDtoFactory.newDto(profileOpt.get());
         }

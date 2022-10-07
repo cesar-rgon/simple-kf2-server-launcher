@@ -59,7 +59,7 @@ public class GameTypesEditionFacadeImpl extends AbstractEditionFacade<GameType, 
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             profileOpt.get().setGametype(null);
-            ProfileDao.getInstance().update(profileOpt.get());
+            profileService.updateItem(profileOpt.get());
             ProfileDtoFactory profileDtoFactory = new ProfileDtoFactory();
             return profileDtoFactory.newDto(profileOpt.get());
         }

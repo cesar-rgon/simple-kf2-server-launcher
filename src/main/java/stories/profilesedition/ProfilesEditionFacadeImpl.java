@@ -156,7 +156,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
         Optional<Profile> profileOpt = profileService.findProfileByCode(oldProfileName);
         if (profileOpt.isPresent()) {
             profileOpt.get().setCode(newProfileName);
-            if (ProfileDao.getInstance().update(profileOpt.get())) {
+            if (profileService.updateItem(profileOpt.get())) {
                 return profileDtoFactory.newDto(profileOpt.get());
             }
         }

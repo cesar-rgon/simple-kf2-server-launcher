@@ -20,6 +20,8 @@ public abstract class AbstractPopulateDatabase {
     protected final LengthServiceImpl lengthService;
     protected final MaxPlayersServiceImpl maxPlayersService;
     protected final AbstractMapService officialMapService;
+    protected final PlatformProfileMapService platformProfileMapService;
+    protected final ProfileService profileService;
 
     protected AbstractPopulateDatabase() {
         super();
@@ -31,6 +33,8 @@ public abstract class AbstractPopulateDatabase {
         this.lengthService = new LengthServiceImpl();
         this.maxPlayersService = new MaxPlayersServiceImpl();
         this.officialMapService = new OfficialMapServiceImpl();
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
+        this.profileService = new ProfileServiceImpl();
     }
 
     public abstract void start() throws Exception;
@@ -88,7 +92,7 @@ public abstract class AbstractPopulateDatabase {
                                    Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting, Double mapVotingTime,
                                    Boolean kickVoting, Double kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators, Boolean voip,
                                    Boolean chatLogging, String chatLoggingFile, Boolean chatLoggingFileTimestamp, Double timeBetweenKicks, Double maxIdleTime, Boolean deadPlayersCanTalk,
-                                   Integer readyUpDelay, Integer gameStartDelay, Integer maxSpectators, Boolean mapObjetives, Boolean pickupItems, Double friendlyFirePercentage) throws SQLException {
+                                   Integer readyUpDelay, Integer gameStartDelay, Integer maxSpectators, Boolean mapObjetives, Boolean pickupItems, Double friendlyFirePercentage) throws Exception {
 
         Profile profile = new Profile(name, language, gametype, map, difficulty, length, maxPlayers,
                 serverName, serverPassword, webPage, webPassword, webPort, gamePort, queryPort,
@@ -98,13 +102,13 @@ public abstract class AbstractPopulateDatabase {
                 chatLogging, chatLoggingFile, chatLoggingFileTimestamp, timeBetweenKicks, maxIdleTime, deadPlayersCanTalk,
                 readyUpDelay, gameStartDelay, maxSpectators, mapObjetives, pickupItems, friendlyFirePercentage);
 
-        ProfileDao.getInstance().insert(profile);
+        profileService.createItem(profile);
     }
 
     protected void populateOfficialMap(String code, String urlInfo, String urlPhoto, Date releaseDate) throws Exception {
         OfficialMap officialMap = new OfficialMap(code, urlInfo, urlPhoto, releaseDate);
 
-        Optional<Profile> profileOptional = ProfileDao.getInstance().findByCode("Default");
+        Optional<Profile> profileOptional = profileService.findByCode("Default");
         if (!profileOptional.isPresent()) {
             throw new RuntimeException("The relation between the profile <NOT FOUND> and the map '" + officialMap.getDescription() + "' could not be persisted to database in populate process");
         }
@@ -116,9 +120,9 @@ public abstract class AbstractPopulateDatabase {
         prepareAndPopulatePlatformProfileMap(profileOptional.get(), officialMap, steamPlatformOptional, epicPlatformOptional);
     }
 
-    protected void populatePlatformProfileMap(AbstractPlatform platform, Profile profile, AbstractMap map) throws SQLException {
+    protected void populatePlatformProfileMap(AbstractPlatform platform, Profile profile, AbstractMap map) throws Exception {
         PlatformProfileMap platformProfileMap = new PlatformProfileMap(platform, profile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), true);
-        PlatformProfileMapDao.getInstance().insert(platformProfileMap);
+        platformProfileMapService.createItem(platformProfileMap);
     }
 
     protected void populatePlatform(EnumPlatform platform) throws SQLException {

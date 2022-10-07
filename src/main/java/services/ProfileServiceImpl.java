@@ -97,7 +97,7 @@ public class ProfileServiceImpl implements ProfileService {
     @Override
     public boolean deleteProfile(Profile profile, String steamInstallationFolder, String epicInstallationFolder) throws Exception {
 
-        List<PlatformProfileMap> platformProfileMapList = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profile);
+        List<PlatformProfileMap> platformProfileMapList = platformProfileMapService.listPlatformProfileMaps(profile);
         platformProfileMapList.stream().forEach(ppm -> {
             try {
                 platformProfileMapService.deleteItem(ppm);
@@ -105,7 +105,7 @@ public class ProfileServiceImpl implements ProfileService {
                 if (customMapService.findByCode(ppm.getMap().getCode()).isPresent()) {
                     CustomMapMod customMapMod = (CustomMapMod) ppm.getMap();
 
-                    List<PlatformProfileMap> platformProfileMapListForMap = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(customMapMod);
+                    List<PlatformProfileMap> platformProfileMapListForMap = platformProfileMapService.listPlatformProfileMaps(customMapMod);
                     if (platformProfileMapListForMap.isEmpty()) {
 
                         if (customMapService.deleteItem(customMapMod)) {
@@ -187,7 +187,7 @@ public class ProfileServiceImpl implements ProfileService {
 
         Profile savedProfile = createItem(newProfile);
 
-        List<PlatformProfileMap> platformProfileMapListForProfileToBeCloned = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profileToBeCloned);
+        List<PlatformProfileMap> platformProfileMapListForProfileToBeCloned = platformProfileMapService.listPlatformProfileMaps(profileToBeCloned);
 
         platformProfileMapListForProfileToBeCloned.stream().forEach(ppm -> {
             try {

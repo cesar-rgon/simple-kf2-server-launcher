@@ -33,10 +33,10 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
     private final MapDtoFactory mapDtoFactory;
     private final OfficialMapServiceImpl officialMapService;
     private final CustomMapModServiceImpl customMapModService;
-    private final PlatformProfileToDisplayFactory platformProfileToDisplayFactory;
     private final ProfileService profileService;
     private final ProfileDtoFactory profileDtoFactory;
     private final PlatformService platformService;
+    private final PlatformProfileMapService platformProfileMapService;
 
     public MapWebInfoFacadeImpl() {
         super();
@@ -44,10 +44,10 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         this.mapDtoFactory = new MapDtoFactory();
         this.officialMapService = new OfficialMapServiceImpl();
         this.customMapModService = new CustomMapModServiceImpl();
-        this.platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory();
         this.profileService = new ProfileServiceImpl();
         this.profileDtoFactory = new ProfileDtoFactory();
         this.platformService = new PlatformServiceImpl();
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
     }
 
     @Override
@@ -237,7 +237,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
 
         for (Profile profile: fullProfileList) {
             for (AbstractPlatform platform: fullPlatformList) {
-                Optional<PlatformProfileMap> platformProfileMapOptional = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(platform, profile).stream().
+                Optional<PlatformProfileMap> platformProfileMapOptional = platformProfileMapService.listPlatformProfileMaps(platform, profile).stream().
                         filter(ppm -> {
                             try {
                                 Optional<AbstractMap> customMapModOptional = customMapModService.findByCode(ppm.getMap().getCode());
@@ -270,7 +270,7 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
         try {
             Optional<AbstractMap> mapOptional = customMapModService.findMapByCode(customMapName);
             if (mapOptional.isPresent()) {
-                List<PlatformProfileMap> platformProfileMapList = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(mapOptional.get());
+                List<PlatformProfileMap> platformProfileMapList = platformProfileMapService.listPlatformProfileMaps(mapOptional.get());
                 if (platformProfileMapList != null && !platformProfileMapList.isEmpty()) {
                     return platformProfileMapList.size();
                 }

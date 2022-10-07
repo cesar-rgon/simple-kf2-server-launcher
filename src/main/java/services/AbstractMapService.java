@@ -18,12 +18,10 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
 
     private static final Logger logger = LogManager.getLogger(AbstractMapService.class);
     private final PlatformProfileMapService platformProfileMapService;
-    private final AbstractMapService officialMapService;
 
     protected AbstractMapService() {
         super();
         this.platformProfileMapService = new PlatformProfileMapServiceImpl();
-        this.officialMapService = new OfficialMapServiceImpl();
     }
 
     @Override
@@ -61,7 +59,7 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
                 logger.error(errorMessage);
                 return null;
             }
-            downloaded = officialMapService.findByCode(map.getCode()).isPresent();
+            downloaded = findByCode(map.getCode()).isPresent();
         } catch (Exception e) {
             String errorMessage = "Error creating the map: " + map.getCode();
             errors.append(errorMessage + "\n");
@@ -106,10 +104,12 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
 
 
     protected AbstractMap deleteMap(AbstractPlatform platform, AbstractMap map, Profile profile) throws Exception {
-        PlatformProfileMap.IdPlatformProfileMap idPlatformProfileMap = new PlatformProfileMap.IdPlatformProfileMap(platform.getId(), profile.getId(), map.getId());
-        PlatformProfileMap platformProfileMap = PlatformProfileMapDao.getInstance().get(idPlatformProfileMap);
-        platformProfileMapService.deleteItem(platformProfileMap);
-        return map;
+        Optional<PlatformProfileMap> platformProfileMapOptional = platformProfileMapService.findPlatformProfileMapByNames(platform.getCode(), profile.getName(), map.getCode());
+        if (platformProfileMapOptional.isPresent()) {
+            platformProfileMapService.deleteItem(platformProfileMapOptional.get());
+            return map;
+        }
+        return null;
     }
 
 }

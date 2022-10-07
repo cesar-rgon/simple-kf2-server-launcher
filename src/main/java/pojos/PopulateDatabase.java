@@ -186,7 +186,7 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
     }
 
     private void setDefaultMapInProfile() throws Exception {
-        Optional<Profile> profileOptional = ProfileDao.getInstance().findByCode("Default");
+        Optional<Profile> profileOptional = profileService.findByCode("Default");
         if (!profileOptional.isPresent()) {
             throw new RuntimeException("The profile 'Default' has not been found");
         }
@@ -196,6 +196,6 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
         }
 
         profileOptional.get().setMap(officialMapOptional.get());
-        ProfileDao.getInstance().update(profileOptional.get());
+        profileService.updateItem(profileOptional.get());
     }
 }

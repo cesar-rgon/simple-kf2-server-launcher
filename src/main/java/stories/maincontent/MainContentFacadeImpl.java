@@ -124,7 +124,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
             Optional<GameType> gameTypeOpt = gameTypeService.findByCode(gameTypeCode);
             if (gameTypeOpt.isPresent()) {
                 profile.setGametype(gameTypeOpt.get());
-                return ProfileDao.getInstance().update(profile);
+                return profileService.updateItem(profile);
             }
         }
         return false;
@@ -142,7 +142,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
 
         if (profileOpt.isPresent() && mapOptionaL.isPresent()) {
             profileOpt.get().setMap((AbstractMap) mapOptionaL.get());
-            return ProfileDao.getInstance().update(profileOpt.get());
+            return profileService.updateItem(profileOpt.get());
         }
         return false;
     }
@@ -155,7 +155,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
             Optional<Difficulty> difficultyOpt = difficultyService.findByCode(difficultyCode);
             if (difficultyOpt.isPresent()) {
                 profile.setDifficulty(difficultyOpt.get());
-                return ProfileDao.getInstance().update(profile);
+                return profileService.updateItem(profile);
             }
         }
         return false;
@@ -169,7 +169,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
             Optional<Length> lengthOpt = lengthService.findByCode(lengthCode);
             if (lengthOpt.isPresent()) {
                 profile.setLength(lengthOpt.get());
-                return ProfileDao.getInstance().update(profile);
+                return profileService.updateItem(profile);
             }
         }
         return false;
@@ -183,7 +183,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
             Optional<MaxPlayers> maxPlayersOpt = maxPlayersService.findByCode(maxPlayersCode);
             if (maxPlayersOpt.isPresent()) {
                 profile.setMaxPlayers(maxPlayersOpt.get());
-                return ProfileDao.getInstance().update(profile);
+                return profileService.updateItem(profile);
             }
         }
         return false;
@@ -197,7 +197,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
             Optional<Language> languageOpt = languageService.findByCode(languageCode);
             if (languageOpt.isPresent()) {
                 profile.setLanguage(languageOpt.get());
-                return ProfileDao.getInstance().update(profile);
+                return profileService.updateItem(profile);
             }
         }
         return false;
@@ -209,7 +209,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setServerName(serverName);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -220,7 +220,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setServerPassword(Utils.encryptAES(serverPassword));
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -231,7 +231,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setWebPassword(Utils.encryptAES(webPassword));
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -242,7 +242,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setWebPort(webPort);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -253,7 +253,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setGamePort(gamePort);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -264,7 +264,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setQueryPort(queryPort);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -275,7 +275,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setYourClan(yourClan);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -286,7 +286,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setYourWebLink(yourWebLink);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -297,7 +297,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setUrlImageServer(urlImageServer);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -308,7 +308,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setWelcomeMessage(welcomeMessage);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -319,7 +319,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setCustomParameters(customParameters);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -330,7 +330,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setWebPage(isSelected);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -436,7 +436,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setTakeover(isSelected);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -447,7 +447,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setMapVoting(isSelected);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -458,7 +458,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setKickVoting(isSelected);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -469,7 +469,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setPublicTextChat(isSelected);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -480,7 +480,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setSpectatorsOnlyChatToOtherSpectators(isSelected);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -491,7 +491,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setVoip(isSelected);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -502,7 +502,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setTeamCollision(isSelected);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -513,7 +513,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setAdminCanPause(isSelected);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -524,7 +524,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setAnnounceAdminLogin(isSelected);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -535,7 +535,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setChatLogging(isSelected);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -550,7 +550,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setMapVotingTime(mapVotingTime);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -565,7 +565,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setKickPercentage(kickPercentage);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -576,7 +576,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setChatLoggingFile(chatLoggingFile);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -587,7 +587,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setChatLoggingFileTimestamp(isSelected);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -602,7 +602,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setTimeBetweenKicks(timeBetweenKicks);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -617,7 +617,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setMaxIdleTime(maxIdleTime);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -628,7 +628,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setDeadPlayersCanTalk(isSelected);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -643,7 +643,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setReadyUpDelay(readyUpDelay);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -658,7 +658,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setGameStartDelay(gameStartDelay);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -673,7 +673,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setMaxSpectators(maxSpectators);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -684,7 +684,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setMapObjetives(isSelected);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -695,7 +695,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setPickupItems(isSelected);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }
@@ -710,7 +710,7 @@ public class MainContentFacadeImpl extends AbstractFacade implements MainContent
         if (profileOpt.isPresent()) {
             Profile profile = profileOpt.get();
             profile.setFriendlyFirePercentage(friendlyFirePercentage);
-            return ProfileDao.getInstance().update(profile);
+            return profileService.updateItem(profile);
         }
         return false;
     }

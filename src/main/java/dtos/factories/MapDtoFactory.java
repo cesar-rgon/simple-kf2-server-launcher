@@ -12,10 +12,7 @@ import javafx.collections.ObservableList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Hibernate;
-import services.AbstractMapService;
-import services.OfficialMapServiceImpl;
-import services.PropertyService;
-import services.PropertyServiceImpl;
+import services.*;
 
 import java.sql.SQLException;
 import java.text.DateFormat;
@@ -32,12 +29,14 @@ public class MapDtoFactory {
     private final PropertyService propertyService;
     private String datePattern;
     private String unknownStr;
-    private AbstractMapService officialMapService;
+    private final AbstractMapService officialMapService;
+    private final PlatformProfileMapService platformProfileMapService;
 
     public MapDtoFactory() {
         super();
         this.propertyService = new PropertyServiceImpl();
         this.officialMapService = new OfficialMapServiceImpl();
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
         try {
             String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             this.datePattern = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.code.dateHourPattern");
@@ -100,7 +99,7 @@ public class MapDtoFactory {
 
     public AbstractMapDto newDto(AbstractMap map) {
         try {
-            List<PlatformProfileMap> platformProfileMapListForNewMap = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(map);
+            List<PlatformProfileMap> platformProfileMapListForNewMap = platformProfileMapService.listPlatformProfileMaps(map);
             List<Integer> officialIdMapList = officialMapService.listAllMaps().stream().map(AbstractMap::getId).collect(Collectors.toList());
             if (officialIdMapList.contains(map.getId())) {
                 return newOfficialMapDto(map, platformProfileMapListForNewMap);

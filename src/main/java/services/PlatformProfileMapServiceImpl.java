@@ -1,6 +1,7 @@
 package services;
 
 import daos.PlatformProfileMapDao;
+import entities.AbstractMap;
 import entities.AbstractPlatform;
 import entities.PlatformProfileMap;
 import entities.Profile;
@@ -44,5 +45,20 @@ public class PlatformProfileMapServiceImpl implements PlatformProfileMapService 
     @Override
     public List<PlatformProfileMap> listPlatformProfileMaps(AbstractPlatform platform, Profile profile) throws SQLException {
         return PlatformProfileMapDao.getInstance().listPlatformProfileMaps(platform, profile);
+    }
+
+    @Override
+    public List<PlatformProfileMap> listPlatformProfileMaps(List<AbstractPlatform> platformList, List<Profile> profileList) throws SQLException {
+        return PlatformProfileMapDao.getInstance().listPlatformProfileMaps(platformList, profileList);
+    }
+
+    @Override
+    public List<PlatformProfileMap> listPlatformProfileMaps(AbstractMap map) throws SQLException {
+        return PlatformProfileMapDao.getInstance().listPlatformProfileMaps(map);
+    }
+
+    @Override
+    public List<PlatformProfileMap> listPlatformProfileMaps(Profile profile) throws SQLException {
+        return PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profile);
     }
 }

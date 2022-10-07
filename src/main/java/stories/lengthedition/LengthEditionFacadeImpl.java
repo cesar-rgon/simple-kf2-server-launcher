@@ -34,7 +34,7 @@ public class LengthEditionFacadeImpl extends AbstractEditionFacade<Length, Selec
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             profileOpt.get().setLength(null);
-            ProfileDao.getInstance().update(profileOpt.get());
+            profileService.updateItem(profileOpt.get());
             ProfileDtoFactory profileDtoFactory = new ProfileDtoFactory();
             return profileDtoFactory.newDto(profileOpt.get());
         }

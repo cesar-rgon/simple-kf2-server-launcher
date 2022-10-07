@@ -1,5 +1,6 @@
 package services;
 
+import entities.AbstractMap;
 import entities.AbstractPlatform;
 import entities.Profile;
 import entities.PlatformProfileMap;
@@ -12,4 +13,7 @@ public interface PlatformProfileMapService extends AbstractService<PlatformProfi
 
     Optional<PlatformProfileMap> findPlatformProfileMapByNames(String platformName, String profileName, String mapName) throws SQLException;
     List<PlatformProfileMap> listPlatformProfileMaps(AbstractPlatform platform, Profile profile) throws SQLException;
+    List<PlatformProfileMap> listPlatformProfileMaps(List<AbstractPlatform> platformList, List<Profile> profileList) throws SQLException;
+    List<PlatformProfileMap> listPlatformProfileMaps(AbstractMap map) throws SQLException;
+    List<PlatformProfileMap> listPlatformProfileMaps(Profile profile) throws SQLException;
 }

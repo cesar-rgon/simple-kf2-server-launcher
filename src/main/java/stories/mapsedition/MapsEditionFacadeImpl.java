@@ -38,7 +38,6 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     private final ProfileDtoFactory profileDtoFactory;
     private final OfficialMapServiceImpl officialMapService;
     private final CustomMapModServiceImpl customMapModService;
-    private final PlatformProfileToDisplayFactory platformProfileToDisplayFactory;
     private final ProfileService profileService;
     private final PlatformProfileMapDtoFactory platformProfileMapDtoFactory;
     private final PlatformProfileMapService platformProfileMapService;
@@ -53,7 +52,6 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         this.profileDtoFactory = new ProfileDtoFactory();
         this.officialMapService = new OfficialMapServiceImpl();
         this.customMapModService = new CustomMapModServiceImpl();
-        this.platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory();
         this.profileService = new ProfileServiceImpl();
         this.platformProfileMapDtoFactory = new PlatformProfileMapDtoFactory();
         this.platformProfileMapService = new PlatformProfileMapServiceImpl();
@@ -274,7 +272,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     @Override
     public AbstractMapDto deleteMapFromPlatformProfile(String platformName, String mapName, String profileName) throws Exception {
 
-        Optional<PlatformProfileMap> platformProfileMapOptional = PlatformProfileMapDao.getInstance().findByPlatformNameProfileNameMapName(platformName, profileName, mapName);
+        Optional<PlatformProfileMap> platformProfileMapOptional = platformProfileMapService.findPlatformProfileMapByNames(platformName, profileName, mapName);
         if (!platformProfileMapOptional.isPresent()) {
             return null;
         }
@@ -310,7 +308,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
             profileOpt.get().setMap(null);
-            ProfileDao.getInstance().update(profileOpt.get());
+            profileService.updateItem(profileOpt.get());
         }
     }
 
@@ -403,7 +401,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
         for (Profile profile: fullProfileList) {
             for (AbstractPlatform platform: fullPlatformList) {
-                Optional<PlatformProfileMap> platformProfileMapOptional = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(platform, profile).stream().
+                Optional<PlatformProfileMap> platformProfileMapOptional = platformProfileMapService.listPlatformProfileMaps(platform, profile).stream().
                         filter(ppm -> {
                             try {
                                 Optional<AbstractMap> customMapModOptional = customMapService.findMapByCode(ppm.getMap().getCode());
@@ -459,7 +457,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
                         CustomMapMod customMap = createNewCustomMapFromWorkshop(platformNameList, idWorkShop, profileNameList, mapName, strUrlMapImage, success, errors);
                         if (customMap != null) {
                             if (profileName.equalsIgnoreCase(actualSelectedProfile)) {
-                                Optional<Profile> profileOptional = ProfileDao.getInstance().findByCode(profileName);
+                                Optional<Profile> profileOptional = profileService.findByCode(profileName);
                                 if (!platformList.isEmpty() && profileOptional.isPresent()) {
                                     for (AbstractPlatform platform: platformList) {
                                         PlatformProfileMap platformProfileMap = new PlatformProfileMap(platform, profileOptional.get(), customMap, customMap.getReleaseDate(), customMap.getUrlInfo(), customMap.getUrlPhoto(), false);
@@ -694,7 +692,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
             throw new RuntimeException("No profile was found: " + profileName);
         }
 
-        List<String> mapListInPlatformProfile = PlatformProfileMapDao.getInstance().listPlatformProfileMaps(platform, profile).stream().
+        List<String> mapListInPlatformProfile = platformProfileMapService.listPlatformProfileMaps(platform, profile).stream().
                 map(ppm -> ppm.getMap().getCode()).
                 collect(Collectors.toList());
 

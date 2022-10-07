@@ -2,9 +2,7 @@ package stories.mapedition;
 
 import daos.PlatformProfileMapDao;
 import entities.PlatformProfileMap;
-import services.AbstractMapService;
-import services.CustomMapModServiceImpl;
-import services.OfficialMapServiceImpl;
+import services.*;
 import stories.AbstractFacade;
 
 import java.sql.SQLException;
@@ -14,36 +12,34 @@ import java.util.Date;
 
 public class MapEditionFacadeImpl extends AbstractFacade implements MapEditionFacade {
 
-    private final AbstractMapService officialMapService;
-    private final AbstractMapService customMapService;
+    private final PlatformProfileMapService platformProfileMapService;
 
     protected MapEditionFacadeImpl() {
         super();
-        this.officialMapService = new OfficialMapServiceImpl();
-        this.customMapService = new CustomMapModServiceImpl();
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
     }
 
     @Override
-    public boolean updateMapSetUrlPhoto(PlatformProfileMap platformProfileMap, String mapPreviewUrl) throws SQLException {
+    public boolean updateMapSetUrlPhoto(PlatformProfileMap platformProfileMap, String mapPreviewUrl) throws Exception {
         platformProfileMap.setUrlPhoto(mapPreviewUrl);
-        return PlatformProfileMapDao.getInstance().update(platformProfileMap);
+        return platformProfileMapService.updateItem(platformProfileMap);
     }
 
     @Override
-    public boolean updateMapSetInfoUrl(PlatformProfileMap platformProfileMap, String mapInfoUrl) throws SQLException {
+    public boolean updateMapSetInfoUrl(PlatformProfileMap platformProfileMap, String mapInfoUrl) throws Exception {
         platformProfileMap.setUrlInfo(mapInfoUrl);
-        return PlatformProfileMapDao.getInstance().update(platformProfileMap);
+        return platformProfileMapService.updateItem(platformProfileMap);
     }
 
     @Override
-    public boolean updateMapSetReleaseDate(PlatformProfileMap platformProfileMap, LocalDate releaseDate) throws SQLException {
+    public boolean updateMapSetReleaseDate(PlatformProfileMap platformProfileMap, LocalDate releaseDate) throws Exception {
         platformProfileMap.setReleaseDate(Date.from(releaseDate.atStartOfDay(ZoneId.systemDefault()).toInstant()));
-        return PlatformProfileMapDao.getInstance().update(platformProfileMap);
+        return platformProfileMapService.updateItem(platformProfileMap);
     }
 
     @Override
-    public boolean updateMapSetAlias(PlatformProfileMap platformProfileMap, String alias) throws SQLException {
+    public boolean updateMapSetAlias(PlatformProfileMap platformProfileMap, String alias) throws Exception {
         platformProfileMap.setAlias(alias);
-        return PlatformProfileMapDao.getInstance().update(platformProfileMap);
+        return platformProfileMapService.updateItem(platformProfileMap);
     }
 }

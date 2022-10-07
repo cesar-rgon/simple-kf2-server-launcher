@@ -9,10 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.Hibernate;
 import pojos.enums.EnumPlatform;
 import pojos.session.Session;
-import services.AbstractMapService;
-import services.CustomMapModServiceImpl;
-import services.PropertyService;
-import services.PropertyServiceImpl;
+import services.*;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -26,10 +23,11 @@ public class TimeListener extends TimerTask {
 
     private static final Logger logger = LogManager.getLogger(TimeListener.class);
     private final AbstractMapService customMapModService;
-
+    private final PlatformProfileMapService platformProfileMapService;
     public TimeListener() {
         super();
         this.customMapModService = new CustomMapModServiceImpl();
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
     }
 
     @Override
@@ -37,7 +35,8 @@ public class TimeListener extends TimerTask {
         logger.info("Starting the process of checking downloaded custom maps and mods.");
         try {
             List<Integer> customIdMapList = customMapModService.listAllMaps().stream().map(AbstractMap::getId).collect(Collectors.toList());
-            List<PlatformProfileMap> platformProfileCustomMapList = PlatformProfileMapDao.getInstance().listPlatformProfileMaps().stream().
+
+            List<PlatformProfileMap> platformProfileCustomMapList = platformProfileMapService.listAll().stream().
                     filter(ppm -> customIdMapList.contains(ppm.getMap().getId())).
                     collect(Collectors.toList());
 
@@ -59,12 +58,12 @@ public class TimeListener extends TimerTask {
                             customMap.setCode(filenameWithoutExtension);
                             customMapModService.updateItem(customMap);
                             ppm.setDownloaded(true);
-                            PlatformProfileMapDao.getInstance().update(ppm);
+                            platformProfileMapService.updateItem(ppm);
                         } else {
                             File folder = new File(ppm.getPlatform().getInstallationFolder() + "/KFGame/Cache/" + customMap.getIdWorkShop());
                             if (folder.exists()) {
                                 ppm.setDownloaded(true);
-                                PlatformProfileMapDao.getInstance().update(ppm);
+                                platformProfileMapService.updateItem(ppm);
                             }
                         }
                     } catch (Exception ex) {

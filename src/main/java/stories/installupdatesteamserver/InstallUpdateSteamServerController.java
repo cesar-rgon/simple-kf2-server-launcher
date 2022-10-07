@@ -1,8 +1,5 @@
 package stories.installupdatesteamserver;
 
-import daos.EpicPlatformDao;
-import daos.SteamPlatformDao;
-import entities.EpicPlatform;
 import entities.SteamPlatform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -16,12 +13,9 @@ import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import pojos.kf2factory.Kf2Steam;
-import services.PlatformService;
-import services.PlatformServiceImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
