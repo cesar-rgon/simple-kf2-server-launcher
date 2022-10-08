@@ -1,5 +1,6 @@
 package stories.lengthedition;
 
+import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -169,11 +170,11 @@ public class LengthEditionController implements Initializable {
                 String question = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteLengthQuestion");
                 Optional<ButtonType> result = Utils.questionDialog(question, selectedLength.getKey());
                 if (result.isPresent() && result.get().equals(ButtonType.OK)) {
-                    if (Session.getInstance().getActualProfile() != null &&
-                            Session.getInstance().getActualProfile().getLength() != null &&
-                            selectedLength.getKey().equals(Session.getInstance().getActualProfile().getLength().getKey())) {
 
-                        Session.getInstance().setActualProfile(facade.unselectLengthInProfile(Session.getInstance().getActualProfile().getName()));
+                    ProfileDto actualProfile = Session.getInstance().getActualProfile();
+                    if (actualProfile != null && actualProfile.getLength() != null &&
+                            selectedLength.getKey().equals(actualProfile.getLength().getKey())) {
+                        facade.unselectLengthInProfile(actualProfile.getName());
                     }
 
                     if (facade.deleteItem(selectedLength.getKey())) {

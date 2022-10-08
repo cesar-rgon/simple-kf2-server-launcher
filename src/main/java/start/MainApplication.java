@@ -99,20 +99,23 @@ public class MainApplication extends Application {
                 launch(args);
                 logger.info("----- Ending application Simple Killing Floor 2 Server Launcher v" + applicationVersion + " -----");
             } else {
-                if ("--profiles".equalsIgnoreCase(args[0])) {
+                if ("--pp".equalsIgnoreCase(args[0])) {
                     if (args.length > 1) {
                         ConsoleService consoleService = new ConsoleServiceImpl();
-                        consoleService.runServersByConsole(Arrays.asList(args));
+                        String[] parameters = Arrays.copyOfRange(args, 1, args.length);
+                        consoleService.runServersByConsole(Arrays.asList(parameters));
                     } else {
-                        System.out.println("No profiles where found\nUse --profiles profile1[ profile2 profile3 ...]");
+                        String errorMessage = "\nInvalid parameters.\nUse --pp platformName/profileName [ platformName2/profileName2 ... ].\nValid platform names are: Steam, Epic.\nCase sensitive letters must be used in Profile Name.\n";
+                        System.out.println(errorMessage);
                     }
                 } else {
-                    System.out.println("Unrecognized parameter: " + args[0] + "\nUse --profiles profile1[ profile2 profile3 ...]");
+                    String errorMessage = "\nInvalid parameters.\nUse --pp platformName/profileName [ platformName2/profileName2 ... ].\nValid platform names are: Steam, Epic.\nCase sensitive letters must be used in Profile Name.\n";
+                    System.out.println(errorMessage);
                 }
                 System.exit(0);
             }
         } catch (Exception e) {
-             logger.error(e);
+             logger.error(e.getMessage(), e);
         }
     }
 

@@ -1,5 +1,6 @@
 package stories.difficultiesedition;
 
+import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -167,11 +168,11 @@ public class DifficultiesEditionController implements Initializable {
                 String question = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteDifficultyQuestion");
                 Optional<ButtonType> result = Utils.questionDialog(question, selectedDifficulty.getKey());
                 if (result.isPresent() && result.get().equals(ButtonType.OK)) {
-                    if (Session.getInstance().getActualProfile() != null &&
-                            Session.getInstance().getActualProfile().getDifficulty() != null &&
-                            selectedDifficulty.getKey().equals(Session.getInstance().getActualProfile().getDifficulty().getKey())) {
 
-                        Session.getInstance().setActualProfile(facade.unselectDifficultyInProfile(Session.getInstance().getActualProfile().getName()));
+                    ProfileDto actualProfile = Session.getInstance().getActualProfile();
+                    if (actualProfile != null && actualProfile.getDifficulty() != null &&
+                            selectedDifficulty.getKey().equals(actualProfile.getDifficulty().getKey())) {
+                        facade.unselectDifficultyInProfile(actualProfile.getName());
                     }
 
                     if (facade.deleteItem(selectedDifficulty.getKey())) {

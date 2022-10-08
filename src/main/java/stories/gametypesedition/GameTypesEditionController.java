@@ -1,6 +1,7 @@
 package stories.gametypesedition;
 
 import dtos.GameTypeDto;
+import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -251,11 +252,12 @@ public class GameTypesEditionController implements Initializable {
                 String question = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteGameTypeQuestion");
                 Optional<ButtonType> result = Utils.questionDialog(question, selectedGameType.getKey());
                 if (result.isPresent() && result.get().equals(ButtonType.OK)) {
-                    if (Session.getInstance().getActualProfile() != null &&
-                            Session.getInstance().getActualProfile().getGametype() != null &&
-                            selectedGameType.getKey().equals(Session.getInstance().getActualProfile().getGametype().getKey())) {
 
-                        Session.getInstance().setActualProfile(facade.unselectGametypeInProfile(Session.getInstance().getActualProfile().getName()));
+                    ProfileDto actualProfile = Session.getInstance().getActualProfile();
+                    if (actualProfile != null &&
+                            actualProfile.getGametype() != null &&
+                            selectedGameType.getKey().equals(actualProfile.getGametype().getKey())) {
+                        facade.unselectGametypeInProfile(actualProfile.getName());
                     }
 
                     if (facade.deleteItem(selectedGameType.getKey())) {

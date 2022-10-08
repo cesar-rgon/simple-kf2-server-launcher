@@ -57,8 +57,11 @@ public class MaxPlayersServiceImpl implements AbstractExtendedService<MaxPlayers
 
     @Override
     public boolean deleteItem(MaxPlayers maxPlayers) throws Exception {
-        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-        propertyService.removeProperty("properties/languages/" + languageCode + ".properties", "prop.maxplayers." + maxPlayers.getCode());
-        return MaxPlayersDao.getInstance().remove(maxPlayers);
+       boolean itemDeleted = MaxPlayersDao.getInstance().remove(maxPlayers);
+       if (itemDeleted) {
+           String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+           propertyService.removeProperty("properties/languages/" + languageCode + ".properties", "prop.maxplayers." + maxPlayers.getCode());
+       }
+       return itemDeleted;
     }
 }

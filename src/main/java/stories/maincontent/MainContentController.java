@@ -223,7 +223,7 @@ public class MainContentController implements Initializable {
                         noSelectedMapImage.setVisible(true);
                     }
 
-                    Session.getInstance().setActualProfile(profileSelect.getValue());
+                    Session.getInstance().setActualProfileName(profileSelect.getValue().getName());
                     languageSelect.setItems(facade.listAllLanguages());
                     gameTypeSelect.setItems(facade.listAllGameTypes());
                     difficultySelect.setItems(facade.listAllDifficulties());
@@ -1370,7 +1370,7 @@ public class MainContentController implements Initializable {
         pickupItems.setSelected(profile.getPickupItems() != null ? profile.getPickupItems(): false);
         friendlyFirePercentage.setText(profile.getFriendlyFirePercentage() != null? String.valueOf(profile.getFriendlyFirePercentage()): "");
 
-        Session.getInstance().setActualProfile(profile);
+        Session.getInstance().setActualProfileName(profile.getName());
         if (Session.getInstance().getMapsProfile() == null || profile.getName().equals(Session.getInstance().getMapsProfile().getName())) {
             Session.getInstance().setMapsProfile(profile);
         }
@@ -1382,7 +1382,7 @@ public class MainContentController implements Initializable {
         try {
             ProfileDto databaseProfile = facade.findProfileDtoByName(profileSelect.getValue().getName());
             loadActualProfile(platformSelect.getValue(), databaseProfile);
-            Session.getInstance().setActualProfile(profileSelect.getValue());
+            Session.getInstance().setActualProfileName(profileSelect.getValue().getName());
             propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", profileSelect.getValue().getName());
             String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             if (!languageCode.equals(languageSelect.getValue().getKey())) {
@@ -1441,7 +1441,7 @@ public class MainContentController implements Initializable {
                     Utils.warningDialog(headerText, contentText);
                 }
                 ProfileDto databaseProfile = facade.findProfileDtoByName(profileSelect.getValue().getName());
-                Session.getInstance().setActualProfile(databaseProfile);
+                Session.getInstance().setActualProfileName(databaseProfile.getName());
             }
         } catch (Exception e) {
             String headerText = "The map value could not be saved!";

@@ -1,5 +1,6 @@
 package stories.maxplayersedition;
 
+import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -170,11 +171,12 @@ public class MaxPlayersEditionController implements Initializable {
                 String question = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteMaxPlayersQuestion");
                 Optional<ButtonType> result = Utils.questionDialog(question, selectedMaxPlayers.getKey());
                 if (result.isPresent() && result.get().equals(ButtonType.OK)) {
-                    if (Session.getInstance().getActualProfile() != null &&
-                            Session.getInstance().getActualProfile().getMaxPlayers() != null &&
-                            selectedMaxPlayers.getKey().equals(Session.getInstance().getActualProfile().getMaxPlayers().getKey())) {
 
-                        Session.getInstance().setActualProfile(facade.unselectMaxPlayersInProfile(Session.getInstance().getActualProfile().getName()));
+                    ProfileDto actualProfile = Session.getInstance().getActualProfile();
+                    if (actualProfile != null && actualProfile.getMaxPlayers() != null &&
+                            selectedMaxPlayers.getKey().equals(actualProfile.getMaxPlayers().getKey())) {
+
+                        facade.unselectMaxPlayersInProfile(actualProfile.getName());
                     }
 
                     if (facade.deleteItem(selectedMaxPlayers.getKey())) {

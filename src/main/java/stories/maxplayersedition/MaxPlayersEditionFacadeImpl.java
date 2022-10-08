@@ -7,18 +7,19 @@ import dtos.SelectDto;
 import dtos.factories.MaxPlayersDtoFactory;
 import dtos.factories.ProfileDtoFactory;
 import entities.MaxPlayers;
+import entities.PlatformProfileMap;
 import entities.Profile;
-import services.MaxPlayersServiceImpl;
-import services.ProfileService;
-import services.ProfileServiceImpl;
+import services.*;
 import stories.AbstractEditionFacade;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Optional;
 
 public class MaxPlayersEditionFacadeImpl extends AbstractEditionFacade<MaxPlayers, SelectDto>  implements MaxPlayersEditionFacade {
 
     private final ProfileService profileService;
+    private final PlatformProfileMapService platformProfileMapService;
 
     public MaxPlayersEditionFacadeImpl() {
         super(
@@ -27,6 +28,7 @@ public class MaxPlayersEditionFacadeImpl extends AbstractEditionFacade<MaxPlayer
                 new MaxPlayersServiceImpl()
         );
         this.profileService = new ProfileServiceImpl();
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
     }
 
     @Override

@@ -138,7 +138,7 @@ public class ProfilesEditionController implements Initializable {
                         ProfileDto newProfile = task.getValue();
                         profilesTable.getItems().add(newProfile);
                         if (profilesTable.getItems().size() == 1) {
-                            Session.getInstance().setActualProfile(profilesTable.getItems().get(0));
+                            Session.getInstance().setActualProfileName(profilesTable.getItems().get(0).getName());
                             propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", profilesTable.getItems().get(0).getName());
                         }
 
@@ -270,7 +270,7 @@ public class ProfilesEditionController implements Initializable {
                             Boolean profileDeleted = task.getValue();
                             if (profileDeleted != null && profileDeleted) {
                                 if (Session.getInstance().getActualProfile() != null && selectedProfile.getName().equalsIgnoreCase(Session.getInstance().getActualProfile().getName())) {
-                                    Session.getInstance().setActualProfile(null);
+                                    Session.getInstance().setActualProfileName(StringUtils.EMPTY);
                                     propertyService.removeProperty("properties/config.properties", "prop.config.lastSelectedProfile");
                                 }
                                 if (Session.getInstance().getMapsProfile() != null && selectedProfile.getName().equalsIgnoreCase(Session.getInstance().getMapsProfile().getName())) {
@@ -331,7 +331,7 @@ public class ProfilesEditionController implements Initializable {
             ProfileDto updatedProfileDto = facade.updateChangedProfile(oldProfileName, newProfileName);
             if (updatedProfileDto != null) {
                 if (Session.getInstance().getActualProfile() != null && oldProfileName.equalsIgnoreCase(Session.getInstance().getActualProfile().getName())) {
-                    Session.getInstance().setActualProfile(updatedProfileDto);
+                    Session.getInstance().setActualProfileName(updatedProfileDto.getName());
                     propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", newProfileName);
                 }
                 if (Session.getInstance().getMapsProfile() != null && oldProfileName.equalsIgnoreCase(Session.getInstance().getMapsProfile().getName())) {
