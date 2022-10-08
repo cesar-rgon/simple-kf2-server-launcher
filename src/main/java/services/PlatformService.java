@@ -18,7 +18,7 @@ public interface PlatformService {
     Optional<EpicPlatform> findEpicPlatform() throws SQLException;
     SteamPlatform createSteamPlatform(SteamPlatform steamPlatform) throws SQLException;
     EpicPlatform createEpicPlatform(EpicPlatform epicPlatform) throws SQLException;
-    boolean updateSteamPlatform(SteamPlatform steamPlatform) throws SQLException;
-    boolean updateEpicPlatform(EpicPlatform epicPlatform) throws SQLException;
+    boolean updateSteamPlatform(SteamPlatform steamPlatform) throws Exception;
+    boolean updateEpicPlatform(EpicPlatform epicPlatform) throws Exception;
 
 }

@@ -228,7 +228,7 @@ public class MapsEditionController implements Initializable {
                 }
 
                 try {
-                    String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
+                    String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officialMaps");
                     String customMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
 
                     if (facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
@@ -835,11 +835,9 @@ public class MapsEditionController implements Initializable {
                 try {
                     String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfiles");
                     if (StringUtils.isNotBlank(success)) {
-                        String steamCustomMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.steamCustomMaps");
-                        steamCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, false, steamCustomMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
-
-                        String epicCustomMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.epicCustomMaps");
-                        epicCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.EPIC, false, epicCustomMapsModsTabText, epicCustomMapsFlowPane.getChildren().size()));
+                        String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
+                        steamCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, false, customMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
+                        epicCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.EPIC, false, customMapsModsTabText, epicCustomMapsFlowPane.getChildren().size()));
 
                         headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
                         Utils.infoDialog(headerText, success.toString());
@@ -962,7 +960,7 @@ public class MapsEditionController implements Initializable {
                                 epicPlatformProfileMapDtoList.clear();
                                 epicPlatformProfileMapDtoList = facade.listPlatformProfileMaps(EnumPlatform.EPIC.name(), profileSelect.getValue().getName());
 
-                                String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
+                                String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officialMaps");
                                 steamOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, true, officialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
                                 String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
                                 steamCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, false, customMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
@@ -1253,7 +1251,7 @@ public class MapsEditionController implements Initializable {
                             }
                         });
 
-                        String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
+                        String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officialMaps");
                         String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
 
                         steamOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, true, officialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
@@ -1555,7 +1553,7 @@ public class MapsEditionController implements Initializable {
                 }
             }
 
-            String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officiaslMaps");
+            String officialMapsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officialMaps");
             String customMapsModsTabText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customMaps");
 
             steamOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, true, officialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));

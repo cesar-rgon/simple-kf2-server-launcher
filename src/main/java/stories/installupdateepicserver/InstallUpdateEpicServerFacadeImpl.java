@@ -38,7 +38,7 @@ public class InstallUpdateEpicServerFacadeImpl implements InstallUpdateEpicServe
     }
 
     @Override
-    public boolean updatePlatformInstallationFolder(String installationFolder) throws SQLException {
+    public boolean updatePlatformInstallationFolder(String installationFolder) throws Exception {
         Optional<EpicPlatform> platformOptional = platformService.findEpicPlatform();
         if (!platformOptional.isPresent()) {
             logger.error("The platform Epic Games has not been found in database");

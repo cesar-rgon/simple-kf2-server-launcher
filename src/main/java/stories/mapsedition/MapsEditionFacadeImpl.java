@@ -340,7 +340,7 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
 
     @Override
     public String runServer(String platformName, String profileName) throws Exception {
-        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(profileName);
+        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(platformName);
         if (!platformOptional.isPresent()) {
             throw new RuntimeException("The platform can not be found!");
         }

@@ -61,4 +61,9 @@ public class PlatformProfileMapServiceImpl implements PlatformProfileMapService 
     public List<PlatformProfileMap> listPlatformProfileMaps(Profile profile) throws SQLException {
         return PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profile);
     }
+
+    @Override
+    public List<PlatformProfileMap> listPlatformProfileMaps(AbstractPlatform platform) throws SQLException {
+        return PlatformProfileMapDao.getInstance().listPlatformProfileMaps(platform);
+    }
 }

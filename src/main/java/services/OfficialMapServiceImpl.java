@@ -41,6 +41,11 @@ public class OfficialMapServiceImpl extends AbstractMapService {
         return OfficialMapDao.getInstance().update((OfficialMap) map);
     }
 
+    @Override
+    protected boolean idDownloadedMap() {
+        return true;
+    }
+
     public AbstractMap deleteMap(AbstractPlatform platform, OfficialMap map, Profile profile) throws Exception {
         return super.deleteMap(platform, map, profile);
     }

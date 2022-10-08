@@ -49,6 +49,11 @@ public class CustomMapModServiceImpl extends AbstractMapService {
         return CustomMapModDao.getInstance().update((CustomMapMod) map);
     }
 
+    @Override
+    protected boolean idDownloadedMap() {
+        return false;
+    }
+
     public CustomMapMod deleteMap(AbstractPlatform platform, CustomMapMod map, Profile profile) throws Exception {
         super.deleteMap(platform, map, profile);
 

@@ -4,6 +4,7 @@ import daos.EpicPlatformDao;
 import daos.SteamPlatformDao;
 import entities.AbstractPlatform;
 import entities.EpicPlatform;
+import entities.PlatformProfileMap;
 import entities.SteamPlatform;
 import org.hibernate.Hibernate;
 import pojos.enums.EnumPlatform;
@@ -14,6 +15,13 @@ import java.util.List;
 import java.util.Optional;
 
 public class PlatformServiceImpl implements PlatformService {
+
+    private final PlatformProfileMapService platformProfileMapService;
+
+    public PlatformServiceImpl() {
+        super();
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
+    }
 
     @Override
     public List<AbstractPlatform> listAllPlatforms() throws SQLException  {
@@ -81,12 +89,26 @@ public class PlatformServiceImpl implements PlatformService {
     }
 
     @Override
-    public boolean updateSteamPlatform(SteamPlatform steamPlatform) throws SQLException {
-        return SteamPlatformDao.getInstance().update(steamPlatform);
+    public boolean updateSteamPlatform(SteamPlatform steamPlatform) throws Exception {
+        if (SteamPlatformDao.getInstance().update(steamPlatform)) {
+            List<PlatformProfileMap> ppmList = platformProfileMapService.listPlatformProfileMaps(steamPlatform);
+            for (PlatformProfileMap ppm: ppmList) {
+                ppm.setPlatform(steamPlatform);
+                platformProfileMapService.updateItem(ppm);
+            }
+        }
+        return true;
     }
 
     @Override
-    public boolean updateEpicPlatform(EpicPlatform epicPlatform) throws SQLException {
-        return EpicPlatformDao.getInstance().update(epicPlatform);
+    public boolean updateEpicPlatform(EpicPlatform epicPlatform) throws Exception {
+        if (EpicPlatformDao.getInstance().update(epicPlatform)) {
+            List<PlatformProfileMap> ppmList = platformProfileMapService.listPlatformProfileMaps(epicPlatform);
+            for (PlatformProfileMap ppm: ppmList) {
+                ppm.setPlatform(epicPlatform);
+                platformProfileMapService.updateItem(ppm);
+            }
+        }
+        return true;
     }
 }

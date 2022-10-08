@@ -38,7 +38,7 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
     public abstract AbstractMap createItem(AbstractMap map) throws Exception;
     public abstract boolean deleteItem(AbstractMap map) throws Exception;
     public abstract boolean updateItem(AbstractMap map) throws SQLException;
-
+    protected abstract boolean idDownloadedMap();
 
     public Optional<AbstractMap> findMapByCode(String mapName) throws Exception {
         return findByCode(mapName);
@@ -59,7 +59,7 @@ public abstract class AbstractMapService implements AbstractExtendedService<Abst
                 logger.error(errorMessage);
                 return null;
             }
-            downloaded = findByCode(map.getCode()).isPresent();
+            downloaded = idDownloadedMap();
         } catch (Exception e) {
             String errorMessage = "Error creating the map: " + map.getCode();
             errors.append(errorMessage + "\n");

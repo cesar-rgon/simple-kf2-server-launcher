@@ -50,7 +50,7 @@ public class InstallUpdateSteamServerFacadeImpl implements InstallUpdateSteamSer
     }
 
     @Override
-    public boolean updatePlatformInstallationFolder(String installationFolder) throws SQLException {
+    public boolean updatePlatformInstallationFolder(String installationFolder) throws Exception {
         Optional<SteamPlatform> platformOptional = platformService.findSteamPlatform();
         if (!platformOptional.isPresent()) {
             logger.error("The platform Steam has not been found in database");
