@@ -7,6 +7,7 @@ import entities.*;
 import entities.AbstractMap;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ButtonType;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +15,8 @@ import pojos.PlatformProfile;
 import pojos.PlatformProfileToDisplay;
 import pojos.PlatformProfileToDisplayFactory;
 import pojos.enums.EnumPlatform;
+import pojos.kf2factory.Kf2Common;
+import pojos.kf2factory.Kf2Factory;
 import services.*;
 import stories.AbstractFacade;
 import utils.Utils;
@@ -64,7 +67,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
 
 
     @Override
-    public ProfileDto createNewProfile(String platformName, String profileName) throws Exception {
+    public ProfileDto createNewProfile(String profileName) throws Exception {
         String defaultServername = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultServername");
         String defaultWebPort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultWebPort");
         String defaultGamePort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultGamePort");
@@ -122,26 +125,69 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
                 0.0
         );
 
-        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(platformName);
         Profile savedProfile = profileService.createItem(newProfile);
-
-
-        officialMaps.stream().forEach(map -> {
-            try {
-                platformProfileMapService.createItem(new PlatformProfileMap(platformOptional.get(), savedProfile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), true));
-            } catch (Exception e) {
-                logger.error("Error creating the relation between the profile: " + savedProfile.getName() + " and the map: " + map.getCode(), e);
+        List<AbstractPlatform> validPlatformList = new ArrayList<AbstractPlatform>();
+        Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();
+        if (steamPlatformOptional.isPresent()) {
+            if (Kf2Factory.getInstance(steamPlatformOptional.get()).isValidInstallationFolder()) {
+                validPlatformList.add(steamPlatformOptional.get());
             }
-        });
+        }
+        Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
+        if (epicPlatformOptional.isPresent()) {
+            if (Kf2Factory.getInstance(epicPlatformOptional.get()).isValidInstallationFolder()) {
+                validPlatformList.add(epicPlatformOptional.get());
+            }
+        }
+
+        for (AbstractMap map: officialMaps) {
+            for (AbstractPlatform platform: validPlatformList) {
+                try {
+                    PlatformProfileMap ppm = new PlatformProfileMap(platform, savedProfile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), true);
+                    platformProfileMapService.createItem(ppm);
+                } catch (Exception e) {
+                    logger.error("Error creating the relation between the profile: " + savedProfile.getName() + " and the map: " + map.getCode(), e);
+                }
+            }
+        }
+
+        for (AbstractPlatform platform: validPlatformList) {
+            Kf2Common kf2Common = Kf2Factory.getInstance(platform);
+            kf2Common.createConfigFolder(platform.getInstallationFolder(), newProfile.getName());
+        }
 
         return profileDtoFactory.newDto(savedProfile);
     }
 
     @Override
-    public boolean deleteSelectedProfile(String profileName, String steamInstallationFolder, String epicInstallationFolder) throws Exception {
+    public boolean deleteSelectedProfile(String profileName) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
-            return profileService.deleteProfile(profileOpt.get(), steamInstallationFolder, epicInstallationFolder);
+            if (profileService.deleteProfile(profileOpt.get())) {
+
+                List<AbstractPlatform> validPlatformList = new ArrayList<AbstractPlatform>();
+                Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();
+                if (steamPlatformOptional.isPresent()) {
+                    if (Kf2Factory.getInstance(steamPlatformOptional.get()).isValidInstallationFolder()) {
+                        validPlatformList.add(steamPlatformOptional.get());
+                    }
+                }
+                Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
+                if (epicPlatformOptional.isPresent()) {
+                    if (Kf2Factory.getInstance(epicPlatformOptional.get()).isValidInstallationFolder()) {
+                        validPlatformList.add(epicPlatformOptional.get());
+                    }
+                }
+
+                for (AbstractPlatform platform: validPlatformList) {
+                    File platformProfileConfigFolder = new File(platform.getInstallationFolder() + "/KFGame/Config/" + profileName);
+                    if (platformProfileConfigFolder.exists()) {
+                        FileUtils.deleteDirectory(platformProfileConfigFolder);
+                    }
+                }
+
+                return true;
+            }
         }
         return false;
     }
@@ -170,6 +216,26 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
         Optional<Profile> profileToBeClonedOpt = profileService.findProfileByCode(profileName);
         if (profileToBeClonedOpt.isPresent()) {
             Profile newProfile = profileService.cloneProfile(profileToBeClonedOpt.get(), newProfileName);
+
+            List<AbstractPlatform> validPlatformList = new ArrayList<AbstractPlatform>();
+            Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();
+            if (steamPlatformOptional.isPresent()) {
+                if (Kf2Factory.getInstance(steamPlatformOptional.get()).isValidInstallationFolder()) {
+                    validPlatformList.add(steamPlatformOptional.get());
+                }
+            }
+            Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
+            if (epicPlatformOptional.isPresent()) {
+                if (Kf2Factory.getInstance(epicPlatformOptional.get()).isValidInstallationFolder()) {
+                    validPlatformList.add(epicPlatformOptional.get());
+                }
+            }
+
+            for (AbstractPlatform platform: validPlatformList) {
+                Kf2Common kf2Common = Kf2Factory.getInstance(platform);
+                kf2Common.createConfigFolder(platform.getInstallationFolder(), newProfile.getName());
+            }
+
             return profileDtoFactory.newDto(newProfile);
         } else {
             return null;

@@ -114,8 +114,6 @@ public class ProfilesEditionController implements Initializable {
     @FXML
     private void addProfileOnAction() {
         try {
-            String steamInstallationFolder = facade.findConfigPropertyValue("prop.config.steamInstallationFolder");
-            String epicInstallationFolder = facade.findConfigPropertyValue("prop.config.epicInstallationFolder");
             String addProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addProfile");
             String enterProfileName = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.enterProfileName");
             Optional<String> profileNameOpt = Utils.OneTextInputDialog(addProfileText, enterProfileName + ":");
@@ -126,10 +124,7 @@ public class ProfilesEditionController implements Initializable {
                     @Override
                     protected ProfileDto call() throws Exception {
                         String profileName = profileNameOpt.get().replaceAll(" ", "_");
-                        return facade.createNewProfile(
-                                Session.getInstance().getPlatform().getKey(),
-                                profileName
-                        );
+                        return facade.createNewProfile(profileName);
                     }
                 };
 
@@ -141,18 +136,6 @@ public class ProfilesEditionController implements Initializable {
                             Session.getInstance().setActualProfileName(profilesTable.getItems().get(0).getName());
                             propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", profilesTable.getItems().get(0).getName());
                         }
-
-                        /*
-                        Kf2Common kf2Common = Kf2Factory.getInstance(
-                                Session.getInstance().getPlatform().getKey()
-                        );
-                        if (StringUtils.isNotBlank(steamInstallationFolder)) {
-                            kf2Common.createConfigFolder(steamInstallationFolder, newProfile.getName());
-                        }
-                        if (StringUtils.isNotBlank(epicInstallationFolder)) {
-                            kf2Common.createConfigFolder(epicInstallationFolder, newProfile.getName());
-                        }
-                        */
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);
                     }
@@ -177,8 +160,6 @@ public class ProfilesEditionController implements Initializable {
     @FXML
     private void cloneProfileOnAction() {
         try {
-            String steamInstallationFolder = facade.findConfigPropertyValue("prop.config.steamInstallationFolder");
-            String epicInstallationFolder = facade.findConfigPropertyValue("prop.config.epicInstallationFolder");
             int selectedIndex = profilesTable.getSelectionModel().getSelectedIndex();
             if (selectedIndex >= 0) {
                 ProfileDto selectedProfile = profilesTable.getSelectionModel().getSelectedItem();
@@ -201,17 +182,6 @@ public class ProfilesEditionController implements Initializable {
                             ProfileDto clonedProfile = task.getValue();
                             if (clonedProfile != null) {
                                 profilesTable.getItems().add(clonedProfile);
-                                /*
-                                Kf2Common kf2Common = Kf2Factory.getInstance(
-                                        Session.getInstance().getPlatform().getKey()
-                                );
-                                if (StringUtils.isNotBlank(steamInstallationFolder)) {
-                                    kf2Common.createConfigFolder(steamInstallationFolder, clonedProfile.getName());
-                                }
-                                if (StringUtils.isNotBlank(epicInstallationFolder)) {
-                                    kf2Common.createConfigFolder(epicInstallationFolder, clonedProfile.getName());
-                                }
-                                */
                             } else {
                                 logger.warn("The profile can not be cloned in database. Selected profile: " + selectedProfile.getName() + ". New profile name: " + clonedProfile.getName());
                                 String notOperationDoneText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
@@ -247,8 +217,6 @@ public class ProfilesEditionController implements Initializable {
     @FXML
     private void removeProfileOnAction() {
         try {
-            String steamInstallationFolder = facade.findConfigPropertyValue("prop.config.steamInstallationFolder");
-            String epicInstallationFolder = facade.findConfigPropertyValue("prop.config.epicInstallationFolder");
             int selectedIndex = profilesTable.getSelectionModel().getSelectedIndex();
             if (selectedIndex >= 0) {
                 ProfileDto selectedProfile = profilesTable.getSelectionModel().getSelectedItem();
@@ -261,7 +229,7 @@ public class ProfilesEditionController implements Initializable {
                     Task<Boolean> task = new Task<Boolean>() {
                         @Override
                         protected Boolean call() throws Exception {
-                            return facade.deleteSelectedProfile(selectedProfile.getName(), steamInstallationFolder, epicInstallationFolder);
+                            return facade.deleteSelectedProfile(selectedProfile.getName());
                         }
                     };
 
@@ -269,7 +237,8 @@ public class ProfilesEditionController implements Initializable {
                         try {
                             Boolean profileDeleted = task.getValue();
                             if (profileDeleted != null && profileDeleted) {
-                                if (Session.getInstance().getActualProfile() != null && selectedProfile.getName().equalsIgnoreCase(Session.getInstance().getActualProfile().getName())) {
+
+                                if (StringUtils.isNotBlank(Session.getInstance().getActualProfileName()) && selectedProfile.getName().equalsIgnoreCase(Session.getInstance().getActualProfileName())) {
                                     Session.getInstance().setActualProfileName(StringUtils.EMPTY);
                                     propertyService.removeProperty("properties/config.properties", "prop.config.lastSelectedProfile");
                                 }
@@ -278,14 +247,6 @@ public class ProfilesEditionController implements Initializable {
                                 }
 
                                 profilesTable.getItems().remove(selectedIndex);
-                                File steamProfileConfigFolder = new File(facade.findConfigPropertyValue("prop.config.steamInstallationFolder") + "/KFGame/Config/" + selectedProfile.getName());
-                                if (steamProfileConfigFolder.exists()) {
-                                    FileUtils.deleteDirectory(steamProfileConfigFolder);
-                                }
-                                File epicProfileConfigFolder = new File(facade.findConfigPropertyValue("prop.config.epicInstallationFolder") + "/KFGame/Config/" + selectedProfile.getName());
-                                if (epicProfileConfigFolder.exists()) {
-                                    FileUtils.deleteDirectory(epicProfileConfigFolder);
-                                }
                             } else {
                                 logger.warn("The profile can not be deleted from database: " + selectedProfile.getName());
                                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");

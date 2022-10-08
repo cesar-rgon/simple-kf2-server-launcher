@@ -14,7 +14,7 @@ public interface ProfileService extends AbstractExtendedService<Profile> {
 
     Optional<Profile> findProfileByCode(String profileName) throws Exception;
     List<Profile> listAllProfiles() throws SQLException;
-    public boolean deleteProfile(Profile profile, String steamInstallationFolder, String epicInstallationFolder) throws Exception;
+    public boolean deleteProfile(Profile profile) throws Exception;
     Profile cloneProfile(Profile profileToBeCloned, String newProfileName) throws Exception;
     void exportProfilesToFile(List<Profile> profilesToExport, File file) throws Exception;
     void importGameTypesFromFile(Properties properties, List<Language> languageList) throws Exception;

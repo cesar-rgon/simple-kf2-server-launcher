@@ -17,4 +17,5 @@ public interface PlatformProfileMapService extends AbstractService<PlatformProfi
     List<PlatformProfileMap> listPlatformProfileMaps(AbstractMap map) throws SQLException;
     List<PlatformProfileMap> listPlatformProfileMaps(Profile profile) throws SQLException;
     List<PlatformProfileMap> listPlatformProfileMaps(AbstractPlatform platform) throws SQLException;
+    List<PlatformProfileMap> listPlatformProfileMaps(AbstractPlatform platform, AbstractMap map) throws SQLException;
 }

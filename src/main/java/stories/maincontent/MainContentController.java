@@ -223,7 +223,7 @@ public class MainContentController implements Initializable {
                         noSelectedMapImage.setVisible(true);
                     }
 
-                    Session.getInstance().setActualProfileName(profileSelect.getValue().getName());
+                    Session.getInstance().setActualProfileName(profileSelect.getValue() != null ? profileSelect.getValue().getName(): StringUtils.EMPTY);
                     languageSelect.setItems(facade.listAllLanguages());
                     gameTypeSelect.setItems(facade.listAllGameTypes());
                     difficultySelect.setItems(facade.listAllDifficulties());
@@ -1925,10 +1925,12 @@ public class MainContentController implements Initializable {
     private void platformOnAction() {
         joinServerVisibility();
         try {
-            ProfileDto databaseProfile = facade.findProfileDtoByName(profileSelect.getValue().getName());
-            if (databaseProfile != null) {
-                Session.getInstance().setPlatform(platformSelect.getValue());
-                loadActualProfile(platformSelect.getValue(), databaseProfile);
+            Session.getInstance().setPlatform(platformSelect.getValue());
+            if (profileSelect.getValue() != null) {
+                ProfileDto databaseProfile = facade.findProfileDtoByName(profileSelect.getValue().getName());
+                if (databaseProfile != null) {
+                    loadActualProfile(platformSelect.getValue(), databaseProfile);
+                }
             }
         } catch (Exception e) {
             String headerText = "The platform value could not be saved!";

@@ -7,6 +7,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.hibernate.Hibernate;
 import pojos.MapToDisplay;
 import pojos.PlatformProfileToDisplay;
 import pojos.enums.EnumPlatform;
@@ -95,7 +96,7 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public boolean deleteProfile(Profile profile, String steamInstallationFolder, String epicInstallationFolder) throws Exception {
+    public boolean deleteProfile(Profile profile) throws Exception {
 
         List<PlatformProfileMap> platformProfileMapList = platformProfileMapService.listPlatformProfileMaps(profile);
         platformProfileMapList.stream().forEach(ppm -> {
@@ -103,28 +104,19 @@ public class ProfileServiceImpl implements ProfileService {
                 platformProfileMapService.deleteItem(ppm);
 
                 if (customMapService.findByCode(ppm.getMap().getCode()).isPresent()) {
-                    CustomMapMod customMapMod = (CustomMapMod) ppm.getMap();
+                    CustomMapMod customMapMod = (CustomMapMod) Hibernate.unproxy(ppm.getMap());
 
-                    List<PlatformProfileMap> platformProfileMapListForMap = platformProfileMapService.listPlatformProfileMaps(customMapMod);
+                    List<PlatformProfileMap> platformProfileMapListForMap = platformProfileMapService.listPlatformProfileMaps(ppm.getPlatform(), customMapMod);
                     if (platformProfileMapListForMap.isEmpty()) {
 
                         if (customMapService.deleteItem(customMapMod)) {
-                            File steamMapPhoto = new File(steamInstallationFolder + customMapMod.getUrlPhoto());
-                            if (steamMapPhoto.exists()) {
-                                steamMapPhoto.delete();
+                            File mapPhoto = new File(ppm.getPlatform().getInstallationFolder() + customMapMod.getUrlPhoto());
+                            if (mapPhoto.exists()) {
+                                mapPhoto.delete();
                             }
-                            File steamMapCacheFolder = new File(steamInstallationFolder + "/KFGame/Cache/" + customMapMod.getIdWorkShop());
-                            if (steamMapCacheFolder.exists()) {
-                                FileUtils.deleteDirectory(steamMapCacheFolder);
-                            }
-
-                            File epicMapPhoto = new File(epicInstallationFolder + customMapMod.getUrlPhoto());
-                            if (epicMapPhoto.exists()) {
-                                epicMapPhoto.delete();
-                            }
-                            File epicMapCacheFolder = new File(epicInstallationFolder + "/KFGame/Cache/" + customMapMod.getIdWorkShop());
-                            if (epicMapCacheFolder.exists()) {
-                                FileUtils.deleteDirectory(epicMapCacheFolder);
+                            File mapCacheFolder = new File(ppm.getPlatform().getInstallationFolder() + "/KFGame/Cache/" + customMapMod.getIdWorkShop());
+                            if (mapCacheFolder.exists()) {
+                                FileUtils.deleteDirectory(mapCacheFolder);
                             }
                         }
                     }
