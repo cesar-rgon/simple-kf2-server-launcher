@@ -9,9 +9,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Hibernate;
 import pojos.MapToDisplay;
-import pojos.PlatformProfileToDisplay;
+import pojos.ProfileToDisplay;
 import pojos.enums.EnumPlatform;
-import pojos.session.Session;
+import pojos.kf2factory.Kf2Factory;
 import utils.Utils;
 
 import java.io.BufferedReader;
@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -30,12 +31,13 @@ public class ProfileServiceImpl implements ProfileService {
     private final AbstractMapService officialMapService;
     private final AbstractMapService customMapModService;
     private final PlatformProfileMapService platformProfileMapService;
-    private final AbstractMapService customMapService;
+    private final CustomMapModServiceImpl customMapService;
     private final DifficultyServiceImpl difficultyService;
     private final GameTypeServiceImpl gameTypeService;
     private final LanguageServiceImpl languageService;
     private final LengthServiceImpl lengthService;
     private final MaxPlayersServiceImpl maxPlayersService;
+    private final PlatformService platformService;
 
     public ProfileServiceImpl() {
         super();
@@ -49,6 +51,7 @@ public class ProfileServiceImpl implements ProfileService {
         this.languageService = new LanguageServiceImpl();
         this.lengthService = new LengthServiceImpl();
         this.maxPlayersService = new MaxPlayersServiceImpl();
+        this.platformService = new PlatformServiceImpl();
     }
 
     @Override
@@ -194,6 +197,31 @@ public class ProfileServiceImpl implements ProfileService {
         return savedProfile;
     }
 
+    private void exportMapValues(PlatformProfileMap ppm, int profileIndex, int mapIndex, List<Integer> idsOfficialMapList, Properties properties) {
+        // Save original map values
+        properties.setProperty("exported.profile" + profileIndex + ".platform" + ppm.getPlatform().getCode() + ".map" + mapIndex + ".name", ppm.getMap().getCode());
+        if (ppm.getMap().getReleaseDate() != null) {
+            properties.setProperty("exported.profile" + profileIndex + ".platform" + ppm.getPlatform().getCode() + ".map" + mapIndex + ".releaseDate", new SimpleDateFormat("yyyy/MM/dd").format(ppm.getMap().getReleaseDate()));
+        }
+        properties.setProperty("exported.profile" + profileIndex + ".platform" + ppm.getPlatform().getCode() + ".map" + mapIndex + ".urlInfo", StringUtils.isNotBlank(ppm.getMap().getUrlInfo())? ppm.getMap().getUrlInfo(): "");
+        properties.setProperty("exported.profile" + profileIndex + ".platform" + ppm.getPlatform().getCode() + ".map" + mapIndex + ".urlPhoto", StringUtils.isNotBlank(ppm.getMap().getUrlPhoto())? ppm.getMap().getUrlPhoto(): "");
+
+        boolean isOfficialMap = idsOfficialMapList.contains(ppm.getMap().getId());
+        properties.setProperty("exported.profile" + profileIndex + ".platform" + ppm.getPlatform().getCode() + ".map" + mapIndex + ".official", String.valueOf(isOfficialMap));
+        if (!isOfficialMap) {
+            CustomMapMod customMapMod = (CustomMapMod) Hibernate.unproxy(ppm.getMap());
+            properties.setProperty("exported.profile" + profileIndex + ".platform" + ppm.getPlatform().getCode() + ".map" + mapIndex + ".idWorkShop", customMapMod.getIdWorkShop()!=null? String.valueOf(customMapMod.getIdWorkShop()): "");
+        }
+
+        // Save copied map values (they could be edited and changed)
+        properties.setProperty("exported.profile" + profileIndex + ".platform" + ppm.getPlatform().getCode() + ".profilemap" + mapIndex + ".alias", ppm.getAlias());
+        if (ppm.getReleaseDate() != null) {
+            properties.setProperty("exported.profile" + profileIndex + ".platform" + ppm.getPlatform().getCode() + ".profilemap" + mapIndex + ".releaseDate", new SimpleDateFormat("yyyy/MM/dd").format(ppm.getReleaseDate()));
+        }
+        properties.setProperty("exported.profile" + profileIndex + ".platform" + ppm.getPlatform().getCode() + ".profilemap" + mapIndex + ".urlInfo", ppm.getUrlInfo());
+        properties.setProperty("exported.profile" + profileIndex + ".platform" + ppm.getPlatform().getCode() + ".profilemap" + mapIndex + ".urlPhoto", ppm.getUrlPhoto());
+    }
+
     @Override
     public void exportProfilesToFile(List<Profile> profilesToExport, File file) throws Exception {
         Properties properties = new Properties();
@@ -219,9 +247,7 @@ public class ProfileServiceImpl implements ProfileService {
             properties.setProperty("exported.profile" + profileIndex + ".urlImageServer", StringUtils.isNotBlank(profile.getUrlImageServer())? profile.getUrlImageServer(): "");
             properties.setProperty("exported.profile" + profileIndex + ".welcomeMessage", StringUtils.isNotBlank(profile.getWelcomeMessage())? profile.getWelcomeMessage(): "");
             properties.setProperty("exported.profile" + profileIndex + ".customParameters", StringUtils.isNotBlank(profile.getCustomParameters())? profile.getCustomParameters(): "");
-            //properties.setProperty("exported.profile" + profileIndex + ".mapListSize", profile.getMapList()!=null? String.valueOf(profile.getMapList().size()): "0");
             properties.setProperty("exported.profile" + profileIndex + ".takeover", profile.getTakeover()!=null? String.valueOf(profile.getTakeover()): "false");
-
             properties.setProperty("exported.profile" + profileIndex + ".mapVoting", profile.getMapVoting()? String.valueOf(profile.getMapVoting()): "false");
             properties.setProperty("exported.profile" + profileIndex + ".mapVotingTime", profile.getMapVotingTime() != null? String.valueOf(profile.getMapVotingTime()): "");
             properties.setProperty("exported.profile" + profileIndex + ".kickVoting", profile.getKickVoting()? String.valueOf(profile.getKickVoting()): "false");
@@ -245,35 +271,29 @@ public class ProfileServiceImpl implements ProfileService {
             properties.setProperty("exported.profile" + profileIndex + ".pickupItems", profile.getPickupItems()? String.valueOf(profile.getPickupItems()): "false");
             properties.setProperty("exported.profile" + profileIndex + ".friendlyFirePercentage", profile.getFriendlyFirePercentage() != null? String.valueOf(profile.getFriendlyFirePercentage()): "");
 
-            // TODO: Revisar este código para tener en cuenta los ppm (en concreto, la Plataforma)
-            /*
-            if (profile.getPlatformProfileMapList() != null && !profile.getPlatformProfileMapList().isEmpty()) {
-                int profileMapIndex = 1;
-                for (PlatformProfileMap platformProfileMap : profile.getPlatformProfileMapList()) {
-                    // Save original map values
-                    properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".name", platformProfileMap.getMap().getCode());
-                    if (platformProfileMap.getMap().getReleaseDate() != null) {
-                        properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".releaseDate", new SimpleDateFormat("yyyy/MM/dd").format(platformProfileMap.getMap().getReleaseDate()));
-                    }
-                    properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".urlInfo", StringUtils.isNotBlank(platformProfileMap.getMap().getUrlInfo())? platformProfileMap.getMap().getUrlInfo(): "");
-                    properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".urlPhoto", StringUtils.isNotBlank(platformProfileMap.getMap().getUrlPhoto())? platformProfileMap.getMap().getUrlPhoto(): "");
-                    properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".official", String.valueOf(platformProfileMap.getMap().isOfficial()));
-                    if (!platformProfileMap.getMap().isOfficial()) {
-                        properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".idWorkShop", ((CustomMapMod) platformProfileMap.getMap()).getIdWorkShop()!=null? String.valueOf(((CustomMapMod) platformProfileMap.getMap()).getIdWorkShop()): "");
-                        properties.setProperty("exported.profile" + profileIndex + ".map" + profileMapIndex + ".downloaded", String.valueOf(platformProfileMap.isDownloaded()));
-                    }
-                    // Save copied map values (they could be edited and changed)
-                    properties.setProperty("exported.profile" + profileIndex + ".profilemap" + profileMapIndex + ".alias", platformProfileMap.getAlias());
-                    if (platformProfileMap.getReleaseDate() != null) {
-                        properties.setProperty("exported.profile" + profileIndex + ".profilemap" + profileMapIndex + ".releaseDate", new SimpleDateFormat("yyyy/MM/dd").format(platformProfileMap.getReleaseDate()));
-                    }
-                    properties.setProperty("exported.profile" + profileIndex + ".profilemap" + profileMapIndex + ".urlInfo", platformProfileMap.getUrlInfo());
-                    properties.setProperty("exported.profile" + profileIndex + ".profilemap" + profileMapIndex + ".urlPhoto", platformProfileMap.getUrlPhoto());
+            List<PlatformProfileMap> ppmList = platformProfileMapService.listPlatformProfileMaps(profile);
+            List<PlatformProfileMap> steamPpmList = ppmList.stream().filter(ppm -> ppm.getPlatform().getCode().equals(EnumPlatform.STEAM.name())).collect(Collectors.toList());
+            List<PlatformProfileMap> epicPpmList = ppmList.stream().filter(ppm -> ppm.getPlatform().getCode().equals(EnumPlatform.EPIC.name())).collect(Collectors.toList());
+            List<Integer> idsOfficialMapList = officialMapService.listAllMaps().stream().map(AbstractMap::getId).collect(Collectors.toList());
 
-                    profileMapIndex++;
+            if (steamPpmList != null && !steamPpmList.isEmpty()) {
+                properties.setProperty("exported.profile" + profileIndex + ".platform" + EnumPlatform.STEAM.name() + ".mapListSize", String.valueOf(steamPpmList.size()));
+                int mapIndex = 1;
+                for (PlatformProfileMap ppm : steamPpmList) {
+                    exportMapValues(ppm, profileIndex, mapIndex, idsOfficialMapList, properties);
+                    mapIndex++;
                 }
             }
-            */
+
+            if (epicPpmList != null && !epicPpmList.isEmpty()) {
+                properties.setProperty("exported.profile" + profileIndex + ".platform" + EnumPlatform.EPIC.name() + ".mapListSize", String.valueOf(epicPpmList.size()));
+                int mapIndex = 1;
+                for (PlatformProfileMap ppm : epicPpmList) {
+                    exportMapValues(ppm, profileIndex, mapIndex, idsOfficialMapList, properties);
+                    mapIndex++;
+                }
+            }
+
             profileIndex ++;
         }
 
@@ -361,8 +381,8 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     @Override
-    public List<Profile> importProfilesFromFile(AbstractPlatform platform, List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) {
-        List<Profile> savedProfileList = saveProfilesToDatabase(platform, selectedProfileList, properties);
+    public List<Profile> importProfilesFromFile(List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) {
+        List<Profile> savedProfileList = saveProfilesToDatabase(selectedProfileList, properties);
 
         if (savedProfileList.size() < selectedProfileList.size()) {
             List<String> selectedProfileNameList = selectedProfileList.stream().map(p -> p.getCode()).collect(Collectors.toList());
@@ -508,7 +528,7 @@ public class ProfileServiceImpl implements ProfileService {
     public List<Profile> selectProfilesToBeImported(Properties properties, String message) throws Exception {
         int numberOfProfiles = Integer.parseInt(properties.getProperty("exported.profiles.number"));
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-        List<PlatformProfileToDisplay> platformProfileToDisplayList = new ArrayList<PlatformProfileToDisplay>();
+        List<ProfileToDisplay> profileToDisplayList = new ArrayList<ProfileToDisplay>();
 
         for (int profileIndex = 1; profileIndex <= numberOfProfiles; profileIndex++) {
             String profileName = properties.getProperty("exported.profile" + profileIndex + ".name");
@@ -521,23 +541,20 @@ public class ProfileServiceImpl implements ProfileService {
                 String lengthDescription = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.length." + lengthCode);
                 String mapName = properties.getProperty("exported.profile" + profileIndex + ".map");
 
-                /*
-                PlatformProfileToDisplay platformProfileToDisplay = new PlatformProfileToDisplay(profileIndex, profileName, gameTypeDescription, mapName, difficultyDescription, lengthDescription);
-                platformProfileToDisplay.setSelected(true);
-                platformProfileToDisplayList.add(platformProfileToDisplay);
-                 */
+                ProfileToDisplay profileToDisplay = new ProfileToDisplay(profileIndex, profileName, gameTypeDescription, mapName, difficultyDescription, lengthDescription);
+                profileToDisplay.setSelected(true);
+                profileToDisplayList.add(profileToDisplay);
 
             } catch (Exception e) {
                 logger.error("Error reading the profile " + profileName + " from exported file", e);
             }
         }
-        /*
-        return Utils.selectPlatformProfilesDialog(message + ":", platformProfileToDisplayList)
+
+        return Utils.selectProfilesDialog(message + ":", profileToDisplayList)
                 .stream()
                 .map(ptd -> getProfileFromFile(ptd.getProfileFileIndex(), properties))
                 .collect(Collectors.toList());
-         */
-        return null;
+
     }
 
 
@@ -627,15 +644,15 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
-    private List<Profile> saveProfilesToDatabase(AbstractPlatform platform, List<Profile> selectedProfileList, Properties properties) {
+    private List<Profile> saveProfilesToDatabase(List<Profile> selectedProfileList, Properties properties) {
         List<Profile> savedProfileList = new ArrayList<Profile>();
 
         int profileIndex = 1;
         for (Profile profile: selectedProfileList) {
             try {
-                Profile savedProfile = (Profile) ProfileDao.getInstance().insert(profile);
+                Profile savedProfile = ProfileDao.getInstance().insert(profile);
 
-                List<AbstractMap> mapList = importPlatformProfileMapsFromFile(platform, profileIndex, savedProfile, properties);
+                List<AbstractMap> mapList = importPlatformProfileMapsFromFile(profileIndex, savedProfile, properties);
 
                 String mapName = properties.getProperty("exported.profile" + profileIndex + ".map");
                 Optional<AbstractMap> mapOpt = mapList.stream().filter(m -> m.getCode().equalsIgnoreCase(mapName)).findFirst();
@@ -652,27 +669,102 @@ public class ProfileServiceImpl implements ProfileService {
         return savedProfileList;
     }
 
-    private List<AbstractMap> importPlatformProfileMapsFromFile(AbstractPlatform platform, int profileIndex, Profile profile, Properties properties) throws Exception {
-        List<AbstractMap> mapList = new ArrayList<AbstractMap>();
-        java.util.Map<String,Integer> officialMapsIndex = new HashMap<String, Integer>();
-        List<MapToDisplay> customMapListToDisplay = new ArrayList<MapToDisplay>();
-        java.util.Map<Long,Integer> customMapsIndex = new HashMap<Long, Integer>();
-        int numberOfMaps = Integer.parseInt(properties.getProperty("exported.profile" + profileIndex + ".mapListSize"));
+    private int getMapListSize(int profileIndex, EnumPlatform enumPlatform, Properties properties) throws NumberFormatException {
+        if (enumPlatform.equals(EnumPlatform.STEAM)) {
+            // Retrocompatibility
+            String strNumberOfMaps = properties.getProperty("exported.profile" + profileIndex + ".mapListSize");
+            if (StringUtils.isNotBlank(strNumberOfMaps)) {
+                return Integer.parseInt(strNumberOfMaps);
+            }
+        }
+        // New imported structure
+        String strNumberOfMaps = properties.getProperty("exported.profile" + profileIndex + ".platform" + enumPlatform.name() + ".mapListSize");
+        return StringUtils.isNotBlank(strNumberOfMaps) ? Integer.parseInt(strNumberOfMaps): 0;
+    }
 
-        for (int mapIndex = 1; mapIndex <= numberOfMaps; mapIndex++) {
+    private String getMapName(int profileIndex, EnumPlatform enumPlatform, int mapIndex, Properties properties) {
+        if (enumPlatform.equals(EnumPlatform.STEAM)) {
+            // Retrocompatibility
             String mapName = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".name");
+            if (StringUtils.isNotBlank(mapName)) {
+                return mapName;
+            }
+        }
+        // New imported structure
+        String mapName = properties.getProperty("exported.profile" + profileIndex + ".platform" + enumPlatform.name() + ".map" + mapIndex + ".name");
+        return StringUtils.isNotBlank(mapName) ? mapName: StringUtils.EMPTY;
+    }
+
+    private boolean isOfficialMap(int profileIndex, EnumPlatform enumPlatform, int mapIndex, Properties properties) {
+        if (enumPlatform.equals(EnumPlatform.STEAM)) {
+            // Retrocompatibility
+            String strIsOfficial = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".official");
+            if (StringUtils.isNotBlank(strIsOfficial)) {
+                return Boolean.parseBoolean(strIsOfficial);
+            }
+        }
+        // New imported structure
+        String strIsOfficial = properties.getProperty("exported.profile" + profileIndex + ".platform" + enumPlatform.name() + ".map" + mapIndex + ".official");
+        return StringUtils.isNotBlank(strIsOfficial) ? Boolean.parseBoolean(strIsOfficial): false;
+    }
+
+    private Long getIdWorkShop(int profileIndex, EnumPlatform enumPlatform, int mapIndex, Properties properties) throws NumberFormatException {
+        if (enumPlatform.equals(EnumPlatform.STEAM)) {
+            // Retrocompatibility
+            String strIdWorkShop = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".idWorkShop");
+            if (StringUtils.isNotBlank(strIdWorkShop)) {
+                return Long.parseLong(strIdWorkShop);
+            }
+        }
+        // New imported structure
+        String strIdWorkShop = properties.getProperty("exported.profile" + profileIndex + ".platform" + enumPlatform.name() + ".map" + mapIndex + ".idWorkShop");
+        return StringUtils.isNotBlank(strIdWorkShop) ? Long.parseLong(strIdWorkShop): 0L;
+    }
+
+    private List<AbstractMap> importPlatformProfileMapsFromFile(int profileIndex, Profile profile, Properties properties) throws Exception {
+        List<AbstractMap> mapList = new ArrayList<AbstractMap>();
+        List<MapToDisplay> customMapListToDisplay = new ArrayList<MapToDisplay>();
+
+        java.util.Map<String,Integer> steamOfficialMapsIndex = new HashMap<String, Integer>();
+        java.util.Map<String,Integer> epicOfficialMapsIndex = new HashMap<String, Integer>();
+        java.util.Map<Long,Integer> steamCustomMapsIndex = new HashMap<Long, Integer>();
+        java.util.Map<Long,Integer> epicCustomMapsIndex = new HashMap<Long, Integer>();
+
+        int steamMapListSize = getMapListSize(profileIndex, EnumPlatform.STEAM, properties);
+        for (int mapIndex = 1; mapIndex <= steamMapListSize; mapIndex++) {
+            String mapName = getMapName(profileIndex, EnumPlatform.STEAM, mapIndex, properties);
             try {
-                boolean official = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".official"));
-                if (official) {
-                    officialMapsIndex.put(mapName, mapIndex);
+                boolean isOfficial = isOfficialMap(profileIndex, EnumPlatform.STEAM, mapIndex, properties);
+                if (isOfficial) {
+                    steamOfficialMapsIndex.put(mapName, mapIndex);
                 } else {
-                    String strIdWorkShop = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".idWorkShop");
-                    Long idWorkShop = StringUtils.isNotBlank(strIdWorkShop) ? Long.parseLong(strIdWorkShop) : 0;
-                    customMapListToDisplay.add(new MapToDisplay(idWorkShop, mapName));
-                    customMapsIndex.put(idWorkShop, mapIndex);
+                    Long idWorkShop = getIdWorkShop(profileIndex, EnumPlatform.STEAM, mapIndex, properties);
+                    MapToDisplay mapToDisplay = new MapToDisplay(idWorkShop, mapName);
+                    mapToDisplay.setPlatformDescription(EnumPlatform.STEAM.getDescripcion());
+                    customMapListToDisplay.add(mapToDisplay);
+                    steamCustomMapsIndex.put(idWorkShop, mapIndex);
                 }
             } catch (Exception e) {
-                logger.error("Error importing the map " + mapName + " of profile index " + profileIndex + " from file", e);
+                logger.error("Error importing the map " + mapName + " of profile index " + profileIndex + " in platform " + EnumPlatform.STEAM.getDescripcion() + " from file", e);
+            }
+        }
+
+        int epicMapListSize = getMapListSize(profileIndex, EnumPlatform.EPIC, properties);
+        for (int mapIndex = 1; mapIndex <= epicMapListSize; mapIndex++) {
+            String mapName = getMapName(profileIndex, EnumPlatform.EPIC, mapIndex, properties);
+            try {
+                boolean isOfficial = isOfficialMap(profileIndex, EnumPlatform.EPIC, mapIndex, properties);
+                if (isOfficial) {
+                    epicOfficialMapsIndex.put(mapName, mapIndex);
+                } else {
+                    Long idWorkShop = getIdWorkShop(profileIndex, EnumPlatform.EPIC, mapIndex, properties);
+                    MapToDisplay mapToDisplay = new MapToDisplay(idWorkShop, mapName);
+                    mapToDisplay.setPlatformDescription(EnumPlatform.EPIC.getDescripcion());
+                    customMapListToDisplay.add(mapToDisplay);
+                    epicCustomMapsIndex.put(idWorkShop, mapIndex);
+                }
+            } catch (Exception e) {
+                logger.error("Error importing the map " + mapName + " of profile index " + profileIndex + " in platform " + EnumPlatform.EPIC.getDescripcion() + " from file", e);
             }
         }
 
@@ -680,29 +772,53 @@ public class ProfileServiceImpl implements ProfileService {
         String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectMapsModsForProfile");
         List<MapToDisplay> selectedCustomMapList = Utils.selectMapsDialog(headerText + " " + profile.getCode(), customMapListToDisplay);
 
-        for (java.util.Map.Entry<String, Integer> entry : officialMapsIndex.entrySet()) {
+        for (java.util.Map.Entry<String, Integer> entry : steamOfficialMapsIndex.entrySet()) {
             String mapName = entry.getKey();
             Integer mapIndex = entry.getValue();
             try {
                 Optional mapInDataBaseOpt = officialMapService.findMapByCode(mapName);
-                AbstractMap map = getImportedMap(mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, mapName, null, true);
+                AbstractMap map = getImportedMap(EnumPlatform.STEAM, mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, mapName, null, true);
                 if (map != null) {
                     mapList.add(map);
-                    importPlatformProfileMap(platform, profile, map, true, profileIndex, mapIndex,  properties);
+                    importPlatformProfileMap(EnumPlatform.STEAM, profile, map, true, profileIndex, mapIndex,  properties);
                 }
             } catch (Exception e) {
-                logger.error("Error importing the official map " + mapName + " of profile index " + profileIndex + " from file", e);
+                logger.error("Error importing the official map " + mapName + " of profile index " + profileIndex + " in platform " + EnumPlatform.STEAM.getDescripcion() + " from file", e);
+            }
+        }
+
+        for (java.util.Map.Entry<String, Integer> entry : epicOfficialMapsIndex.entrySet()) {
+            String mapName = entry.getKey();
+            Integer mapIndex = entry.getValue();
+            try {
+                Optional mapInDataBaseOpt = officialMapService.findMapByCode(mapName);
+                AbstractMap map = getImportedMap(EnumPlatform.EPIC, mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, mapName, null, true);
+                if (map != null) {
+                    mapList.add(map);
+                    importPlatformProfileMap(EnumPlatform.EPIC, profile, map, true, profileIndex, mapIndex,  properties);
+                }
+            } catch (Exception e) {
+                logger.error("Error importing the official map " + mapName + " of profile index " + profileIndex + " in platform " + EnumPlatform.EPIC.getDescripcion() + " from file", e);
             }
         }
 
         for (MapToDisplay customMap: selectedCustomMapList) {
-            Integer mapIndex = customMapsIndex.get(customMap.getIdWorkShop());
+            EnumPlatform enumPlatform = null;
+            Integer mapIndex = null;
+            if (customMap.getPlatformDescription().equals(EnumPlatform.STEAM.getDescripcion())) {
+                enumPlatform = EnumPlatform.STEAM;
+                mapIndex = steamCustomMapsIndex.get(customMap.getIdWorkShop());
+            } else {
+                enumPlatform = EnumPlatform.EPIC;
+                mapIndex = epicCustomMapsIndex.get(customMap.getIdWorkShop());
+            }
+
             try {
-                Optional mapInDataBaseOpt = ((CustomMapModServiceImpl) customMapService).findByIdWorkShop(customMap.getIdWorkShop());
-                AbstractMap map = getImportedMap(mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, customMap.getCommentary(), customMap.getIdWorkShop(), false);
+                Optional mapInDataBaseOpt = customMapService.findByIdWorkShop(customMap.getIdWorkShop());
+                AbstractMap map = getImportedMap(enumPlatform, mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, customMap.getCommentary(), customMap.getIdWorkShop(), false);
                 if (map != null) {
                     mapList.add(map);
-                    importPlatformProfileMap(platform, profile, map, false, profileIndex, mapIndex,  properties);
+                    importPlatformProfileMap(enumPlatform, profile, map, false, profileIndex, mapIndex,  properties);
                 }
             } catch (Exception e) {
                 logger.error("Error importing the official map " + customMap.getCommentary() + " of profile index " + profileIndex + " from file", e);
@@ -712,27 +828,115 @@ public class ProfileServiceImpl implements ProfileService {
         return mapList;
     }
 
-    private void importPlatformProfileMap(AbstractPlatform platform, Profile profile, AbstractMap map, boolean downloaded, int profileIndex, int mapIndex, Properties properties) throws Exception {
-        String alias = properties.getProperty("exported.profile" + profileIndex + ".profilemap" + mapIndex + ".alias");
-        alias = StringUtils.isNotBlank(alias) ? alias: map.getCode();
-
-        String releaseDateCopyStr = properties.getProperty("exported.profile" + profileIndex + ".profilemap" + mapIndex + ".releaseDate");
-        String releaseDateOriginalStr = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".releaseDate");
-        String releaseDateStr = StringUtils.isNotBlank(releaseDateCopyStr) ? releaseDateCopyStr: map.getReleaseDate() != null ? releaseDateOriginalStr: StringUtils.EMPTY;
-        Date releaseDate = StringUtils.isNotBlank(releaseDateStr) ? new SimpleDateFormat("yyyy/MM/dd").parse(releaseDateStr): null;
-
-        String urlInfo = properties.getProperty("exported.profile" + profileIndex + ".profilemap" + mapIndex + ".urlInfo");
-        urlInfo = StringUtils.isNotBlank(urlInfo) ? urlInfo: map.getUrlInfo();
-
-        String urlPhoto = properties.getProperty("exported.profile" + profileIndex + ".profilemap" + mapIndex + ".urlPhoto");
-        urlPhoto = StringUtils.isNotBlank(urlPhoto) ? urlPhoto: map.getUrlPhoto();
-
-        PlatformProfileMap platformProfileMap = new PlatformProfileMap(platform, profile, map, releaseDate, urlInfo, urlPhoto, downloaded);
-        platformProfileMap.setAlias(alias);
-        platformProfileMapService.createItem(platformProfileMap);
+    private String getAlias(int profileIndex, Integer mapIndex, EnumPlatform enumPlatform, String mapName, Properties properties) {
+        if (enumPlatform.equals(EnumPlatform.STEAM)) {
+            // Retrocompatibility
+            String alias = properties.getProperty("exported.profile" + profileIndex + ".profilemap" + mapIndex + ".alias");
+            if (StringUtils.isNotBlank(alias)) {
+                return alias;
+            }
+        }
+        // New imported structure
+        String alias = properties.getProperty("exported.profile" + profileIndex + ".platform" + enumPlatform.name() + ".profilemap" + mapIndex + ".alias");
+        return StringUtils.isNotBlank(alias) ? alias: mapName;
     }
 
-    private AbstractMap getImportedMap(Optional<AbstractMap> mapInDataBaseOpt, Profile profile, Properties properties, int profileIndex, Integer mapIndex, String mapName, Long idWorkShop, boolean official) throws Exception {
+    private Date getReleaseDateCopy(int profileIndex, Integer mapIndex, EnumPlatform enumPlatform, Properties properties) throws ParseException {
+        if (enumPlatform.equals(EnumPlatform.STEAM)) {
+            // Retrocompatibility
+            String releaseDateCopyStr = properties.getProperty("exported.profile" + profileIndex + ".profilemap" + mapIndex + ".releaseDate");
+            if (StringUtils.isNotBlank(releaseDateCopyStr)) {
+                return new SimpleDateFormat("yyyy/MM/dd").parse(releaseDateCopyStr);
+            }
+        }
+
+        String releaseDateStr = properties.getProperty("exported.profile" + profileIndex + ".platform" + enumPlatform.name() + ".profilemap" + mapIndex + ".releaseDate");
+        return StringUtils.isNotBlank(releaseDateStr) ? new SimpleDateFormat("yyyy/MM/dd").parse(releaseDateStr): null;
+    }
+
+    private String getUrlInfoCopy(int profileIndex, Integer mapIndex, EnumPlatform enumPlatform, String originalUrlInfo, Properties properties) {
+        if (enumPlatform.equals(EnumPlatform.STEAM)) {
+            // Retrocompatibility
+            String urlInfoCopy = properties.getProperty("exported.profile" + profileIndex + ".profilemap" + mapIndex + ".urlInfo");
+            if (StringUtils.isNotBlank(urlInfoCopy)) {
+                return urlInfoCopy;
+            }
+        }
+        // New imported structure
+        String urlInfoCopy = properties.getProperty("exported.profile" + profileIndex + ".platform" + enumPlatform.name() + ".profilemap" + mapIndex + ".urlInfo");
+        return StringUtils.isNotBlank(urlInfoCopy) ? urlInfoCopy: originalUrlInfo;
+    }
+
+    private String getUrlPhotoCopy(int profileIndex, Integer mapIndex, EnumPlatform enumPlatform, String originalUrlPhoto, Properties properties) {
+        if (enumPlatform.equals(EnumPlatform.STEAM)) {
+            // Retrocompatibility
+            String urlPhotoCopy = properties.getProperty("exported.profile" + profileIndex + ".profilemap" + mapIndex + ".urlPhoto");
+            if (StringUtils.isNotBlank(urlPhotoCopy)) {
+                return urlPhotoCopy;
+            }
+        }
+        // New imported structure
+        String urlPhotoCopy = properties.getProperty("exported.profile" + profileIndex + ".platform" + enumPlatform.name() + ".profilemap" + mapIndex + ".urlPhoto");
+        return StringUtils.isNotBlank(urlPhotoCopy) ? urlPhotoCopy: originalUrlPhoto;
+    }
+
+    private void importPlatformProfileMap(EnumPlatform enumPlatform, Profile profile, AbstractMap map, boolean downloaded, int profileIndex, int mapIndex, Properties properties) throws Exception {
+        String alias = getAlias(profileIndex, mapIndex, enumPlatform, map.getCode(), properties);
+        Date releaseDateCopy = getReleaseDateCopy(profileIndex, mapIndex, enumPlatform, properties);
+        Date releaseDate = releaseDateCopy != null ? releaseDateCopy: map.getReleaseDate() != null ? map.getReleaseDate(): null;
+        String urlInfo = getUrlInfoCopy(profileIndex, mapIndex, enumPlatform, map.getUrlInfo(), properties);
+        String urlPhoto = getUrlPhotoCopy(profileIndex, mapIndex, enumPlatform, map.getUrlPhoto(), properties);
+
+        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(enumPlatform.name());
+        if (platformOptional.isPresent()) {
+            if (Kf2Factory.getInstance(platformOptional.get()).isValidInstallationFolder()) {
+                PlatformProfileMap platformProfileMap = new PlatformProfileMap(platformOptional.get(), profile, map, releaseDate, urlInfo, urlPhoto, downloaded);
+                platformProfileMap.setAlias(alias);
+                platformProfileMapService.createItem(platformProfileMap);
+            }
+        }
+    }
+
+    private String getUrlInfo(int profileIndex, Integer mapIndex, EnumPlatform enumPlatform, Properties properties) {
+        if (enumPlatform.equals(EnumPlatform.STEAM)) {
+            // Retrocompatibility
+            String urlInfo = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlInfo");
+            if (StringUtils.isNotBlank(urlInfo)) {
+                return urlInfo;
+            }
+        }
+        // New imported structure
+        String urlInfo = properties.getProperty("exported.profile" + profileIndex + ".platform" + enumPlatform.name() + ".map" + mapIndex + ".urlInfo");
+        return StringUtils.isNotBlank(urlInfo) ? urlInfo: StringUtils.EMPTY;
+    }
+
+    private String getUrlPhoto(int profileIndex, Integer mapIndex, EnumPlatform enumPlatform, Properties properties) {
+        if (enumPlatform.equals(EnumPlatform.STEAM)) {
+            // Retrocompatibility
+            String urlPhoto = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlPhoto");
+            if (StringUtils.isNotBlank(urlPhoto)) {
+                return urlPhoto;
+            }
+        }
+        // New imported structure
+        String urlPhoto = properties.getProperty("exported.profile" + profileIndex + ".platform" + enumPlatform.name() + ".map" + mapIndex + ".urlPhoto");
+        return StringUtils.isNotBlank(urlPhoto) ? urlPhoto: StringUtils.EMPTY;
+    }
+
+    private Date getReleaseDate(int profileIndex, Integer mapIndex, EnumPlatform enumPlatform, Properties properties) throws ParseException {
+        if (enumPlatform.equals(EnumPlatform.STEAM)) {
+            // Retrocompatibility
+            String releaseDateStr = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".releaseDate");
+            if (StringUtils.isNotBlank(releaseDateStr)) {
+                return new SimpleDateFormat("yyyy/MM/dd").parse(releaseDateStr);
+            }
+        }
+
+        String releaseDateStr = properties.getProperty("exported.profile" + profileIndex + ".platform" + enumPlatform.name() + ".map" + mapIndex + ".releaseDate");
+        return StringUtils.isNotBlank(releaseDateStr) ? new SimpleDateFormat("yyyy/MM/dd").parse(releaseDateStr): null;
+    }
+
+    private AbstractMap getImportedMap(EnumPlatform enumPlatform, Optional<AbstractMap> mapInDataBaseOpt, Profile profile, Properties properties, int profileIndex, Integer mapIndex, String mapName, Long idWorkShop, boolean official) throws Exception {
         if (mapInDataBaseOpt.isPresent()) {
             if (officialMapService.findByCode(mapInDataBaseOpt.get().getCode()).isPresent()) {
                 if (officialMapService.updateItem(mapInDataBaseOpt.get())) {
@@ -744,17 +948,15 @@ public class ProfileServiceImpl implements ProfileService {
                 }
             }
         } else {
-            String urlInfo = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlInfo");
-            String urlPhoto = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".urlPhoto");
-            String releaseDateStr = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".releaseDate");
-            Date releaseDate = StringUtils.isNotBlank(releaseDateStr) ? new SimpleDateFormat("yyyy/MM/dd").parse(releaseDateStr): null;
+            String urlInfo = getUrlInfo(profileIndex, mapIndex, enumPlatform, properties);
+            String urlPhoto = getUrlPhoto(profileIndex, mapIndex, enumPlatform, properties);
+            Date releaseDate = getReleaseDate(profileIndex, mapIndex, enumPlatform, properties);
 
             AbstractMap map = null;
             if (official) {
                 map = new OfficialMap(mapName, urlInfo, urlPhoto, releaseDate);
                 return officialMapService.createItem(map);
             } else {
-                boolean downloaded = Boolean.parseBoolean(properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".downloaded"));
                 map = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop);
                 if (createNewCustomMapFromWorkshop((CustomMapMod) map)) {
                     return map;
@@ -765,12 +967,6 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     private boolean createNewCustomMapFromWorkshop(CustomMapMod map) throws Exception {
-        String installationFolder;
-        if (EnumPlatform.STEAM.equals(Session.getInstance().getPlatform())) {
-            installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.steamInstallationFolder");
-        } else {
-            installationFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.epicInstallationFolder");
-        }
         URL urlWorkShop = new URL(map.getUrlInfo());
         BufferedReader reader = new BufferedReader(new InputStreamReader(urlWorkShop.openStream()));
         String strUrlMapImage = null;
@@ -783,7 +979,25 @@ public class ProfileServiceImpl implements ProfileService {
             }
         }
         reader.close();
-        Utils.downloadImageFromUrlToFile(strUrlMapImage, installationFolder + map.getUrlPhoto());
+
+        List<AbstractPlatform> validPlatformList = new ArrayList<AbstractPlatform>();
+        Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();
+        if (steamPlatformOptional.isPresent()) {
+            if (Kf2Factory.getInstance(steamPlatformOptional.get()).isValidInstallationFolder()) {
+                validPlatformList.add(steamPlatformOptional.get());
+            }
+        }
+        Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
+        if (epicPlatformOptional.isPresent()) {
+            if (Kf2Factory.getInstance(epicPlatformOptional.get()).isValidInstallationFolder()) {
+                validPlatformList.add(epicPlatformOptional.get());
+            }
+        }
+
+        for (AbstractPlatform platform: validPlatformList) {
+            Utils.downloadImageFromUrlToFile(strUrlMapImage, platform.getInstallationFolder() + map.getUrlPhoto());
+        }
+
         AbstractMap insertedMap = customMapModService.createItem(map);;
         return (insertedMap != null);
     }

@@ -22,5 +22,5 @@ public interface ProfileService extends AbstractExtendedService<Profile> {
     void importLengthsFromFile(Properties properties, List<Language> languageList) throws Exception;
     void importMaxPlayersFromFile(Properties properties, List<Language> languageList) throws Exception;
     List<Profile> selectProfilesToBeImported(Properties properties, String message) throws Exception;
-    List<Profile> importProfilesFromFile(AbstractPlatform platform, List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage);
+    List<Profile> importProfilesFromFile(List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage);
 }

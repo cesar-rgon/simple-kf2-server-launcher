@@ -1597,7 +1597,7 @@ public class MainContentController implements Initializable {
             List<String> selectedProfileNameList = new ArrayList<String>();
             switch (allProfiles.size()) {
                 case 0:
-                    facade.runServer(null, null);
+                    facade.runServer(platformSelect.getValue().getKey(), null);
                     return;
                 case 1:
                     selectedProfileNameList.add(allProfiles.get(0).getName());
@@ -1627,7 +1627,7 @@ public class MainContentController implements Initializable {
             String selectedProfileName = null;
             switch (allProfiles.size()) {
                 case 0:
-                    facade.joinServer(null, null);
+                    facade.joinServer(platformSelect.getValue().getKey(), null);
                     return;
                 case 1:
                     selectedProfileName = allProfiles.get(0).getName();

@@ -4,9 +4,9 @@ import javafx.beans.property.*;
 import javafx.scene.control.Hyperlink;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.enums.EnumPlatform;
 import services.PropertyService;
 import services.PropertyServiceImpl;
-import stories.mapsedition.MapsEditionFacadeImpl;
 
 public class MapToDisplay {
 
@@ -15,6 +15,7 @@ public class MapToDisplay {
     private Long idWorkShop;
     private Hyperlink workShopPage;
     private StringProperty commentary;
+    private String platformDescription;
 
     public MapToDisplay(Long idWorkShop,
                         String commentary) {
@@ -30,6 +31,7 @@ public class MapToDisplay {
             logger.error(e.getMessage(), e);
         }
         this.commentary = new SimpleStringProperty(commentary);
+        this.platformDescription = EnumPlatform.STEAM.name();
     }
 
     public MapToDisplay(String commentary) {
@@ -70,10 +72,18 @@ public class MapToDisplay {
     }
 
     public StringProperty commentaryProperty() {
-        return commentary;
+        return new SimpleStringProperty("[ " + platformDescription + " ] " + commentary.get());
     }
 
     public void setCommentary(String commentary) {
         this.commentary.set(commentary);
+    }
+
+    public String getPlatformDescription() {
+        return platformDescription;
+    }
+
+    public void setPlatformDescription(String platformDescription) {
+        this.platformDescription = platformDescription;
     }
 }

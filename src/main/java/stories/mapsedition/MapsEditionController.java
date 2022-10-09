@@ -1558,8 +1558,8 @@ public class MapsEditionController implements Initializable {
 
             steamOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, true, officialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
             steamCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.STEAM, false, customMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
-            epicOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.EPIC, true, officialMapsTabText, steamOfficialMapsFlowPane.getChildren().size()));
-            epicCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.EPIC, true, customMapsModsTabText, steamCustomMapsFlowPane.getChildren().size()));
+            epicOfficialMapsTab.setGraphic(createTabTitle(EnumPlatform.EPIC, true, officialMapsTabText, epicOfficialMapsFlowPane.getChildren().size()));
+            epicCustomMapsTab.setGraphic(createTabTitle(EnumPlatform.EPIC, true, customMapsModsTabText, epicCustomMapsFlowPane.getChildren().size()));
 
             Session.getInstance().setMapsProfile(profileSelect.getValue());
         } catch (Exception e) {

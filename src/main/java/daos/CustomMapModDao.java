@@ -43,7 +43,6 @@ public class CustomMapModDao extends AbstractExtendedDao<CustomMapMod> {
         String query="select cmm from entities.CustomMapMod cmm where cmm.idWorkShop=:IDWORKSHOP";
         java.util.Map<String,Object> parameters = new HashMap<String,Object>();
         parameters.put("IDWORKSHOP", idWorkShop);
-        List<CustomMapMod> list = list(query, parameters);
-        return (list != null && !list.isEmpty())? Optional.ofNullable(list.get(0)): Optional.empty();
+        return find(query, parameters);
     }
 }

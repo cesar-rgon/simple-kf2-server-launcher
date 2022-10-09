@@ -11,9 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.PlatformProfile;
-import pojos.PlatformProfileToDisplay;
-import pojos.PlatformProfileToDisplayFactory;
+import pojos.*;
 import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
@@ -42,6 +40,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
     private final LanguageServiceImpl languageService;
     private final LengthServiceImpl lengthService;
     private final MaxPlayersServiceImpl maxPlayersService;
+    private final ProfileToDisplayFactory profileToDisplayFactory;
 
     public ProfilesEditionFacadeImpl() {
         profileDtoFactory = new ProfileDtoFactory();
@@ -56,6 +55,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
         this.languageService = new LanguageServiceImpl();
         this.lengthService = new LengthServiceImpl();
         this.maxPlayersService = new MaxPlayersServiceImpl();
+        this.profileToDisplayFactory = new ProfileToDisplayFactory();
     }
 
 
@@ -243,7 +243,7 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
     }
 
     @Override
-    public void exportProfilesToFile(List<PlatformProfileToDisplay> profilesToExportDto, File file) throws Exception {
+    public void exportProfilesToFile(List<ProfileToDisplay> profilesToExportDto, File file) throws Exception {
         List<Profile> profilesToExport = profilesToExportDto.stream().map(dto -> {
             try {
                 Optional<Profile> profileOpt = profileService.findProfileByCode(dto.getProfileName());
@@ -295,27 +295,39 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
     }
 
     @Override
-    public ObservableList<ProfileDto> importProfilesFromFile(String platformName, List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) throws Exception {
-        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(platformName);
-        if (!platformOptional.isPresent()) {
-            return null;
-        }
-        List<Profile> savedProfileList = profileService.importProfilesFromFile(platformOptional.get(), selectedProfileList, properties, errorMessage);
+    public ObservableList<ProfileDto> importProfilesFromFile(List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) throws Exception {
+        List<Profile> savedProfileList = profileService.importProfilesFromFile(selectedProfileList, properties, errorMessage);
         return profileDtoFactory.newDtos(savedProfileList);
     }
 
     @Override
-    public List<PlatformProfileToDisplay> selectProfilesToBeExported(String message) throws SQLException {
-        List<AbstractPlatform> allPlatformList = platformService.listAllPlatforms();
-        List<Profile> allProfileList = profileService.listAllProfiles();
-        List<PlatformProfile> platformProfileList = new ArrayList<PlatformProfile>();
-        for (Profile profile: allProfileList) {
-            for (AbstractPlatform platform: allPlatformList) {
-                platformProfileList.add(new PlatformProfile(platform, profile));
+    public List<ProfileToDisplay> selectProfilesToBeExported(String message) throws SQLException {
+        List<Profile> allProfiles = profileService.listAllProfiles();
+        List<ProfileToDisplay> allProfilesToDisplay = profileToDisplayFactory.newOnes(allProfiles);
+        allProfilesToDisplay.stream().forEach(p -> p.setSelected(true));
+        return Utils.selectProfilesDialog(message + ":", allProfilesToDisplay);
+
+    }
+
+    @Override
+    public void createConfigFolder(String profileName) throws SQLException {
+        List<AbstractPlatform> validPlatformList = new ArrayList<AbstractPlatform>();
+        Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();
+        if (steamPlatformOptional.isPresent()) {
+            if (Kf2Factory.getInstance(steamPlatformOptional.get()).isValidInstallationFolder()) {
+                validPlatformList.add(steamPlatformOptional.get());
             }
         }
-        List<String> fullProfileNameList = EnumPlatform.listAll().stream().map(EnumPlatform::name).collect(Collectors.toList());
+        Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
+        if (epicPlatformOptional.isPresent()) {
+            if (Kf2Factory.getInstance(epicPlatformOptional.get()).isValidInstallationFolder()) {
+                validPlatformList.add(epicPlatformOptional.get());
+            }
+        }
 
-        return Utils.selectPlatformProfilesDialog(message + ":", platformProfileList, fullProfileNameList);
+        for (AbstractPlatform platform: validPlatformList) {
+            Kf2Common kf2Common = Kf2Factory.getInstance(platform);
+            kf2Common.createConfigFolder(platform.getInstallationFolder(), profileName);
+        }
     }
 }

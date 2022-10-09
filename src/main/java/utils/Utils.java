@@ -387,6 +387,147 @@ public class Utils {
         return new ArrayList<AddMapsToPlatformProfile>();
     }
 
+    public static List<ProfileToDisplay> selectProfilesDialog(String headerText, List<ProfileToDisplay> profileList) {
+        Dialog<TableView<ProfileToDisplay>> dialog = new Dialog<TableView<ProfileToDisplay>>();
+        PropertyService propertyService = new PropertyServiceImpl();
+        String selectText = "";
+        String profileNameText = "";
+        String gameTypeText = "";
+        String mapNameText = "";
+        String difficultyText = "";
+        String lengthText = "";
+
+        try {
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            selectText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.select");
+            profileNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileName");
+            gameTypeText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.gametype");
+            mapNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
+            difficultyText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultyLowercase");
+            lengthText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthLowercase");
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
+            dialog.setTitle(applicationTitle);
+        } catch (Exception ex) {
+            dialog.setTitle("");
+        }
+        dialog.setHeaderText(headerText);
+
+        TableView<ProfileToDisplay> tableView = new TableView<ProfileToDisplay>();
+
+        // First Column
+        TableColumn<ProfileToDisplay, Boolean> selectColumn = new TableColumn<ProfileToDisplay, Boolean>();
+        selectColumn.setText(selectText);
+        selectColumn.setCellFactory(col -> new CheckBoxTableCell<>());
+        selectColumn.setCellValueFactory(cellData -> cellData.getValue().selectedProperty());
+        selectColumn.setSortable(false);
+        selectColumn.setEditable(true);
+        selectColumn.setMinWidth(50);
+
+        // Second Column
+        TableColumn<ProfileToDisplay, String> profileNameColumn = new TableColumn<ProfileToDisplay, String>();
+        profileNameColumn.setText(profileNameText);
+        profileNameColumn.setCellValueFactory(cellData -> cellData.getValue().profileNameProperty());
+        profileNameColumn.setSortable(false);
+        profileNameColumn.setEditable(false);
+        profileNameColumn.setMinWidth(150);
+
+        // Third Column
+        TableColumn<ProfileToDisplay, String> gameTypeColumn = new TableColumn<ProfileToDisplay, String>();
+        gameTypeColumn.setText(gameTypeText);
+        gameTypeColumn.setCellValueFactory(cellData -> cellData.getValue().gameTypeDescriptionProperty());
+        gameTypeColumn.setSortable(false);
+        gameTypeColumn.setEditable(false);
+        gameTypeColumn.setMinWidth(150);
+
+        // Fourth Column
+        TableColumn<ProfileToDisplay, String> mapNameColumn = new TableColumn<ProfileToDisplay, String>();
+        mapNameColumn.setText(mapNameText);
+        mapNameColumn.setCellValueFactory(cellData -> cellData.getValue().mapNameProperty());
+        mapNameColumn.setSortable(false);
+        mapNameColumn.setEditable(false);
+        mapNameColumn.setMinWidth(150);
+
+        // Fifth Column
+        TableColumn<ProfileToDisplay, String> difficultyColumn = new TableColumn<ProfileToDisplay, String>();
+        difficultyColumn.setText(difficultyText);
+        difficultyColumn.setCellValueFactory(cellData -> cellData.getValue().difficultyDescriptionProperty());
+        difficultyColumn.setSortable(false);
+        difficultyColumn.setEditable(false);
+        difficultyColumn.setMinWidth(150);
+
+        // Sixth Column
+        TableColumn<ProfileToDisplay, String> lengthColumn = new TableColumn<ProfileToDisplay, String>();
+        lengthColumn.setText(lengthText);
+        lengthColumn.setCellValueFactory(cellData -> cellData.getValue().lengthDescriptionProperty());
+        lengthColumn.setSortable(false);
+        lengthColumn.setEditable(false);
+        lengthColumn.setMinWidth(150);
+
+        tableView.getColumns().add(selectColumn);
+        tableView.getColumns().add(profileNameColumn);
+        tableView.getColumns().add(gameTypeColumn);
+        tableView.getColumns().add(mapNameColumn);
+        tableView.getColumns().add(difficultyColumn);
+        tableView.getColumns().add(lengthColumn);
+        tableView.setItems(FXCollections.observableArrayList(profileList));
+        tableView.setEditable(true);
+
+        dialog.getDialogPane().setContent(tableView);
+        dialog.setResizable(true);
+        dialog.getDialogPane().setMinWidth(800);
+        dialog.getDialogPane().setMinHeight(400);
+
+        ButtonType buttonTypeOk = null;
+        ButtonType buttonTypeCancel = null;
+        ButtonType selectAll = null;
+        ButtonType selectNone = null;
+        try {
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            String okText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.ok");
+            buttonTypeOk = new ButtonType(okText, ButtonBar.ButtonData.OK_DONE);
+            String cancelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.cancel");
+            buttonTypeCancel = new ButtonType(cancelText, ButtonBar.ButtonData.CANCEL_CLOSE);
+            String selectAllText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.selectMaps");
+            selectAll = new ButtonType(selectAllText, ButtonBar.ButtonData.LEFT);
+            String unselectAllText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unselectMaps");
+            selectNone = new ButtonType(unselectAllText, ButtonBar.ButtonData.LEFT);
+        } catch (Exception e) {
+            buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+            buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        }
+
+        dialog.getDialogPane().getButtonTypes().addAll(selectAll, selectNone, buttonTypeOk, buttonTypeCancel);
+        ButtonType finalButtonTypeOk = buttonTypeOk;
+        ButtonType finalUnselectAll = selectNone;
+        ButtonType finalSelectAll = selectAll;
+        dialog.setResultConverter(b -> {
+            if (b.equals(finalButtonTypeOk) ) {
+                return tableView;
+            }
+            if (b.equals(finalUnselectAll)) {
+                profileList.stream().forEach(p -> p.setSelected(false));
+                dialog.showAndWait();
+            }
+            if (b.equals(finalSelectAll)) {
+                profileList.stream().forEach(p -> p.setSelected(true));
+                dialog.showAndWait();
+            }
+            return null;
+        });
+
+        Optional<TableView<ProfileToDisplay>> result = dialog.showAndWait();
+        if (result.isPresent() && result.get() != null && result.get().getItems() != null && !result.get().getItems().isEmpty()) {
+            List<ProfileToDisplay> selectedProfiles = new ArrayList<ProfileToDisplay>();
+            for (ProfileToDisplay profileToDisplay : profileList) {
+                Boolean isSelected = selectColumn.getCellData(profileToDisplay);
+                if (isSelected != null && isSelected) {
+                    selectedProfiles.add(profileToDisplay);
+                }
+            }
+            return selectedProfiles;
+        }
+        return new ArrayList<ProfileToDisplay>();
+    }
 
     public static List<PlatformProfileToDisplay> selectPlatformProfilesDialog(String headerText, List<PlatformProfile> platformProfileList, List<String> selectedProfileNameList) {
         Dialog<TableView<PlatformProfileToDisplay>> dialog = new Dialog<TableView<PlatformProfileToDisplay>>();
@@ -651,16 +792,16 @@ public class Utils {
         idWorkShopColumn.setMinWidth(480);
 
         // Third Column
-        TableColumn<MapToDisplay, String> mapNameColumn = new TableColumn<MapToDisplay, String>();
-        mapNameColumn.setText(commentaryText);
-        mapNameColumn.setCellValueFactory(cellData -> cellData.getValue().commentaryProperty());
-        mapNameColumn.setSortable(false);
-        mapNameColumn.setEditable(false);
-        mapNameColumn.setMinWidth(270);
+        TableColumn<MapToDisplay, String> commentaryColumn = new TableColumn<MapToDisplay, String>();
+        commentaryColumn.setText(commentaryText);
+        commentaryColumn.setCellValueFactory(cellData -> cellData.getValue().commentaryProperty());
+        commentaryColumn.setSortable(false);
+        commentaryColumn.setEditable(false);
+        commentaryColumn.setMinWidth(270);
 
         tableView.getColumns().add(selectColumn);
         tableView.getColumns().add(idWorkShopColumn);
-        tableView.getColumns().add(mapNameColumn);
+        tableView.getColumns().add(commentaryColumn);
         tableView.setItems(FXCollections.observableArrayList(mapList));
         tableView.setEditable(true);
 

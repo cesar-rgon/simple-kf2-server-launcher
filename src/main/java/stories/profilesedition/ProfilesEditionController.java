@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.PlatformProfileToDisplay;
+import pojos.ProfileToDisplay;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import pojos.session.Session;
@@ -331,8 +332,6 @@ public class ProfilesEditionController implements Initializable {
     @FXML
     private void importProfileOnAction() {
         try {
-            String steamInstallationFolder = facade.findConfigPropertyValue("prop.config.steamInstallationFolder");
-            String epicInstallationFolder = facade.findConfigPropertyValue("prop.config.epicInstallationFolder");
             FileChooser fileChooser = new FileChooser();
             String message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.importProfiles");
             fileChooser.setTitle(message + " ...");
@@ -366,7 +365,6 @@ public class ProfilesEditionController implements Initializable {
                             return;
                         }
                         ObservableList<ProfileDto> importedProfiles = facade.importProfilesFromFile(
-                                Session.getInstance().getPlatform().getKey(),
                                 selectedProfileList,
                                 properties, errorMessage
                         );
@@ -377,18 +375,12 @@ public class ProfilesEditionController implements Initializable {
                         }
 
                         for (ProfileDto importedProfile: importedProfiles) {
-                            profilesTable.getItems().add(importedProfile);
-                            /*
-                            Kf2Common kf2Common = Kf2Factory.getInstance(
-                                    Session.getInstance().getPlatform().getKey()
-                            );
-                            if (StringUtils.isNotBlank(steamInstallationFolder)) {
-                                kf2Common.createConfigFolder(steamInstallationFolder, importedProfile.getName());
+                            try {
+                                profilesTable.getItems().add(importedProfile);
+                                facade.createConfigFolder(importedProfile.getName());
+                            } catch (Exception e) {
+                                logger.error(e.getMessage(), e);
                             }
-                            if (StringUtils.isNotBlank(epicInstallationFolder)) {
-                                kf2Common.createConfigFolder(epicInstallationFolder, importedProfile.getName());
-                            }
-                            */
                         }
 
                         if (StringUtils.isBlank(errorMessage)) {
@@ -424,7 +416,7 @@ public class ProfilesEditionController implements Initializable {
     private void exportProfileOnAction() {
         try {
             String message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfilesToExport");
-            List<PlatformProfileToDisplay> selectedProfiles = facade.selectProfilesToBeExported(message);
+            List<ProfileToDisplay> selectedProfiles = facade.selectProfilesToBeExported(message);
 
             if (selectedProfiles != null && !selectedProfiles.isEmpty()) {
                 FileChooser fileChooser = new FileChooser();
