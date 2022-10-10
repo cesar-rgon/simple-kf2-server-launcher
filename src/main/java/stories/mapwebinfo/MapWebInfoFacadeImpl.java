@@ -231,12 +231,25 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
 
     @Override
     public List<PlatformProfile> getPlatformProfileListWithoutMap(Long idWorkShop) throws SQLException {
-        List<AbstractPlatform> fullPlatformList = platformService.listAllPlatforms();
+        List<AbstractPlatform> validPlatformList = new ArrayList<AbstractPlatform>();
+        Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();
+        if (steamPlatformOptional.isPresent()) {
+            if (Kf2Factory.getInstance(steamPlatformOptional.get()).isValidInstallationFolder()) {
+                validPlatformList.add(steamPlatformOptional.get());
+            }
+        }
+        Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
+        if (epicPlatformOptional.isPresent()) {
+            if (Kf2Factory.getInstance(epicPlatformOptional.get()).isValidInstallationFolder()) {
+                validPlatformList.add(epicPlatformOptional.get());
+            }
+        }
+
         List<Profile> fullProfileList = profileService.listAllProfiles();
         List<PlatformProfile> platformProfileListWithoutMap = new ArrayList<PlatformProfile>();
 
         for (Profile profile: fullProfileList) {
-            for (AbstractPlatform platform: fullPlatformList) {
+            for (AbstractPlatform platform: validPlatformList) {
                 Optional<PlatformProfileMap> platformProfileMapOptional = platformProfileMapService.listPlatformProfileMaps(platform, profile).stream().
                         filter(ppm -> {
                             try {

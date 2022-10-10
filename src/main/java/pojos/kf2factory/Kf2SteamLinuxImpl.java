@@ -1,6 +1,7 @@
 package pojos.kf2factory;
 
 import entities.Profile;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,6 +9,7 @@ import pojos.session.Session;
 import utils.Utils;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -107,7 +109,61 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
 
     @Override
     protected void applyPatchToDownloadMaps() throws Exception {
+        String homeFolder = System.getProperty("user.home");
+        StringBuffer command = new StringBuffer("/usr/games/steamcmd +force_install_dir ");
+        command.append(homeFolder);
+        command.append("/kf2_patch");
+        command.append(" +login anonymous +app_update 1007 validate ");
+        command.append(" +exit");
 
+        // Execute steamcmd and install the patch
+        Process applyPatch = Runtime.getRuntime().exec(new String[]{"xterm",
+                "-T", "Installing/Updating the server",
+                "-fa", "DejaVu Sans Mono",
+                "-fs", "11",
+                "-geometry", "120x25+0-0",
+                "-xrm", "XTerm.vt100.allowTitleOps: false",
+                "-e", command.toString()});
+        applyPatch.waitFor();
+
+        File srcFolder = new File(homeFolder + "/kf2_patch");
+        File targetFolder = new File(this.platform.getInstallationFolder());
+        File[] sourceSoFiles = srcFolder.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                if(name.endsWith(".so")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+        for (File sourceSoFile: sourceSoFiles) {
+            FileUtils.copyFileToDirectory(sourceSoFile, targetFolder);
+        }
+
+        File srcLinux64Folder = new File(homeFolder + "/kf2_patch/linux64");
+        File targetLinux64Folder = new File(this.platform.getInstallationFolder() + "/linux64");
+        File[] sourceLinux64SoFiles = srcLinux64Folder.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                if(name.endsWith(".so")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        });
+        for (File sourceSoFile: sourceLinux64SoFiles) {
+            FileUtils.copyFileToDirectory(sourceSoFile, targetLinux64Folder);
+        }
+
+        File targetLib64Folder = new File(this.platform.getInstallationFolder() + "/Binaries/Win64/lib64");
+        for (File sourceSoFile: sourceSoFiles) {
+            FileUtils.copyFileToDirectory(sourceSoFile, targetLib64Folder);
+        }
+
+        FileUtils.deleteDirectory(srcFolder);
     }
 
     @Override
