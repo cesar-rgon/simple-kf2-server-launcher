@@ -70,8 +70,8 @@ public abstract class AbstractPlatform extends AbstractExtendedEntity {
     }
 
     @Override
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescription(Object description) {
+        this.description = (String) description;
     }
 
     public String getLogoPath() {

@@ -2,6 +2,7 @@ package stories.difficultiesedition;
 
 import dtos.ProfileDto;
 import dtos.SelectDto;
+import entities.Description;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -10,6 +11,7 @@ import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.enums.EnumLanguage;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -123,7 +125,7 @@ public class DifficultiesEditionController implements Initializable {
         String newDifficultyDescription = (String)event.getNewValue();
         try {
             String code = difficultiesTable.getItems().get(edittedRowIndex).getKey();
-            SelectDto updatedGameTypeDto = facade.updateItemDescription(code, oldDifficultyDescription, newDifficultyDescription);
+            SelectDto updatedGameTypeDto = facade.updateItemDescription(code, oldDifficultyDescription, newDifficultyDescription, languageCode);
             if (updatedGameTypeDto != null) {
                 difficultiesTable.getItems().remove(edittedRowIndex);
                 difficultiesTable.getItems().add(updatedGameTypeDto);
@@ -149,7 +151,7 @@ public class DifficultiesEditionController implements Initializable {
             if (result.isPresent() && StringUtils.isNotBlank(result.get().getKey()) && StringUtils.isNotBlank(result.get().getValue())) {
                 String code = result.get().getKey();
                 String description = result.get().getValue();
-                difficultiesTable.getItems().add(facade.createItem(code, description));
+                difficultiesTable.getItems().add(facade.createItem(code, description, languageCode));
             }
         } catch (Exception e) {
             String message = "The difficulty can not be created!";
@@ -169,7 +171,7 @@ public class DifficultiesEditionController implements Initializable {
                 Optional<ButtonType> result = Utils.questionDialog(question, selectedDifficulty.getKey());
                 if (result.isPresent() && result.get().equals(ButtonType.OK)) {
 
-                    ProfileDto actualProfile = Session.getInstance().getActualProfile();
+                    ProfileDto actualProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfileName());
                     if (actualProfile != null && actualProfile.getDifficulty() != null &&
                             selectedDifficulty.getKey().equals(actualProfile.getDifficulty().getKey())) {
                         facade.unselectDifficultyInProfile(actualProfile.getName());

@@ -27,4 +27,5 @@ public interface ProfilesEditionFacade {
     List<Profile> questionToImportProfilesFromFile(Properties properties, String message) throws Exception;
     ObservableList<ProfileDto> importProfilesFromFile(List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) throws Exception;
     void createConfigFolder(String profileName) throws SQLException;
+    ProfileDto findProfileDtoByName(String name) throws Exception;
 }

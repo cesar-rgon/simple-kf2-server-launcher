@@ -15,9 +15,9 @@ public class MaxPlayers extends AbstractExtendedEntity {
     @Column(name="CODE", length=100, unique=true, nullable=false)
     private String code;
 
-    // Not mapped attribute. This value is stored in .properties file of each language
-    @Transient
-    private String description;
+    @OneToOne
+    @JoinColumn(name="ID_DESCRIPTION")
+    private Description description;
 
     public MaxPlayers() {
         super();
@@ -49,13 +49,13 @@ public class MaxPlayers extends AbstractExtendedEntity {
     }
 
     @Override
-    public String getDescription() {
+    public Description getDescription() {
         return description;
     }
 
     @Override
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescription(Object description) {
+        this.description = (Description) description;
     }
 
     @Override

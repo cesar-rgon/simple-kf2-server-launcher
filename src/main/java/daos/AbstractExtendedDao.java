@@ -8,8 +8,6 @@ import java.util.Optional;
 
 public abstract class AbstractExtendedDao<E extends AbstractEntity> extends AbstractDao<E> {
 
-    private Class<E> entityClass;
-
     public AbstractExtendedDao(Class<E> entityClass) {
         super(entityClass);
     }

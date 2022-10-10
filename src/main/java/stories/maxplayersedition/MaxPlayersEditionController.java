@@ -2,6 +2,7 @@ package stories.maxplayersedition;
 
 import dtos.ProfileDto;
 import dtos.SelectDto;
+import entities.Description;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -10,6 +11,7 @@ import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.enums.EnumLanguage;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -126,7 +128,7 @@ public class MaxPlayersEditionController implements Initializable {
         String newMaxPlayersDescription = (String)event.getNewValue();
         try {
             String code = maxPlayersTable.getItems().get(edittedRowIndex).getKey();
-            SelectDto updatedLengthDto = facade.updateItemDescription(code, oldMaxPlayersDescription, newMaxPlayersDescription);
+            SelectDto updatedLengthDto = facade.updateItemDescription(code, oldMaxPlayersDescription, newMaxPlayersDescription, languageCode);
             if (updatedLengthDto != null) {
                 maxPlayersTable.getItems().remove(edittedRowIndex);
                 maxPlayersTable.getItems().add(updatedLengthDto);
@@ -152,7 +154,7 @@ public class MaxPlayersEditionController implements Initializable {
             if (result.isPresent() && StringUtils.isNotBlank(result.get().getKey()) && StringUtils.isNotBlank(result.get().getValue())) {
                 String code = result.get().getKey();
                 String description = result.get().getValue();
-                maxPlayersTable.getItems().add(facade.createItem(code, description));
+                maxPlayersTable.getItems().add(facade.createItem(code, description, languageCode));
             }
         } catch (Exception e) {
             String message = "The max. players can not be created!";
@@ -172,7 +174,7 @@ public class MaxPlayersEditionController implements Initializable {
                 Optional<ButtonType> result = Utils.questionDialog(question, selectedMaxPlayers.getKey());
                 if (result.isPresent() && result.get().equals(ButtonType.OK)) {
 
-                    ProfileDto actualProfile = Session.getInstance().getActualProfile();
+                    ProfileDto actualProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfileName());
                     if (actualProfile != null && actualProfile.getMaxPlayers() != null &&
                             selectedMaxPlayers.getKey().equals(actualProfile.getMaxPlayers().getKey())) {
 

@@ -74,21 +74,6 @@ public class Session {
         return actualProfileName;
     }
 
-    public ProfileDto getActualProfile() {
-        if (StringUtils.isEmpty(getActualProfileName())) {
-            return null;
-        }
-        try {
-            Optional<Profile> actualProfileOptional = profileService.findProfileByCode(getActualProfileName());
-            if (actualProfileOptional.isPresent()) {
-                return profileDtoFactory.newDto(actualProfileOptional.get());
-            }
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-        }
-        return null;
-    }
-
     public void setActualProfileName(String actualProfileName) {
         this.actualProfileName = actualProfileName;
     }

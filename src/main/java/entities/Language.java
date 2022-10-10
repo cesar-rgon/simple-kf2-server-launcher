@@ -54,8 +54,8 @@ public class Language extends AbstractExtendedEntity {
     }
 
     @Override
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescription(Object description) {
+        this.description = (String) description;
     }
 
     @Override

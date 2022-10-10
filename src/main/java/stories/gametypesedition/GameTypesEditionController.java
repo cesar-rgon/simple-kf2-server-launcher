@@ -3,6 +3,7 @@ package stories.gametypesedition;
 import dtos.GameTypeDto;
 import dtos.ProfileDto;
 import dtos.SelectDto;
+import entities.Description;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -17,6 +18,7 @@ import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.enums.EnumLanguage;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -207,7 +209,7 @@ public class GameTypesEditionController implements Initializable {
         String newGameTypeDescription = (String)event.getNewValue();
         try {
             String code = gameTypesTable.getItems().get(edittedRowIndex).getKey();
-            GameTypeDto updatedGameTypeDto = facade.updateItemDescription(code, oldGameTypeDescription, newGameTypeDescription);
+            GameTypeDto updatedGameTypeDto = facade.updateItemDescription(code, oldGameTypeDescription, newGameTypeDescription, languageCode);
             if (updatedGameTypeDto != null) {
                 gameTypesTable.getItems().remove(edittedRowIndex);
                 gameTypesTable.getItems().add(updatedGameTypeDto);
@@ -232,8 +234,8 @@ public class GameTypesEditionController implements Initializable {
             Optional<SelectDto> result = Utils.TwoTextInputsDialog();
             if (result.isPresent() && StringUtils.isNotBlank(result.get().getKey()) && StringUtils.isNotBlank(result.get().getValue())) {
                 String code = result.get().getKey();
-                String description = result.get().getValue();
-                gameTypesTable.getItems().add(facade.createItem(code, description));
+                String descriptionValue = result.get().getValue();
+                gameTypesTable.getItems().add(facade.createItem(code, descriptionValue, languageCode));
             }
         } catch (Exception e) {
             String message = "The game type can not be created!";
@@ -253,7 +255,7 @@ public class GameTypesEditionController implements Initializable {
                 Optional<ButtonType> result = Utils.questionDialog(question, selectedGameType.getKey());
                 if (result.isPresent() && result.get().equals(ButtonType.OK)) {
 
-                    ProfileDto actualProfile = Session.getInstance().getActualProfile();
+                    ProfileDto actualProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfileName());
                     if (actualProfile != null &&
                             actualProfile.getGametype() != null &&
                             selectedGameType.getKey().equals(actualProfile.getGametype().getKey())) {

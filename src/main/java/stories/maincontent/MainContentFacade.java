@@ -67,4 +67,5 @@ public interface MainContentFacade {
     List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws Exception;
     void runExecutableFile(String platformName) throws SQLException;
     PlatformDto getPlatform(EnumPlatform enumPlatform) throws SQLException;
+
 }

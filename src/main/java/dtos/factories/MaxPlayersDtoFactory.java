@@ -4,6 +4,8 @@ import dtos.SelectDto;
 import entities.MaxPlayers;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.apache.commons.lang3.StringUtils;
+import pojos.enums.EnumLanguage;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import utils.Utils;
@@ -17,8 +19,13 @@ public class MaxPlayersDtoFactory extends AbstractDtoFactory<MaxPlayers, SelectD
     public SelectDto newDto(MaxPlayers maxPlayers) {
         try {
             PropertyService propertyService = new PropertyServiceImpl();
-            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-            String description = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.maxplayers." + maxPlayers.getCode());
+            EnumLanguage language = EnumLanguage.valueOf(propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode"));
+            String description = StringUtils.EMPTY;
+            switch (language) {
+                case en: description = maxPlayers.getDescription().getEnglishValue(); break;
+                case es: description = maxPlayers.getDescription().getSpanishValue(); break;
+                case fr: description = maxPlayers.getDescription().getFrenchValue(); break;
+            }
             return new SelectDto(maxPlayers.getCode(), description);
         } catch (Exception e) {
             Utils.errorDialog(e.getMessage(), e);

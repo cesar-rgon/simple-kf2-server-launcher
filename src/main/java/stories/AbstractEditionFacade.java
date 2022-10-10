@@ -1,24 +1,25 @@
 package stories;
 
-import daos.AbstractExtendedDao;
+import daos.DescriptionDao;
 import dtos.SelectDto;
 import dtos.factories.AbstractDtoFactory;
 import entities.AbstractExtendedEntity;
+import entities.Description;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
-import services.AbstractExtendedService;
+import pojos.enums.EnumLanguage;
+import services.AbstractService;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public abstract class AbstractEditionFacade<E extends AbstractExtendedEntity, D extends SelectDto> {
+public abstract class AbstractEditionFacade<E extends AbstractExtendedEntity, D extends SelectDto> extends AbstractFacade {
 
     private final Class<E> entityClass;
     protected final AbstractDtoFactory dtoFactory;
-    protected final AbstractExtendedService<E> abstractService;
+    protected final AbstractService<E> abstractService;
 
-    protected AbstractEditionFacade(Class<E> entityClass, AbstractDtoFactory dtoFactory, AbstractExtendedService<E> abstractService) {
+    protected AbstractEditionFacade(Class<E> entityClass, AbstractDtoFactory dtoFactory, AbstractService<E> abstractService) {
         this.entityClass = entityClass;
         this.dtoFactory = dtoFactory;
         this.abstractService = abstractService;
@@ -30,7 +31,17 @@ public abstract class AbstractEditionFacade<E extends AbstractExtendedEntity, D 
     }
 
 
-    public D createItem(String code, String description) throws Exception {
+    public D createItem(String code, String descriptionValue, String languageCode) throws Exception {
+
+        EnumLanguage language = EnumLanguage.valueOf(languageCode);
+        Description description = new Description();
+        switch (language) {
+            case en: description.setEnglishValue(descriptionValue); break;
+            case es: description.setSpanishValue(descriptionValue); break;
+            case fr: description.setFrenchValue(descriptionValue); break;
+        }
+        DescriptionDao.getInstance().insert(description);
+
         E item = entityClass.newInstance();
         item.setCode(code);
         item.setDescription(description);
@@ -43,7 +54,9 @@ public abstract class AbstractEditionFacade<E extends AbstractExtendedEntity, D 
     public boolean deleteItem(String code) throws Exception {
         Optional<E> itemOptional = abstractService.findByCode(code);
         if (itemOptional.isPresent()) {
-            return abstractService.deleteItem(itemOptional.get());
+            boolean removed = abstractService.deleteItem(itemOptional.get());
+            DescriptionDao.getInstance().remove((Description) itemOptional.get().getDescription());
+            return removed;
         }
         return false;
     }
@@ -56,21 +69,36 @@ public abstract class AbstractEditionFacade<E extends AbstractExtendedEntity, D 
         Optional<E> itemOptional = abstractService.findByCode(oldCode);
         if (itemOptional.isPresent()) {
             itemOptional.get().setCode(newCode);
-            if (abstractService.updateItemCode(itemOptional.get(), oldCode)) {
+            if (abstractService.updateItem(itemOptional.get())) {
                 return (D) dtoFactory.newDto(itemOptional.get());
             }
         }
         return null;
     }
 
-    public D updateItemDescription(String code, String oldDescription, String newDescription) throws Exception {
-        if (StringUtils.isBlank(newDescription) || newDescription.equalsIgnoreCase(oldDescription)) {
+    public D updateItemDescription(String code, String oldDescriptionValue, String newDescriptionValue, String languageCode) throws Exception {
+        if (StringUtils.isBlank(newDescriptionValue) || newDescriptionValue.equals(oldDescriptionValue)) {
             return null;
         }
         Optional<E> itemOptional = abstractService.findByCode(code);
         if (itemOptional.isPresent()) {
+
+            EnumLanguage language = EnumLanguage.valueOf(languageCode);
+            Description newDescription = new Description();
+            switch (language) {
+                case en: newDescription.setEnglishValue(newDescriptionValue); break;
+                case es: newDescription.setSpanishValue(newDescriptionValue); break;
+                case fr: newDescription.setFrenchValue(newDescriptionValue); break;
+            }
+            DescriptionDao.getInstance().insert(newDescription);
+
             itemOptional.get().setDescription(newDescription);
-            abstractService.updateItemDescription(itemOptional.get());
+            abstractService.updateItem(itemOptional.get());
+
+            Optional<Description> oldDescriptionOptional = DescriptionDao.getInstance().findByValue(oldDescriptionValue, language);
+            if (oldDescriptionOptional.isPresent()) {
+                DescriptionDao.getInstance().remove(oldDescriptionOptional.get());
+            }
             return (D) dtoFactory.newDto(itemOptional.get());
         }
         return null;

@@ -231,7 +231,7 @@ public class Profile extends AbstractExtendedEntity {
     }
 
     @Override
-    public void setDescription(String description) {
+    public void setDescription(Object description) {
     }
 
     public Language getLanguage() {

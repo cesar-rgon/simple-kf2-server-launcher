@@ -107,10 +107,11 @@ public class MapsEditionController implements Initializable {
             ObservableList<ProfileDto> profileOptions = facade.listAllProfiles();
             profileSelect.setItems(profileOptions);
             if (!profileOptions.isEmpty()) {
+                ProfileDto actualProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfileName());
                 profileSelect.setValue(Session.getInstance().getMapsProfile() != null?
                         Session.getInstance().getMapsProfile():
-                        Session.getInstance().getActualProfile() != null?
-                                Session.getInstance().getActualProfile():
+                        actualProfile != null?
+                                actualProfile:
                                 profileSelect.getItems().get(0));
             }
 

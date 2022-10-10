@@ -37,4 +37,5 @@ public interface MapsEditionFacade {
     AbstractMapDto getOfficialMapByName(String mapName) throws Exception ;
     List<MapToDisplay> getNotPresentOfficialMapList(List<String> officialMapNameList, String platformName, String profileName) throws Exception;
     Kf2Common getKf2Common(String platformName) throws Exception;
+    ProfileDto findProfileDtoByName(String name) throws Exception;
 }

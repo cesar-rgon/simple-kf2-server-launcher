@@ -57,8 +57,9 @@ public class WebAdminController implements Initializable {
                             Element passwordInput = doc.getElementById("password");
                             if (passwordInput != null) {
                                 try {
-                                    if (Session.getInstance().getActualProfile() != null) {
-                                        String decryptedPassword = Utils.decryptAES(Session.getInstance().getActualProfile().getWebPassword());
+                                    ProfileDto actualProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfileName());
+                                    if (actualProfile != null) {
+                                        String decryptedPassword = Utils.decryptAES(actualProfile.getWebPassword());
                                         if (StringUtils.isNotEmpty(decryptedPassword)) {
                                             passwordInput.setAttribute("value", decryptedPassword);
                                         } else {
@@ -84,8 +85,8 @@ public class WebAdminController implements Initializable {
             com.sun.webkit.WebPage page = (com.sun.webkit.WebPage) f.get(webEngine);
             page.setBackgroundColor((new java.awt.Color(0.0f, 0.0f, 0.0f, 1f)).getRGB());
 
-            if (Session.getInstance().isRunningProcess() && Session.getInstance().getActualProfile() != null) {
-                ProfileDto databaseProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfile().getName());
+            if (Session.getInstance().isRunningProcess() && facade.findProfileDtoByName(Session.getInstance().getActualProfileName()) != null) {
+                ProfileDto databaseProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfileName());
                 if (databaseProfile.getWebPage() != null && databaseProfile.getWebPage()) {
                     message.setVisible(false);
                     progressIndicator.setVisible(true);

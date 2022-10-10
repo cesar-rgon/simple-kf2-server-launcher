@@ -4,6 +4,8 @@ import dtos.SelectDto;
 import entities.Difficulty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.apache.commons.lang3.StringUtils;
+import pojos.enums.EnumLanguage;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import utils.Utils;
@@ -17,8 +19,13 @@ public class DifficultyDtoFactory extends AbstractDtoFactory<Difficulty, SelectD
     public SelectDto newDto(Difficulty difficulty) {
         try {
             PropertyService propertyService = new PropertyServiceImpl();
-            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-            String description = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.difficulty." + difficulty.getCode());
+            EnumLanguage language = EnumLanguage.valueOf(propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode"));
+            String description = StringUtils.EMPTY;
+            switch (language) {
+                case en: description = difficulty.getDescription().getEnglishValue(); break;
+                case es: description = difficulty.getDescription().getSpanishValue(); break;
+                case fr: description = difficulty.getDescription().getFrenchValue(); break;
+            }
             return new SelectDto(difficulty.getCode(), description);
         } catch (Exception e) {
             Utils.errorDialog(e.getMessage(), e);

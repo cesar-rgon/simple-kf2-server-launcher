@@ -6,8 +6,8 @@ public abstract class AbstractExtendedEntity extends AbstractEntity {
 
     public abstract void setCode(String code);
 
-    public abstract String getDescription();
+    public abstract Object getDescription();
 
-    public abstract void setDescription(String description);
+    public abstract void setDescription(Object description);
 
 }

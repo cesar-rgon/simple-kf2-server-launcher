@@ -216,7 +216,8 @@ public class MainContentController implements Initializable {
                     ObservableList<ProfileDto> profileOptions = facade.listAllProfiles();
                     profileSelect.setItems(profileOptions);
                     if (!profileOptions.isEmpty()) {
-                        profileSelect.setValue(Session.getInstance().getActualProfile() != null ? Session.getInstance().getActualProfile() : facade.getLastSelectedProfile());
+                        ProfileDto actualProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfileName());
+                        profileSelect.setValue(actualProfile != null ? actualProfile : facade.getLastSelectedProfile());
                     } else {
                         profileSelect.setValue(null);
                         profileMapSelect.setItems(null);

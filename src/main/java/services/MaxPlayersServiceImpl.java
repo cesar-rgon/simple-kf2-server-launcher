@@ -1,30 +1,28 @@
 package services;
 
+import daos.DescriptionDao;
 import daos.MaxPlayersDao;
 import entities.MaxPlayers;
 
 import java.util.List;
 import java.util.Optional;
 
-public class MaxPlayersServiceImpl implements AbstractExtendedService<MaxPlayers> {
-
-    private PropertyService propertyService;
+public class MaxPlayersServiceImpl implements AbstractService<MaxPlayers> {
 
     public MaxPlayersServiceImpl() {
         super();
-        this.propertyService = new PropertyServiceImpl();
     }
 
 
     @Override
     public MaxPlayers createItem(MaxPlayers maxPlayers) throws Exception {
-        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-        propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.maxplayers." + maxPlayers.getCode(), maxPlayers.getDescription());
+        DescriptionDao.getInstance().insert(maxPlayers.getDescription());
         return MaxPlayersDao.getInstance().insert(maxPlayers);
     }
 
     @Override
     public boolean updateItem(MaxPlayers maxPlayers) throws Exception {
+        DescriptionDao.getInstance().update(maxPlayers.getDescription());
         return MaxPlayersDao.getInstance().update(maxPlayers);
     }
 
@@ -39,29 +37,9 @@ public class MaxPlayersServiceImpl implements AbstractExtendedService<MaxPlayers
     }
 
     @Override
-    public boolean updateItemCode(MaxPlayers maxPlayers, String oldCode) throws Exception {
-        if (MaxPlayersDao.getInstance().update(maxPlayers)) {
-            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-            String value = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.maxplayers." + oldCode);
-            propertyService.removeProperty("properties/languages/" + languageCode + ".properties", "prop.maxplayers." + oldCode);
-            propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.maxplayers." + maxPlayers.getCode(), value);
-            return true;
-        }
-        return false;
-    }
-
-    public void updateItemDescription(MaxPlayers maxPlayers) throws Exception {
-        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-        propertyService.setProperty("properties/languages/" + languageCode + ".properties", "prop.maxplayers." + maxPlayers.getCode(), maxPlayers.getDescription());
-    }
-
-    @Override
     public boolean deleteItem(MaxPlayers maxPlayers) throws Exception {
-       boolean itemDeleted = MaxPlayersDao.getInstance().remove(maxPlayers);
-       if (itemDeleted) {
-           String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-           propertyService.removeProperty("properties/languages/" + languageCode + ".properties", "prop.maxplayers." + maxPlayers.getCode());
-       }
-       return itemDeleted;
+       boolean removed = MaxPlayersDao.getInstance().remove(maxPlayers);
+        DescriptionDao.getInstance().remove(maxPlayers.getDescription());
+        return removed;
     }
 }

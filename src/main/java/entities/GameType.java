@@ -21,9 +21,9 @@ public class GameType extends AbstractExtendedEntity {
     @Column(name="LENGTH_ENABLED", nullable=false)
     boolean lengthEnabled;
 
-    // Not mapped attribute. This value is stored in .properties file of each language
-    @Transient
-    private String description;
+    @OneToOne
+    @JoinColumn(name="ID_DESCRIPTION")
+    private Description description;
 
     public GameType() {
         super();
@@ -71,13 +71,13 @@ public class GameType extends AbstractExtendedEntity {
     }
 
     @Override
-    public String getDescription() {
+    public Description getDescription() {
         return description;
     }
 
     @Override
-    public void setDescription(String description) {
-        this.description = description;
+    public void setDescription(Object description) {
+        this.description = (Description) description;
     }
 
     @Override

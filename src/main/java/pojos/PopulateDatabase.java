@@ -2,6 +2,7 @@ package pojos;
 
 import daos.*;
 import entities.*;
+import pojos.enums.EnumLanguage;
 import pojos.enums.EnumPlatform;
 
 import java.sql.SQLException;
@@ -30,9 +31,9 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
 
     @Override
     protected void populateLanguages() throws Exception {
-        populateLanguage("en", "English");
-        populateLanguage("es", "Español");
-        populateLanguage("fr", "Français");
+        populateLanguage(EnumLanguage.en.name(), EnumLanguage.en.getDescripcion());
+        populateLanguage(EnumLanguage.es.name(), EnumLanguage.es.getDescripcion());
+        populateLanguage(EnumLanguage.fr.name(), EnumLanguage.fr.getDescripcion());
     }
 
     @Override

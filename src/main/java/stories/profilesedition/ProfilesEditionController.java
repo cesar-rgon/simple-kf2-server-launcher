@@ -292,7 +292,8 @@ public class ProfilesEditionController implements Initializable {
             String epicInstallationFolder = facade.findConfigPropertyValue("prop.config.epicInstallationFolder");
             ProfileDto updatedProfileDto = facade.updateChangedProfile(oldProfileName, newProfileName);
             if (updatedProfileDto != null) {
-                if (Session.getInstance().getActualProfile() != null && oldProfileName.equalsIgnoreCase(Session.getInstance().getActualProfile().getName())) {
+                ProfileDto actualProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfileName());
+                if (actualProfile != null && oldProfileName.equalsIgnoreCase(Session.getInstance().getActualProfileName())) {
                     Session.getInstance().setActualProfileName(updatedProfileDto.getName());
                     propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", newProfileName);
                 }

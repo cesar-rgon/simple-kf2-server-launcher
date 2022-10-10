@@ -2,6 +2,7 @@ package stories.lengthedition;
 
 import dtos.ProfileDto;
 import dtos.SelectDto;
+import entities.Description;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -10,6 +11,7 @@ import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.enums.EnumLanguage;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -125,7 +127,7 @@ public class LengthEditionController implements Initializable {
         String newLengthDescription = (String)event.getNewValue();
         try {
             String code = lengthTable.getItems().get(edittedRowIndex).getKey();
-            SelectDto updatedLengthDto = facade.updateItemDescription(code, oldLengthDescription, newLengthDescription);
+            SelectDto updatedLengthDto = facade.updateItemDescription(code, oldLengthDescription, newLengthDescription, languageCode);
             if (updatedLengthDto != null) {
                 lengthTable.getItems().remove(edittedRowIndex);
                 lengthTable.getItems().add(updatedLengthDto);
@@ -151,7 +153,7 @@ public class LengthEditionController implements Initializable {
             if (result.isPresent() && StringUtils.isNotBlank(result.get().getKey()) && StringUtils.isNotBlank(result.get().getValue())) {
                 String code = result.get().getKey();
                 String description = result.get().getValue();
-                lengthTable.getItems().add(facade.createItem(code, description));
+                lengthTable.getItems().add(facade.createItem(code, description, languageCode));
             }
         } catch (Exception e) {
             String message = "The length can not be created!";
@@ -171,7 +173,7 @@ public class LengthEditionController implements Initializable {
                 Optional<ButtonType> result = Utils.questionDialog(question, selectedLength.getKey());
                 if (result.isPresent() && result.get().equals(ButtonType.OK)) {
 
-                    ProfileDto actualProfile = Session.getInstance().getActualProfile();
+                    ProfileDto actualProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfileName());
                     if (actualProfile != null && actualProfile.getLength() != null &&
                             selectedLength.getKey().equals(actualProfile.getLength().getKey())) {
                         facade.unselectLengthInProfile(actualProfile.getName());

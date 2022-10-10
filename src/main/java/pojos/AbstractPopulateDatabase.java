@@ -12,7 +12,6 @@ import java.util.Optional;
 
 public abstract class AbstractPopulateDatabase {
 
-    private final PropertyService propertyService;
     private final PlatformService platformService;
     protected final DifficultyServiceImpl difficultyService;
     protected final GameTypeServiceImpl gameTypeService;
@@ -25,7 +24,6 @@ public abstract class AbstractPopulateDatabase {
 
     protected AbstractPopulateDatabase() {
         super();
-        this.propertyService = new PropertyServiceImpl();
         this.platformService = new PlatformServiceImpl();
         this.difficultyService = new DifficultyServiceImpl();
         this.gameTypeService = new GameTypeServiceImpl();
@@ -53,37 +51,33 @@ public abstract class AbstractPopulateDatabase {
     }
 
     protected void populateDifficulty(String code, String englishDescription, String spanishDescription, String frenchDescription) throws Exception {
+        Description description = new Description(englishDescription, spanishDescription, frenchDescription);
         Difficulty difficulty = new Difficulty(code);
+        difficulty.setDescription(description);
         difficultyService.createItem(difficulty);
-        propertyService.setProperty("properties/languages/en.properties", "prop.difficulty." + code, englishDescription);
-        propertyService.setProperty("properties/languages/es.properties", "prop.difficulty." + code, spanishDescription);
-        propertyService.setProperty("properties/languages/fr.properties", "prop.difficulty." + code, frenchDescription);
     }
 
     protected void populateGameType(String code, boolean difficultyEnabled, boolean lengthEnabled, String englishDescription, String spanishDescription, String frenchDescription) throws Exception {
+        Description description = new Description(englishDescription, spanishDescription, frenchDescription);
         GameType gameType = new GameType(code);
         gameType.setDifficultyEnabled(difficultyEnabled);;
         gameType.setLengthEnabled(lengthEnabled);
+        gameType.setDescription(description);
         gameTypeService.createItem(gameType);
-        propertyService.setProperty("properties/languages/en.properties", "prop.gametype." + code, englishDescription);
-        propertyService.setProperty("properties/languages/es.properties", "prop.gametype." + code, spanishDescription);
-        propertyService.setProperty("properties/languages/fr.properties", "prop.gametype." + code, frenchDescription);
     }
 
     protected void populateLength(String code, String englishDescription, String spanishDescription, String frenchDescription) throws Exception {
+        Description description = new Description(englishDescription, spanishDescription, frenchDescription);
         Length length = new Length(code);
+        length.setDescription(description);
         lengthService.createItem(length);
-        propertyService.setProperty("properties/languages/en.properties", "prop.length." + code, englishDescription);
-        propertyService.setProperty("properties/languages/es.properties", "prop.length." + code, spanishDescription);
-        propertyService.setProperty("properties/languages/fr.properties", "prop.length." + code, frenchDescription);
     }
 
     protected void polulateMaximunPlayers(String code, String englishDescription, String spanishDescription, String frenchDescription) throws Exception {
+        Description description = new Description(englishDescription, spanishDescription, frenchDescription);
         MaxPlayers maxPlayers = new MaxPlayers(code);
+        maxPlayers.setDescription(description);
         maxPlayersService.createItem(maxPlayers);
-        propertyService.setProperty("properties/languages/en.properties", "prop.maxplayers." + code, englishDescription);
-        propertyService.setProperty("properties/languages/es.properties", "prop.maxplayers." + code, spanishDescription);
-        propertyService.setProperty("properties/languages/fr.properties", "prop.maxplayers." + code, frenchDescription);
     }
 
     protected void populateProfile(String name, Language language, GameType gametype, AbstractMap map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,

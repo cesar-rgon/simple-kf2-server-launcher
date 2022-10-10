@@ -2,6 +2,7 @@ package entities;
 
 
 import jakarta.persistence.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 
@@ -62,11 +63,11 @@ public abstract class AbstractMap extends AbstractExtendedEntity {
 
     @Override
     public String getDescription() {
-        return "";
+        return StringUtils.EMPTY;
     }
 
     @Override
-    public void setDescription(String description) {
+    public void setDescription(Object description) {
     }
 
     public String getUrlInfo() {
