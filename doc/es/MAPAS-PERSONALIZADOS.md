@@ -22,7 +22,7 @@ En la página Mapas/Mods puedes gestionar mapas personalizados, mods y mapas ofi
 
 * _Filtro buscador_: Permite filtrar mapas y mods por nombre mientras vas escribiendo el texto. 
 
-* _Selecciona todos_: Permite seleccionar todos los mapas para realizar una acción sobre ellos. Además permite deseleccionarlos.
+* _Selecciona todos por pestaña_: Permite seleccionar todos los mapas para realizar una acción sobre ellos. Además permite deseleccionarlos.
 
 * _Barra de columnas_: Permite cambiar el tamaño de las miniaturas de los mapas según un número de columnas determinado. 
 

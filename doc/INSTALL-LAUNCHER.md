@@ -25,7 +25,5 @@ $ java -jar SimpleKF2ServerLauncher.jar
 ```
 *NOTE: Replace SimpleKF2ServerLauncher-local-folder for the local folder that you want.*
 
-*NOTE: The JRE must be the Oracle version (not the OpenJDK available in repositories).*
-
 ---
 Back to main page [here](../README.md).

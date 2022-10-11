@@ -21,13 +21,14 @@ El lanzador permite ejecutar servidores a través de parámetros de terminal sin
 Los parámetros aceptados son: *Por ejemplo*:
 
 ```
-java -jar SimpleKF2ServerLauncher.jar --profiles nombrePerfil1 [nombrePerfil2 nombrePerfil3 ... ]
+java -jar SimpleKF2ServerLauncher.jar --pp platformName/profileName [platformName2/profileName2 ... ]
 ```
 *NOTE: [ ] significa que estos parámetros son opcionales*
 
-- Este comando ejecuta uno o varios servidores, uno por nombre de perfil.
-- Los nombres de perfiles deben estar separados por espacio en blanco.
-- Los nombres de perfiles deben existir en la base de datos del lanzador.
+- Este comando ejecuta uno o varios servidores, uno por nombre de plataforma y perfil.
+- Los nombres de plataforma/perfil deben estar separados por espacio en blanco.
+- Los nombres de plataformas deben existir en la base de datos del lanzador. Los valores válidos son: Steam y Epic.
+- Los nombres de perfiles deben existir en la base de datos del lanzador (sensible a mayúsculas).
 
 ---
 Back to main page [here](../../LEEME.md).

@@ -3,7 +3,10 @@
 # Configuración básica
 
 ## Página principal
+
 ![Launcher screenshot](../images/screenshot00.png)
+
+* _Plataforma_: Este combo es obligatorio. Permite seleccionar la plataforma donde está instalado el servidor.
 
 * _Perfil_: Este combo es obligatorio. Permite personalizar los valores de los filtros por nombre de perfil.
 

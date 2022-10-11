@@ -20,13 +20,14 @@ The launcher allows to execute servers through terminal parameters without user 
 
 Accepted parameters are: *For example*
 ```
-java -jar SimpleKF2ServerLauncher.jar --profiles profileName1 [profileName2 profileName3 ... ]
+java -jar SimpleKF2ServerLauncher.jar --pp platformName/profileName [platformName2/profileName2 ... ]
 ```
 *NOTE: [ ] means that these parameters are optional*
 
-- This command executes one or multiple servers, one per profileName.
-- The profile names must be separated by whitespace.
-- The profile names must exist in launcher's database.
+- This command executes one or multiple servers, one per platformName and profileName.
+- The plarform/profile names must be separated by whitespace.
+- The platform names must exist in launcher's database. Valid values are: Steam and Epic.
+- The profile names must exist in launcher's database (case sensitive).
 
 ---
 Back to main page [here](../README.md).

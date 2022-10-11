@@ -22,7 +22,7 @@ Under Maps/Mods page you can manage custom maps, mods and official maps present 
 
 * _Search filter_: It allows to filter maps and mods by name while you are writing the text.
 
-* _Select all_: It allows to select all maps to perform an action over them. Furthermore it allows to unselect them.
+* _Select all per tab_: It allows to select all maps to perform an action over them. Furthermore it allows to unselect them.
 
 * _Columns slider_: It allows to change the thumbnail size of the maps by the specific number of columns.
 

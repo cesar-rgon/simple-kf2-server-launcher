@@ -5,6 +5,8 @@
 ## Main page
 ![Launcher screenshot](images/screenshot00.png)
 
+* _Platform_: This combo is mandatory. It allows to select the platform where the server is installed.
+ 
 * _Profile_: This combo is mandatory. It allows to customize filter values by profile name.
 
 * _Run server_: Run a Killing Floor 2 server with the specified filters. All mandatory fields must be specified. Server config files are placed in folder: KFGame/Config/PROFILENAME. So, the original config files placed in folder: KFGame/Config are never modified.
@@ -46,6 +48,7 @@ If more than one profile, you can select wich server you want to join (one per p
 * _Welcome message_: This field is optional. It's a welcome message in starting screen of the server.
 
 #### Advanced parameters
+
 ![Launcher screenshot](images/screenshot01.png)
 
 * _Map voting_: This check enables or disables map voting screen after a game ends.
