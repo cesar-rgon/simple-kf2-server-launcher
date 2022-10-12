@@ -33,15 +33,25 @@ public abstract class Kf2Epic extends Kf2AbstractCommon {
     protected abstract void applyPatchToDownloadMaps() throws Exception;
 
     public void installOrUpdateServer() {
-        if (prerequisitesAreValid()) {
+        if (!prerequisitesAreValid()) {
             try {
-                installUpdateKf2Server();
-                applyPatchToDownloadMaps();
+                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
+                Utils.warningDialog(headerText, contentText);
             } catch (Exception e) {
-                String message = "Error installing KF2 server";
-                logger.error(message, e);
-                Utils.errorDialog(message, e);
+                logger.error(e.getMessage(), e);
+                Utils.errorDialog(e.getMessage(), e);
             }
+            return;
+        }
+
+        try {
+            installUpdateKf2Server();
+            applyPatchToDownloadMaps();
+        } catch (Exception e) {
+            String message = "Error installing KF2 server";
+            logger.error(message, e);
+            Utils.errorDialog(message, e);
         }
     }
 

@@ -227,25 +227,29 @@ public class InstallUpdateSteamServerController implements Initializable {
     private void installUpdateServer() {
         progressIndicator.setVisible(true);
 
-        Task<Void> task = new Task<Void>() {
+        Task<SteamPlatform> task = new Task<SteamPlatform>() {
             @Override
-            protected Void call() throws Exception {
-                Optional<SteamPlatform> steamPlatformOptional = facade.findSteamPlatform();
-                if (steamPlatformOptional.isPresent()) {
-                    Kf2Common kf2Common = Kf2Factory.getInstance(steamPlatformOptional.get());
-                    if (StringUtils.isNotBlank(installationFolder.getText())) {
-                        installationFolder.setText(installationFolder.getText().replaceAll(" ", "_"));
-                    }
-                    ((Kf2Steam) kf2Common).installOrUpdateServer(
-                            validateFiles.isSelected(),
-                            isBeta.isSelected(),
-                            betaBrunch.getText()
-                    );
+            protected SteamPlatform call() throws Exception {
+                if (StringUtils.isNotBlank(installationFolder.getText())) {
+                    installationFolder.setText(installationFolder.getText().replaceAll(" ", "_"));
                 }
-                return null;
+                facade.updatePlatformInstallationFolder(installationFolder.getText());
+
+                Optional<SteamPlatform> steamPlatformOptional = facade.findSteamPlatform();
+                if (!steamPlatformOptional.isPresent()) {
+                    throw new RuntimeException("Steam platform not found");
+                }
+                return steamPlatformOptional.get();
             }
         };
         task.setOnSucceeded(wse -> {
+            SteamPlatform steamPlatform = task.getValue();
+            Kf2Common kf2Common = Kf2Factory.getInstance(steamPlatform);
+            ((Kf2Steam) kf2Common).installOrUpdateServer(
+                    validateFiles.isSelected(),
+                    isBeta.isSelected(),
+                    betaBrunch.getText()
+            );
             progressIndicator.setVisible(false);
         });
         task.setOnFailed(wse -> {

@@ -2,6 +2,7 @@ package stories.installupdateepicserver;
 
 import daos.EpicPlatformDao;
 import entities.EpicPlatform;
+import entities.SteamPlatform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
@@ -17,6 +18,7 @@ import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Epic;
 import pojos.kf2factory.Kf2Factory;
+import pojos.kf2factory.Kf2Steam;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
@@ -128,18 +130,22 @@ public class InstallUpdateEpicServerController implements Initializable {
     private void installUpdateServer() {
         progressIndicator.setVisible(true);
 
-        Task<Void> task = new Task<Void>() {
+        Task<EpicPlatform> task = new Task<EpicPlatform>() {
             @Override
-            protected Void call() throws Exception {
+            protected EpicPlatform call() throws Exception {
                 Optional<EpicPlatform> epicPlatformOptional = facade.findEpicPlatform();
-                if (epicPlatformOptional.isPresent()) {
-                    Kf2Common kf2Common = Kf2Factory.getInstance(epicPlatformOptional.get());
-                    ((Kf2Epic) kf2Common).installOrUpdateServer();
+                if (!epicPlatformOptional.isPresent()) {
+                    throw new RuntimeException("Epic Games platform not found");
                 }
-                return null;
+                return epicPlatformOptional.get();
             }
         };
+
         task.setOnSucceeded(wse -> {
+            EpicPlatform epicPlatform = task.getValue();
+            Kf2Common kf2Common = Kf2Factory.getInstance(epicPlatform);
+            ((Kf2Epic) kf2Common).installOrUpdateServer();
+
             progressIndicator.setVisible(false);
         });
         task.setOnFailed(wse -> {

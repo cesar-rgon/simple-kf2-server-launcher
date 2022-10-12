@@ -29,7 +29,7 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
 
     @Override
     public boolean isValidInstallationFolder() {
-        return !StringUtils.isBlank(this.platform.getInstallationFolder()) && (Files.exists(Paths.get(this.platform.getInstallationFolder() + "/Binaries/Win64/KFServer.exe")));
+        return StringUtils.isNotBlank(this.platform.getInstallationFolder()) && !this.platform.getInstallationFolder().contains(" ");
     }
 
     @Override
