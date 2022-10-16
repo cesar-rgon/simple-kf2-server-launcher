@@ -19,10 +19,7 @@ import services.PropertyServiceImpl;
 import utils.Utils;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 
 public class MainApplication extends Application {
 
@@ -66,6 +63,8 @@ public class MainApplication extends Application {
 
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
         Utils.checkApplicationUpgrade(languageCode);
+
+        Utils.showTipsOnStasrtup();
 
         this.primaryStage.maximizedProperty().addListener(new ChangeListener<Boolean>() {
             @Override

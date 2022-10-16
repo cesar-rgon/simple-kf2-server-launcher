@@ -12,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.PropertyService;
@@ -23,6 +24,8 @@ import java.awt.*;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class TemplateController implements Initializable {
@@ -47,9 +50,8 @@ public class TemplateController implements Initializable {
     @FXML private MenuItem documentation;
     @FXML private MenuItem github;
     @FXML private MenuItem releases;
+    @FXML private MenuItem tips;
     @FXML private MenuItem donation;
-    @FXML private MenuItem steam;
-    @FXML private MenuItem epic;
 
     public TemplateController() {
         super();
@@ -108,6 +110,9 @@ public class TemplateController implements Initializable {
 
             String releasesTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.releases");
             releases.setText(releasesTitle);
+
+            String tipsTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.tips");
+            tips.setText(tipsTitle);
 
             String donationTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.donation");
             donation.setText(donationTitle);
@@ -292,6 +297,37 @@ public class TemplateController implements Initializable {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void tipsMenuOnAction() {
+        InputStream maxNumberOfTipsIS = null;
+        try {
+            maxNumberOfTipsIS = new URL("https://raw.githubusercontent.com/cesar-rgon/simple-kf2-server-launcher/master/tips/lastTip.txt").openStream();
+            Integer maxNumberOfTips = Integer.parseInt(IOUtils.toString(maxNumberOfTipsIS, StandardCharsets.UTF_8));
+            if (maxNumberOfTips == 0) {
+                Utils.infoDialog("Show tips", "There are no elements to show");
+            }
+
+            Boolean dontShowTipsOnStartup = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.dontShowTipsOnStartup"));
+            Optional<Integer> actualTipNumber = Optional.ofNullable(maxNumberOfTips);
+            if (actualTipNumber.isPresent()) {
+                do {
+                    actualTipNumber = Utils.renderTipMarkDown(actualTipNumber.get(), maxNumberOfTips, dontShowTipsOnStartup);
+                } while (actualTipNumber.isPresent() && actualTipNumber.get() > 0);
+            }
+            if (actualTipNumber.isPresent() && actualTipNumber.get() == 0) {
+                propertyService.setProperty("properties/config.properties", "prop.config.dontShowTipsOnStartup", "true");
+            }
+            if (actualTipNumber.isPresent() && actualTipNumber.get() == -1) {
+                propertyService.setProperty("properties/config.properties", "prop.config.dontShowTipsOnStartup", "false");
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.infoDialog("Show tips", "There are no elements to show");
+        } finally {
+            IOUtils.closeQuietly(maxNumberOfTipsIS);
         }
     }
 

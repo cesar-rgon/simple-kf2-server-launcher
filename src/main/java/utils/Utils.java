@@ -1,5 +1,8 @@
 package utils;
 
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.data.MutableDataSet;
 import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.beans.binding.Bindings;
@@ -10,6 +13,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
@@ -22,8 +26,10 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.scene.web.WebView;
 import javafx.util.Callback;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -41,6 +47,9 @@ import java.io.*;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.Key;
 import java.util.*;
 import java.util.List;
@@ -1273,6 +1282,128 @@ public class Utils {
             }
         }
         return StringUtils.EMPTY;
+    }
+
+    public static Optional<Integer> renderTipMarkDown(Integer actualTipNumber, Integer maxNumberOfTips, Boolean dontShowTipsOnStartup) {
+        Dialog<Integer> dialog = new Dialog<Integer>();
+        try {
+            PropertyService propertyService = new PropertyServiceImpl();
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
+            dialog.setTitle(applicationTitle);
+        } catch (Exception ex) {
+            dialog.setTitle("");
+        }
+        dialog.setHeaderText("Test");
+
+        InputStream markdownContentIS = null;
+        try {
+            markdownContentIS = new URL("https://raw.githubusercontent.com/cesar-rgon/simple-kf2-server-launcher/master/tips/tip" + actualTipNumber + ".md").openStream();
+            String markdownContent = IOUtils.toString(markdownContentIS, StandardCharsets.UTF_8);
+
+            MutableDataSet options = new MutableDataSet();
+            Parser parser = Parser.builder(options).build();
+            HtmlRenderer renderer = HtmlRenderer.builder(options).build();
+            com.vladsch.flexmark.util.ast.Node document = parser.parse(markdownContent);
+            String outputHtml = renderer.render(document);
+
+            WebView webView = new WebView();
+            webView.getEngine().loadContent(outputHtml);
+
+            CheckBox showAtStartupCheckBox = new CheckBox();
+            dialog.setDialogPane(new DialogPane() {
+                @Override
+                protected Node createDetailsButton() {
+                    showAtStartupCheckBox.setText("Do not show at startup");
+                    if (dontShowTipsOnStartup) {
+                        showAtStartupCheckBox.setSelected(true);
+                    } else {
+                        showAtStartupCheckBox.setSelected(false);
+                    }
+                    return showAtStartupCheckBox;
+                }
+            });
+
+            dialog.getDialogPane().setExpandableContent(new Group());
+            dialog.getDialogPane().setExpanded(false);
+
+            dialog.getDialogPane().setContent(webView);;
+            dialog.getDialogPane().setMinWidth(1000);
+            dialog.getDialogPane().setMinHeight(700);
+
+            ButtonType previousButton = new ButtonType("Previous tip", ButtonBar.ButtonData.BACK_PREVIOUS);
+            ButtonType nextButton = new ButtonType("Next tip", ButtonBar.ButtonData.NEXT_FORWARD);
+            ButtonType closeButton = new ButtonType("Ok", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+            dialog.getDialogPane().getButtonTypes().addAll(previousButton, nextButton, closeButton);
+            dialog.setResizable(true);
+
+            dialog.setResultConverter(new Callback<ButtonType, Integer>() {
+                @Override
+                public Integer call(ButtonType b) {
+                    if (b.equals(closeButton)) {
+                        if (showAtStartupCheckBox.isSelected()) {
+                            return 0;
+                        }
+                        return -1;
+                    }
+                    if (b.equals(previousButton)) {
+                        if (actualTipNumber > 1) {
+                            return actualTipNumber - 1;
+                        } else {
+                            return maxNumberOfTips;
+                        }
+                    }
+                    if (b.equals(nextButton)) {
+                        if (actualTipNumber < maxNumberOfTips) {
+                            return actualTipNumber + 1;
+                        } else {
+                            return 1;
+                        }
+                    }
+                    return null;
+                }
+            });
+
+            return dialog.showAndWait();
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        } finally {
+            IOUtils.closeQuietly(markdownContentIS);
+        }
+
+        return Optional.empty();
+    }
+
+    public static void showTipsOnStasrtup() {
+        PropertyService propertyService = new PropertyServiceImpl();
+        InputStream maxNumberOfTipsIS = null;
+        try {
+            maxNumberOfTipsIS = new URL("https://raw.githubusercontent.com/cesar-rgon/simple-kf2-server-launcher/master/tips/lastTip.txt").openStream();
+            Integer maxNumberOfTips = Integer.parseInt(IOUtils.toString(maxNumberOfTipsIS, StandardCharsets.UTF_8));
+
+            Boolean dontShowTipsOnStartup = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.dontShowTipsOnStartup"));
+
+            if (!dontShowTipsOnStartup && maxNumberOfTips > 0) {
+                Optional<Integer> actualTipNumber = Optional.ofNullable(maxNumberOfTips);
+                if (actualTipNumber.isPresent()) {
+                    do {
+                        actualTipNumber = renderTipMarkDown(actualTipNumber.get(), maxNumberOfTips, dontShowTipsOnStartup);
+                    } while (actualTipNumber.isPresent() && actualTipNumber.get() > 0);
+                }
+                if (actualTipNumber.isPresent() && actualTipNumber.get() == 0) {
+                    propertyService.setProperty("properties/config.properties", "prop.config.dontShowTipsOnStartup", "true");
+                }
+                if (actualTipNumber.isPresent() && actualTipNumber.get() == -1) {
+                    propertyService.setProperty("properties/config.properties", "prop.config.dontShowTipsOnStartup", "false");
+                }
+            }
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        } finally {
+            IOUtils.closeQuietly(maxNumberOfTipsIS);
+        }
     }
 
 }
