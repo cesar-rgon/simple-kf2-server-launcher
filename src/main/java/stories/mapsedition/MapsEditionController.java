@@ -367,12 +367,22 @@ public class MapsEditionController implements Initializable {
 
     private GridPane createMapGridPane(PlatformProfileMapDto platformProfileMapDto) {
 
+        String urlPhoto = StringUtils.EMPTY;
+        if (StringUtils.isNotBlank(platformProfileMapDto.getUrlPhoto())) {
+            if (platformProfileMapDto.getUrlPhoto().startsWith("http") || platformProfileMapDto.getUrlPhoto().startsWith("file:")) {
+                urlPhoto = platformProfileMapDto.getUrlPhoto();
+            } else if (platformProfileMapDto.getUrlPhoto().startsWith("/KFGame")) {
+                urlPhoto = "file:" + platformProfileMapDto.getPlatformDto().getInstallationFolder() + platformProfileMapDto.getUrlPhoto();
+            } else {
+                urlPhoto = "file:" + platformProfileMapDto.getUrlPhoto();
+            }
+        }
+
         ImageView mapPreview = new ImageView();
-        String installationFolder = platformProfileMapDto.getPlatformDto().getInstallationFolder();
         try {
             Image image = null;
-            if (facade.isCorrectInstallationFolder(platformProfileMapDto.getPlatformDto().getKey()) && StringUtils.isNotBlank(platformProfileMapDto.getUrlPhoto())) {
-                image = new Image("file:" + installationFolder + "/" + platformProfileMapDto.getUrlPhoto());
+            if (StringUtils.isNotBlank(urlPhoto)) {
+                image = new Image(urlPhoto);
             } else {
                 File file = new File(System.getProperty("user.dir") + "/external-images/no-photo.png");
                 InputStream inputStream;
@@ -531,7 +541,8 @@ public class MapsEditionController implements Initializable {
         if (!platformProfileMapDto.getMapDto().isOfficial()) {
             tooltipText.append("id WorkShop: ").append(((CustomMapModDto) platformProfileMapDto.getMapDto()).getIdWorkShop());
         }
-        if (StringUtils.isNotBlank(platformProfileMapDto.getUrlPhoto())) {
+
+        if (StringUtils.isNotBlank(urlPhoto)) {
             if (StringUtils.isNotBlank(tooltipText)) {
                 tooltipText.append("\n");
             }
@@ -553,7 +564,7 @@ public class MapsEditionController implements Initializable {
             } catch (Exception e) {
                 message = "Photo location";
             }
-            tooltipText.append(message).append(": ").append(installationFolder).append(platformProfileMapDto.getUrlPhoto());
+            tooltipText.append(message).append(": ").append(urlPhoto);
         }
 
         if (StringUtils.isNotBlank(tooltipText)) {
@@ -567,7 +578,7 @@ public class MapsEditionController implements Initializable {
             gridpane.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
-                    Session.getInstance().setMap(platformProfileMapDto.getMapDto());
+                    Session.getInstance().setPpm(platformProfileMapDto);
                     loadNewContent("/views/mapWebInfo.fxml");
                     event.consume();
                 }
@@ -1509,7 +1520,7 @@ public class MapsEditionController implements Initializable {
 
     @FXML
     private void searchInWorkShopOnAction() {
-        Session.getInstance().setMap(null);
+        Session.getInstance().setPpm(null);
         Session.getInstance().setMapsProfile(profileSelect.getValue());
         loadNewContent("/views/mapWebInfo.fxml");
     }

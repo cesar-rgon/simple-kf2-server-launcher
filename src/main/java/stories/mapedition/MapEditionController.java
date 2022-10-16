@@ -216,19 +216,20 @@ public class MapEditionController implements Initializable {
                     if (!newPropertyValue && !Session.getInstance().getProfileMapList().isEmpty()) {
                         PlatformProfileMap edittedPlatformProfileMap = Session.getInstance().getProfileMapList().get(profileMapIndex);
 
-                        String relativeTargetFolder = StringUtils.EMPTY;
-                        if (mapPreviewUrlTextField.getText() != null && mapPreviewUrlTextField.getText().startsWith("http")) {
-                            String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
-                            String absoluteTargetFolder = edittedPlatformProfileMap.getPlatform().getInstallationFolder() + customMapLocalFolder;
-                            File localfile = Utils.downloadImageFromUrlToFile(mapPreviewUrlTextField.getText(), absoluteTargetFolder, edittedPlatformProfileMap.getMap().getCode());
-                            relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
-
-                        } else if (mapPreviewUrlTextField.getText() != null && mapPreviewUrlTextField.getText().startsWith("file:")) {
-                            relativeTargetFolder = mapPreviewUrlTextField.getText().replace("file:", "").replace(edittedPlatformProfileMap.getPlatform().getInstallationFolder(), "");
+                        String mapPreviewUrl = StringUtils.EMPTY;
+                        if (StringUtils.isNotBlank(mapPreviewUrlTextField.getText())) {
+                            if (mapPreviewUrlTextField.getText().startsWith("http") || mapPreviewUrlTextField.getText().startsWith("file:")) {
+                                mapPreviewUrl = mapPreviewUrlTextField.getText();
+                            } else if (mapPreviewUrlTextField.getText().startsWith("/KFGame")) {
+                                mapPreviewUrl = "file:" + edittedPlatformProfileMap.getPlatform().getInstallationFolder() + mapPreviewUrlTextField.getText();
+                            } else {
+                                mapPreviewUrl = "file:" + mapPreviewUrlTextField.getText();
+                            }
                         }
 
-                        if (facade.updateMapSetUrlPhoto(edittedPlatformProfileMap, relativeTargetFolder)) {
-                            edittedPlatformProfileMap.setUrlPhoto(relativeTargetFolder);
+                        if (facade.updateMapSetUrlPhoto(edittedPlatformProfileMap, mapPreviewUrl)) {
+                            edittedPlatformProfileMap.setUrlPhoto(mapPreviewUrl);
+                            mapPreviewUrlTextField.setText(mapPreviewUrl);
                         } else {
                             logger.warn("The map image link value could not be saved!" + mapPreviewUrlTextField.getText());
                             String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
@@ -374,9 +375,20 @@ public class MapEditionController implements Initializable {
                         StringUtils.isNotBlank(platformProfileMapDto.getUrlInfo()) ? platformProfileMapDto.getUrlInfo() : StringUtils.EMPTY
                 );
 
+                String urlPhoto = StringUtils.EMPTY;
                 if (StringUtils.isNotBlank(platformProfileMapDto.getUrlPhoto())) {
-                    webEngine.load("file:" + platformProfileMapDto.getPlatformDto().getInstallationFolder() + platformProfileMapDto.getUrlPhoto());
-                    mapPreviewUrlTextField.setText("file:" + platformProfileMapDto.getPlatformDto().getInstallationFolder() + platformProfileMapDto.getUrlPhoto());
+                    if (platformProfileMapDto.getUrlPhoto().startsWith("http") || platformProfileMapDto.getUrlPhoto().startsWith("file:")) {
+                        urlPhoto = platformProfileMapDto.getUrlPhoto();
+                    } else if (platformProfileMapDto.getUrlPhoto().startsWith("/KFGame")) {
+                        urlPhoto = "file:" + platformProfileMapDto.getPlatformDto().getInstallationFolder() + platformProfileMapDto.getUrlPhoto();
+                    } else {
+                        urlPhoto = "file:" + platformProfileMapDto.getUrlPhoto();
+                    }
+                }
+
+                if (StringUtils.isNotBlank(urlPhoto)) {
+                    webEngine.load(urlPhoto);
+                    mapPreviewUrlTextField.setText(urlPhoto);
                 } else {
                     File file = new File(System.getProperty("user.dir") + "/external-images/no-photo.png");
                     if (file.exists()) {

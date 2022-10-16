@@ -65,9 +65,9 @@ public class MapWebInfoController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         try {
             languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-            if (Session.getInstance().getMap() != null) {
-                mapNameLabel.setText(Session.getInstance().getMap().getKey());
-                mapInfoWebView.getEngine().load(Session.getInstance().getMap().getUrlInfo());
+            if (Session.getInstance().getPpm() != null) {
+                mapNameLabel.setText(Session.getInstance().getPpm().getMapDto().getKey());
+                mapInfoWebView.getEngine().load(Session.getInstance().getPpm().getUrlInfo());
             } else {
                 mapNameLabel.setText("");
                 mapInfoWebView.getEngine().load("https://steamcommunity.com/app/232090/workshop/");
@@ -98,7 +98,7 @@ public class MapWebInfoController implements Initializable {
                     return;
                 }
                 progressIndicator.setVisible(false);
-                if (Session.getInstance().getMap() == null || !Session.getInstance().getMap().isOfficial()) {
+                if (Session.getInstance().getPpm() == null || !Session.getInstance().getPpm().getMapDto().isOfficial()) {
                     try {
                         NodeList titleList = doc.getElementsByTagName("title");
                         String urlWorkShop = doc.getDocumentURI();

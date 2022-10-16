@@ -2,6 +2,7 @@ package pojos.session;
 
 import dtos.AbstractMapDto;
 import dtos.PlatformDto;
+import dtos.PlatformProfileMapDto;
 import dtos.ProfileDto;
 import dtos.factories.ProfileDtoFactory;
 import entities.PlatformProfileMap;
@@ -26,15 +27,14 @@ public class Session {
 
     private String actualProfileName;
     private String console;
-    private AbstractMapDto map;
+
+    private PlatformProfileMapDto ppm;
     private List<Process> processList;
     private ProfileDto mapsProfile;
     private EnumSortedMapsCriteria sortedMapsCriteria;
     private EnumMapsTab selectedMapTab;
     private List<PlatformProfileMap> platformProfileMapList;
     private PlatformDto platform;
-    private final ProfileService profileService;
-    private final ProfileDtoFactory profileDtoFactory;
 
     /**
      * Singleton constructor
@@ -42,13 +42,11 @@ public class Session {
     private Session() {
         super();
         console = "";
-        map = null;
+        ppm = null;
         processList = new ArrayList<Process>();
         sortedMapsCriteria = EnumSortedMapsCriteria.NAME_DESC;
         selectedMapTab = EnumMapsTab.STEAM_OFFICIAL_MAPS_TAB;
         platformProfileMapList = new ArrayList<PlatformProfileMap>();
-        profileService = new ProfileServiceImpl();
-        profileDtoFactory = new ProfileDtoFactory();
     }
 
     public static Session getInstance() {
@@ -86,12 +84,12 @@ public class Session {
         this.console = console;
     }
 
-    public AbstractMapDto getMap() {
-        return map;
+    public PlatformProfileMapDto getPpm() {
+        return ppm;
     }
 
-    public void setMap(AbstractMapDto map) {
-        this.map = map;
+    public void setPpm(PlatformProfileMapDto ppm) {
+        this.ppm = ppm;
     }
 
     public List<Process> getProcessList() {
