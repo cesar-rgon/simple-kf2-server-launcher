@@ -1,8 +1,10 @@
+# Tip 221017#01
+
 Si vous avez des suggestions, des propositions d'améliorations ou souhaitez signaler un bug
 
 vous pouvez me contacter via Github :
 
-https://github.com/cesar-rgon/simple-kf2-server-launcher/issues
+[https://github.com/cesar-rgon/simple-kf2-server-launcher/issues](https://github.com/cesar-rgon/simple-kf2-server-launcher/issues)
 
 ou, directement, mon email :
 
