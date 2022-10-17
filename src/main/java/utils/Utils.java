@@ -17,6 +17,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
@@ -44,6 +45,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import java.awt.*;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
@@ -1293,7 +1295,6 @@ public class Utils {
         } catch (Exception ex) {
             dialog.setTitle("");
         }
-        dialog.setHeaderText("Tip " + actualTipNumber);
 
         InputStream markdownContentIS = null;
         try {
@@ -1305,7 +1306,7 @@ public class Utils {
             Parser parser = Parser.builder(options).build();
             HtmlRenderer renderer = HtmlRenderer.builder(options).build();
             com.vladsch.flexmark.util.ast.Node document = parser.parse(markdownContent);
-            String outputHtml = renderer.render(document);
+            String outputHtml = "<html><head><title>Tip " + actualTipNumber + "</title></head><body style=\"background-color:#d4d5c8;\">" + renderer.render(document) + "</body></html>";
 
             WebView webView = new WebView();
             webView.getEngine().loadContent(outputHtml);
@@ -1328,8 +1329,8 @@ public class Utils {
             dialog.getDialogPane().setExpanded(false);
 
             dialog.getDialogPane().setContent(webView);;
-            dialog.getDialogPane().setMinWidth(1000);
-            dialog.getDialogPane().setMinHeight(700);
+            dialog.getDialogPane().setMinWidth(800);
+            dialog.getDialogPane().setMinHeight(600);
 
             ButtonType previousButton = new ButtonType("Previous tip", ButtonBar.ButtonData.BACK_PREVIOUS);
             ButtonType nextButton = new ButtonType("Next tip", ButtonBar.ButtonData.NEXT_FORWARD);
