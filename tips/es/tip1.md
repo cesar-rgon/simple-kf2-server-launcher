@@ -1,4 +1,4 @@
-# Tip 221017#01
+# Consejo 221017#01
 
 Si tienes alguna sugerencia, propuesta de mejora o quieres reportar algún bug
 
