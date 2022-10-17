@@ -51,6 +51,7 @@ public class TemplateController implements Initializable {
     @FXML private MenuItem github;
     @FXML private MenuItem releases;
     @FXML private MenuItem tips;
+    @FXML private MenuItem checkForUpdates;
     @FXML private MenuItem donation;
 
     public TemplateController() {
@@ -113,6 +114,9 @@ public class TemplateController implements Initializable {
 
             String tipsTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.tips");
             tips.setText(tipsTitle);
+
+            String checkForUpdatesTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.checkForUpdates");
+            checkForUpdates.setText(checkForUpdatesTitle);
 
             String donationTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.donation");
             donation.setText(donationTitle);
@@ -329,6 +333,11 @@ public class TemplateController implements Initializable {
         } finally {
             IOUtils.closeQuietly(maxNumberOfTipsIS);
         }
+    }
+
+    @FXML
+    private void checkForUpdatesMenuOnAction() {
+        Utils.checkApplicationUpgrade(languageCode, false);
     }
 
     @FXML

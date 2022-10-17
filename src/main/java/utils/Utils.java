@@ -227,42 +227,80 @@ public class Utils {
         alert.showAndWait();
     }
 
-    public static void infoDialog(String header, String content, String url) {
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    public static Optional<Integer> infoDialog(String header, String content, String url) {
+        Dialog<Integer> dialog = new Dialog<Integer>();
+        PropertyService propertyService = new PropertyServiceImpl();
+        Boolean checkForUpgrades = null;
         try {
-            PropertyService propertyService = new PropertyServiceImpl();
             String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
-            alert.setTitle(applicationTitle);
-            alert.setHeaderText(header);
-
-            TextArea area = new TextArea(content);
-            area.setWrapText(true);
-            area.setPrefHeight(100);
-            area.setEditable(false);
-
-            Hyperlink hyperlink = new Hyperlink(url);
-            hyperlink.setPadding(new Insets(5,0,15,0));
-            hyperlink.setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent e) {
-                    try {
-                        Desktop.getDesktop().browse(new URI(url));
-                    } catch (Exception ex) {
-                        logger.error(ex.getMessage(), ex);
-                    }
-                }
-            });
-
-            VBox vBox = new VBox();
-            vBox.getChildren().addAll(hyperlink, area);
-
-            alert.getDialogPane().setContent(vBox);
-            alert.setResizable(true);
-            alert.showAndWait();
-
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
+            checkForUpgrades = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.checkForUpgrades"));
+            dialog.setTitle(applicationTitle);
+        } catch (Exception ex) {
+            dialog.setTitle("");
         }
+
+        Text headerText = new Text(header + "\n");
+        headerText.setStyle("-fx-font-weight: bold");
+
+        TextArea area = new TextArea(content);
+        area.setWrapText(true);
+        area.setPrefHeight(150);
+        area.setEditable(false);
+
+        Hyperlink hyperlink = new Hyperlink(url);
+        hyperlink.setPadding(new Insets(10,0,0,0));
+        hyperlink.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent e) {
+                try {
+                    Desktop.getDesktop().browse(new URI(url));
+                } catch (Exception ex) {
+                    logger.error(ex.getMessage(), ex);
+                }
+            }
+        });
+
+        VBox vBox = new VBox();
+        vBox.getChildren().addAll(headerText, area, hyperlink);
+
+        CheckBox dontShowAtStartupCheckBox = new CheckBox();
+        Boolean finalCheckForUpgrades = checkForUpgrades;
+        dialog.setDialogPane(new DialogPane() {
+            @Override
+            protected Node createDetailsButton() {
+                dontShowAtStartupCheckBox.setText("Do not show at startup");
+                if (finalCheckForUpgrades) {
+                    dontShowAtStartupCheckBox.setSelected(false);
+                } else {
+                    dontShowAtStartupCheckBox.setSelected(true);
+                }
+                return dontShowAtStartupCheckBox;
+            }
+        });
+
+        dialog.getDialogPane().setExpandableContent(new Group());
+        dialog.getDialogPane().setExpanded(false);
+        dialog.getDialogPane().setContent(vBox);;
+
+        ButtonType closeButton = new ButtonType("Ok", ButtonBar.ButtonData.CANCEL_CLOSE);
+
+        dialog.getDialogPane().getButtonTypes().addAll(closeButton);
+        dialog.setResizable(true);
+
+        dialog.setResultConverter(new Callback<ButtonType, Integer>() {
+            @Override
+            public Integer call(ButtonType b) {
+                if (b.equals(closeButton)) {
+                    if (dontShowAtStartupCheckBox.isSelected()) {
+                        return -1;
+                    }
+                    return 0;
+                }
+                return null;
+            }
+        });
+
+        return dialog.showAndWait();
     }
 
     public static void infoDialog(String header, Node content) {
@@ -1231,34 +1269,44 @@ public class Utils {
         return dialog.showAndWait();
     }
 
-    public static void checkApplicationUpgrade(String languageCode) {
+    public static void checkApplicationUpgrade(String languageCode, boolean isInStartup) {
         try {
             PropertyService propertyService = new PropertyServiceImpl();
-            Boolean checkForUpgrades = Boolean.parseBoolean(
-                    propertyService.getPropertyValue("properties/config.properties", "prop.config.checkForUpgrades")
-            );
-            if (checkForUpgrades != null && checkForUpgrades) {
-                String applicationVersion = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion");
-                String releasePageGithubUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.releasePageGithubUrl");
+            String applicationVersion = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion");
+            String releasePageGithubUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.releasePageGithubUrl");
 
-                String lastPublishedVersion = getLastPublishedVersion();
-                if (applicationVersion.compareTo(lastPublishedVersion) < 0) {
+            String lastPublishedVersion = getLastPublishedVersion();
 
-                    String newPublishedVersionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.newPublishedVersion");
-                    String actualVersionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.actualVersion");
-                    String newestPublishedVersionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.publishedversion");
-                    String upgradeAppText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.upgradeApp");
-                    String checkLinkText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.checkLink");
-
-                    Utils.infoDialog(newPublishedVersionText,
-                            actualVersionText + ": " + applicationVersion +
-                                    "\n" + newestPublishedVersionText + ": " + lastPublishedVersion +
-                                    "\n\n" + upgradeAppText + "." +
-                                    "\n" + checkLinkText + ".",
-                            releasePageGithubUrl
-                    );
+            String newPublishedVersionText = StringUtils.EMPTY;
+            if (applicationVersion.compareTo(lastPublishedVersion) < 0) {
+                newPublishedVersionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.newPublishedVersion");
+            } else {
+                if (isInStartup) {
+                    return;
                 }
+                newPublishedVersionText = "There is not a newer version of the application";
             }
+
+            String actualVersionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.actualVersion");
+            String newestPublishedVersionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.publishedversion");
+            String upgradeAppText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.upgradeApp");
+            String checkLinkText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.checkLink");
+
+            Optional<Integer> checkForUpgradeOptional = Utils.infoDialog(newPublishedVersionText,
+                    actualVersionText + ": " + applicationVersion +
+                            "\n" + newestPublishedVersionText + ": " + lastPublishedVersion +
+                            "\n\n" + upgradeAppText + "." +
+                            "\n" + checkLinkText + ".",
+                    releasePageGithubUrl
+            );
+
+            if (checkForUpgradeOptional.isPresent() && checkForUpgradeOptional.get() == 0) {
+                propertyService.setProperty("properties/config.properties", "prop.config.checkForUpgrades", "true");
+            }
+            if (checkForUpgradeOptional.isPresent() && checkForUpgradeOptional.get() == -1) {
+                propertyService.setProperty("properties/config.properties", "prop.config.checkForUpgrades", "false");
+            }
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -1306,7 +1354,9 @@ public class Utils {
             Parser parser = Parser.builder(options).build();
             HtmlRenderer renderer = HtmlRenderer.builder(options).build();
             com.vladsch.flexmark.util.ast.Node document = parser.parse(markdownContent);
-            String outputHtml = "<html><head><title>Tip " + actualTipNumber + "</title></head><body style=\"background-color:#d4d5c8;\">" + renderer.render(document) + "</body></html>";
+
+            String htmlTemplate = "<html><head><title>Tip " + actualTipNumber + "</title></head><body style='background-color:black;color:white;'><img src='https://raw.githubusercontent.com/cesar-rgon/simple-kf2-server-launcher/master/doc/images/kf2banner.png' alt='Simple KF2 Server Launcher logo'><div style='font-size:18px;'>CONTENT</div></body></html>";
+            String outputHtml = htmlTemplate.replace("CONTENT", renderer.render(document)).replace("<h1>", "<h1 style='color:gold'>").replace("<img ", "<img width='800' ").replace("<a ", "<a style='color:#f03830;' ");
 
             WebView webView = new WebView();
             webView.getEngine().loadContent(outputHtml);

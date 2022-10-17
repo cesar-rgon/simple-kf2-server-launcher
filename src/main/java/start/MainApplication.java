@@ -62,7 +62,10 @@ public class MainApplication extends Application {
         this.primaryStage = primaryStage;
 
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-        Utils.checkApplicationUpgrade(languageCode);
+        Boolean checkForUpgrades = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.checkForUpgrades"));
+        if (checkForUpgrades != null && checkForUpgrades) {
+            Utils.checkApplicationUpgrade(languageCode, true);
+        }
 
         Utils.showTipsOnStasrtup();
 
