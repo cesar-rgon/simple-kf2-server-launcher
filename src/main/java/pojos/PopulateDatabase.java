@@ -118,6 +118,7 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
         populateOfficialMap("KF-Netherhold", "https://wiki.killingfloor2.com/index.php?title=Netherhold","/KFGame/Web/images/maps/KF-Netherhold.jpg", dateFormatter.parse("2021-10-05"));
         populateOfficialMap("KF-CarillonHamlet", "https://wiki.killingfloor2.com/index.php?title=Carillon_Hamlet","/KFGame/Web/images/maps/KF-CarillonHamlet.jpg", dateFormatter.parse("2021-12-09"));
         populateOfficialMap("KF-Rig", "https://wiki.killingfloor2.com/index.php?title=Rig","/KFGame/Web/images/maps/KF-Rig.jpg", dateFormatter.parse("2022-06-14"));
+        populateOfficialMap("KF-BarmwichTown", "https://wiki.killingfloor2.com/index.php?title=Barmwich_Town","/KFGame/Web/images/maps/KF-BarmwichTown.jpg", dateFormatter.parse("2022-10-13"));
     }
 
     @Override

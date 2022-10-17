@@ -1286,18 +1286,19 @@ public class Utils {
 
     public static Optional<Integer> renderTipMarkDown(Integer actualTipNumber, Integer maxNumberOfTips, Boolean dontShowTipsOnStartup) {
         Dialog<Integer> dialog = new Dialog<Integer>();
+        PropertyService propertyService = new PropertyServiceImpl();
         try {
-            PropertyService propertyService = new PropertyServiceImpl();
             String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
             dialog.setTitle(applicationTitle);
         } catch (Exception ex) {
             dialog.setTitle("");
         }
-        dialog.setHeaderText("Test");
+        dialog.setHeaderText("Tip " + actualTipNumber);
 
         InputStream markdownContentIS = null;
         try {
-            markdownContentIS = new URL("https://raw.githubusercontent.com/cesar-rgon/simple-kf2-server-launcher/master/tips/tip" + actualTipNumber + ".md").openStream();
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            markdownContentIS = new URL("https://raw.githubusercontent.com/cesar-rgon/simple-kf2-server-launcher/master/tips/" + languageCode + "/tip" + actualTipNumber + ".md").openStream();
             String markdownContent = IOUtils.toString(markdownContentIS, StandardCharsets.UTF_8);
 
             MutableDataSet options = new MutableDataSet();
