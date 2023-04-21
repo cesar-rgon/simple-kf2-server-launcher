@@ -3,43 +3,47 @@ package services;
 import daos.DescriptionDao;
 import daos.MaxPlayersDao;
 import entities.MaxPlayers;
+import jakarta.persistence.EntityManager;
 
 import java.util.List;
 import java.util.Optional;
 
 public class MaxPlayersServiceImpl implements AbstractService<MaxPlayers> {
 
-    public MaxPlayersServiceImpl() {
+    private final EntityManager em;
+
+    public MaxPlayersServiceImpl(EntityManager em) {
         super();
+        this.em = em;
     }
 
 
     @Override
     public MaxPlayers createItem(MaxPlayers maxPlayers) throws Exception {
-        DescriptionDao.getInstance().insert(maxPlayers.getDescription());
-        return MaxPlayersDao.getInstance().insert(maxPlayers);
+        new DescriptionDao(em).insert(maxPlayers.getDescription());
+        return new MaxPlayersDao(em).insert(maxPlayers);
     }
 
     @Override
     public boolean updateItem(MaxPlayers maxPlayers) throws Exception {
-        DescriptionDao.getInstance().update(maxPlayers.getDescription());
-        return MaxPlayersDao.getInstance().update(maxPlayers);
+        new DescriptionDao(em).update(maxPlayers.getDescription());
+        return new MaxPlayersDao(em).update(maxPlayers);
     }
 
     @Override
     public List<MaxPlayers> listAll() throws Exception {
-        return MaxPlayersDao.getInstance().listAll();
+        return new MaxPlayersDao(em).listAll();
     }
 
     @Override
     public Optional<MaxPlayers> findByCode(String code) throws Exception {
-        return MaxPlayersDao.getInstance().findByCode(code);
+        return new MaxPlayersDao(em).findByCode(code);
     }
 
     @Override
     public boolean deleteItem(MaxPlayers maxPlayers) throws Exception {
-       boolean removed = MaxPlayersDao.getInstance().remove(maxPlayers);
-        DescriptionDao.getInstance().remove(maxPlayers.getDescription());
+       boolean removed = new MaxPlayersDao(em).remove(maxPlayers);
+        new DescriptionDao(em).remove(maxPlayers.getDescription());
         return removed;
     }
 }

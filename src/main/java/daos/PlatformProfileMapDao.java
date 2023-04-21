@@ -4,6 +4,7 @@ import entities.AbstractMap;
 import entities.AbstractPlatform;
 import entities.Profile;
 import entities.PlatformProfileMap;
+import jakarta.persistence.EntityManager;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -12,20 +13,8 @@ import java.util.Optional;
 
 public class PlatformProfileMapDao extends AbstractDao<PlatformProfileMap> {
 
-    private static PlatformProfileMapDao instance = null;
-
-    /**
-     * Singleton constructor
-     */
-    private PlatformProfileMapDao() {
-        super(PlatformProfileMap.class);
-    }
-
-    public static PlatformProfileMapDao getInstance() {
-        if (instance == null) {
-            instance = new PlatformProfileMapDao();
-        }
-        return instance;
+    public PlatformProfileMapDao(EntityManager em) {
+        super(PlatformProfileMap.class, em);
     }
 
     public Optional<PlatformProfileMap> findByPlatformNameProfileNameMapName(String platformName, String profileName, String mapName) throws SQLException {

@@ -3,43 +3,47 @@ package services;
 import daos.DescriptionDao;
 import daos.DifficultyDao;
 import entities.Difficulty;
+import jakarta.persistence.EntityManager;
 
 import java.util.List;
 import java.util.Optional;
 
 public class DifficultyServiceImpl implements AbstractService<Difficulty> {
 
-    public DifficultyServiceImpl() {
+    private final EntityManager em;
+
+    public DifficultyServiceImpl(EntityManager em) {
         super();
+        this.em = em;
     }
 
 
     @Override
     public Difficulty createItem(Difficulty difficulty) throws Exception {
-        DescriptionDao.getInstance().insert(difficulty.getDescription());
-        return DifficultyDao.getInstance().insert(difficulty);
+        new DescriptionDao(em).insert(difficulty.getDescription());
+        return new DifficultyDao(em).insert(difficulty);
     }
 
     @Override
     public boolean updateItem(Difficulty difficulty) throws Exception {
-        DescriptionDao.getInstance().update(difficulty.getDescription());
-        return DifficultyDao.getInstance().update(difficulty);
+        new DescriptionDao(em).update(difficulty.getDescription());
+        return new DifficultyDao(em).update(difficulty);
     }
 
     @Override
     public List<Difficulty> listAll() throws Exception {
-        return DifficultyDao.getInstance().listAll();
+        return new DifficultyDao(em).listAll();
     }
 
     @Override
     public Optional<Difficulty> findByCode(String code) throws Exception {
-        return DifficultyDao.getInstance().findByCode(code);
+        return new DifficultyDao(em).findByCode(code);
     }
 
     @Override
     public boolean deleteItem(Difficulty difficulty) throws Exception {
-        boolean removed = DifficultyDao.getInstance().remove(difficulty);
-        DescriptionDao.getInstance().remove(difficulty.getDescription());
+        boolean removed = new DifficultyDao(em).remove(difficulty);
+        new DescriptionDao(em).remove(difficulty.getDescription());
         return removed;
     }
 

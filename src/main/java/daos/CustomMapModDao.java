@@ -1,37 +1,24 @@
 package daos;
 
 import entities.CustomMapMod;
+import jakarta.persistence.EntityManager;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-public class CustomMapModDao extends AbstractExtendedDao<CustomMapMod> {
+public class CustomMapModDao extends AbstractDao<CustomMapMod> {
 
-    private static CustomMapModDao instance = null;
-
-    /**
-     * Singleton constructor
-     */
-    private CustomMapModDao() {
-        super(CustomMapMod.class);
+    public CustomMapModDao(EntityManager em) {
+        super(CustomMapMod.class, em);
     }
 
-    public static CustomMapModDao getInstance() {
-        if (instance == null) {
-            instance = new CustomMapModDao();
-        }
-        return instance;
-    }
-
-    @Override
     public List<CustomMapMod> listAll() throws SQLException {
         String query="select cmm from entities.CustomMapMod cmm";
         return list(query, null);
     }
 
-    @Override
     public Optional<CustomMapMod> findByCode(String code) throws SQLException {
         String query="select cmm from entities.CustomMapMod cmm where cmm.code = :CODE";
         java.util.Map<String,Object> parameters = new HashMap<String,Object>();

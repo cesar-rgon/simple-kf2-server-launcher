@@ -4,6 +4,7 @@ import daos.EpicPlatformDao;
 import daos.SteamPlatformDao;
 import entities.AbstractPlatform;
 import entities.EpicPlatform;
+import jakarta.persistence.EntityManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,7 +25,8 @@ public class InstallUpdateEpicServerFacadeImpl implements InstallUpdateEpicServe
 
     public InstallUpdateEpicServerFacadeImpl() {
         super();
-        platformService = new PlatformServiceImpl();
+        EntityManager em = null;
+        platformService = new PlatformServiceImpl(em);
     }
 
     @Override

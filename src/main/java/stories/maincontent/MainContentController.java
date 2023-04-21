@@ -29,13 +29,13 @@ import pojos.enums.EnumPlatform;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
+import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
 import utils.Utils;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -43,8 +43,8 @@ public class MainContentController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(MainContentController.class);
 
-    private final MainContentFacade facade;
-    private final PropertyService propertyService;
+    private MainContentFacadeManager facade;
+    private PropertyService propertyService;
     private String previousSelectedLanguageCode;
 
     @FXML private ComboBox<ProfileDto> profileSelect;
@@ -196,9 +196,13 @@ public class MainContentController implements Initializable {
     @FXML ProgressIndicator progressIndicator;
 
     public MainContentController() {
-        super();
-        facade = new MainContentFacadeImpl();
-        propertyService = new PropertyServiceImpl();
+        try {
+            facade = new MainContentFacadeManagerImpl();
+            propertyService = new PropertyServiceImpl();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
     }
 
 
@@ -213,7 +217,9 @@ public class MainContentController implements Initializable {
 
                 @Override
                 protected Void call() throws Exception {
-                    ObservableList<ProfileDto> profileOptions = facade.listAllProfiles();
+                    ListValuesMainContentFacadeResult result = facade.execute();
+
+                    ObservableList<ProfileDto> profileOptions = result.getProfileDtoList();
                     profileSelect.setItems(profileOptions);
                     if (!profileOptions.isEmpty()) {
                         ProfileDto actualProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfileName());
@@ -225,7 +231,7 @@ public class MainContentController implements Initializable {
                     }
 
                     Session.getInstance().setActualProfileName(profileSelect.getValue() != null ? profileSelect.getValue().getName(): StringUtils.EMPTY);
-                    languageSelect.setItems(facade.listAllLanguages());
+                    languageSelect.setItems(result.getLanguageDtoList());
                     gameTypeSelect.setItems(facade.listAllGameTypes());
                     difficultySelect.setItems(facade.listAllDifficulties());
                     lengthSelect.setItems(facade.listAllLengths());

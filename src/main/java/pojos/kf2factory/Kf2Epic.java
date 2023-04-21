@@ -2,6 +2,7 @@ package pojos.kf2factory;
 
 import daos.EpicPlatformDao;
 import entities.EpicPlatform;
+import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.enums.EnumPlatform;
@@ -19,7 +20,8 @@ public abstract class Kf2Epic extends Kf2AbstractCommon {
 
     protected Kf2Epic() {
         super();
-        this.platformService = new PlatformServiceImpl();
+        EntityManager em = null;
+        this.platformService = new PlatformServiceImpl(em);
         try {
             Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
             this.platform = epicPlatformOptional.isPresent() ? epicPlatformOptional.get() : null;

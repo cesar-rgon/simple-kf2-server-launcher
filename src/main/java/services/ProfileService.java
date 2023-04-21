@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-public interface ProfileService extends AbstractExtendedService<Profile> {
+public interface ProfileService extends AbstractService<Profile> {
 
     Optional<Profile> findProfileByCode(String profileName) throws Exception;
     List<Profile> listAllProfiles() throws SQLException;

@@ -103,7 +103,7 @@ public class MainApplication extends Application {
             } else {
                 if ("--pp".equalsIgnoreCase(args[0])) {
                     if (args.length > 1) {
-                        ConsoleService consoleService = new ConsoleServiceImpl();
+                        ConsoleService consoleService = new ConsoleServiceImpl(null);
                         String[] parameters = Arrays.copyOfRange(args, 1, args.length);
                         consoleService.runServersByConsole(Arrays.asList(parameters));
                     } else {

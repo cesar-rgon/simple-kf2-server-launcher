@@ -1,14 +1,19 @@
 package stories.maincontent;
 
 import dtos.*;
+import framework.FacadeResult;
 import javafx.collections.ObservableList;
 import pojos.enums.EnumPlatform;
+import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
 
 import java.sql.SQLException;
 import java.util.List;
 
-public interface MainContentFacade {
-    ObservableList<ProfileDto> listAllProfiles() throws SQLException;
+public interface MainContentFacadeManager {
+
+    ListValuesMainContentFacadeResult execute() throws Exception;
+
+    ObservableList<ProfileDto> listAllProfiles() throws Exception;
     ObservableList<SelectDto> listAllLanguages() throws Exception;
     ObservableList<GameTypeDto> listAllGameTypes() throws Exception;
     ObservableList<SelectDto> listAllDifficulties() throws Exception;

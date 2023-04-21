@@ -349,7 +349,7 @@ public class MapEditionController implements Initializable {
             WebEngine webEngine = mapPreviewWebView.getEngine();
 
             if (!Session.getInstance().getProfileMapList().isEmpty()) {
-                PlatformProfileMapDtoFactory platformProfileMapDtoFactory = new PlatformProfileMapDtoFactory();
+                PlatformProfileMapDtoFactory platformProfileMapDtoFactory = new PlatformProfileMapDtoFactory(null);
                 PlatformProfileMapDto platformProfileMapDto = platformProfileMapDtoFactory.newDto(
                         Session.getInstance().getProfileMapList().get(mapIndex)
                 );

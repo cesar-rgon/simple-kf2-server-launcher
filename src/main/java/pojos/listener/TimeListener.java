@@ -4,6 +4,7 @@ import daos.CustomMapModDao;
 import daos.OfficialMapDao;
 import daos.PlatformProfileMapDao;
 import entities.*;
+import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Hibernate;
@@ -26,8 +27,9 @@ public class TimeListener extends TimerTask {
     private final PlatformProfileMapService platformProfileMapService;
     public TimeListener() {
         super();
-        this.customMapModService = new CustomMapModServiceImpl();
-        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
+        EntityManager em = null;
+        this.customMapModService = new CustomMapModServiceImpl(em);
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl(em);
     }
 
     @Override

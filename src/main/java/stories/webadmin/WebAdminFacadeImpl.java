@@ -1,11 +1,11 @@
 package stories.webadmin;
 
-import stories.AbstractFacade;
+import stories.OldAFacade;
 
-public class WebAdminFacadeImpl extends AbstractFacade implements WebAdminFacade {
+public class WebAdminFacadeImpl extends OldAFacade implements WebAdminFacade {
 
     public WebAdminFacadeImpl() {
-        super();
+        super(null);
     }
 
 }

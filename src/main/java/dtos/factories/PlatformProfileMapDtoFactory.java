@@ -3,6 +3,7 @@ package dtos.factories;
 import dtos.PlatformDto;
 import dtos.PlatformProfileMapDto;
 import entities.PlatformProfileMap;
+import jakarta.persistence.EntityManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import pojos.enums.EnumPlatform;
@@ -19,11 +20,11 @@ public class PlatformProfileMapDtoFactory {
     private final ProfileDtoFactory profileDtoFactory;
     private final MapDtoFactory mapDtoFactory;
 
-    public PlatformProfileMapDtoFactory() {
+    public PlatformProfileMapDtoFactory(EntityManager em) {
         super();
         this.platformDtoFactory = new PlatformDtoFactory();
-        this.profileDtoFactory = new ProfileDtoFactory();
-        this.mapDtoFactory = new MapDtoFactory();
+        this.profileDtoFactory = new ProfileDtoFactory(em);
+        this.mapDtoFactory = new MapDtoFactory(em);
     }
 
     public PlatformProfileMapDto newDto(PlatformProfileMap platformProfileMap) {

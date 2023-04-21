@@ -1,6 +1,5 @@
 package stories.profilesedition;
 
-import daos.*;
 import dtos.ProfileDto;
 import dtos.factories.ProfileDtoFactory;
 import entities.*;
@@ -12,11 +11,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.*;
-import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import services.*;
-import stories.AbstractFacade;
+import stories.OldAFacade;
 import utils.Utils;
 
 import java.io.File;
@@ -25,7 +23,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-public class ProfilesEditionFacadeImpl extends AbstractFacade implements ProfilesEditionFacade {
+public class ProfilesEditionFacadeImpl extends OldAFacade implements ProfilesEditionFacade {
 
     private static final Logger logger = LogManager.getLogger(ProfilesEditionFacadeImpl.class);
     private final ProfileDtoFactory profileDtoFactory;
@@ -43,18 +41,19 @@ public class ProfilesEditionFacadeImpl extends AbstractFacade implements Profile
     private final ProfileToDisplayFactory profileToDisplayFactory;
 
     public ProfilesEditionFacadeImpl() {
-        profileDtoFactory = new ProfileDtoFactory();
+        super(null);
+        profileDtoFactory = new ProfileDtoFactory(em);
         propertyService = new PropertyServiceImpl();
         platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory();
-        this.profileService = new ProfileServiceImpl();
-        this.officialMapService = new OfficialMapServiceImpl();
-        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
-        this.platformService = new PlatformServiceImpl();
-        this.difficultyService = new DifficultyServiceImpl();
-        this.gameTypeService = new GameTypeServiceImpl();
-        this.languageService = new LanguageServiceImpl();
-        this.lengthService = new LengthServiceImpl();
-        this.maxPlayersService = new MaxPlayersServiceImpl();
+        this.profileService = new ProfileServiceImpl(em);
+        this.officialMapService = new OfficialMapServiceImpl(em);
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl(em);
+        this.platformService = new PlatformServiceImpl(em);
+        this.difficultyService = new DifficultyServiceImpl(em);
+        this.gameTypeService = new GameTypeServiceImpl(em);
+        this.languageService = new LanguageServiceImpl(em);
+        this.lengthService = new LengthServiceImpl(em);
+        this.maxPlayersService = new MaxPlayersServiceImpl(em);
         this.profileToDisplayFactory = new ProfileToDisplayFactory();
     }
 

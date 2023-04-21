@@ -3,6 +3,7 @@ package services;
 import daos.OfficialMapDao;
 import daos.PlatformProfileMapDao;
 import entities.*;
+import jakarta.persistence.EntityManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,22 +15,20 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public abstract class AbstractMapService implements AbstractExtendedService<AbstractMap> {
+public abstract class AbstractMapService implements AbstractService<AbstractMap> {
 
     private static final Logger logger = LogManager.getLogger(AbstractMapService.class);
     private final PlatformProfileMapService platformProfileMapService;
 
-    protected AbstractMapService() {
+    protected AbstractMapService(EntityManager em) {
         super();
-        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl(em);
     }
 
-    @Override
     public boolean updateItemCode(AbstractMap map, String oldCode) throws Exception {
         return false;
     }
 
-    @Override
     public void updateItemDescription(AbstractMap map) throws Exception {
     }
 

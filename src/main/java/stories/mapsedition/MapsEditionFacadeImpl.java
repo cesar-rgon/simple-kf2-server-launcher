@@ -1,6 +1,5 @@
 package stories.mapsedition;
 
-import daos.*;
 import dtos.*;
 import dtos.factories.MapDtoFactory;
 import dtos.factories.PlatformDtoFactory;
@@ -17,9 +16,8 @@ import pojos.*;
 import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
-import pojos.session.Session;
 import services.*;
-import stories.AbstractFacade;
+import stories.OldAFacade;
 import utils.Utils;
 
 import java.io.*;
@@ -29,7 +27,7 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEditionFacade {
+public class MapsEditionFacadeImpl extends OldAFacade implements MapsEditionFacade {
 
     private static final Logger logger = LogManager.getLogger(MapsEditionFacadeImpl.class);
 
@@ -46,18 +44,18 @@ public class MapsEditionFacadeImpl extends AbstractFacade implements MapsEdition
     private final PlatformService platformService;
 
     public MapsEditionFacadeImpl() {
-        super();
-        this.mapDtoFactory = new MapDtoFactory();
+        super(null);
+        this.mapDtoFactory = new MapDtoFactory(em);
         this.propertyService = new PropertyServiceImpl();
-        this.profileDtoFactory = new ProfileDtoFactory();
-        this.officialMapService = new OfficialMapServiceImpl();
-        this.customMapModService = new CustomMapModServiceImpl();
-        this.profileService = new ProfileServiceImpl();
-        this.platformProfileMapDtoFactory = new PlatformProfileMapDtoFactory();
-        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
+        this.profileDtoFactory = new ProfileDtoFactory(em);
+        this.officialMapService = new OfficialMapServiceImpl(em);
+        this.customMapModService = new CustomMapModServiceImpl(em);
+        this.profileService = new ProfileServiceImpl(em);
+        this.platformProfileMapDtoFactory = new PlatformProfileMapDtoFactory(em);
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl(em);
         this.platformDtoFactory = new PlatformDtoFactory();
-        this.customMapService = new CustomMapModServiceImpl();
-        this.platformService = new PlatformServiceImpl();
+        this.customMapService = new CustomMapModServiceImpl(em);
+        this.platformService = new PlatformServiceImpl(em);
     }
 
     private CustomMapMod createNewCustomMap(List<AbstractPlatform> platformList, String mapName, Long idWorkShop, String urlPhoto, List<Profile> profileList, StringBuffer success, StringBuffer errors) throws Exception {

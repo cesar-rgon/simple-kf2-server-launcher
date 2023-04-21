@@ -4,6 +4,7 @@ import dtos.AbstractMapDto;
 import dtos.ProfileDto;
 import entities.AbstractMap;
 import entities.Profile;
+import jakarta.persistence.EntityManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -20,11 +21,11 @@ public class ProfileDtoFactory {
     private final LengthDtoFactory lengthDtoFactory;
     private final MaxPlayersDtoFactory maxPlayersDtoFactory;
 
-    public ProfileDtoFactory() {
+    public ProfileDtoFactory(EntityManager em) {
         super();
         languageDtoFactory = new LanguageDtoFactory();
         gameTypeDtoFactory = new GameTypeDtoFactory();
-        mapDtoFactory = new MapDtoFactory();
+        mapDtoFactory = new MapDtoFactory(em);
         difficultyDtoFactory = new DifficultyDtoFactory();
         lengthDtoFactory = new LengthDtoFactory();
         maxPlayersDtoFactory = new MaxPlayersDtoFactory();

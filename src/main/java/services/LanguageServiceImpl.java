@@ -2,34 +2,41 @@ package services;
 
 import daos.LanguageDao;
 import entities.Language;
+import jakarta.persistence.EntityManager;
 
 import java.util.List;
 import java.util.Optional;
 
 public class LanguageServiceImpl implements AbstractService<Language> {
 
+    private final EntityManager em;
+
+    public LanguageServiceImpl(EntityManager em) {
+        this.em = em;
+    }
+
     @Override
     public List<Language> listAll() throws Exception {
-        return LanguageDao.getInstance().listAll();
+        return new LanguageDao(em).listAll();
     }
 
     @Override
     public Optional<Language> findByCode(String languageCode) throws Exception {
-        return LanguageDao.getInstance().findByCode(languageCode);
+        return new LanguageDao(em).findByCode(languageCode);
     }
 
     @Override
     public Language createItem(Language language) throws Exception {
-        return LanguageDao.getInstance().insert(language);
+        return new LanguageDao(em).insert(language);
     }
 
     @Override
     public boolean updateItem(Language language) throws Exception {
-        return LanguageDao.getInstance().update(language);
+        return new LanguageDao(em).update(language);
     }
 
     @Override
     public boolean deleteItem(Language language) throws Exception {
-        return LanguageDao.getInstance().remove(language);
+        return new LanguageDao(em).remove(language);
     }
 }

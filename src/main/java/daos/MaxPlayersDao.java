@@ -1,6 +1,7 @@
 package daos;
 
 import entities.MaxPlayers;
+import jakarta.persistence.EntityManager;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -8,25 +9,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-public class MaxPlayersDao extends AbstractExtendedDao<MaxPlayers> {
+public class MaxPlayersDao extends AbstractDao<MaxPlayers> {
 
-    private static MaxPlayersDao instance = null;
-
-    /**
-     * Singleton constructor
-     */
-    private MaxPlayersDao() {
-        super(MaxPlayers.class);
+    public MaxPlayersDao(EntityManager em) {
+        super(MaxPlayers.class, em);
     }
 
-    public static MaxPlayersDao getInstance() {
-        if (instance == null) {
-            instance = new MaxPlayersDao();
-        }
-        return instance;
-    }
-
-    @Override
     public List<MaxPlayers> listAll() throws SQLException {
         String query="select mp from entities.MaxPlayers mp";
         List<MaxPlayers> playerList = list(query, null);
@@ -50,7 +38,6 @@ public class MaxPlayersDao extends AbstractExtendedDao<MaxPlayers> {
         return sortedPlayerList;
     }
 
-    @Override
     public Optional<MaxPlayers> findByCode(String code) throws SQLException {
         String query="select mp from entities.MaxPlayers mp where mp.code = :CODE";
         java.util.Map<String,Object> parameters = new HashMap<String,Object>();

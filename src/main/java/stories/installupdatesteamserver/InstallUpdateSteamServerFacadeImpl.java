@@ -3,6 +3,7 @@ package stories.installupdatesteamserver;
 import daos.SteamPlatformDao;
 import entities.AbstractPlatform;
 import entities.SteamPlatform;
+import jakarta.persistence.EntityManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,8 +25,9 @@ public class InstallUpdateSteamServerFacadeImpl implements InstallUpdateSteamSer
 
     public InstallUpdateSteamServerFacadeImpl() {
         super();
+        EntityManager em = null;
         propertyService = new PropertyServiceImpl();
-        this.platformService = new PlatformServiceImpl();
+        this.platformService = new PlatformServiceImpl(em);
     }
 
     @Override

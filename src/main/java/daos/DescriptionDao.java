@@ -2,6 +2,7 @@ package daos;
 
 import entities.Description;
 import jakarta.persistence.Column;
+import jakarta.persistence.EntityManager;
 import org.apache.commons.lang3.StringUtils;
 import pojos.enums.EnumLanguage;
 
@@ -10,31 +11,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-public class DescriptionDao extends AbstractExtendedDao<Description> {
+public class DescriptionDao extends AbstractDao<Description> {
 
-    private static DescriptionDao instance = null;
-
-    /**
-     * Singleton constructor
-     */
-    private DescriptionDao() {
-        super(Description.class);
+    public DescriptionDao(EntityManager em) {
+        super(Description.class, em);
     }
 
-    public static DescriptionDao getInstance() {
-        if (instance == null) {
-            instance = new DescriptionDao();
-        }
-        return instance;
-    }
-
-    @Override
     public List<Description> listAll() throws SQLException {
         String query="select d from entities.Description d";
         return list(query, null);
     }
 
-    @Override
     public Optional<Description> findByCode(String code) throws SQLException {
         return Optional.empty();
     }

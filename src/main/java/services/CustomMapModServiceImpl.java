@@ -2,6 +2,7 @@ package services;
 
 import daos.CustomMapModDao;
 import entities.*;
+import jakarta.persistence.EntityManager;
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
@@ -12,21 +13,23 @@ import java.util.stream.Collectors;
 
 public class CustomMapModServiceImpl extends AbstractMapService {
 
+    private final EntityManager em;
     private final PlatformProfileMapService platformProfileMapService;
 
-    public CustomMapModServiceImpl() {
-        super();
-        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
+    public CustomMapModServiceImpl(EntityManager em) {
+        super(em);
+        this.em = em;
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl(em);
     }
 
     @Override
     public List listAll() throws SQLException {
-        return CustomMapModDao.getInstance().listAll();
+        return new CustomMapModDao(em).listAll();
     }
 
     @Override
     public Optional<AbstractMap> findByCode(String mapName) throws Exception {
-        Optional<CustomMapMod> customMapModOptional = CustomMapModDao.getInstance().findByCode(mapName);
+        Optional<CustomMapMod> customMapModOptional = new CustomMapModDao(em).findByCode(mapName);
         if (!customMapModOptional.isPresent()) {
             return Optional.empty();
         }
@@ -35,17 +38,17 @@ public class CustomMapModServiceImpl extends AbstractMapService {
 
     @Override
     public AbstractMap createItem(AbstractMap map) throws Exception {
-        return CustomMapModDao.getInstance().insert((CustomMapMod) map);
+        return new CustomMapModDao(em).insert((CustomMapMod) map);
     }
 
     @Override
     public boolean deleteItem(AbstractMap map) throws Exception {
-        return CustomMapModDao.getInstance().remove((CustomMapMod) map);
+        return new CustomMapModDao(em).remove((CustomMapMod) map);
     }
 
     @Override
     public boolean updateItem(AbstractMap map) throws SQLException {
-        return CustomMapModDao.getInstance().update((CustomMapMod) map);
+        return new CustomMapModDao(em).update((CustomMapMod) map);
     }
 
     @Override
@@ -73,6 +76,6 @@ public class CustomMapModServiceImpl extends AbstractMapService {
     }
 
     public Optional findByIdWorkShop(Long idWorkShop) throws SQLException {
-        return CustomMapModDao.getInstance().findByIdWorkShop(idWorkShop);
+        return new CustomMapModDao(em).findByIdWorkShop(idWorkShop);
     }
 }

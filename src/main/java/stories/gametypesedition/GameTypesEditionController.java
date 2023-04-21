@@ -3,7 +3,6 @@ package stories.gametypesedition;
 import dtos.GameTypeDto;
 import dtos.ProfileDto;
 import dtos.SelectDto;
-import entities.Description;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -18,7 +17,6 @@ import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.enums.EnumLanguage;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -50,7 +48,7 @@ public class GameTypesEditionController implements Initializable {
     @FXML private Label lengthsEnabledLabel;
 
     public GameTypesEditionController() {
-        facade = new GameTypesEditionFacadeImpl();
+        facade = new GameTypesEditionFacadeImplOld();
         propertyService = new PropertyServiceImpl();
     }
 

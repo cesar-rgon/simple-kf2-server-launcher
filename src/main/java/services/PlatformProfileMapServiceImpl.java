@@ -5,6 +5,7 @@ import entities.AbstractMap;
 import entities.AbstractPlatform;
 import entities.PlatformProfileMap;
 import entities.Profile;
+import jakarta.persistence.EntityManager;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -12,19 +13,26 @@ import java.util.Optional;
 
 public class PlatformProfileMapServiceImpl implements PlatformProfileMapService {
 
+    private final EntityManager em;
+
+    public PlatformProfileMapServiceImpl(EntityManager em) {
+        super();
+        this.em = em;
+    }
+
     @Override
     public PlatformProfileMap createItem(PlatformProfileMap entity) throws Exception {
-        return PlatformProfileMapDao.getInstance().insert(entity);
+        return new PlatformProfileMapDao(em).insert(entity);
     }
 
     @Override
     public boolean updateItem(PlatformProfileMap platformProfileMap) throws Exception {
-        return PlatformProfileMapDao.getInstance().update(platformProfileMap);
+        return new PlatformProfileMapDao(em).update(platformProfileMap);
     }
 
     @Override
     public List<PlatformProfileMap> listAll() throws Exception {
-        return PlatformProfileMapDao.getInstance().listPlatformProfileMaps();
+        return new PlatformProfileMapDao(em).listPlatformProfileMaps();
     }
 
     @Override
@@ -34,41 +42,41 @@ public class PlatformProfileMapServiceImpl implements PlatformProfileMapService 
 
     @Override
     public boolean deleteItem(PlatformProfileMap entity) throws Exception {
-        return PlatformProfileMapDao.getInstance().remove(entity);
+        return new PlatformProfileMapDao(em).remove(entity);
     }
 
     @Override
     public Optional<PlatformProfileMap> findPlatformProfileMapByNames(String platformName, String profileName, String mapName) throws SQLException {
-        return PlatformProfileMapDao.getInstance().findByPlatformNameProfileNameMapName(platformName, profileName, mapName);
+        return new PlatformProfileMapDao(em).findByPlatformNameProfileNameMapName(platformName, profileName, mapName);
     }
 
     @Override
     public List<PlatformProfileMap> listPlatformProfileMaps(AbstractPlatform platform, Profile profile) throws SQLException {
-        return PlatformProfileMapDao.getInstance().listPlatformProfileMaps(platform, profile);
+        return new PlatformProfileMapDao(em).listPlatformProfileMaps(platform, profile);
     }
 
     @Override
     public List<PlatformProfileMap> listPlatformProfileMaps(List<AbstractPlatform> platformList, List<Profile> profileList) throws SQLException {
-        return PlatformProfileMapDao.getInstance().listPlatformProfileMaps(platformList, profileList);
+        return new PlatformProfileMapDao(em).listPlatformProfileMaps(platformList, profileList);
     }
 
     @Override
     public List<PlatformProfileMap> listPlatformProfileMaps(AbstractMap map) throws SQLException {
-        return PlatformProfileMapDao.getInstance().listPlatformProfileMaps(map);
+        return new PlatformProfileMapDao(em).listPlatformProfileMaps(map);
     }
 
     @Override
     public List<PlatformProfileMap> listPlatformProfileMaps(Profile profile) throws SQLException {
-        return PlatformProfileMapDao.getInstance().listPlatformProfileMaps(profile);
+        return new PlatformProfileMapDao(em).listPlatformProfileMaps(profile);
     }
 
     @Override
     public List<PlatformProfileMap> listPlatformProfileMaps(AbstractPlatform platform) throws SQLException {
-        return PlatformProfileMapDao.getInstance().listPlatformProfileMaps(platform);
+        return new PlatformProfileMapDao(em).listPlatformProfileMaps(platform);
     }
 
     @Override
     public List<PlatformProfileMap> listPlatformProfileMaps(AbstractPlatform platform, AbstractMap map) throws SQLException {
-        return PlatformProfileMapDao.getInstance().listPlatformProfileMaps(platform, map);
+        return new PlatformProfileMapDao(em).listPlatformProfileMaps(platform, map);
     }
 }

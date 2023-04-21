@@ -1,22 +1,20 @@
 package stories.mapedition;
 
-import daos.PlatformProfileMapDao;
 import entities.PlatformProfileMap;
 import services.*;
-import stories.AbstractFacade;
+import stories.OldAFacade;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
-public class MapEditionFacadeImpl extends AbstractFacade implements MapEditionFacade {
+public class MapEditionFacadeImpl extends OldAFacade implements MapEditionFacade {
 
     private final PlatformProfileMapService platformProfileMapService;
 
     protected MapEditionFacadeImpl() {
-        super();
-        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
+        super(null);
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl(em);
     }
 
     @Override

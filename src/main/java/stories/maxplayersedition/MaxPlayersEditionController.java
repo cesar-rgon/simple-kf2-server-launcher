@@ -2,7 +2,6 @@ package stories.maxplayersedition;
 
 import dtos.ProfileDto;
 import dtos.SelectDto;
-import entities.Description;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -11,7 +10,6 @@ import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.enums.EnumLanguage;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -40,7 +38,7 @@ public class MaxPlayersEditionController implements Initializable {
 
     public MaxPlayersEditionController() {
         super();
-        facade = new MaxPlayersEditionFacadeImpl();
+        facade = new MaxPlayersEditionFacadeImplOld();
         propertyService = new PropertyServiceImpl();
     }
 

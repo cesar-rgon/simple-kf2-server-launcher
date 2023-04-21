@@ -2,6 +2,7 @@ package pojos;
 
 import daos.*;
 import entities.*;
+import jakarta.persistence.EntityManager;
 import pojos.enums.EnumPlatform;
 import services.*;
 
@@ -24,15 +25,16 @@ public abstract class AbstractPopulateDatabase {
 
     protected AbstractPopulateDatabase() {
         super();
-        this.platformService = new PlatformServiceImpl();
-        this.difficultyService = new DifficultyServiceImpl();
-        this.gameTypeService = new GameTypeServiceImpl();
-        this.languageService = new LanguageServiceImpl();
-        this.lengthService = new LengthServiceImpl();
-        this.maxPlayersService = new MaxPlayersServiceImpl();
-        this.officialMapService = new OfficialMapServiceImpl();
-        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
-        this.profileService = new ProfileServiceImpl();
+        EntityManager em = null;
+        this.platformService = new PlatformServiceImpl(em);
+        this.difficultyService = new DifficultyServiceImpl(em);
+        this.gameTypeService = new GameTypeServiceImpl(em);
+        this.languageService = new LanguageServiceImpl(em);
+        this.lengthService = new LengthServiceImpl(em);
+        this.maxPlayersService = new MaxPlayersServiceImpl(em);
+        this.officialMapService = new OfficialMapServiceImpl(em);
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl(em);
+        this.profileService = new ProfileServiceImpl(em);
     }
 
     public abstract void start() throws Exception;

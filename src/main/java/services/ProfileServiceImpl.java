@@ -3,6 +3,7 @@ package services;
 import daos.*;
 import entities.*;
 import entities.AbstractMap;
+import jakarta.persistence.EntityManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 public class ProfileServiceImpl implements ProfileService {
 
     private static final Logger logger = LogManager.getLogger(ProfileServiceImpl.class);
+    private final EntityManager em;
     private final PropertyService propertyService;
     private final AbstractMapService officialMapService;
     private final AbstractMapService customMapModService;
@@ -39,19 +41,20 @@ public class ProfileServiceImpl implements ProfileService {
     private final MaxPlayersServiceImpl maxPlayersService;
     private final PlatformService platformService;
 
-    public ProfileServiceImpl() {
+    public ProfileServiceImpl(EntityManager em) {
         super();
+        this.em = em;
         this.propertyService = new PropertyServiceImpl();
-        this.officialMapService = new OfficialMapServiceImpl();
-        this.customMapModService = new CustomMapModServiceImpl();
-        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
-        this.customMapService = new CustomMapModServiceImpl();
-        this.difficultyService = new DifficultyServiceImpl();
-        this.gameTypeService = new GameTypeServiceImpl();
-        this.languageService = new LanguageServiceImpl();
-        this.lengthService = new LengthServiceImpl();
-        this.maxPlayersService = new MaxPlayersServiceImpl();
-        this.platformService = new PlatformServiceImpl();
+        this.officialMapService = new OfficialMapServiceImpl(em);
+        this.customMapModService = new CustomMapModServiceImpl(em);
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl(em);
+        this.customMapService = new CustomMapModServiceImpl(em);
+        this.difficultyService = new DifficultyServiceImpl(em);
+        this.gameTypeService = new GameTypeServiceImpl(em);
+        this.languageService = new LanguageServiceImpl(em);
+        this.lengthService = new LengthServiceImpl(em);
+        this.maxPlayersService = new MaxPlayersServiceImpl(em);
+        this.platformService = new PlatformServiceImpl(em);
     }
 
     @Override
@@ -61,41 +64,39 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Override
     public List<Profile> listAllProfiles() throws SQLException {
-        return ProfileDao.getInstance().listAll();
+        return new ProfileDao(em).listAll();
     }
 
     @Override
     public Profile createItem(Profile profile) throws Exception {
-        return ProfileDao.getInstance().insert(profile);
+        return new ProfileDao(em).insert(profile);
     }
 
     @Override
     public boolean updateItem(Profile profile) throws Exception {
-        return ProfileDao.getInstance().update(profile);
+        return new ProfileDao(em).update(profile);
     }
 
     @Override
     public List<Profile> listAll() throws Exception {
-        return ProfileDao.getInstance().listAll();
+        return new ProfileDao(em).listAll();
     }
 
     @Override
     public Optional<Profile> findByCode(String code) throws Exception {
-        return ProfileDao.getInstance().findByCode(code);
+        return new ProfileDao(em).findByCode(code);
     }
 
-    @Override
     public boolean updateItemCode(Profile profile, String oldCode) throws Exception {
         return false;
     }
 
-    @Override
     public void updateItemDescription(Profile entity) throws Exception {
     }
 
     @Override
     public boolean deleteItem(Profile profile) throws Exception {
-        return ProfileDao.getInstance().remove(profile);
+        return new ProfileDao(em).remove(profile);
     }
 
     @Override
@@ -129,7 +130,7 @@ public class ProfileServiceImpl implements ProfileService {
             }
         });
 
-        Profile updatedProfile = ProfileDao.getInstance().get(profile.getId());
+        Profile updatedProfile = new ProfileDao(em).get(profile.getId());
         return deleteItem(updatedProfile);
     }
 
@@ -650,7 +651,7 @@ public class ProfileServiceImpl implements ProfileService {
         int profileIndex = 1;
         for (Profile profile: selectedProfileList) {
             try {
-                Profile savedProfile = ProfileDao.getInstance().insert(profile);
+                Profile savedProfile = new ProfileDao(em).insert(profile);
 
                 List<AbstractMap> mapList = importPlatformProfileMapsFromFile(profileIndex, savedProfile, properties);
 
@@ -658,7 +659,7 @@ public class ProfileServiceImpl implements ProfileService {
                 Optional<AbstractMap> mapOpt = mapList.stream().filter(m -> m.getCode().equalsIgnoreCase(mapName)).findFirst();
                 savedProfile.setMap(mapOpt.isPresent()? mapOpt.get(): null);
 
-                ProfileDao.getInstance().update(savedProfile);
+                new ProfileDao(em).update(savedProfile);
 
                 savedProfileList.add(savedProfile);
                 profileIndex++;

@@ -7,6 +7,7 @@ import entities.AbstractMap;
 import entities.CustomMapMod;
 import entities.PlatformProfileMap;
 import entities.Profile;
+import jakarta.persistence.EntityManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -39,10 +40,11 @@ public class Kf2Utils {
 
     protected Kf2Utils() {
         super();
+        EntityManager em = null;
         propertyService = new PropertyServiceImpl();
-        customMapService = new CustomMapModServiceImpl();
-        officialMapService = new OfficialMapServiceImpl();
-        platformProfileMapService = new PlatformProfileMapServiceImpl();
+        customMapService = new CustomMapModServiceImpl(em);
+        officialMapService = new OfficialMapServiceImpl(em);
+        platformProfileMapService = new PlatformProfileMapServiceImpl(em);
         byConsole = false;
         try {
             languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");

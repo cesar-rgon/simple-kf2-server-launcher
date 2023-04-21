@@ -7,6 +7,7 @@ import dtos.CustomMapModDto;
 import dtos.ImportedDateByProfileDto;
 import dtos.OfficialMapDto;
 import entities.*;
+import jakarta.persistence.EntityManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.logging.log4j.LogManager;
@@ -32,11 +33,11 @@ public class MapDtoFactory {
     private final AbstractMapService officialMapService;
     private final PlatformProfileMapService platformProfileMapService;
 
-    public MapDtoFactory() {
+    public MapDtoFactory(EntityManager em) {
         super();
         this.propertyService = new PropertyServiceImpl();
-        this.officialMapService = new OfficialMapServiceImpl();
-        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
+        this.officialMapService = new OfficialMapServiceImpl(em);
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl(em);
         try {
             String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             this.datePattern = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.code.dateHourPattern");

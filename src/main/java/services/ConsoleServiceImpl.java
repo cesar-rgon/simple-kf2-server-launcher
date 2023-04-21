@@ -2,6 +2,7 @@ package services;
 
 import entities.AbstractPlatform;
 import entities.Profile;
+import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.kf2factory.Kf2Common;
@@ -16,13 +17,15 @@ import java.util.Optional;
 public class ConsoleServiceImpl implements ConsoleService {
 
     private static final Logger logger = LogManager.getLogger(ConsoleServiceImpl.class);
+    private final EntityManager em;
     private final ProfileService profileService;
     private final PlatformService platformService;
 
-    public ConsoleServiceImpl() {
+    public ConsoleServiceImpl(EntityManager em) {
         super();
-        this.platformService = new PlatformServiceImpl();
-        this.profileService = new ProfileServiceImpl();
+        this.em = em;
+        this.platformService = new PlatformServiceImpl(em);
+        this.profileService = new ProfileServiceImpl(em);
     }
 
     @Override

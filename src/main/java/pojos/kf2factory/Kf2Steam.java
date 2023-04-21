@@ -3,6 +3,7 @@ package pojos.kf2factory;
 import daos.SteamPlatformDao;
 import entities.Profile;
 import entities.SteamPlatform;
+import jakarta.persistence.EntityManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,7 +23,8 @@ public abstract class Kf2Steam extends Kf2AbstractCommon {
 
     protected Kf2Steam() {
         super();
-        this.platformService = new PlatformServiceImpl();
+        EntityManager em = null;
+        this.platformService = new PlatformServiceImpl(em);
 
         try {
             Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();;

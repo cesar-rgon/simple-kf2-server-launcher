@@ -1,6 +1,5 @@
 package stories.mapwebinfo;
 
-import daos.*;
 import dtos.CustomMapModDto;
 import dtos.ProfileDto;
 import dtos.factories.MapDtoFactory;
@@ -12,12 +11,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Hibernate;
 import pojos.PlatformProfile;
-import pojos.PlatformProfileToDisplayFactory;
 import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import services.*;
-import stories.AbstractFacade;
+import stories.OldAFacade;
 import utils.Utils;
 
 import java.io.File;
@@ -25,7 +23,7 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFacade {
+public class MapWebInfoFacadeImpl extends OldAFacade implements MapWebInfoFacade {
 
     private static final Logger logger = LogManager.getLogger(MapWebInfoFacadeImpl.class);
 
@@ -39,15 +37,15 @@ public class MapWebInfoFacadeImpl extends AbstractFacade implements MapWebInfoFa
     private final PlatformProfileMapService platformProfileMapService;
 
     public MapWebInfoFacadeImpl() {
-        super();
+        super(null);
         this.propertyService = new PropertyServiceImpl();
-        this.mapDtoFactory = new MapDtoFactory();
-        this.officialMapService = new OfficialMapServiceImpl();
-        this.customMapModService = new CustomMapModServiceImpl();
-        this.profileService = new ProfileServiceImpl();
-        this.profileDtoFactory = new ProfileDtoFactory();
-        this.platformService = new PlatformServiceImpl();
-        this.platformProfileMapService = new PlatformProfileMapServiceImpl();
+        this.mapDtoFactory = new MapDtoFactory(em);
+        this.officialMapService = new OfficialMapServiceImpl(em);
+        this.customMapModService = new CustomMapModServiceImpl(em);
+        this.profileService = new ProfileServiceImpl(em);
+        this.profileDtoFactory = new ProfileDtoFactory(em);
+        this.platformService = new PlatformServiceImpl(em);
+        this.platformProfileMapService = new PlatformProfileMapServiceImpl(em);
     }
 
     @Override
