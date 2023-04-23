@@ -17,9 +17,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class ListValuesMainContentTransactionalFacadeImpl extends AbstractTransactionalFacade<EmptyModelContext, ListValuesMainContentFacadeResult> implements ListValuesMainContentTransactionalFacade {
+public class ListValuesMainContentFacadeImpl
+        extends AbstractTransactionalFacade<EmptyModelContext, ListValuesMainContentFacadeResult>
+        implements ListValuesMainContentFacade {
 
-    public ListValuesMainContentTransactionalFacadeImpl() {
+    public ListValuesMainContentFacadeImpl() {
         super(new EmptyModelContext(), ListValuesMainContentFacadeResult.class);
     }
 

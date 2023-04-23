@@ -4,6 +4,7 @@ import dtos.*;
 import javafx.collections.ObservableList;
 import pojos.enums.EnumPlatform;
 import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
+import stories.loadactualprofile.LoadActualProfileFacadeResult;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -11,9 +12,10 @@ import java.util.List;
 public interface MainContentManagerFacade {
 
     ListValuesMainContentFacadeResult execute() throws Exception;
+    LoadActualProfileFacadeResult loadActualProfile(String platformName, String profileName) throws Exception;
+
 
     ObservableList<ProfileDto> listAllProfiles() throws Exception;
-
     boolean updateProfileSetGameType(String profileName, String gameTypeCode) throws Exception;
     boolean updateProfileSetMap(String profileName, String mapCode, boolean isOfficial) throws Exception;
     boolean updateProfileSetDifficulty(String profileName, String difficultyCode) throws Exception;

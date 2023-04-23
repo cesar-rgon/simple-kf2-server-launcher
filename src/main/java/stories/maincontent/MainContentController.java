@@ -30,6 +30,7 @@ import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
+import stories.loadactualprofile.LoadActualProfileFacadeResult;
 import utils.Utils;
 
 import java.io.File;
@@ -1278,38 +1279,21 @@ public class MainContentController implements Initializable {
 
     }
 
-    private void loadActualProfile(PlatformDto platformDto, ProfileDto profile) throws Exception {
-        languageSelect.setValue(profile.getLanguage());
-        previousSelectedLanguageCode = profile.getLanguage().getKey();
-        gameTypeSelect.setValue(profile.getGametype());
-        platformSelect.setValue(platformDto);
+    private void loadActualProfile() throws Exception {
 
-        List<PlatformProfileMapDto> platformProfileMapList = facade.listPlatformProfileMaps(platformDto.getKey(), profile.getName());
+        LoadActualProfileFacadeResult result = facade.loadActualProfile(platformSelect.getValue().getKey(), profileSelect.getValue().getName());
 
-        List<PlatformProfileMapDto> officialMaps = platformProfileMapList.stream()
-                .sorted((ppm1, ppm2) -> ppm1.getAlias().compareTo(ppm2.getAlias()))
-                .filter(ppm -> ppm.getMapDto().isOfficial())
-                .collect(Collectors.toList());
-
-        List<PlatformProfileMapDto> downloadedCustomMaps = platformProfileMapList.stream()
-                .sorted((ppm1, ppm2) -> ppm1.getAlias().compareTo(ppm2.getAlias()))
-                .filter(ppm -> !ppm.getMapDto().isOfficial())
-                .filter(ppm -> ppm.isDownloaded())
-                .collect(Collectors.toList());
-
-        List<PlatformProfileMapDto> filteredMapList = new ArrayList<PlatformProfileMapDto>(officialMaps);
-        filteredMapList.addAll(downloadedCustomMaps);
+        languageSelect.setValue(result.getProfileDto().getLanguage());
+        previousSelectedLanguageCode = result.getProfileDto().getLanguage().getKey();
+        gameTypeSelect.setValue(result.getProfileDto().getGametype());
+        platformSelect.setValue(result.getPlatformDto());
         profileMapSelect.getItems().clear();
-        profileMapSelect.setItems(FXCollections.observableArrayList(filteredMapList));
-        if (profile.getMap() != null) {
-            Optional<PlatformProfileMapDto> selectedProfileMapOpt = filteredMapList.stream()
-                    .filter(pm -> pm.getMapDto().getKey().equals(profile.getMap().getKey()))
-                    .findFirst();
+        profileMapSelect.setItems(result.getFilteredMapDtoList());
 
-            if (selectedProfileMapOpt.isPresent()) {
-                profileMapSelect.getSelectionModel().select(filteredMapList.indexOf(selectedProfileMapOpt.get()));
-            }
+        if (result.getProfileDto().getMap() != null && result.getSelectedProfileMapOptional().isPresent()) {
+            profileMapSelect.getSelectionModel().select(result.getFilteredMapDtoList().indexOf(result.getSelectedProfileMapOptional().get()));
         }
+
         if (profileMapSelect.getValue() != null) {
             noSelectedMapImage.setVisible(false);
         } else {
@@ -1317,26 +1301,26 @@ public class MainContentController implements Initializable {
         }
 
         joinServerVisibility();
-        difficultySelect.setValue(profile.getDifficulty());
+        difficultySelect.setValue(result.getProfileDto().getDifficulty());
         difficultySelect.setDisable(gameTypeSelect.getValue() != null ? !gameTypeSelect.getValue().isDifficultyEnabled(): false);
-        lengthSelect.setValue(profile.getLength());
+        lengthSelect.setValue(result.getProfileDto().getLength());
         lengthSelect.setDisable(gameTypeSelect.getValue() != null ? !gameTypeSelect.getValue().isLengthEnabled(): false);
-        maxPlayersSelect.setValue(profile.getMaxPlayers());
+        maxPlayersSelect.setValue(result.getProfileDto().getMaxPlayers());
 
-        serverName.setText(profile.getServerName());
-        Integer webPortValue = profile.getWebPort();
+        serverName.setText(result.getProfileDto().getServerName());
+        Integer webPortValue = result.getProfileDto().getWebPort();
         webPort.setText(webPortValue != null? String.valueOf(webPortValue): "");
-        Integer gamePortValue = profile.getGamePort();
+        Integer gamePortValue = result.getProfileDto().getGamePort();
         gamePort.setText(gamePortValue != null? String.valueOf(gamePortValue): "");
-        Integer queryPortValue = profile.getQueryPort();
+        Integer queryPortValue = result.getProfileDto().getQueryPort();
         queryPort.setText(queryPortValue != null? String.valueOf(queryPortValue): "");
-        yourClan.setText(profile.getYourClan());
-        yourWebLink.setText(profile.getYourWebLink());
-        urlImageServer.setText(profile.getUrlImageServer());
-        welcomeMessage.setText(profile.getWelcomeMessage());
-        customParameters.setText(profile.getCustomParameters());
-        webPage.setSelected(profile.getWebPage() != null ? profile.getWebPage(): false);
-        takeover.setSelected(profile.getTakeover() != null ? profile.getTakeover(): false);
+        yourClan.setText(result.getProfileDto().getYourClan());
+        yourWebLink.setText(result.getProfileDto().getYourWebLink());
+        urlImageServer.setText(result.getProfileDto().getUrlImageServer());
+        welcomeMessage.setText(result.getProfileDto().getWelcomeMessage());
+        customParameters.setText(result.getProfileDto().getCustomParameters());
+        webPage.setSelected(result.getProfileDto().getWebPage() != null ? result.getProfileDto().getWebPage(): false);
+        takeover.setSelected(result.getProfileDto().getTakeover() != null ? result.getProfileDto().getTakeover(): false);
         try {
             if (StringUtils.isNotEmpty(urlImageServer.getText())) {
                 imageWebView.getEngine().load(urlImageServer.getText());
@@ -1348,38 +1332,38 @@ public class MainContentController implements Initializable {
                     imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/photo-borders.png").getPath());
                 }
             }
-            serverPassword.setText(Utils.decryptAES(profile.getServerPassword()));
-            webPassword.setText(Utils.decryptAES(profile.getWebPassword()));
+            serverPassword.setText(Utils.decryptAES(result.getProfileDto().getServerPassword()));
+            webPassword.setText(Utils.decryptAES(result.getProfileDto().getWebPassword()));
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
         }
-        teamCollision.setSelected(profile.getTeamCollision() != null ? profile.getTeamCollision(): false);
-        adminPause.setSelected(profile.getAdminCanPause() != null ? profile.getAdminCanPause(): false);
-        adminLogin.setSelected(profile.getAnnounceAdminLogin() != null ? profile.getAnnounceAdminLogin(): false);
-        mapVoting.setSelected(profile.getMapVoting() != null ? profile.getMapVoting(): false);
-        kickVoting.setSelected(profile.getKickVoting() != null ? profile.getKickVoting(): false);
-        publicTextChat.setSelected(profile.getPublicTextChat() != null ? profile.getPublicTextChat(): false);
-        spectatorsChat.setSelected(profile.getSpectatorsOnlyChatToOtherSpectators() != null ? profile.getSpectatorsOnlyChatToOtherSpectators(): false);
-        voip.setSelected(profile.getVoip() != null ? profile.getVoip(): false);
-        chatLogging.setSelected(profile.getChatLogging() != null ? profile.getChatLogging(): false);
-        mapVotingTime.setText(profile.getMapVotingTime() != null? String.valueOf(profile.getMapVotingTime()): "");
-        kickPercentage.setText(profile.getKickPercentage() != null? String.valueOf(profile.getKickPercentage()): "");
-        chatLoggingFile.setText(profile.getChatLoggingFile());
-        chatLoggingFileTimestamp.setSelected(profile.getChatLoggingFileTimestamp() != null ? profile.getChatLoggingFileTimestamp(): false);
-        timeBetweenKicks.setText(profile.getTimeBetweenKicks() != null? String.valueOf(profile.getTimeBetweenKicks()): "");
-        maxIdleTime.setText(profile.getMaxIdleTime() != null? String.valueOf(profile.getMaxIdleTime()): "");
-        deadPlayersCanTalk.setSelected(profile.getDeadPlayersCanTalk() != null ? profile.getDeadPlayersCanTalk(): false);
-        readyUpDelay.setText(profile.getReadyUpDelay() != null? String.valueOf(profile.getReadyUpDelay()): "");
-        gameStartDelay.setText(profile.getGameStartDelay() != null? String.valueOf(profile.getGameStartDelay()): "");
-        maxSpectators.setText(profile.getMaxSpectators() != null? String.valueOf(profile.getMaxSpectators()): "");
-        mapObjetives.setSelected(profile.getMapObjetives() != null ? profile.getMapObjetives(): false);
-        pickupItems.setSelected(profile.getPickupItems() != null ? profile.getPickupItems(): false);
-        friendlyFirePercentage.setText(profile.getFriendlyFirePercentage() != null? String.valueOf(profile.getFriendlyFirePercentage()): "");
+        teamCollision.setSelected(result.getProfileDto().getTeamCollision() != null ? result.getProfileDto().getTeamCollision(): false);
+        adminPause.setSelected(result.getProfileDto().getAdminCanPause() != null ? result.getProfileDto().getAdminCanPause(): false);
+        adminLogin.setSelected(result.getProfileDto().getAnnounceAdminLogin() != null ? result.getProfileDto().getAnnounceAdminLogin(): false);
+        mapVoting.setSelected(result.getProfileDto().getMapVoting() != null ? result.getProfileDto().getMapVoting(): false);
+        kickVoting.setSelected(result.getProfileDto().getKickVoting() != null ? result.getProfileDto().getKickVoting(): false);
+        publicTextChat.setSelected(result.getProfileDto().getPublicTextChat() != null ? result.getProfileDto().getPublicTextChat(): false);
+        spectatorsChat.setSelected(result.getProfileDto().getSpectatorsOnlyChatToOtherSpectators() != null ? result.getProfileDto().getSpectatorsOnlyChatToOtherSpectators(): false);
+        voip.setSelected(result.getProfileDto().getVoip() != null ? result.getProfileDto().getVoip(): false);
+        chatLogging.setSelected(result.getProfileDto().getChatLogging() != null ? result.getProfileDto().getChatLogging(): false);
+        mapVotingTime.setText(result.getProfileDto().getMapVotingTime() != null? String.valueOf(result.getProfileDto().getMapVotingTime()): "");
+        kickPercentage.setText(result.getProfileDto().getKickPercentage() != null? String.valueOf(result.getProfileDto().getKickPercentage()): "");
+        chatLoggingFile.setText(result.getProfileDto().getChatLoggingFile());
+        chatLoggingFileTimestamp.setSelected(result.getProfileDto().getChatLoggingFileTimestamp() != null ? result.getProfileDto().getChatLoggingFileTimestamp(): false);
+        timeBetweenKicks.setText(result.getProfileDto().getTimeBetweenKicks() != null? String.valueOf(result.getProfileDto().getTimeBetweenKicks()): "");
+        maxIdleTime.setText(result.getProfileDto().getMaxIdleTime() != null? String.valueOf(result.getProfileDto().getMaxIdleTime()): "");
+        deadPlayersCanTalk.setSelected(result.getProfileDto().getDeadPlayersCanTalk() != null ? result.getProfileDto().getDeadPlayersCanTalk(): false);
+        readyUpDelay.setText(result.getProfileDto().getReadyUpDelay() != null? String.valueOf(result.getProfileDto().getReadyUpDelay()): "");
+        gameStartDelay.setText(result.getProfileDto().getGameStartDelay() != null? String.valueOf(result.getProfileDto().getGameStartDelay()): "");
+        maxSpectators.setText(result.getProfileDto().getMaxSpectators() != null? String.valueOf(result.getProfileDto().getMaxSpectators()): "");
+        mapObjetives.setSelected(result.getProfileDto().getMapObjetives() != null ? result.getProfileDto().getMapObjetives(): false);
+        pickupItems.setSelected(result.getProfileDto().getPickupItems() != null ? result.getProfileDto().getPickupItems(): false);
+        friendlyFirePercentage.setText(result.getProfileDto().getFriendlyFirePercentage() != null? String.valueOf(result.getProfileDto().getFriendlyFirePercentage()): "");
 
-        Session.getInstance().setActualProfileName(profile.getName());
-        if (Session.getInstance().getMapsProfile() == null || profile.getName().equals(Session.getInstance().getMapsProfile().getName())) {
-            Session.getInstance().setMapsProfile(profile);
+        Session.getInstance().setActualProfileName(result.getProfileDto().getName());
+        if (Session.getInstance().getMapsProfile() == null || result.getProfileDto().getName().equals(Session.getInstance().getMapsProfile().getName())) {
+            Session.getInstance().setMapsProfile(result.getProfileDto());
         }
     }
 
@@ -1387,8 +1371,8 @@ public class MainContentController implements Initializable {
     @FXML
     private void profileOnAction() {
         try {
-            ProfileDto databaseProfile = facade.findProfileDtoByName(profileSelect.getValue().getName());
-            loadActualProfile(platformSelect.getValue(), databaseProfile);
+            loadActualProfile();
+
             Session.getInstance().setActualProfileName(profileSelect.getValue().getName());
             propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", profileSelect.getValue().getName());
             String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
@@ -1934,10 +1918,7 @@ public class MainContentController implements Initializable {
         try {
             Session.getInstance().setPlatform(platformSelect.getValue());
             if (profileSelect.getValue() != null) {
-                ProfileDto databaseProfile = facade.findProfileDtoByName(profileSelect.getValue().getName());
-                if (databaseProfile != null) {
-                    loadActualProfile(platformSelect.getValue(), databaseProfile);
-                }
+                loadActualProfile();
             }
         } catch (Exception e) {
             String headerText = "The platform value could not be saved!";

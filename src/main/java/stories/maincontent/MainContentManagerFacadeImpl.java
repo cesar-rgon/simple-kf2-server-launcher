@@ -5,9 +5,13 @@ import framework.AbstractManagerFacade;
 import framework.EmptyModelContext;
 import javafx.collections.ObservableList;
 import pojos.enums.EnumPlatform;
-import stories.listvaluesmaincontent.ListValuesMainContentTransactionalFacade;
-import stories.listvaluesmaincontent.ListValuesMainContentTransactionalFacadeImpl;
+import stories.listvaluesmaincontent.ListValuesMainContentFacade;
+import stories.listvaluesmaincontent.ListValuesMainContentFacadeImpl;
 import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
+import stories.loadactualprofile.LoadActualProfileFacade;
+import stories.loadactualprofile.LoadActualProfileFacadeImpl;
+import stories.loadactualprofile.LoadActualProfileFacadeResult;
+import stories.loadactualprofile.LoadActualProfileModelContext;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -27,8 +31,18 @@ public class MainContentManagerFacadeImpl
 
     @Override
     public ListValuesMainContentFacadeResult internalExecute(EmptyModelContext modelContext) throws Exception {
-        ListValuesMainContentTransactionalFacade listValuesMainContentTransactionalFacade = new ListValuesMainContentTransactionalFacadeImpl();
-        return listValuesMainContentTransactionalFacade.execute();
+        ListValuesMainContentFacade listValuesMainContentFacade = new ListValuesMainContentFacadeImpl();
+        return listValuesMainContentFacade.execute();
+    }
+
+    @Override
+    public LoadActualProfileFacadeResult loadActualProfile(String platformName, String profileName) throws Exception {
+        LoadActualProfileModelContext loadActualProfileModelContext = new LoadActualProfileModelContext(
+                platformName,
+                profileName
+        );
+        LoadActualProfileFacade loadActualProfileFacade = new LoadActualProfileFacadeImpl(loadActualProfileModelContext);
+        return loadActualProfileFacade.execute();
     }
 
     @Override

@@ -645,18 +645,6 @@ public class OldMainContentFacadeImpl extends OldAFacade {
     }
 
     
-    public List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws Exception {
-        Optional<AbstractPlatform> platformOpt = platformService.findPlatformByName(platformName);
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (platformOpt.isPresent() && profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            List<PlatformProfileMap> platformProfileMapList = platformProfileMapService.listPlatformProfileMaps(platformOpt.get(), profile);
-            return platformProfileMapDtoFactory.newDtos(platformProfileMapList);
-        }
-        return new ArrayList<PlatformProfileMapDto>();
-    }
-
-    
     public void runExecutableFile(String platformName) throws SQLException {
         Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(platformName);
         if (!platformOptional.isPresent()) {
