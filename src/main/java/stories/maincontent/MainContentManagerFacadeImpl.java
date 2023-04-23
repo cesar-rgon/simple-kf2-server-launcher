@@ -1,22 +1,22 @@
 package stories.maincontent;
 
 import dtos.*;
-import framework.AbstractFacadeManager;
+import framework.AbstractManagerFacade;
 import framework.EmptyModelContext;
 import javafx.collections.ObservableList;
 import pojos.enums.EnumPlatform;
-import stories.listvaluesmaincontent.ListValuesMainContentFacade;
-import stories.listvaluesmaincontent.ListValuesMainContentFacadeImpl;
+import stories.listvaluesmaincontent.ListValuesMainContentTransactionalFacade;
+import stories.listvaluesmaincontent.ListValuesMainContentTransactionalFacadeImpl;
 import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
 
 import java.sql.SQLException;
 import java.util.List;
 
-public class MainContentFacadeManagerImpl
-        extends AbstractFacadeManager<EmptyModelContext, ListValuesMainContentFacadeResult>
-        implements MainContentFacadeManager {
+public class MainContentManagerFacadeImpl
+        extends AbstractManagerFacade<EmptyModelContext, ListValuesMainContentFacadeResult>
+        implements MainContentManagerFacade {
 
-    public MainContentFacadeManagerImpl() {
+    public MainContentManagerFacadeImpl() {
         super(new EmptyModelContext(), ListValuesMainContentFacadeResult.class);
     }
 
@@ -27,42 +27,12 @@ public class MainContentFacadeManagerImpl
 
     @Override
     public ListValuesMainContentFacadeResult internalExecute(EmptyModelContext modelContext) throws Exception {
-        ListValuesMainContentFacade listValuesMainContentFacade = new ListValuesMainContentFacadeImpl();
-        return listValuesMainContentFacade.execute();
+        ListValuesMainContentTransactionalFacade listValuesMainContentTransactionalFacade = new ListValuesMainContentTransactionalFacadeImpl();
+        return listValuesMainContentTransactionalFacade.execute();
     }
 
     @Override
     public ObservableList<ProfileDto> listAllProfiles() throws Exception {
-        return null;
-    }
-
-    @Override
-    public ObservableList<SelectDto> listAllLanguages() throws Exception {
-        return null;
-    }
-
-    @Override
-    public ObservableList<GameTypeDto> listAllGameTypes() throws Exception {
-        return null;
-    }
-
-    @Override
-    public ObservableList<SelectDto> listAllDifficulties() throws Exception {
-        return null;
-    }
-
-    @Override
-    public ObservableList<SelectDto> listAllLengths() throws Exception {
-        return null;
-    }
-
-    @Override
-    public ObservableList<SelectDto> listAllPlayers() throws Exception {
-        return null;
-    }
-
-    @Override
-    public ObservableList<PlatformDto> listAllPlatforms() throws SQLException {
         return null;
     }
 
@@ -168,11 +138,6 @@ public class MainContentFacadeManagerImpl
 
     @Override
     public String joinServer(String platformName, String profileName) throws Exception {
-        return null;
-    }
-
-    @Override
-    public ProfileDto getLastSelectedProfile() throws Exception {
         return null;
     }
 

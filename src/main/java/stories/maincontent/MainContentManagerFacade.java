@@ -1,7 +1,6 @@
 package stories.maincontent;
 
 import dtos.*;
-import framework.FacadeResult;
 import javafx.collections.ObservableList;
 import pojos.enums.EnumPlatform;
 import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
@@ -9,17 +8,11 @@ import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface MainContentFacadeManager {
+public interface MainContentManagerFacade {
 
     ListValuesMainContentFacadeResult execute() throws Exception;
 
     ObservableList<ProfileDto> listAllProfiles() throws Exception;
-    ObservableList<SelectDto> listAllLanguages() throws Exception;
-    ObservableList<GameTypeDto> listAllGameTypes() throws Exception;
-    ObservableList<SelectDto> listAllDifficulties() throws Exception;
-    ObservableList<SelectDto> listAllLengths() throws Exception;
-    ObservableList<SelectDto> listAllPlayers() throws Exception;
-    ObservableList<PlatformDto> listAllPlatforms() throws SQLException;
 
     boolean updateProfileSetGameType(String profileName, String gameTypeCode) throws Exception;
     boolean updateProfileSetMap(String profileName, String mapCode, boolean isOfficial) throws Exception;
@@ -42,7 +35,6 @@ public interface MainContentFacadeManager {
     ProfileDto findProfileDtoByName(String name) throws Exception;
     String runServer(String platformName, String profileName) throws Exception;
     String joinServer(String platformName, String profileName) throws Exception;
-    ProfileDto getLastSelectedProfile() throws Exception;
     List<String> selectProfiles(String message, String actualProfileName) throws SQLException;
     String selectProfile(String message, String actualProfileName) throws SQLException;
     boolean isCorrectInstallationFolder(String platformName) throws SQLException;

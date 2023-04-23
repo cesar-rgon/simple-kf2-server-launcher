@@ -1,6 +1,6 @@
 package stories.listvaluesmaincontent;
 
-public interface ListValuesMainContentFacade {
+public interface ListValuesMainContentTransactionalFacade {
     ListValuesMainContentFacadeResult execute() throws Exception;
 
 }

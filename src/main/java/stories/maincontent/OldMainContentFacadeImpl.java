@@ -63,59 +63,6 @@ public class OldMainContentFacadeImpl extends OldAFacade {
         maxPlayersService = new MaxPlayersServiceImpl(em);
     }
 
-    
-    public ObservableList<ProfileDto> listAllProfiles() throws SQLException {
-        List<Profile> profiles = profileService.listAllProfiles();
-        return profileDtoFactory.newDtos(profiles);
-    }
-
-    
-    public ObservableList<SelectDto> listAllLanguages() throws Exception {
-        List<Language> languages = languageService.listAll();
-        return languageDtoFactory.newDtos(languages);
-    }
-
-    
-    public ObservableList<GameTypeDto> listAllGameTypes() throws Exception {
-        List<GameType> gameTypes = gameTypeService.listAll();
-        return gameTypeDtoFactory.newDtos(gameTypes);
-    }
-
-    
-    public ObservableList<SelectDto> listAllDifficulties() throws Exception {
-        List<Difficulty> difficulties = difficultyService.listAll();
-        return difficultyDtoFactory.newDtos(difficulties);
-    }
-
-    
-    public ObservableList<SelectDto> listAllLengths() throws Exception {
-        List<Length> lengths = lengthService.listAll();
-        return lengthDtoFactory.newDtos(lengths);
-    }
-
-    
-    public ObservableList<SelectDto> listAllPlayers() throws Exception {
-        List<MaxPlayers> playerList = maxPlayersService.listAll();
-        return maxPlayersDtoFactory.newDtos(playerList);
-    }
-
-    public ObservableList<PlatformDto> listAllPlatforms() throws SQLException {
-
-        Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();
-        Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
-
-        List<AbstractPlatform> platformList = new ArrayList<AbstractPlatform>();
-        if (steamPlatformOptional.isPresent()) {
-            platformList.add(steamPlatformOptional.get());
-        }
-        if (epicPlatformOptional.isPresent()) {
-            platformList.add(epicPlatformOptional.get());
-        }
-
-        return platformDtoFactory.newDtos(platformList);
-    }
-
-    
     public boolean updateProfileSetGameType(String profileName, String gameTypeCode) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
@@ -361,23 +308,6 @@ public class OldMainContentFacadeImpl extends OldAFacade {
             Utils.warningDialog("Join operation aborted!", "The profile name can not be empty");
         }
         return StringUtils.EMPTY;
-    }
-
-    
-    public ProfileDto getLastSelectedProfile() throws Exception {
-        PropertyService propertyService = new PropertyServiceImpl();
-        String lastProfileName = propertyService.getPropertyValue("properties/config.properties", "prop.config.lastSelectedProfile");
-        Optional<Profile> lastProfile = profileService.findProfileByCode(lastProfileName);
-        if (lastProfile.isPresent()) {
-            return profileDtoFactory.newDto(lastProfile.get());
-        } else {
-            List<Profile> profileList = profileService.listAllProfiles();
-            if (profileList != null && !profileList.isEmpty()) {
-                return profileDtoFactory.newDto(profileList.get(0));
-            } else {
-                return null;
-            }
-        }
     }
 
     

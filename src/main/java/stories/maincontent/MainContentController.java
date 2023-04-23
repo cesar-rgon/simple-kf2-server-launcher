@@ -43,7 +43,7 @@ public class MainContentController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(MainContentController.class);
 
-    private MainContentFacadeManager facade;
+    private MainContentManagerFacade facade;
     private PropertyService propertyService;
     private String previousSelectedLanguageCode;
 
@@ -197,7 +197,7 @@ public class MainContentController implements Initializable {
 
     public MainContentController() {
         try {
-            facade = new MainContentFacadeManagerImpl();
+            facade = new MainContentManagerFacadeImpl();
             propertyService = new PropertyServiceImpl();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -223,7 +223,7 @@ public class MainContentController implements Initializable {
                     profileSelect.setItems(profileOptions);
                     if (!profileOptions.isEmpty()) {
                         ProfileDto actualProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfileName());
-                        profileSelect.setValue(actualProfile != null ? actualProfile : facade.getLastSelectedProfile());
+                        profileSelect.setValue(actualProfile != null ? actualProfile : result.getLastSelectedProfile());
                     } else {
                         profileSelect.setValue(null);
                         profileMapSelect.setItems(null);
@@ -232,11 +232,11 @@ public class MainContentController implements Initializable {
 
                     Session.getInstance().setActualProfileName(profileSelect.getValue() != null ? profileSelect.getValue().getName(): StringUtils.EMPTY);
                     languageSelect.setItems(result.getLanguageDtoList());
-                    gameTypeSelect.setItems(facade.listAllGameTypes());
-                    difficultySelect.setItems(facade.listAllDifficulties());
-                    lengthSelect.setItems(facade.listAllLengths());
-                    maxPlayersSelect.setItems(facade.listAllPlayers());
-                    platformSelect.setItems(facade.listAllPlatforms());
+                    gameTypeSelect.setItems(result.getGameTypeDtoList());
+                    difficultySelect.setItems(result.getDifficultyDtoList());
+                    lengthSelect.setItems(result.getLengthDtoList());
+                    maxPlayersSelect.setItems(result.getPlayerDtoList());
+                    platformSelect.setItems(result.getPlatformDtoList());
                     platformSelect.getSelectionModel().select(0);
 
                     if (profileSelect.getValue() == null) {
