@@ -14,9 +14,8 @@ public interface MainContentManagerFacade {
     ListValuesMainContentFacadeResult execute() throws Exception;
     LoadActualProfileFacadeResult loadActualProfile(String platformName, String profileName) throws Exception;
 
-
     ObservableList<ProfileDto> listAllProfiles() throws Exception;
-    boolean updateProfileSetGameType(String profileName, String gameTypeCode) throws Exception;
+    void updateProfileSetGameType(String profileName, String gameTypeCode) throws Exception;
     boolean updateProfileSetMap(String profileName, String mapCode, boolean isOfficial) throws Exception;
     boolean updateProfileSetDifficulty(String profileName, String difficultyCode) throws Exception;
     boolean updateProfileSetLength(String profileName, String lengthCode) throws Exception;

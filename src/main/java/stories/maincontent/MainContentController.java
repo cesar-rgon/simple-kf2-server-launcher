@@ -1281,7 +1281,10 @@ public class MainContentController implements Initializable {
 
     private void loadActualProfile() throws Exception {
 
-        LoadActualProfileFacadeResult result = facade.loadActualProfile(platformSelect.getValue().getKey(), profileSelect.getValue().getName());
+        LoadActualProfileFacadeResult result = facade.loadActualProfile(
+                platformSelect.getValue().getKey(),
+                profileSelect.getValue().getName()
+        );
 
         languageSelect.setValue(result.getProfileDto().getLanguage());
         previousSelectedLanguageCode = result.getProfileDto().getLanguage().getKey();
@@ -1372,18 +1375,7 @@ public class MainContentController implements Initializable {
     private void profileOnAction() {
         try {
             loadActualProfile();
-
             Session.getInstance().setActualProfileName(profileSelect.getValue().getName());
-            propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", profileSelect.getValue().getName());
-            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-            if (!languageCode.equals(languageSelect.getValue().getKey())) {
-                propertyService.setProperty("properties/config.properties", "prop.config.selectedLanguageCode", languageSelect.getValue().getKey());
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                        "prop.message.languageChanged");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                        "prop.message.applicationMustBeRestarted");
-                Utils.infoDialog(headerText, contentText);
-            }
         } catch (Exception e) {
             String headerText = "Error loading the profile information";
             logger.error(headerText, e);
@@ -1399,14 +1391,7 @@ public class MainContentController implements Initializable {
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
                 String gameTypeCode = gameTypeSelect.getValue().getKey();
-                if (!facade.updateProfileSetGameType(profileName, gameTypeCode)) {
-                    logger.warn("The game type value could not be saved!: " + gameTypeCode);
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.gameTypeNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
+                facade.updateProfileSetGameType(profileName, gameTypeCode);
             }
         } catch (Exception e) {
             String headerText = "The game type value could not be saved!";

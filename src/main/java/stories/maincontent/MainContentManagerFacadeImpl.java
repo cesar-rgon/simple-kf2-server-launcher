@@ -5,6 +5,8 @@ import framework.AbstractManagerFacade;
 import framework.EmptyModelContext;
 import javafx.collections.ObservableList;
 import pojos.enums.EnumPlatform;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import stories.listvaluesmaincontent.ListValuesMainContentFacade;
 import stories.listvaluesmaincontent.ListValuesMainContentFacadeImpl;
 import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
@@ -12,6 +14,11 @@ import stories.loadactualprofile.LoadActualProfileFacade;
 import stories.loadactualprofile.LoadActualProfileFacadeImpl;
 import stories.loadactualprofile.LoadActualProfileFacadeResult;
 import stories.loadactualprofile.LoadActualProfileModelContext;
+import stories.updateprofilesetgametype.UpdateProfileSetGameTypeFacade;
+import stories.updateprofilesetgametype.UpdateProfileSetGameTypeFacadeImpl;
+import stories.updateprofilesetgametype.UpdateProfileSetGameTypeFacadeResult;
+import stories.updateprofilesetgametype.UpdateProfileSetGameTypeModelContext;
+import utils.Utils;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -42,7 +49,22 @@ public class MainContentManagerFacadeImpl
                 profileName
         );
         LoadActualProfileFacade loadActualProfileFacade = new LoadActualProfileFacadeImpl(loadActualProfileModelContext);
-        return loadActualProfileFacade.execute();
+        LoadActualProfileFacadeResult result = loadActualProfileFacade.execute();
+
+        PropertyService propertyService = new PropertyServiceImpl();
+        propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", profileName);
+        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+
+        if (!languageCode.equals(result.getProfileDto().getLanguage().getKey())) {
+            propertyService.setProperty("properties/config.properties", "prop.config.selectedLanguageCode", result.getProfileDto().getLanguage().getKey());
+            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                    "prop.message.languageChanged");
+            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                    "prop.message.applicationMustBeRestarted");
+            Utils.infoDialog(headerText, contentText);
+        }
+
+        return result;
     }
 
     @Override
@@ -51,8 +73,13 @@ public class MainContentManagerFacadeImpl
     }
 
     @Override
-    public boolean updateProfileSetGameType(String profileName, String gameTypeCode) throws Exception {
-        return false;
+    public void updateProfileSetGameType(String profileName, String gameTypeCode) throws Exception {
+        UpdateProfileSetGameTypeModelContext updateProfileSetGameTypeModelContext = new UpdateProfileSetGameTypeModelContext(
+                profileName,
+                gameTypeCode
+        );
+        UpdateProfileSetGameTypeFacade updateProfileSetGameTypeFacade = new UpdateProfileSetGameTypeFacadeImpl(updateProfileSetGameTypeModelContext);
+        updateProfileSetGameTypeFacade.execute();
     }
 
     @Override
