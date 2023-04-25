@@ -62,50 +62,6 @@ public class OldMainContentFacadeImpl extends OldAFacade {
         maxPlayersService = new MaxPlayersServiceImpl(em);
     }
 
-    public boolean updateProfileSetWebPassword(String profileName, String webPassword) throws Exception {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            profile.setWebPassword(Utils.encryptAES(webPassword));
-            return profileService.updateItem(profile);
-        }
-        return false;
-    }
-
-    
-    public boolean updateProfileSetWebPort(String profileName, Integer webPort) throws Exception {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            profile.setWebPort(webPort);
-            return profileService.updateItem(profile);
-        }
-        return false;
-    }
-
-    
-    public boolean updateProfileSetGamePort(String profileName, Integer gamePort) throws Exception {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            profile.setGamePort(gamePort);
-            return profileService.updateItem(profile);
-        }
-        return false;
-    }
-
-    
-    public boolean updateProfileSetQueryPort(String profileName, Integer queryPort) throws Exception {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            profile.setQueryPort(queryPort);
-            return profileService.updateItem(profile);
-        }
-        return false;
-    }
-
-    
     public boolean updateProfileSetYourClan(String profileName, String yourClan) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {

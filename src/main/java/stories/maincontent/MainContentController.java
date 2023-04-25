@@ -522,14 +522,7 @@ public class MainContentController implements Initializable {
                 try {
                     if (!newPropertyValue) {
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (StringUtils.isNotBlank(profileName) && languageSelect.getValue() != null && !facade.updateProfileSetWebPassword(profileName, webPassword.getText())) {
-                            logger.warn("The web password value could not be saved!: " + webPassword.getText());
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.profileNotUpdated");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.webPasswordNotSaved");
-                            Utils.warningDialog(headerText, contentText);
-                        }
+                        facade.updateProfileSetWebPassword(profileName, webPassword.getText());
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -546,15 +539,7 @@ public class MainContentController implements Initializable {
                     if (!newPropertyValue) {
                         oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getWebPort();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (StringUtils.isNotBlank(profileName) && languageSelect.getValue() != null && !facade.updateProfileSetWebPort(profileName, StringUtils.isNotEmpty(webPort.getText()) ? Integer.parseInt(webPort.getText()): null)) {
-                            String webPortValue = StringUtils.isNotEmpty(webPort.getText())? webPort.getText(): "";
-                            logger.warn("The web port value could not be saved! " + webPortValue);
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.profileNotUpdated");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.webPortNotSaved");
-                            Utils.warningDialog(headerText, contentText);
-                        }
+                        facade.updateProfileSetWebPort(profileName, StringUtils.isNotEmpty(webPort.getText()) ? Integer.parseInt(webPort.getText()): null);
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -572,15 +557,7 @@ public class MainContentController implements Initializable {
                     if (!newPropertyValue) {
                         oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getGamePort();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (StringUtils.isNotBlank(profileName) && languageSelect.getValue() != null && !facade.updateProfileSetGamePort(profileName, StringUtils.isNotEmpty(gamePort.getText()) ? Integer.parseInt(gamePort.getText()): null)) {
-                            String gamePortValue = StringUtils.isNotEmpty(gamePort.getText())? gamePort.getText(): "";
-                            logger.warn("The game port value could not be saved! " + gamePortValue);
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.profileNotUpdated");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.gamePortNotSaved");
-                            Utils.warningDialog(headerText, contentText);
-                        }
+                        facade.updateProfileSetGamePort(profileName, StringUtils.isNotEmpty(gamePort.getText()) ? Integer.parseInt(gamePort.getText()): null);
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -598,15 +575,7 @@ public class MainContentController implements Initializable {
                     if (!newPropertyValue) {
                         oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getQueryPort();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (StringUtils.isNotBlank(profileName) && languageSelect.getValue() != null && !facade.updateProfileSetQueryPort(profileName, StringUtils.isNotEmpty(queryPort.getText()) ? Integer.parseInt(queryPort.getText()): null)) {
-                            String queryPortValue = StringUtils.isNotEmpty(queryPort.getText())? queryPort.getText(): "";
-                            logger.warn("The query port value could not be saved! " + queryPortValue);
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.profileNotUpdated");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.queryPortNotSaved");
-                            Utils.warningDialog(headerText, contentText);
-                        }
+                        facade.updateProfileSetQueryPort(profileName, StringUtils.isNotEmpty(queryPort.getText()) ? Integer.parseInt(queryPort.getText()): null);
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);

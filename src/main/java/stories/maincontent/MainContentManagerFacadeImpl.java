@@ -19,6 +19,9 @@ import stories.loadactualprofile.LoadActualProfileModelContext;
 import stories.updateprofilesetdifficulty.UpdateProfileSetDifficultyFacade;
 import stories.updateprofilesetdifficulty.UpdateProfileSetDifficultyFacadeImpl;
 import stories.updateprofilesetdifficulty.UpdateProfileSetDifficultyModelContext;
+import stories.updateprofilesetgameport.UpdateProfileSetGamePortFacade;
+import stories.updateprofilesetgameport.UpdateProfileSetGamePortFacadeImpl;
+import stories.updateprofilesetgameport.UpdateProfileSetGamePortModelContext;
 import stories.updateprofilesetgametype.UpdateProfileSetGameTypeFacade;
 import stories.updateprofilesetgametype.UpdateProfileSetGameTypeFacadeImpl;
 import stories.updateprofilesetgametype.UpdateProfileSetGameTypeModelContext;
@@ -34,12 +37,21 @@ import stories.updateprofilesetmap.UpdateProfileSetMapModelContext;
 import stories.updateprofilesetmaxplayers.UpdateProfileSetMaxPlayersFacade;
 import stories.updateprofilesetmaxplayers.UpdateProfileSetMaxPlayersFacadeImpl;
 import stories.updateprofilesetmaxplayers.UpdateProfileSetMaxPlayersModelContext;
+import stories.updateprofilesetqueryport.UpdateProfileSetQueryPortFacade;
+import stories.updateprofilesetqueryport.UpdateProfileSetQueryPortFacadeImpl;
+import stories.updateprofilesetqueryport.UpdateProfileSetQueryPortModelContext;
 import stories.updateprofilesetservername.UpdateProfileSetServerNameFacade;
 import stories.updateprofilesetservername.UpdateProfileSetServerNameFacadeImpl;
 import stories.updateprofilesetservername.UpdateProfileSetServerNameModelContext;
 import stories.updateprofilesetserverpassword.UpdateProfileSetServerPasswordFacade;
 import stories.updateprofilesetserverpassword.UpdateProfileSetServerPasswordFacadeImpl;
 import stories.updateprofilesetserverpassword.UpdateProfileSetServerPasswordModelContext;
+import stories.updateprofilesetwebpassword.UpdateProfileSetWebPasswordFacade;
+import stories.updateprofilesetwebpassword.UpdateProfileSetWebPasswordFacadeImpl;
+import stories.updateprofilesetwebpassword.UpdateProfileSetWebPasswordModelContext;
+import stories.updateprofilesetwebport.UpdateProfileSetWebPortFacade;
+import stories.updateprofilesetwebport.UpdateProfileSetWebPortFacadeImpl;
+import stories.updateprofilesetwebport.UpdateProfileSetWebPortModelContext;
 import utils.Utils;
 
 import java.sql.SQLException;
@@ -184,23 +196,43 @@ public class MainContentManagerFacadeImpl
     }
 
     @Override
-    public boolean updateProfileSetWebPassword(String profileName, String webPassword) throws Exception {
-        return false;
+    public void updateProfileSetWebPassword(String profileName, String webPassword) throws Exception {
+        UpdateProfileSetWebPasswordModelContext updateProfileSetWebPasswordModelContext = new UpdateProfileSetWebPasswordModelContext(
+                profileName,
+                webPassword
+        );
+        UpdateProfileSetWebPasswordFacade updateProfileSetWebPasswordFacade = new UpdateProfileSetWebPasswordFacadeImpl(updateProfileSetWebPasswordModelContext);
+        updateProfileSetWebPasswordFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetWebPort(String profileName, Integer webPort) throws Exception {
-        return false;
+    public void updateProfileSetWebPort(String profileName, Integer webPort) throws Exception {
+        UpdateProfileSetWebPortModelContext updateProfileSetWebPortModelContext = new UpdateProfileSetWebPortModelContext(
+                profileName,
+                webPort
+        );
+        UpdateProfileSetWebPortFacade updateProfileSetWebPortFacade = new UpdateProfileSetWebPortFacadeImpl(updateProfileSetWebPortModelContext);
+        updateProfileSetWebPortFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetGamePort(String profileName, Integer gamePort) throws Exception {
-        return false;
+    public void updateProfileSetGamePort(String profileName, Integer gamePort) throws Exception {
+        UpdateProfileSetGamePortModelContext updateProfileSetGamePortModelContext = new UpdateProfileSetGamePortModelContext(
+                profileName,
+                gamePort
+        );
+        UpdateProfileSetGamePortFacade updateProfileSetGamePortFacade = new UpdateProfileSetGamePortFacadeImpl(updateProfileSetGamePortModelContext);
+        updateProfileSetGamePortFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetQueryPort(String profileName, Integer queryPort) throws Exception {
-        return false;
+    public void updateProfileSetQueryPort(String profileName, Integer queryPort) throws Exception {
+        UpdateProfileSetQueryPortModelContext updateProfileSetQueryPortModelContext = new UpdateProfileSetQueryPortModelContext(
+                profileName,
+                queryPort
+        );
+        UpdateProfileSetQueryPortFacade updateProfileSetQueryPortFacade = new UpdateProfileSetQueryPortFacadeImpl(updateProfileSetQueryPortModelContext);
+        updateProfileSetQueryPortFacade.execute();
     }
 
     @Override

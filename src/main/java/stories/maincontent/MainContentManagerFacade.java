@@ -21,10 +21,10 @@ public interface MainContentManagerFacade {
     void updateProfileSetLanguage(String profileName, String languageCode) throws Exception;
     void updateProfileSetServerName(String profileName, String serverName) throws Exception;
     void updateProfileSetServerPassword(String profileName, String serverPassword) throws Exception;
-    boolean updateProfileSetWebPassword(String profileName, String webPassword) throws Exception;
-    boolean updateProfileSetWebPort(String profileName, Integer webPort) throws Exception;
-    boolean updateProfileSetGamePort(String profileName, Integer gamePort) throws Exception;
-    boolean updateProfileSetQueryPort(String profileName, Integer queryPort) throws Exception;
+    void updateProfileSetWebPassword(String profileName, String webPassword) throws Exception;
+    void updateProfileSetWebPort(String profileName, Integer webPort) throws Exception;
+    void updateProfileSetGamePort(String profileName, Integer gamePort) throws Exception;
+    void updateProfileSetQueryPort(String profileName, Integer queryPort) throws Exception;
     boolean updateProfileSetYourClan(String profileName, String yourClan) throws Exception;
     boolean updateProfileSetYourWebLink(String profileName, String yourWebLink) throws Exception;
     boolean updateProfileSetUrlImageServer(String profileName, String urlImageServer) throws Exception;
