@@ -13,16 +13,14 @@ public interface MainContentManagerFacade {
 
     ListValuesMainContentFacadeResult execute() throws Exception;
     LoadActualProfileFacadeResult loadActualProfile(String platformName, String profileName) throws Exception;
-
-    ObservableList<ProfileDto> listAllProfiles() throws Exception;
     void updateProfileSetGameType(String profileName, String gameTypeCode) throws Exception;
-    boolean updateProfileSetMap(String profileName, String mapCode, boolean isOfficial) throws Exception;
-    boolean updateProfileSetDifficulty(String profileName, String difficultyCode) throws Exception;
-    boolean updateProfileSetLength(String profileName, String lengthCode) throws Exception;
-    boolean updateProfileSetMaxPlayers(String profileName, String maxPlayersCode) throws Exception;
-    boolean updateProfileSetLanguage(String profileName, String languageCode) throws Exception;
-    boolean updateProfileSetServerName(String profileName, String serverName) throws Exception;
-    boolean updateProfileSetServerPassword(String profileName, String serverPassword) throws Exception;
+    void updateProfileSetMap(String profileName, String mapCode, boolean isOfficial) throws Exception;
+    void updateProfileSetDifficulty(String profileName, String difficultyCode) throws Exception;
+    void updateProfileSetLength(String profileName, String lengthCode) throws Exception;
+    void updateProfileSetMaxPlayers(String profileName, String maxPlayersCode) throws Exception;
+    void updateProfileSetLanguage(String profileName, String languageCode) throws Exception;
+    void updateProfileSetServerName(String profileName, String serverName) throws Exception;
+    void updateProfileSetServerPassword(String profileName, String serverPassword) throws Exception;
     boolean updateProfileSetWebPassword(String profileName, String webPassword) throws Exception;
     boolean updateProfileSetWebPort(String profileName, Integer webPort) throws Exception;
     boolean updateProfileSetGamePort(String profileName, Integer gamePort) throws Exception;
@@ -65,5 +63,6 @@ public interface MainContentManagerFacade {
     List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws Exception;
     void runExecutableFile(String platformName) throws SQLException;
     PlatformDto getPlatform(EnumPlatform enumPlatform) throws SQLException;
+    ObservableList<ProfileDto> listAllProfiles() throws Exception;
 
 }

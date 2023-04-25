@@ -1,6 +1,8 @@
 package stories.maincontent;
 
-import dtos.*;
+import dtos.PlatformDto;
+import dtos.PlatformProfileMapDto;
+import dtos.ProfileDto;
 import framework.AbstractManagerFacade;
 import framework.EmptyModelContext;
 import javafx.collections.ObservableList;
@@ -14,10 +16,30 @@ import stories.loadactualprofile.LoadActualProfileFacade;
 import stories.loadactualprofile.LoadActualProfileFacadeImpl;
 import stories.loadactualprofile.LoadActualProfileFacadeResult;
 import stories.loadactualprofile.LoadActualProfileModelContext;
+import stories.updateprofilesetdifficulty.UpdateProfileSetDifficultyFacade;
+import stories.updateprofilesetdifficulty.UpdateProfileSetDifficultyFacadeImpl;
+import stories.updateprofilesetdifficulty.UpdateProfileSetDifficultyModelContext;
 import stories.updateprofilesetgametype.UpdateProfileSetGameTypeFacade;
 import stories.updateprofilesetgametype.UpdateProfileSetGameTypeFacadeImpl;
-import stories.updateprofilesetgametype.UpdateProfileSetGameTypeFacadeResult;
 import stories.updateprofilesetgametype.UpdateProfileSetGameTypeModelContext;
+import stories.updateprofilesetlanguage.UpdateProfileSetLanguageFacade;
+import stories.updateprofilesetlanguage.UpdateProfileSetLanguageFacadeImpl;
+import stories.updateprofilesetlanguage.UpdateProfileSetLanguageModelContext;
+import stories.updateprofilesetlength.UpdateProfileSetLengthFacade;
+import stories.updateprofilesetlength.UpdateProfileSetLengthFacadeImpl;
+import stories.updateprofilesetlength.UpdateProfileSetLengthModelContext;
+import stories.updateprofilesetmap.UpdateProfileSetMapFacade;
+import stories.updateprofilesetmap.UpdateProfileSetMapFacadeImpl;
+import stories.updateprofilesetmap.UpdateProfileSetMapModelContext;
+import stories.updateprofilesetmaxplayers.UpdateProfileSetMaxPlayersFacade;
+import stories.updateprofilesetmaxplayers.UpdateProfileSetMaxPlayersFacadeImpl;
+import stories.updateprofilesetmaxplayers.UpdateProfileSetMaxPlayersModelContext;
+import stories.updateprofilesetservername.UpdateProfileSetServerNameFacade;
+import stories.updateprofilesetservername.UpdateProfileSetServerNameFacadeImpl;
+import stories.updateprofilesetservername.UpdateProfileSetServerNameModelContext;
+import stories.updateprofilesetserverpassword.UpdateProfileSetServerPasswordFacade;
+import stories.updateprofilesetserverpassword.UpdateProfileSetServerPasswordFacadeImpl;
+import stories.updateprofilesetserverpassword.UpdateProfileSetServerPasswordModelContext;
 import utils.Utils;
 
 import java.sql.SQLException;
@@ -83,38 +105,82 @@ public class MainContentManagerFacadeImpl
     }
 
     @Override
-    public boolean updateProfileSetMap(String profileName, String mapCode, boolean isOfficial) throws Exception {
-        return false;
+    public void updateProfileSetMap(String profileName, String mapCode, boolean isOfficial) throws Exception {
+        UpdateProfileSetMapModelContext updateProfileSetMapModelContext = new UpdateProfileSetMapModelContext(
+                profileName,
+                mapCode,
+                isOfficial
+        );
+        UpdateProfileSetMapFacade updateProfileSetMapFacade = new UpdateProfileSetMapFacadeImpl(updateProfileSetMapModelContext);
+        updateProfileSetMapFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetDifficulty(String profileName, String difficultyCode) throws Exception {
-        return false;
+    public void updateProfileSetDifficulty(String profileName, String difficultyCode) throws Exception {
+        UpdateProfileSetDifficultyModelContext updateProfileSetDifficultyModelContext = new UpdateProfileSetDifficultyModelContext(
+                profileName,
+                difficultyCode
+        );
+        UpdateProfileSetDifficultyFacade updateProfileSetDifficultyFacade = new UpdateProfileSetDifficultyFacadeImpl(updateProfileSetDifficultyModelContext);
+        updateProfileSetDifficultyFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetLength(String profileName, String lengthCode) throws Exception {
-        return false;
+    public void updateProfileSetLength(String profileName, String lengthCode) throws Exception {
+        UpdateProfileSetLengthModelContext updateProfileSetLengthModelContext = new UpdateProfileSetLengthModelContext(
+                profileName,
+                lengthCode
+        );
+        UpdateProfileSetLengthFacade updateProfileSetLengthFacade = new UpdateProfileSetLengthFacadeImpl(updateProfileSetLengthModelContext);
+        updateProfileSetLengthFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetMaxPlayers(String profileName, String maxPlayersCode) throws Exception {
-        return false;
+    public void updateProfileSetMaxPlayers(String profileName, String maxPlayersCode) throws Exception {
+        UpdateProfileSetMaxPlayersModelContext updateProfileSetMaxPlayersModelContext = new UpdateProfileSetMaxPlayersModelContext(
+                profileName,
+                maxPlayersCode
+        );
+        UpdateProfileSetMaxPlayersFacade updateProfileSetMaxPlayersFacade = new UpdateProfileSetMaxPlayersFacadeImpl(updateProfileSetMaxPlayersModelContext);
+        updateProfileSetMaxPlayersFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetLanguage(String profileName, String languageCode) throws Exception {
-        return false;
+    public void updateProfileSetLanguage(String profileName, String languageCode) throws Exception {
+        UpdateProfileSetLanguageModelContext updateProfileSetLanguageModelContext = new UpdateProfileSetLanguageModelContext(
+                profileName,
+                languageCode
+        );
+        UpdateProfileSetLanguageFacade updateProfileSetLanguageFacade = new UpdateProfileSetLanguageFacadeImpl(updateProfileSetLanguageModelContext);
+        updateProfileSetLanguageFacade.execute();
+
+        PropertyService propertyService = new PropertyServiceImpl();
+        propertyService.setProperty("properties/config.properties", "prop.config.selectedLanguageCode", languageCode);
+        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                "prop.message.languageChanged");
+        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
+                "prop.message.applicationMustBeRestarted");
+        Utils.infoDialog(headerText, contentText);
     }
 
     @Override
-    public boolean updateProfileSetServerName(String profileName, String serverName) throws Exception {
-        return false;
+    public void updateProfileSetServerName(String profileName, String serverName) throws Exception {
+        UpdateProfileSetServerNameModelContext updateProfileSetServerNameModelContext = new UpdateProfileSetServerNameModelContext(
+                profileName,
+                serverName
+        );
+        UpdateProfileSetServerNameFacade updateProfileSetServerNameFacade = new UpdateProfileSetServerNameFacadeImpl(updateProfileSetServerNameModelContext);
+        updateProfileSetServerNameFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetServerPassword(String profileName, String serverPassword) throws Exception {
-        return false;
+    public void updateProfileSetServerPassword(String profileName, String serverPassword) throws Exception {
+        UpdateProfileSetServerPasswordModelContext updateProfileSetServerPasswordModelContext = new UpdateProfileSetServerPasswordModelContext(
+                profileName,
+                serverPassword
+        );
+        UpdateProfileSetServerPasswordFacade updateProfileSetServerPasswordFacade = new UpdateProfileSetServerPasswordFacadeImpl(updateProfileSetServerPasswordModelContext);
+        updateProfileSetServerPasswordFacade.execute();
     }
 
     @Override

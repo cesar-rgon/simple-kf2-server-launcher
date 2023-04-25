@@ -3,7 +3,6 @@ package stories.maincontent;
 import dtos.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
@@ -38,7 +37,6 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class MainContentController implements Initializable {
 
@@ -494,14 +492,7 @@ public class MainContentController implements Initializable {
                 try {
                     if (!newPropertyValue) {
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (StringUtils.isNotBlank(profileName) && languageSelect.getValue() != null && !facade.updateProfileSetServerName(profileName, serverName.getText())) {
-                            logger.warn("The server name value could not be saved!: " + serverName.getText());
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.profileNotUpdated");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.serverNameNotSaved");
-                            Utils.warningDialog(headerText, contentText);
-                        }
+                        facade.updateProfileSetServerName(profileName, serverName.getText());
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -516,14 +507,7 @@ public class MainContentController implements Initializable {
                 try {
                     if (!newPropertyValue) {
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (StringUtils.isNotBlank(profileName) && languageSelect.getValue() != null && !facade.updateProfileSetServerPassword(profileName, serverPassword.getText())) {
-                            logger.warn("The server password value could not be saved!: " + serverPassword.getText());
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.profileNotUpdated");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.serverPasswordNotSaved");
-                            Utils.warningDialog(headerText, contentText);
-                        }
+                        facade.updateProfileSetServerPassword(profileName, serverPassword.getText());
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -1408,14 +1392,7 @@ public class MainContentController implements Initializable {
                 String profileName = profileSelect.getValue().getName();
                 String mapCode = profileMapSelect.getValue().getMapDto().getKey();
                 boolean isOfficial = profileMapSelect.getValue().getMapDto().isOfficial();
-                if (!facade.updateProfileSetMap(profileName, mapCode, isOfficial)) {
-                    logger.warn("The map value could not be saved!: " + mapCode);
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.mapNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
+                facade.updateProfileSetMap(profileName, mapCode, isOfficial);
                 ProfileDto databaseProfile = facade.findProfileDtoByName(profileSelect.getValue().getName());
                 Session.getInstance().setActualProfileName(databaseProfile.getName());
             }
@@ -1432,14 +1409,7 @@ public class MainContentController implements Initializable {
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
                 String difficultyCode = difficultySelect.getValue().getKey();
-                if (!facade.updateProfileSetDifficulty(profileName, difficultyCode)) {
-                    logger.warn("The difficulty value could not be saved!: " + difficultyCode);
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.difficultyNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
+                facade.updateProfileSetDifficulty(profileName, difficultyCode);
             }
         } catch (Exception e) {
             String headerText = "The difficulty value could not be saved!";
@@ -1454,14 +1424,7 @@ public class MainContentController implements Initializable {
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
                 String lengthCode = lengthSelect.getValue().getKey();
-                if (!facade.updateProfileSetLength(profileName, lengthCode)) {
-                    logger.warn("The length value could not be saved!: " + lengthCode);
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.lengthNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
+                facade.updateProfileSetLength(profileName, lengthCode);
             }
         } catch (Exception e) {
             String headerText = "The length value could not be saved!";
@@ -1476,14 +1439,7 @@ public class MainContentController implements Initializable {
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
                 String maxPlayersCode = maxPlayersSelect.getValue().getKey();
-                if (!facade.updateProfileSetMaxPlayers(profileName, maxPlayersCode)) {
-                    logger.warn("The max. players value could not be saved!: " + maxPlayersCode);
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.maxPlayersNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
+                facade.updateProfileSetMaxPlayers(profileName, maxPlayersCode);
             }
         } catch (Exception e) {
             String headerText = "The max. players value could not be saved!";
@@ -1499,21 +1455,7 @@ public class MainContentController implements Initializable {
                 if (profileSelect.getValue() != null) {
                     String profileName = profileSelect.getValue().getName();
                     String languageCode = languageSelect.getValue().getKey();
-                    if (facade.updateProfileSetLanguage(profileName, languageCode)) {
-                        propertyService.setProperty("properties/config.properties", "prop.config.selectedLanguageCode", languageCode);
-                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                                "prop.message.languageChanged");
-                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                                "prop.message.applicationMustBeRestarted");
-                        Utils.infoDialog(headerText, contentText);
-                    } else {
-                        logger.warn("The language value could not be saved!: " + languageCode);
-                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                "prop.message.profileNotUpdated");
-                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                "prop.message.languageNotSaved");
-                        Utils.warningDialog(headerText, contentText);
-                    }
+                    facade.updateProfileSetLanguage(profileName, languageCode);
                 }
                 previousSelectedLanguageCode = languageSelect.getValue().getKey();
             }

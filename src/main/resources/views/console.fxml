@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<fx:root id="centerPane" fx:id="consoleContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.console.ConsoleController">
+<fx:root id="centerPane" fx:id="consoleContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="old.console.ConsoleController">
     <rowConstraints>
       <RowConstraints minHeight="10.0" prefHeight="10.0" />
         <RowConstraints minHeight="10.0" prefHeight="650.0" />

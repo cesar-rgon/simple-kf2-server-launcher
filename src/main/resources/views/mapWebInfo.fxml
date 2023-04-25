@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.*?>
 
-<fx:root id="centerPane" fx:id="mapWebInfo" alignment="CENTER" gridLinesVisible="true" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapwebinfo.MapWebInfoController">
+<fx:root id="centerPane" fx:id="mapWebInfo" alignment="CENTER" gridLinesVisible="true" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="old.mapwebinfo.MapWebInfoController">
    <children>
       <Label id="titleConfigLabel" fx:id="mapNameLabel" alignment="CENTER" text="Map name" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
       <Label fx:id="alreadyInLauncher" text="It is already in the launcher" visible="false" GridPane.halignment="RIGHT">
