@@ -25,12 +25,12 @@ public interface MainContentManagerFacade {
     void updateProfileSetWebPort(String profileName, Integer webPort) throws Exception;
     void updateProfileSetGamePort(String profileName, Integer gamePort) throws Exception;
     void updateProfileSetQueryPort(String profileName, Integer queryPort) throws Exception;
-    boolean updateProfileSetYourClan(String profileName, String yourClan) throws Exception;
-    boolean updateProfileSetYourWebLink(String profileName, String yourWebLink) throws Exception;
-    boolean updateProfileSetUrlImageServer(String profileName, String urlImageServer) throws Exception;
-    boolean updateProfileSetWelcomeMessage(String profileName, String welcomeMessage) throws Exception;
-    boolean updateProfileSetCustomParameters(String profileName, String customParameters) throws Exception;
-    boolean updateProfileSetWebPage(String profileName, boolean isSelected) throws Exception;
+    void updateProfileSetYourClan(String profileName, String yourClan) throws Exception;
+    void updateProfileSetYourWebLink(String profileName, String yourWebLink) throws Exception;
+    void updateProfileSetUrlImageServer(String profileName, String urlImageServer) throws Exception;
+    void updateProfileSetWelcomeMessage(String profileName, String welcomeMessage) throws Exception;
+    void updateProfileSetCustomParameters(String profileName, String customParameters) throws Exception;
+    void updateProfileSetWebPage(String profileName, boolean isSelected) throws Exception;
     ProfileDto findProfileDtoByName(String name) throws Exception;
     String runServer(String platformName, String profileName) throws Exception;
     String joinServer(String platformName, String profileName) throws Exception;

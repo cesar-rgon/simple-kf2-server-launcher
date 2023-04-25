@@ -16,6 +16,9 @@ import stories.loadactualprofile.LoadActualProfileFacade;
 import stories.loadactualprofile.LoadActualProfileFacadeImpl;
 import stories.loadactualprofile.LoadActualProfileFacadeResult;
 import stories.loadactualprofile.LoadActualProfileModelContext;
+import stories.updateprofilesetcustomparameters.UpdateProfileSetCustomParametersFacade;
+import stories.updateprofilesetcustomparameters.UpdateProfileSetCustomParametersFacadeImpl;
+import stories.updateprofilesetcustomparameters.UpdateProfileSetCustomParametersModelContext;
 import stories.updateprofilesetdifficulty.UpdateProfileSetDifficultyFacade;
 import stories.updateprofilesetdifficulty.UpdateProfileSetDifficultyFacadeImpl;
 import stories.updateprofilesetdifficulty.UpdateProfileSetDifficultyModelContext;
@@ -46,12 +49,27 @@ import stories.updateprofilesetservername.UpdateProfileSetServerNameModelContext
 import stories.updateprofilesetserverpassword.UpdateProfileSetServerPasswordFacade;
 import stories.updateprofilesetserverpassword.UpdateProfileSetServerPasswordFacadeImpl;
 import stories.updateprofilesetserverpassword.UpdateProfileSetServerPasswordModelContext;
+import stories.updateprofileseturlimageserver.UpdateProfileSetUrlImageServerFacade;
+import stories.updateprofileseturlimageserver.UpdateProfileSetUrlImageServerFacadeImpl;
+import stories.updateprofileseturlimageserver.UpdateProfileSetUrlImageServerModelContext;
+import stories.updateprofilesetwebpage.UpdateProfileSetWebPageFacade;
+import stories.updateprofilesetwebpage.UpdateProfileSetWebPageFacadeImpl;
+import stories.updateprofilesetwebpage.UpdateProfileSetWebPageModelContext;
 import stories.updateprofilesetwebpassword.UpdateProfileSetWebPasswordFacade;
 import stories.updateprofilesetwebpassword.UpdateProfileSetWebPasswordFacadeImpl;
 import stories.updateprofilesetwebpassword.UpdateProfileSetWebPasswordModelContext;
 import stories.updateprofilesetwebport.UpdateProfileSetWebPortFacade;
 import stories.updateprofilesetwebport.UpdateProfileSetWebPortFacadeImpl;
 import stories.updateprofilesetwebport.UpdateProfileSetWebPortModelContext;
+import stories.updateprofilesetwelcomemessage.UpdateProfileSetWelcomeMessageFacade;
+import stories.updateprofilesetwelcomemessage.UpdateProfileSetWelcomeMessageFacadeImpl;
+import stories.updateprofilesetwelcomemessage.UpdateProfileSetWelcomeMessageModelContext;
+import stories.updateprofilesetyourclan.UpdateProfileSetYourClanFacade;
+import stories.updateprofilesetyourclan.UpdateProfileSetYourClanFacadeImpl;
+import stories.updateprofilesetyourclan.UpdateProfileSetYourClanModelContext;
+import stories.updateprofilesetyourweblink.UpdateProfileSetYourWebLinkFacade;
+import stories.updateprofilesetyourweblink.UpdateProfileSetYourWebLinkFacadeImpl;
+import stories.updateprofilesetyourweblink.UpdateProfileSetYourWebLinkModelContext;
 import utils.Utils;
 
 import java.sql.SQLException;
@@ -236,33 +254,63 @@ public class MainContentManagerFacadeImpl
     }
 
     @Override
-    public boolean updateProfileSetYourClan(String profileName, String yourClan) throws Exception {
-        return false;
+    public void updateProfileSetYourClan(String profileName, String yourClan) throws Exception {
+        UpdateProfileSetYourClanModelContext updateProfileSetYourClanModelContext = new UpdateProfileSetYourClanModelContext(
+                profileName,
+                yourClan
+        );
+        UpdateProfileSetYourClanFacade updateProfileSetYourClanFacade = new UpdateProfileSetYourClanFacadeImpl(updateProfileSetYourClanModelContext);
+        updateProfileSetYourClanFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetYourWebLink(String profileName, String yourWebLink) throws Exception {
-        return false;
+    public void updateProfileSetYourWebLink(String profileName, String yourWebLink) throws Exception {
+        UpdateProfileSetYourWebLinkModelContext updateProfileSetYourWebLinkModelContext = new UpdateProfileSetYourWebLinkModelContext(
+                profileName,
+                yourWebLink
+        );
+        UpdateProfileSetYourWebLinkFacade updateProfileSetYourWebLinkFacade = new UpdateProfileSetYourWebLinkFacadeImpl(updateProfileSetYourWebLinkModelContext);
+        updateProfileSetYourWebLinkFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetUrlImageServer(String profileName, String urlImageServer) throws Exception {
-        return false;
+    public void updateProfileSetUrlImageServer(String profileName, String urlImageServer) throws Exception {
+        UpdateProfileSetUrlImageServerModelContext updateProfileSetUrlImageServerModelContext = new UpdateProfileSetUrlImageServerModelContext(
+                profileName,
+                urlImageServer
+        );
+        UpdateProfileSetUrlImageServerFacade updateProfileSetUrlImageServerFacade = new UpdateProfileSetUrlImageServerFacadeImpl(updateProfileSetUrlImageServerModelContext);
+        updateProfileSetUrlImageServerFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetWelcomeMessage(String profileName, String welcomeMessage) throws Exception {
-        return false;
+    public void updateProfileSetWelcomeMessage(String profileName, String welcomeMessage) throws Exception {
+        UpdateProfileSetWelcomeMessageModelContext updateProfileSetWelcomeMessageModelContext = new UpdateProfileSetWelcomeMessageModelContext(
+                profileName,
+                welcomeMessage
+        );
+        UpdateProfileSetWelcomeMessageFacade updateProfileSetWelcomeMessageFacade = new UpdateProfileSetWelcomeMessageFacadeImpl(updateProfileSetWelcomeMessageModelContext);
+        updateProfileSetWelcomeMessageFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetCustomParameters(String profileName, String customParameters) throws Exception {
-        return false;
+    public void updateProfileSetCustomParameters(String profileName, String customParameters) throws Exception {
+        UpdateProfileSetCustomParametersModelContext updateProfileSetCustomParametersModelContext = new UpdateProfileSetCustomParametersModelContext(
+                profileName,
+                customParameters
+        );
+        UpdateProfileSetCustomParametersFacade updateProfileSetCustomParametersFacade = new UpdateProfileSetCustomParametersFacadeImpl(updateProfileSetCustomParametersModelContext);
+        updateProfileSetCustomParametersFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetWebPage(String profileName, boolean isSelected) throws Exception {
-        return false;
+    public void updateProfileSetWebPage(String profileName, boolean isSelected) throws Exception {
+        UpdateProfileSetWebPageModelContext updateProfileSetWebPageModelContext = new UpdateProfileSetWebPageModelContext(
+                profileName,
+                isSelected
+        );
+        UpdateProfileSetWebPageFacade updateProfileSetWebPageFacade = new UpdateProfileSetWebPageFacadeImpl(updateProfileSetWebPageModelContext);
+        updateProfileSetWebPageFacade.execute();
     }
 
     @Override
