@@ -37,12 +37,12 @@ public interface MainContentManagerFacade {
     List<String> selectProfiles(String message, String actualProfileName) throws SQLException;
     String selectProfile(String message, String actualProfileName) throws SQLException;
     boolean isCorrectInstallationFolder(String platformName) throws SQLException;
-    boolean updateProfileSetTakeover(String profileName, boolean isSelected) throws Exception;
-    boolean updateProfileSetMapVoting(String profileName, boolean isSelected) throws Exception;
-    boolean updateProfileSetKickVoting(String profileName, boolean isSelected) throws Exception;
-    boolean updateProfileSetPublicTextChat(String profileName, boolean isSelected) throws Exception;
-    boolean updateProfileSetSpectatorsChat(String profileName, boolean isSelected) throws Exception;
-    boolean updateProfileSetVoip(String profileName, boolean isSelected) throws Exception;
+    void updateProfileSetTakeover(String profileName, boolean isSelected) throws Exception;
+    void updateProfileSetMapVoting(String profileName, boolean isSelected) throws Exception;
+    void updateProfileSetKickVoting(String profileName, boolean isSelected) throws Exception;
+    void updateProfileSetPublicTextChat(String profileName, boolean isSelected) throws Exception;
+    void updateProfileSetSpectatorsChat(String profileName, boolean isSelected) throws Exception;
+    void updateProfileSetVoip(String profileName, boolean isSelected) throws Exception;
     boolean updateProfileSetTeamCollision(String profileName, boolean isSelected) throws Exception;
     boolean updateProfileSetAdminCanPause(String profileName, boolean isSelected) throws Exception;
     boolean updateProfileSetAnnounceAdminLogin(String profileName, boolean isSelected) throws Exception;

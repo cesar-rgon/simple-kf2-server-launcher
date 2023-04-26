@@ -1419,14 +1419,7 @@ public class MainContentController implements Initializable {
         try {
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
-                if (!facade.updateProfileSetTakeover(profileName, takeover.isSelected())) {
-                    logger.warn("The takeover value could not be saved!: " + takeover.isSelected());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.takeoverNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
+                facade.updateProfileSetTakeover(profileName, takeover.isSelected());
             }
         } catch (Exception e) {
             String headerText = "The takeover value could not be saved!";
@@ -1498,14 +1491,7 @@ public class MainContentController implements Initializable {
         try {
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
-                if (!facade.updateProfileSetMapVoting(profileName, mapVoting.isSelected())) {
-                    logger.warn("The map voting value could not be saved!: " + mapVoting.isSelected());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.mapVotingNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
+                facade.updateProfileSetMapVoting(profileName, mapVoting.isSelected());
             }
         } catch (Exception e) {
             String headerText = "The map voting value could not be saved!";
@@ -1519,14 +1505,7 @@ public class MainContentController implements Initializable {
         try {
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
-                if (!facade.updateProfileSetKickVoting(profileName, kickVoting.isSelected())) {
-                    logger.warn("The kick voting value could not be saved!: " + kickVoting.isSelected());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.kickVotingNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
+                facade.updateProfileSetKickVoting(profileName, kickVoting.isSelected());
             }
         } catch (Exception e) {
             String headerText = "The kick voting value could not be saved!";
@@ -1540,14 +1519,7 @@ public class MainContentController implements Initializable {
         try {
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
-                if (!facade.updateProfileSetPublicTextChat(profileName, publicTextChat.isSelected())) {
-                    logger.warn("The public text chat value could not be saved!: " + publicTextChat.isSelected());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.publicTextChatNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
+                facade.updateProfileSetPublicTextChat(profileName, publicTextChat.isSelected());
             }
         } catch (Exception e) {
             String headerText = "The public text chat value could not be saved!";
@@ -1561,14 +1533,7 @@ public class MainContentController implements Initializable {
         try {
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
-                if (!facade.updateProfileSetSpectatorsChat(profileName, spectatorsChat.isSelected())) {
-                    logger.warn("The spectators chat value could not be saved!: " + spectatorsChat.isSelected());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.spectatorsChatNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
+                facade.updateProfileSetSpectatorsChat(profileName, spectatorsChat.isSelected());
             }
         } catch (Exception e) {
             String headerText = "The spectators chat value could not be saved!";
@@ -1582,14 +1547,7 @@ public class MainContentController implements Initializable {
         try {
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
-                if (!facade.updateProfileSetVoip(profileName, voip.isSelected())) {
-                    logger.warn("The VoIP value could not be saved!: " + voip.isSelected());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.voipNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
+                facade.updateProfileSetVoip(profileName, voip.isSelected());
             }
         } catch (Exception e) {
             String headerText = "The VoIP value could not be saved!";

@@ -1,16 +1,13 @@
 package stories.updateprofilesetmaxplayers;
 
-import entities.Difficulty;
 import entities.MaxPlayers;
 import entities.Profile;
 import framework.AbstractTransactionalFacade;
 import framework.EmptyFacadeResult;
 import jakarta.persistence.EntityManager;
-import services.DifficultyServiceImpl;
 import services.MaxPlayersServiceImpl;
 import services.ProfileService;
 import services.ProfileServiceImpl;
-import stories.updateprofilesetlength.UpdateProfileSetLengthModelContext;
 
 import java.util.Optional;
 

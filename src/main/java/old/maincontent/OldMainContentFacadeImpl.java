@@ -62,72 +62,6 @@ public class OldMainContentFacadeImpl extends OldAFacade {
         maxPlayersService = new MaxPlayersServiceImpl(em);
     }
 
-    public boolean updateProfileSetYourClan(String profileName, String yourClan) throws Exception {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            profile.setYourClan(yourClan);
-            return profileService.updateItem(profile);
-        }
-        return false;
-    }
-
-    
-    public boolean updateProfileSetYourWebLink(String profileName, String yourWebLink) throws Exception {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            profile.setYourWebLink(yourWebLink);
-            return profileService.updateItem(profile);
-        }
-        return false;
-    }
-
-    
-    public boolean updateProfileSetUrlImageServer(String profileName, String urlImageServer) throws Exception {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            profile.setUrlImageServer(urlImageServer);
-            return profileService.updateItem(profile);
-        }
-        return false;
-    }
-
-    
-    public boolean updateProfileSetWelcomeMessage(String profileName, String welcomeMessage) throws Exception {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            profile.setWelcomeMessage(welcomeMessage);
-            return profileService.updateItem(profile);
-        }
-        return false;
-    }
-
-    
-    public boolean updateProfileSetCustomParameters(String profileName, String customParameters) throws Exception {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            profile.setCustomParameters(customParameters);
-            return profileService.updateItem(profile);
-        }
-        return false;
-    }
-
-    
-    public boolean updateProfileSetWebPage(String profileName, boolean isSelected) throws Exception {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            profile.setWebPage(isSelected);
-            return profileService.updateItem(profile);
-        }
-        return false;
-    }
-
-    
     public String runServer(String platformName, String profileName) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(platformName);
@@ -205,73 +139,7 @@ public class OldMainContentFacadeImpl extends OldAFacade {
         return kf2Common.isValidInstallationFolder();
     }
 
-    
-    public boolean updateProfileSetTakeover(String profileName, boolean isSelected) throws Exception {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            profile.setTakeover(isSelected);
-            return profileService.updateItem(profile);
-        }
-        return false;
-    }
 
-    
-    public boolean updateProfileSetMapVoting(String profileName, boolean isSelected) throws Exception {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            profile.setMapVoting(isSelected);
-            return profileService.updateItem(profile);
-        }
-        return false;
-    }
-
-    
-    public boolean updateProfileSetKickVoting(String profileName, boolean isSelected) throws Exception {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            profile.setKickVoting(isSelected);
-            return profileService.updateItem(profile);
-        }
-        return false;
-    }
-
-    
-    public boolean updateProfileSetPublicTextChat(String profileName, boolean isSelected) throws Exception {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            profile.setPublicTextChat(isSelected);
-            return profileService.updateItem(profile);
-        }
-        return false;
-    }
-
-    
-    public boolean updateProfileSetSpectatorsChat(String profileName, boolean isSelected) throws Exception {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            profile.setSpectatorsOnlyChatToOtherSpectators(isSelected);
-            return profileService.updateItem(profile);
-        }
-        return false;
-    }
-
-    
-    public boolean updateProfileSetVoip(String profileName, boolean isSelected) throws Exception {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        if (profileOpt.isPresent()) {
-            Profile profile = profileOpt.get();
-            profile.setVoip(isSelected);
-            return profileService.updateItem(profile);
-        }
-        return false;
-    }
-
-    
     public boolean updateProfileSetTeamCollision(String profileName, boolean isSelected) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {

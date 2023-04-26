@@ -28,6 +28,9 @@ import stories.updateprofilesetgameport.UpdateProfileSetGamePortModelContext;
 import stories.updateprofilesetgametype.UpdateProfileSetGameTypeFacade;
 import stories.updateprofilesetgametype.UpdateProfileSetGameTypeFacadeImpl;
 import stories.updateprofilesetgametype.UpdateProfileSetGameTypeModelContext;
+import stories.updateprofilesetkickvoting.UpdateProfileSetKickVotingFacade;
+import stories.updateprofilesetkickvoting.UpdateProfileSetKickVotingFacadeImpl;
+import stories.updateprofilesetkickvoting.UpdateProfileSetKickVotingModelContext;
 import stories.updateprofilesetlanguage.UpdateProfileSetLanguageFacade;
 import stories.updateprofilesetlanguage.UpdateProfileSetLanguageFacadeImpl;
 import stories.updateprofilesetlanguage.UpdateProfileSetLanguageModelContext;
@@ -37,9 +40,15 @@ import stories.updateprofilesetlength.UpdateProfileSetLengthModelContext;
 import stories.updateprofilesetmap.UpdateProfileSetMapFacade;
 import stories.updateprofilesetmap.UpdateProfileSetMapFacadeImpl;
 import stories.updateprofilesetmap.UpdateProfileSetMapModelContext;
+import stories.updateprofilesetmapvoting.UpdateProfileSetMapVotingFacade;
+import stories.updateprofilesetmapvoting.UpdateProfileSetMapVotingFacadeImpl;
+import stories.updateprofilesetmapvoting.UpdateProfileSetMapVotingModelContext;
 import stories.updateprofilesetmaxplayers.UpdateProfileSetMaxPlayersFacade;
 import stories.updateprofilesetmaxplayers.UpdateProfileSetMaxPlayersFacadeImpl;
 import stories.updateprofilesetmaxplayers.UpdateProfileSetMaxPlayersModelContext;
+import stories.updateprofilesetpublictextchat.UpdateProfileSetPublicTextChatFacade;
+import stories.updateprofilesetpublictextchat.UpdateProfileSetPublicTextChatFacadeImpl;
+import stories.updateprofilesetpublictextchat.UpdateProfileSetPublicTextChatModelContext;
 import stories.updateprofilesetqueryport.UpdateProfileSetQueryPortFacade;
 import stories.updateprofilesetqueryport.UpdateProfileSetQueryPortFacadeImpl;
 import stories.updateprofilesetqueryport.UpdateProfileSetQueryPortModelContext;
@@ -49,9 +58,18 @@ import stories.updateprofilesetservername.UpdateProfileSetServerNameModelContext
 import stories.updateprofilesetserverpassword.UpdateProfileSetServerPasswordFacade;
 import stories.updateprofilesetserverpassword.UpdateProfileSetServerPasswordFacadeImpl;
 import stories.updateprofilesetserverpassword.UpdateProfileSetServerPasswordModelContext;
+import stories.updateprofilesetspectatorschat.UpdateProfileSetSpectatorsChatFacade;
+import stories.updateprofilesetspectatorschat.UpdateProfileSetSpectatorsChatFacadeImpl;
+import stories.updateprofilesetspectatorschat.UpdateProfileSetSpectatorsChatModelContext;
+import stories.updateprofilesettakeover.UpdateProfileSetTakeoverFacade;
+import stories.updateprofilesettakeover.UpdateProfileSetTakeoverFacadeImpl;
+import stories.updateprofilesettakeover.UpdateProfileSetTakeoverModelContext;
 import stories.updateprofileseturlimageserver.UpdateProfileSetUrlImageServerFacade;
 import stories.updateprofileseturlimageserver.UpdateProfileSetUrlImageServerFacadeImpl;
 import stories.updateprofileseturlimageserver.UpdateProfileSetUrlImageServerModelContext;
+import stories.updateprofilesetvoip.UpdateProfileSetVoipFacade;
+import stories.updateprofilesetvoip.UpdateProfileSetVoipFacadeImpl;
+import stories.updateprofilesetvoip.UpdateProfileSetVoipModelContext;
 import stories.updateprofilesetwebpage.UpdateProfileSetWebPageFacade;
 import stories.updateprofilesetwebpage.UpdateProfileSetWebPageFacadeImpl;
 import stories.updateprofilesetwebpage.UpdateProfileSetWebPageModelContext;
@@ -344,33 +362,63 @@ public class MainContentManagerFacadeImpl
     }
 
     @Override
-    public boolean updateProfileSetTakeover(String profileName, boolean isSelected) throws Exception {
-        return false;
+    public void updateProfileSetTakeover(String profileName, boolean takeoverSelected) throws Exception {
+        UpdateProfileSetTakeoverModelContext updateProfileSetTakeoverModelContext = new UpdateProfileSetTakeoverModelContext(
+                profileName,
+                takeoverSelected
+        );
+        UpdateProfileSetTakeoverFacade updateProfileSetTakeoverFacade = new UpdateProfileSetTakeoverFacadeImpl(updateProfileSetTakeoverModelContext);
+        updateProfileSetTakeoverFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetMapVoting(String profileName, boolean isSelected) throws Exception {
-        return false;
+    public void updateProfileSetMapVoting(String profileName, boolean mapVotingSelected) throws Exception {
+        UpdateProfileSetMapVotingModelContext updateProfileSetMapVotingModelContext = new UpdateProfileSetMapVotingModelContext(
+                profileName,
+                mapVotingSelected
+        );
+        UpdateProfileSetMapVotingFacade updateProfileSetMapVotingFacade = new UpdateProfileSetMapVotingFacadeImpl(updateProfileSetMapVotingModelContext);
+        updateProfileSetMapVotingFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetKickVoting(String profileName, boolean isSelected) throws Exception {
-        return false;
+    public void updateProfileSetKickVoting(String profileName, boolean kickVotingSelected) throws Exception {
+        UpdateProfileSetKickVotingModelContext updateProfileSetKickVotingModelContext = new UpdateProfileSetKickVotingModelContext(
+                profileName,
+                kickVotingSelected
+        );
+        UpdateProfileSetKickVotingFacade updateProfileSetKickVotingFacade = new UpdateProfileSetKickVotingFacadeImpl(updateProfileSetKickVotingModelContext);
+        updateProfileSetKickVotingFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetPublicTextChat(String profileName, boolean isSelected) throws Exception {
-        return false;
+    public void updateProfileSetPublicTextChat(String profileName, boolean publicTextChatSelected) throws Exception {
+        UpdateProfileSetPublicTextChatModelContext updateProfileSetPublicTextChatModelContext = new UpdateProfileSetPublicTextChatModelContext(
+                profileName,
+                publicTextChatSelected
+        );
+        UpdateProfileSetPublicTextChatFacade updateProfileSetPublicTextChatFacade = new UpdateProfileSetPublicTextChatFacadeImpl(updateProfileSetPublicTextChatModelContext);
+        updateProfileSetPublicTextChatFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetSpectatorsChat(String profileName, boolean isSelected) throws Exception {
-        return false;
+    public void updateProfileSetSpectatorsChat(String profileName, boolean spectatorsChatSelected) throws Exception {
+        UpdateProfileSetSpectatorsChatModelContext updateProfileSetSpectatorsChatModelContext = new UpdateProfileSetSpectatorsChatModelContext(
+                profileName,
+                spectatorsChatSelected
+        );
+        UpdateProfileSetSpectatorsChatFacade updateProfileSetSpectatorsChatFacade = new UpdateProfileSetSpectatorsChatFacadeImpl(updateProfileSetSpectatorsChatModelContext);
+        updateProfileSetSpectatorsChatFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetVoip(String profileName, boolean isSelected) throws Exception {
-        return false;
+    public void updateProfileSetVoip(String profileName, boolean voipSelected) throws Exception {
+        UpdateProfileSetVoipModelContext updateProfileSetVoipModelContext = new UpdateProfileSetVoipModelContext(
+                profileName,
+                voipSelected
+        );
+        UpdateProfileSetVoipFacade updateProfileSetVoipFacade = new UpdateProfileSetVoipFacadeImpl(updateProfileSetVoipModelContext);
+        updateProfileSetVoipFacade.execute();
     }
 
     @Override
