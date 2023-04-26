@@ -22,7 +22,7 @@ public class UpdateProfileSetLengthFacadeImpl
 
     @Override
     public boolean assertPreconditions() throws Exception {
-        return false;
+        return true;
     }
 
     @Override

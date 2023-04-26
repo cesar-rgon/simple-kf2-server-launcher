@@ -16,18 +16,45 @@ import stories.loadactualprofile.LoadActualProfileFacade;
 import stories.loadactualprofile.LoadActualProfileFacadeImpl;
 import stories.loadactualprofile.LoadActualProfileFacadeResult;
 import stories.loadactualprofile.LoadActualProfileModelContext;
+import stories.updateprofilesetadmincanpause.UpdateProfileSetAdminCanPauseFacade;
+import stories.updateprofilesetadmincanpause.UpdateProfileSetAdminCanPauseFacadeImpl;
+import stories.updateprofilesetadmincanpause.UpdateProfileSetAdminCanPauseModelContext;
+import stories.updateprofilesetannounceadminlogin.UpdateProfileSetAnnounceAdminLoginFacade;
+import stories.updateprofilesetannounceadminlogin.UpdateProfileSetAnnounceAdminLoginFacadeImpl;
+import stories.updateprofilesetannounceadminlogin.UpdateProfileSetAnnounceAdminLoginModelContext;
+import stories.updateprofilesetchatlogging.UpdateProfileSetChatLoggingFacade;
+import stories.updateprofilesetchatlogging.UpdateProfileSetChatLoggingFacadeImpl;
+import stories.updateprofilesetchatlogging.UpdateProfileSetChatLoggingModelContext;
+import stories.updateprofilesetchatloggingfile.UpdateProfileSetChatLoggingFileFacade;
+import stories.updateprofilesetchatloggingfile.UpdateProfileSetChatLoggingFileFacadeImpl;
+import stories.updateprofilesetchatloggingfile.UpdateProfileSetChatLoggingFileModelContext;
+import stories.updateprofilesetchatloggingfiletimestamp.UpdateProfileSetChatLoggingFileTimestampFacade;
+import stories.updateprofilesetchatloggingfiletimestamp.UpdateProfileSetChatLoggingFileTimestampFacadeImpl;
+import stories.updateprofilesetchatloggingfiletimestamp.UpdateProfileSetChatLoggingFileTimestampModelContext;
 import stories.updateprofilesetcustomparameters.UpdateProfileSetCustomParametersFacade;
 import stories.updateprofilesetcustomparameters.UpdateProfileSetCustomParametersFacadeImpl;
 import stories.updateprofilesetcustomparameters.UpdateProfileSetCustomParametersModelContext;
+import stories.updateprofilesetdeadplayerscantalk.UpdateProfileSetDeadPlayersCanTalkFacade;
+import stories.updateprofilesetdeadplayerscantalk.UpdateProfileSetDeadPlayersCanTalkFacadeImpl;
+import stories.updateprofilesetdeadplayerscantalk.UpdateProfileSetDeadPlayersCanTalkModelContext;
 import stories.updateprofilesetdifficulty.UpdateProfileSetDifficultyFacade;
 import stories.updateprofilesetdifficulty.UpdateProfileSetDifficultyFacadeImpl;
 import stories.updateprofilesetdifficulty.UpdateProfileSetDifficultyModelContext;
+import stories.updateprofilesetfriendlyfirepercentage.UpdateProfileSetFriendlyFirePercentageFacade;
+import stories.updateprofilesetfriendlyfirepercentage.UpdateProfileSetFriendlyFirePercentageFacadeImpl;
+import stories.updateprofilesetfriendlyfirepercentage.UpdateProfileSetFriendlyFirePercentageModelContext;
 import stories.updateprofilesetgameport.UpdateProfileSetGamePortFacade;
 import stories.updateprofilesetgameport.UpdateProfileSetGamePortFacadeImpl;
 import stories.updateprofilesetgameport.UpdateProfileSetGamePortModelContext;
+import stories.updateprofilesetgamestartdelay.UpdateProfileSetGameStartDelayFacade;
+import stories.updateprofilesetgamestartdelay.UpdateProfileSetGameStartDelayFacadeImpl;
+import stories.updateprofilesetgamestartdelay.UpdateProfileSetGameStartDelayModelContext;
 import stories.updateprofilesetgametype.UpdateProfileSetGameTypeFacade;
 import stories.updateprofilesetgametype.UpdateProfileSetGameTypeFacadeImpl;
 import stories.updateprofilesetgametype.UpdateProfileSetGameTypeModelContext;
+import stories.updateprofilesetkickpercentage.UpdateProfileSetKickPercentageFacade;
+import stories.updateprofilesetkickpercentage.UpdateProfileSetKickPercentageFacadeImpl;
+import stories.updateprofilesetkickpercentage.UpdateProfileSetKickPercentageModelContext;
 import stories.updateprofilesetkickvoting.UpdateProfileSetKickVotingFacade;
 import stories.updateprofilesetkickvoting.UpdateProfileSetKickVotingFacadeImpl;
 import stories.updateprofilesetkickvoting.UpdateProfileSetKickVotingModelContext;
@@ -40,18 +67,36 @@ import stories.updateprofilesetlength.UpdateProfileSetLengthModelContext;
 import stories.updateprofilesetmap.UpdateProfileSetMapFacade;
 import stories.updateprofilesetmap.UpdateProfileSetMapFacadeImpl;
 import stories.updateprofilesetmap.UpdateProfileSetMapModelContext;
+import stories.updateprofilesetmapobjetives.UpdateProfileSetMapObjetivesFacade;
+import stories.updateprofilesetmapobjetives.UpdateProfileSetMapObjetivesFacadeImpl;
+import stories.updateprofilesetmapobjetives.UpdateProfileSetMapObjetivesModelContext;
 import stories.updateprofilesetmapvoting.UpdateProfileSetMapVotingFacade;
 import stories.updateprofilesetmapvoting.UpdateProfileSetMapVotingFacadeImpl;
 import stories.updateprofilesetmapvoting.UpdateProfileSetMapVotingModelContext;
+import stories.updateprofilesetmapvotingtime.UpdateProfileSetMapVotingTimeFacade;
+import stories.updateprofilesetmapvotingtime.UpdateProfileSetMapVotingTimeFacadeImpl;
+import stories.updateprofilesetmapvotingtime.UpdateProfileSetMapVotingTimeModelContext;
+import stories.updateprofilesetmaxidletime.UpdateProfileSetMaxIdleTimeFacade;
+import stories.updateprofilesetmaxidletime.UpdateProfileSetMaxIdleTimeFacadeImpl;
+import stories.updateprofilesetmaxidletime.UpdateProfileSetMaxIdleTimeModelContext;
 import stories.updateprofilesetmaxplayers.UpdateProfileSetMaxPlayersFacade;
 import stories.updateprofilesetmaxplayers.UpdateProfileSetMaxPlayersFacadeImpl;
 import stories.updateprofilesetmaxplayers.UpdateProfileSetMaxPlayersModelContext;
+import stories.updateprofilesetmaxspectators.UpdateProfileSetMaxSpectatorsFacade;
+import stories.updateprofilesetmaxspectators.UpdateProfileSetMaxSpectatorsFacadeImpl;
+import stories.updateprofilesetmaxspectators.UpdateProfileSetMaxSpectatorsModelContext;
+import stories.updateprofilesetpickupitems.UpdateProfileSetPickupItemsFacade;
+import stories.updateprofilesetpickupitems.UpdateProfileSetPickupItemsFacadeImpl;
+import stories.updateprofilesetpickupitems.UpdateProfileSetPickupItemsModelContext;
 import stories.updateprofilesetpublictextchat.UpdateProfileSetPublicTextChatFacade;
 import stories.updateprofilesetpublictextchat.UpdateProfileSetPublicTextChatFacadeImpl;
 import stories.updateprofilesetpublictextchat.UpdateProfileSetPublicTextChatModelContext;
 import stories.updateprofilesetqueryport.UpdateProfileSetQueryPortFacade;
 import stories.updateprofilesetqueryport.UpdateProfileSetQueryPortFacadeImpl;
 import stories.updateprofilesetqueryport.UpdateProfileSetQueryPortModelContext;
+import stories.updateprofilesetreadyupdelay.UpdateProfileSetReadyUpDelayFacade;
+import stories.updateprofilesetreadyupdelay.UpdateProfileSetReadyUpDelayFacadeImpl;
+import stories.updateprofilesetreadyupdelay.UpdateProfileSetReadyUpDelayModelContext;
 import stories.updateprofilesetservername.UpdateProfileSetServerNameFacade;
 import stories.updateprofilesetservername.UpdateProfileSetServerNameFacadeImpl;
 import stories.updateprofilesetservername.UpdateProfileSetServerNameModelContext;
@@ -64,6 +109,12 @@ import stories.updateprofilesetspectatorschat.UpdateProfileSetSpectatorsChatMode
 import stories.updateprofilesettakeover.UpdateProfileSetTakeoverFacade;
 import stories.updateprofilesettakeover.UpdateProfileSetTakeoverFacadeImpl;
 import stories.updateprofilesettakeover.UpdateProfileSetTakeoverModelContext;
+import stories.updateprofilesetteamcollision.UpdateProfileSetTeamCollisionFacade;
+import stories.updateprofilesetteamcollision.UpdateProfileSetTeamCollisionFacadeImpl;
+import stories.updateprofilesetteamcollision.UpdateProfileSetTeamCollisionModelContext;
+import stories.updateprofilesettimebetweenkicks.UpdateProfileSetTimeBetweenKicksFacade;
+import stories.updateprofilesettimebetweenkicks.UpdateProfileSetTimeBetweenKicksFacadeImpl;
+import stories.updateprofilesettimebetweenkicks.UpdateProfileSetTimeBetweenKicksModelContext;
 import stories.updateprofileseturlimageserver.UpdateProfileSetUrlImageServerFacade;
 import stories.updateprofileseturlimageserver.UpdateProfileSetUrlImageServerFacadeImpl;
 import stories.updateprofileseturlimageserver.UpdateProfileSetUrlImageServerModelContext;
@@ -422,88 +473,173 @@ public class MainContentManagerFacadeImpl
     }
 
     @Override
-    public boolean updateProfileSetTeamCollision(String profileName, boolean isSelected) throws Exception {
-        return false;
+    public void updateProfileSetTeamCollision(String profileName, boolean teamCollisionSelected) throws Exception {
+        UpdateProfileSetTeamCollisionModelContext updateProfileSetTeamCollisionModelContext = new UpdateProfileSetTeamCollisionModelContext(
+                profileName,
+                teamCollisionSelected
+        );
+        UpdateProfileSetTeamCollisionFacade updateProfileSetTeamCollisionFacade = new UpdateProfileSetTeamCollisionFacadeImpl(updateProfileSetTeamCollisionModelContext);
+        updateProfileSetTeamCollisionFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetAdminCanPause(String profileName, boolean isSelected) throws Exception {
-        return false;
+    public void updateProfileSetAdminCanPause(String profileName, boolean adminCanPauseSelected) throws Exception {
+        UpdateProfileSetAdminCanPauseModelContext updateProfileSetAdminCanPauseModelContext = new UpdateProfileSetAdminCanPauseModelContext(
+                profileName,
+                adminCanPauseSelected
+        );
+        UpdateProfileSetAdminCanPauseFacade updateProfileSetAdminCanPauseFacade = new UpdateProfileSetAdminCanPauseFacadeImpl(updateProfileSetAdminCanPauseModelContext);
+        updateProfileSetAdminCanPauseFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetAnnounceAdminLogin(String profileName, boolean isSelected) throws Exception {
-        return false;
+    public void updateProfileSetAnnounceAdminLogin(String profileName, boolean announceAdminLoginSelected) throws Exception {
+        UpdateProfileSetAnnounceAdminLoginModelContext updateProfileSetAnnounceAdminLoginModelContext = new UpdateProfileSetAnnounceAdminLoginModelContext(
+                profileName,
+                announceAdminLoginSelected
+        );
+        UpdateProfileSetAnnounceAdminLoginFacade updateProfileSetAnnounceAdminLoginFacade = new UpdateProfileSetAnnounceAdminLoginFacadeImpl(updateProfileSetAnnounceAdminLoginModelContext);
+        updateProfileSetAnnounceAdminLoginFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetChatLogging(String profileName, boolean isSelected) throws Exception {
-        return false;
+    public void updateProfileSetChatLogging(String profileName, boolean chatLoggingSelected) throws Exception {
+        UpdateProfileSetChatLoggingModelContext updateProfileSetChatLoggingModelContext = new UpdateProfileSetChatLoggingModelContext(
+                profileName,
+                chatLoggingSelected
+        );
+        UpdateProfileSetChatLoggingFacade updateProfileSetChatLoggingFacade = new UpdateProfileSetChatLoggingFacadeImpl(updateProfileSetChatLoggingModelContext);
+        updateProfileSetChatLoggingFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetMapVotingTime(String profileName, Double mapVotingTime) throws Exception {
-        return false;
+    public void updateProfileSetMapVotingTime(String profileName, Double mapVotingTime) throws Exception {
+        UpdateProfileSetMapVotingTimeModelContext updateProfileSetMapVotingTimeModelContext = new UpdateProfileSetMapVotingTimeModelContext(
+                profileName,
+                mapVotingTime
+        );
+        UpdateProfileSetMapVotingTimeFacade updateProfileSetMapVotingTimeFacade = new UpdateProfileSetMapVotingTimeFacadeImpl(updateProfileSetMapVotingTimeModelContext);
+        updateProfileSetMapVotingTimeFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetKickPercentage(String profileName, Double kickPercentage) throws Exception {
-        return false;
+    public void updateProfileSetKickPercentage(String profileName, Double kickPercentage) throws Exception {
+        UpdateProfileSetKickPercentageModelContext updateProfileSetKickPercentageModelContext = new UpdateProfileSetKickPercentageModelContext(
+                profileName,
+                kickPercentage
+        );
+        UpdateProfileSetKickPercentageFacade updateProfileSetKickPercentageFacade = new UpdateProfileSetKickPercentageFacadeImpl(updateProfileSetKickPercentageModelContext);
+        updateProfileSetKickPercentageFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetChatLoggingFile(String profileName, String chatLoggingFile) throws Exception {
-        return false;
+    public void updateProfileSetChatLoggingFile(String profileName, String chatLoggingFile) throws Exception {
+        UpdateProfileSetChatLoggingFileModelContext updateProfileSetChatLoggingFileModelContext = new UpdateProfileSetChatLoggingFileModelContext(
+                profileName,
+                chatLoggingFile
+        );
+        UpdateProfileSetChatLoggingFileFacade updateProfileSetChatLoggingFileFacade = new UpdateProfileSetChatLoggingFileFacadeImpl(updateProfileSetChatLoggingFileModelContext);
+        updateProfileSetChatLoggingFileFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetChatLoggingFileTimestamp(String profileName, boolean isSelected) throws Exception {
-        return false;
+    public void updateProfileSetChatLoggingFileTimestamp(String profileName, boolean chatLoggingFileTimestampSelected) throws Exception {
+        UpdateProfileSetChatLoggingFileTimestampModelContext updateProfileSetChatLoggingFileTimestampModelContext = new UpdateProfileSetChatLoggingFileTimestampModelContext(
+                profileName,
+                chatLoggingFileTimestampSelected
+        );
+        UpdateProfileSetChatLoggingFileTimestampFacade updateProfileSetChatLoggingFileTimestampFacade = new UpdateProfileSetChatLoggingFileTimestampFacadeImpl(updateProfileSetChatLoggingFileTimestampModelContext);
+        updateProfileSetChatLoggingFileTimestampFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetTimeBetweenKicks(String profileName, Double timeBetweenKicks) throws Exception {
-        return false;
+    public void updateProfileSetTimeBetweenKicks(String profileName, Double timeBetweenKicks) throws Exception {
+        UpdateProfileSetTimeBetweenKicksModelContext updateProfileSetTimeBetweenKicksModelContext = new UpdateProfileSetTimeBetweenKicksModelContext(
+                profileName,
+                timeBetweenKicks
+        );
+        UpdateProfileSetTimeBetweenKicksFacade updateProfileSetTimeBetweenKicksFacade = new UpdateProfileSetTimeBetweenKicksFacadeImpl(updateProfileSetTimeBetweenKicksModelContext);
+        updateProfileSetTimeBetweenKicksFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetMaxIdleTime(String profileName, Double maxIdleTime) throws Exception {
-        return false;
+    public void updateProfileSetMaxIdleTime(String profileName, Double maxIdleTime) throws Exception {
+        UpdateProfileSetMaxIdleTimeModelContext updateProfileSetMaxIdleTimeModelContext = new UpdateProfileSetMaxIdleTimeModelContext(
+                profileName,
+                maxIdleTime
+        );
+        UpdateProfileSetMaxIdleTimeFacade updateProfileSetMaxIdleTimeFacade = new UpdateProfileSetMaxIdleTimeFacadeImpl(updateProfileSetMaxIdleTimeModelContext);
+        updateProfileSetMaxIdleTimeFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetDeadPlayersCanTalk(String profileName, boolean isSelected) throws Exception {
-        return false;
+    public void updateProfileSetDeadPlayersCanTalk(String profileName, boolean deadPlayersCanTalkSelected) throws Exception {
+        UpdateProfileSetDeadPlayersCanTalkModelContext updateProfileSetDeadPlayersCanTalkModelContext = new UpdateProfileSetDeadPlayersCanTalkModelContext(
+                profileName,
+                deadPlayersCanTalkSelected
+        );
+        UpdateProfileSetDeadPlayersCanTalkFacade updateProfileSetDeadPlayersCanTalkFacade = new UpdateProfileSetDeadPlayersCanTalkFacadeImpl(updateProfileSetDeadPlayersCanTalkModelContext);
+        updateProfileSetDeadPlayersCanTalkFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetReadyUpDelay(String profileName, Integer readyUpDelay) throws Exception {
-        return false;
+    public void updateProfileSetReadyUpDelay(String profileName, Integer readyUpDelay) throws Exception {
+        UpdateProfileSetReadyUpDelayModelContext updateProfileSetReadyUpDelayModelContext = new UpdateProfileSetReadyUpDelayModelContext(
+                profileName,
+                readyUpDelay
+        );
+        UpdateProfileSetReadyUpDelayFacade updateProfileSetReadyUpDelayFacade = new UpdateProfileSetReadyUpDelayFacadeImpl(updateProfileSetReadyUpDelayModelContext);
+        updateProfileSetReadyUpDelayFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetGameStartDelay(String profileName, Integer gameStartDelay) throws Exception {
-        return false;
+    public void updateProfileSetGameStartDelay(String profileName, Integer gameStartDelay) throws Exception {
+        UpdateProfileSetGameStartDelayModelContext updateProfileSetGameStartDelayModelContext = new UpdateProfileSetGameStartDelayModelContext(
+                profileName,
+                gameStartDelay
+        );
+        UpdateProfileSetGameStartDelayFacade updateProfileSetGameStartDelayFacade = new UpdateProfileSetGameStartDelayFacadeImpl(updateProfileSetGameStartDelayModelContext);
+        updateProfileSetGameStartDelayFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetMaxSpectators(String profileName, Integer maxSpectators) throws Exception {
-        return false;
+    public void updateProfileSetMaxSpectators(String profileName, Integer maxSpectators) throws Exception {
+        UpdateProfileSetMaxSpectatorsModelContext updateProfileSetMaxSpectatorsModelContext = new UpdateProfileSetMaxSpectatorsModelContext(
+                profileName,
+                maxSpectators
+        );
+        UpdateProfileSetMaxSpectatorsFacade updateProfileSetMaxSpectatorsFacade = new UpdateProfileSetMaxSpectatorsFacadeImpl(updateProfileSetMaxSpectatorsModelContext);
+        updateProfileSetMaxSpectatorsFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetMapObjetives(String profileName, boolean isSelected) throws Exception {
-        return false;
+    public void updateProfileSetMapObjetives(String profileName, boolean mapObjetivesSelected) throws Exception {
+        UpdateProfileSetMapObjetivesModelContext updateProfileSetMapObjetivesModelContext = new UpdateProfileSetMapObjetivesModelContext(
+                profileName,
+                mapObjetivesSelected
+        );
+        UpdateProfileSetMapObjetivesFacade updateProfileSetMapObjetivesFacade = new UpdateProfileSetMapObjetivesFacadeImpl(updateProfileSetMapObjetivesModelContext);
+        updateProfileSetMapObjetivesFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetPickupItems(String profileName, boolean isSelected) throws Exception {
-        return false;
+    public void updateProfileSetPickupItems(String profileName, boolean pickupItemsSelected) throws Exception {
+        UpdateProfileSetPickupItemsModelContext updateProfileSetPickupItemsModelContext = new UpdateProfileSetPickupItemsModelContext(
+                profileName,
+                pickupItemsSelected
+        );
+        UpdateProfileSetPickupItemsFacade updateProfileSetPickupItemsFacade = new UpdateProfileSetPickupItemsFacadeImpl(updateProfileSetPickupItemsModelContext);
+        updateProfileSetPickupItemsFacade.execute();
     }
 
     @Override
-    public boolean updateProfileSetFriendlyFirePercentage(String profileName, Double friendlyFirePercentage) throws Exception {
-        return false;
+    public void updateProfileSetFriendlyFirePercentage(String profileName, Double friendlyFirePercentage) throws Exception {
+        UpdateProfileSetFriendlyFirePercentageModelContext updateProfileSetFriendlyFirePercentageModelContext = new UpdateProfileSetFriendlyFirePercentageModelContext(
+                profileName,
+                friendlyFirePercentage
+        );
+        UpdateProfileSetFriendlyFirePercentageFacade updateProfileSetFriendlyFirePercentageFacade = new UpdateProfileSetFriendlyFirePercentageFacadeImpl(updateProfileSetFriendlyFirePercentageModelContext);
+        updateProfileSetFriendlyFirePercentageFacade.execute();
     }
 
     @Override

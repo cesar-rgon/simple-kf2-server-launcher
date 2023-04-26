@@ -19,7 +19,7 @@ public class UpdateProfileSetServerNameFacadeImpl
 
     @Override
     public boolean assertPreconditions() throws Exception {
-        return false;
+        return true;
     }
 
     @Override

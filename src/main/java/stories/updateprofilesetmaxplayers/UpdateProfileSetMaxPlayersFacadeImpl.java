@@ -21,7 +21,7 @@ public class UpdateProfileSetMaxPlayersFacadeImpl
 
     @Override
     public boolean assertPreconditions() throws Exception {
-        return false;
+        return true;
     }
 
     @Override

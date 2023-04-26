@@ -20,7 +20,7 @@ public class UpdateProfileSetGamePortFacadeImpl
 
     @Override
     public boolean assertPreconditions() throws Exception {
-        return false;
+        return true;
     }
 
     @Override

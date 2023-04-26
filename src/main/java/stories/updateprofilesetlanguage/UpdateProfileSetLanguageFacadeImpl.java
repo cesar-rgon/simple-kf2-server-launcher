@@ -24,7 +24,7 @@ public class UpdateProfileSetLanguageFacadeImpl
 
     @Override
     public boolean assertPreconditions() throws Exception {
-        return false;
+        return true;
     }
 
     @Override

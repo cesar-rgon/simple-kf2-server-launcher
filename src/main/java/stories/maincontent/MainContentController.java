@@ -694,15 +694,7 @@ public class MainContentController implements Initializable {
                     if (!newPropertyValue) {
                         oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getMapVotingTime();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (StringUtils.isNotBlank(profileName) && languageSelect.getValue() != null && !facade.updateProfileSetMapVotingTime(profileName, StringUtils.isNotEmpty(mapVotingTime.getText()) ? Double.parseDouble(mapVotingTime.getText()): null)) {
-                            String mapVotingTimeValue = StringUtils.isNotEmpty(mapVotingTime.getText())? mapVotingTime.getText(): "";
-                            logger.warn("The map voting time value could not be saved! " + mapVotingTimeValue);
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.profileNotUpdated");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.mapVotingTimeNotSaved");
-                            Utils.warningDialog(headerText, contentText);
-                        }
+                        facade.updateProfileSetMapVotingTime(profileName, StringUtils.isNotEmpty(mapVotingTime.getText()) ? Double.parseDouble(mapVotingTime.getText()): null);
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -720,15 +712,7 @@ public class MainContentController implements Initializable {
                     if (!newPropertyValue) {
                         oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getTimeBetweenKicks();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (StringUtils.isNotBlank(profileName) && languageSelect.getValue() != null && !facade.updateProfileSetTimeBetweenKicks(profileName, StringUtils.isNotEmpty(timeBetweenKicks.getText()) ? Double.parseDouble(timeBetweenKicks.getText()): null)) {
-                            String timeBetweenKicksValue = StringUtils.isNotEmpty(timeBetweenKicks.getText())? timeBetweenKicks.getText(): "";
-                            logger.warn("The time between kick votes value could not be saved! " + timeBetweenKicksValue);
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.profileNotUpdated");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.timeBetweenKicksNotSaved");
-                            Utils.warningDialog(headerText, contentText);
-                        }
+                        facade.updateProfileSetTimeBetweenKicks(profileName, StringUtils.isNotEmpty(timeBetweenKicks.getText()) ? Double.parseDouble(timeBetweenKicks.getText()): null);
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -746,15 +730,7 @@ public class MainContentController implements Initializable {
                     if (!newPropertyValue) {
                         oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getKickPercentage();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (StringUtils.isNotBlank(profileName) && languageSelect.getValue() != null && !facade.updateProfileSetKickPercentage(profileName, StringUtils.isNotEmpty(kickPercentage.getText()) ? Double.parseDouble(kickPercentage.getText()): null)) {
-                            String kickPercentageValue = StringUtils.isNotEmpty(kickPercentage.getText())? kickPercentage.getText(): "";
-                            logger.warn("The kick percentage value could not be saved! " + kickPercentageValue);
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.profileNotUpdated");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.kickPercentageNotSaved");
-                            Utils.warningDialog(headerText, contentText);
-                        }
+                        facade.updateProfileSetKickPercentage(profileName, StringUtils.isNotEmpty(kickPercentage.getText()) ? Double.parseDouble(kickPercentage.getText()): null);
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -773,15 +749,7 @@ public class MainContentController implements Initializable {
                     if (!newPropertyValue) {
                         oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getMaxIdleTime();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (StringUtils.isNotBlank(profileName) && languageSelect.getValue() != null && !facade.updateProfileSetMaxIdleTime(profileName, StringUtils.isNotEmpty(maxIdleTime.getText()) ? Double.parseDouble(maxIdleTime.getText()): null)) {
-                            String maxIdleTimeValue = StringUtils.isNotEmpty(maxIdleTime.getText())? maxIdleTime.getText(): "";
-                            logger.warn("The maximum idle time value could not be saved! " + maxIdleTimeValue);
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.profileNotUpdated");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.maxIdleTimeNotSaved");
-                            Utils.warningDialog(headerText, contentText);
-                        }
+                        facade.updateProfileSetMaxIdleTime(profileName, StringUtils.isNotEmpty(maxIdleTime.getText()) ? Double.parseDouble(maxIdleTime.getText()): null);
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -799,15 +767,7 @@ public class MainContentController implements Initializable {
                     if (!newPropertyValue) {
                         oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getReadyUpDelay();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (StringUtils.isNotBlank(profileName) && languageSelect.getValue() != null && !facade.updateProfileSetReadyUpDelay(profileName, StringUtils.isNotEmpty(readyUpDelay.getText()) ? Integer.parseInt(readyUpDelay.getText()): null)) {
-                            String readyUpDelayValue = StringUtils.isNotEmpty(readyUpDelay.getText())? readyUpDelay.getText(): "";
-                            logger.warn("The ready up delay value could not be saved! " + readyUpDelayValue);
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.profileNotUpdated");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.readyUpDelayNotSaved");
-                            Utils.warningDialog(headerText, contentText);
-                        }
+                        facade.updateProfileSetReadyUpDelay(profileName, StringUtils.isNotEmpty(readyUpDelay.getText()) ? Integer.parseInt(readyUpDelay.getText()): null);
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -823,14 +783,7 @@ public class MainContentController implements Initializable {
                 try {
                     if (!newPropertyValue) {
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (StringUtils.isNotBlank(profileName) && languageSelect.getValue() != null && !facade.updateProfileSetChatLoggingFile(profileName, chatLoggingFile.getText())) {
-                            logger.warn("The chat logging file value could not be saved!: " + chatLoggingFile.getText());
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.profileNotUpdated");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.chatLoggingFileNotSaved");
-                            Utils.warningDialog(headerText, contentText);
-                        }
+                        facade.updateProfileSetChatLoggingFile(profileName, chatLoggingFile.getText());
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -847,15 +800,7 @@ public class MainContentController implements Initializable {
                     if (!newPropertyValue) {
                         oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getGameStartDelay();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (StringUtils.isNotBlank(profileName) && languageSelect.getValue() != null && !facade.updateProfileSetGameStartDelay(profileName, StringUtils.isNotEmpty(gameStartDelay.getText()) ? Integer.parseInt(gameStartDelay.getText()): null)) {
-                            String gameStartDelayValue = StringUtils.isNotEmpty(gameStartDelay.getText())? gameStartDelay.getText(): "";
-                            logger.warn("The game start delay value could not be saved! " + gameStartDelayValue);
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.profileNotUpdated");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.gameStartDelayNotSaved");
-                            Utils.warningDialog(headerText, contentText);
-                        }
+                        facade.updateProfileSetGameStartDelay(profileName, StringUtils.isNotEmpty(gameStartDelay.getText()) ? Integer.parseInt(gameStartDelay.getText()): null);
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -873,15 +818,7 @@ public class MainContentController implements Initializable {
                     if (!newPropertyValue) {
                         oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getMaxSpectators();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (StringUtils.isNotBlank(profileName) && languageSelect.getValue() != null && !facade.updateProfileSetMaxSpectators(profileName, StringUtils.isNotEmpty(maxSpectators.getText()) ? Integer.parseInt(maxSpectators.getText()): null)) {
-                            String maxSpectatorsValue = StringUtils.isNotEmpty(maxSpectators.getText())? maxSpectators.getText(): "";
-                            logger.warn("The maximum spectators value could not be saved! " + maxSpectatorsValue);
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.profileNotUpdated");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.maxSpectatorsNotSaved");
-                            Utils.warningDialog(headerText, contentText);
-                        }
+                        facade.updateProfileSetMaxSpectators(profileName, StringUtils.isNotEmpty(maxSpectators.getText()) ? Integer.parseInt(maxSpectators.getText()): null);
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -899,15 +836,7 @@ public class MainContentController implements Initializable {
                     if (!newPropertyValue) {
                         oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getFriendlyFirePercentage();
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        if (StringUtils.isNotBlank(profileName) && languageSelect.getValue() != null && !facade.updateProfileSetFriendlyFirePercentage(profileName, StringUtils.isNotEmpty(friendlyFirePercentage.getText()) ? Double.parseDouble(friendlyFirePercentage.getText()): null)) {
-                            String friendlyFirePercentageValue = StringUtils.isNotEmpty(friendlyFirePercentage.getText())? friendlyFirePercentage.getText(): "";
-                            logger.warn("The friendly fire percentage value could not be saved! " + friendlyFirePercentageValue);
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.profileNotUpdated");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                                    "prop.message.friendlyFirePercentageNotSaved");
-                            Utils.warningDialog(headerText, contentText);
-                        }
+                        facade.updateProfileSetFriendlyFirePercentage(profileName, StringUtils.isNotEmpty(friendlyFirePercentage.getText()) ? Double.parseDouble(friendlyFirePercentage.getText()): null);
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -1561,14 +1490,7 @@ public class MainContentController implements Initializable {
         try {
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
-                if (!facade.updateProfileSetTeamCollision(profileName, teamCollision.isSelected())) {
-                    logger.warn("The team collision value could not be saved!: " + teamCollision.isSelected());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.teamCollisionNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
+                facade.updateProfileSetTeamCollision(profileName, teamCollision.isSelected());
             }
         } catch (Exception e) {
             String headerText = "The team collision value could not be saved!";
@@ -1582,14 +1504,7 @@ public class MainContentController implements Initializable {
         try {
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
-                if (!facade.updateProfileSetAdminCanPause(profileName, adminPause.isSelected())) {
-                    logger.warn("The admin can pause value could not be saved!: " + adminPause.isSelected());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.adminCanPauseNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
+                facade.updateProfileSetAdminCanPause(profileName, adminPause.isSelected());
             }
         } catch (Exception e) {
             String headerText = "The admin can pause value could not be saved!";
@@ -1603,14 +1518,7 @@ public class MainContentController implements Initializable {
         try {
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
-                if (!facade.updateProfileSetAnnounceAdminLogin(profileName, adminLogin.isSelected())) {
-                    logger.warn("The announce admin login value could not be saved!: " + adminLogin.isSelected());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.adminLoginNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
+                facade.updateProfileSetAnnounceAdminLogin(profileName, adminLogin.isSelected());
             }
         } catch (Exception e) {
             String headerText = "The announce admin login value could not be saved!";
@@ -1624,14 +1532,7 @@ public class MainContentController implements Initializable {
         try {
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
-                if (!facade.updateProfileSetChatLogging(profileName, chatLogging.isSelected())) {
-                    logger.warn("The chat logging value could not be saved!: " + chatLogging.isSelected());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.chatLoggingNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
+                facade.updateProfileSetChatLogging(profileName, chatLogging.isSelected());
             }
         } catch (Exception e) {
             String headerText = "The chat logging value could not be saved!";
@@ -1645,14 +1546,7 @@ public class MainContentController implements Initializable {
         try {
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
-                if (!facade.updateProfileSetChatLoggingFileTimestamp(profileName, chatLoggingFileTimestamp.isSelected())) {
-                    logger.warn("The chat logging file timestamp value could not be saved!: " + adminLogin.isSelected());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.chatLoggingFileTimestampNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
+                facade.updateProfileSetChatLoggingFileTimestamp(profileName, chatLoggingFileTimestamp.isSelected());
             }
         } catch (Exception e) {
             String headerText = "The chat logging file timestamp value could not be saved!";
@@ -1666,14 +1560,7 @@ public class MainContentController implements Initializable {
         try {
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
-                if (!facade.updateProfileSetDeadPlayersCanTalk(profileName, deadPlayersCanTalk.isSelected())) {
-                    logger.warn("The dead players can talk value could not be saved!: " + deadPlayersCanTalk.isSelected());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.deadPlayersCanTalkNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
+                facade.updateProfileSetDeadPlayersCanTalk(profileName, deadPlayersCanTalk.isSelected());
             }
         } catch (Exception e) {
             String headerText = "The dead players can talk value could not be saved!";
@@ -1687,14 +1574,7 @@ public class MainContentController implements Initializable {
         try {
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
-                if (!facade.updateProfileSetMapObjetives(profileName, mapObjetives.isSelected())) {
-                    logger.warn("The map objetives value could not be saved!: " + mapObjetives.isSelected());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.mapObjetivesNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
+                facade.updateProfileSetMapObjetives(profileName, mapObjetives.isSelected());
             }
         } catch (Exception e) {
             String headerText = "The map objetives value could not be saved!";
@@ -1708,14 +1588,7 @@ public class MainContentController implements Initializable {
         try {
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
-                if (!facade.updateProfileSetPickupItems(profileName, pickupItems.isSelected())) {
-                    logger.warn("The pick up items value could not be saved!: " + pickupItems.isSelected());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.profileNotUpdated");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.pickupItemsNotSaved");
-                    Utils.warningDialog(headerText, contentText);
-                }
+                facade.updateProfileSetPickupItems(profileName, pickupItems.isSelected());
             }
         } catch (Exception e) {
             String headerText = "The pick up items value could not be saved!";
