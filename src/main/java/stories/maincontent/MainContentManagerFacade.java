@@ -1,10 +1,6 @@
 package stories.maincontent;
 
-import dtos.PlatformDto;
-import dtos.PlatformProfileMapDto;
 import dtos.ProfileDto;
-import javafx.collections.ObservableList;
-import pojos.enums.EnumPlatform;
 import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
 import stories.loadactualprofile.LoadActualProfileFacadeResult;
 
@@ -33,12 +29,6 @@ public interface MainContentManagerFacade {
     void updateProfileSetWelcomeMessage(String profileName, String welcomeMessage) throws Exception;
     void updateProfileSetCustomParameters(String profileName, String customParameters) throws Exception;
     void updateProfileSetWebPage(String profileName, boolean isSelected) throws Exception;
-    ProfileDto findProfileDtoByName(String name) throws Exception;
-    String runServer(String platformName, String profileName) throws Exception;
-    String joinServer(String platformName, String profileName) throws Exception;
-    List<String> selectProfiles(String message, String actualProfileName) throws SQLException;
-    String selectProfile(String message, String actualProfileName) throws SQLException;
-    boolean isCorrectInstallationFolder(String platformName) throws SQLException;
     void updateProfileSetTakeover(String profileName, boolean isSelected) throws Exception;
     void updateProfileSetMapVoting(String profileName, boolean isSelected) throws Exception;
     void updateProfileSetKickVoting(String profileName, boolean isSelected) throws Exception;
@@ -62,9 +52,11 @@ public interface MainContentManagerFacade {
     void updateProfileSetMapObjetives(String profileName, boolean isSelected) throws Exception;
     void updateProfileSetPickupItems(String profileName, boolean isSelected) throws Exception;
     void updateProfileSetFriendlyFirePercentage(String profileName, Double friendlyFirePercentage) throws Exception;
-    List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws Exception;
-    void runExecutableFile(String platformName) throws SQLException;
-    PlatformDto getPlatform(EnumPlatform enumPlatform) throws SQLException;
-    ObservableList<ProfileDto> listAllProfiles() throws Exception;
+    void runServers(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) throws Exception;
 
+    ProfileDto findProfileDtoByName(String name) throws Exception;
+
+    String joinServer(String platformName, String profileName) throws Exception;
+    String selectProfile(String message, String actualProfileName) throws SQLException;
+    boolean isCorrectInstallationFolder(String platformName) throws SQLException;
 }

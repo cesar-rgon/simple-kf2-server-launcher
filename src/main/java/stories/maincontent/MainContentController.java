@@ -1360,27 +1360,11 @@ public class MainContentController implements Initializable {
     @FXML
     private void runServerOnAction() {
         try {
-            ObservableList<ProfileDto> allProfiles = facade.listAllProfiles();
-            List<String> selectedProfileNameList = new ArrayList<String>();
-            switch (allProfiles.size()) {
-                case 0:
-                    facade.runServer(platformSelect.getValue().getKey(), null);
-                    return;
-                case 1:
-                    selectedProfileNameList.add(allProfiles.get(0).getName());
-                    profileSelect.setValue(allProfiles.get(0));
-                    break;
-                default:
-                    String message = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.runServers");
-                    selectedProfileNameList = facade.selectProfiles(message, profileSelect.getValue().getName());
-            }
-
-            facade.runExecutableFile(platformSelect.getValue().getKey());
-            for (String profileName: selectedProfileNameList) {
-                Session.getInstance().setConsole((StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
-                        "< " + new Date() + " - Run Server >\n" + facade.runServer(platformSelect.getValue().getKey(), profileName));
-            }
+            facade.runServers(
+                    platformSelect.getValue().getKey(),
+                    profileSelect.getValue().getName(),
+                    languageSelect.getValue().getKey()
+            );
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -1390,6 +1374,7 @@ public class MainContentController implements Initializable {
     @FXML
     private void joinServerOnAction() {
         try {
+            /*
             ObservableList<ProfileDto> allProfiles = facade.listAllProfiles();
             String selectedProfileName = null;
             switch (allProfiles.size()) {
@@ -1409,6 +1394,7 @@ public class MainContentController implements Initializable {
                 Session.getInstance().setConsole((StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n": "") +
                         "< " + new Date() + " - Join Server >\n" + facade.joinServer(platformSelect.getValue().getKey(), selectedProfileName));
             }
+             */
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);

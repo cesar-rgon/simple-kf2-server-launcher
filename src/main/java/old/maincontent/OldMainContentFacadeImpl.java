@@ -151,9 +151,4 @@ public class OldMainContentFacadeImpl extends OldAFacade {
         kf2Common.runExecutableFile();
     }
 
-    
-    public PlatformDto getPlatform(EnumPlatform enumPlatform) throws SQLException {
-        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(enumPlatform.name());
-        return platformOptional.isPresent() ? platformDtoFactory.newSteamDto(platformOptional.get()): null;
-    }
 }

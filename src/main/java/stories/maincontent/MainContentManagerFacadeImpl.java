@@ -1,14 +1,12 @@
 package stories.maincontent;
 
-import dtos.PlatformDto;
-import dtos.PlatformProfileMapDto;
 import dtos.ProfileDto;
 import framework.AbstractManagerFacade;
 import framework.EmptyModelContext;
-import javafx.collections.ObservableList;
-import pojos.enums.EnumPlatform;
 import services.PropertyService;
 import services.PropertyServiceImpl;
+import stories.runServers.RunServersFacade;
+import stories.runServers.RunServersFacadeImpl;
 import stories.listvaluesmaincontent.ListValuesMainContentFacade;
 import stories.listvaluesmaincontent.ListValuesMainContentFacadeImpl;
 import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
@@ -16,6 +14,7 @@ import stories.loadactualprofile.LoadActualProfileFacade;
 import stories.loadactualprofile.LoadActualProfileFacadeImpl;
 import stories.loadactualprofile.LoadActualProfileFacadeResult;
 import stories.loadactualprofile.LoadActualProfileModelContext;
+import stories.runServers.RunServersModelContext;
 import stories.updateprofilesetadmincanpause.UpdateProfileSetAdminCanPauseFacade;
 import stories.updateprofilesetadmincanpause.UpdateProfileSetAdminCanPauseFacadeImpl;
 import stories.updateprofilesetadmincanpause.UpdateProfileSetAdminCanPauseModelContext;
@@ -186,11 +185,6 @@ public class MainContentManagerFacadeImpl
         }
 
         return result;
-    }
-
-    @Override
-    public ObservableList<ProfileDto> listAllProfiles() throws Exception {
-        return null;
     }
 
     @Override
@@ -388,17 +382,18 @@ public class MainContentManagerFacadeImpl
     }
 
     @Override
-    public String runServer(String platformName, String profileName) throws Exception {
-        return null;
+    public void runServers(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) throws Exception {
+        RunServersModelContext runServersModelContext = new RunServersModelContext(
+                platformName,
+                actualSelectedProfileName,
+                actualSelectedLanguage
+        );
+        RunServersFacade runServersFacade = new RunServersFacadeImpl(runServersModelContext);
+        runServersFacade.execute();
     }
 
     @Override
     public String joinServer(String platformName, String profileName) throws Exception {
-        return null;
-    }
-
-    @Override
-    public List<String> selectProfiles(String message, String actualProfileName) throws SQLException {
         return null;
     }
 
@@ -642,18 +637,4 @@ public class MainContentManagerFacadeImpl
         updateProfileSetFriendlyFirePercentageFacade.execute();
     }
 
-    @Override
-    public List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws Exception {
-        return null;
-    }
-
-    @Override
-    public void runExecutableFile(String platformName) throws SQLException {
-
-    }
-
-    @Override
-    public PlatformDto getPlatform(EnumPlatform enumPlatform) throws SQLException {
-        return null;
-    }
 }
