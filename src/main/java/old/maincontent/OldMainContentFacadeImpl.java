@@ -62,73 +62,7 @@ public class OldMainContentFacadeImpl extends OldAFacade {
         maxPlayersService = new MaxPlayersServiceImpl(em);
     }
 
-    public String runServer(String platformName, String profileName) throws Exception {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(platformName);
-        if (!platformOptional.isPresent()) {
-            Utils.warningDialog("Run operation aborted!", "The platform can not be found");
-            return StringUtils.EMPTY;
-        }
-        Kf2Common kf2Common = Kf2Factory.getInstance(platformOptional.get());
-        return kf2Common.runServer(profileOpt.isPresent() ? profileOpt.get() : null);
-    }
 
-    
-    public String joinServer(String platformName, String profileName) throws Exception {
-        Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
-        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(platformName);
-        if (!platformOptional.isPresent()) {
-            Utils.warningDialog("Join operation aborted!", "The platform can not be found");
-            return StringUtils.EMPTY;
-        }
-        if (profileOpt.isPresent()) {
-            Kf2Common kf2Common = Kf2Factory.getInstance(platformOptional.get());
-            return kf2Common.joinServer(profileOpt.get());
-        } else {
-            Utils.warningDialog("Join operation aborted!", "The profile name can not be empty");
-        }
-        return StringUtils.EMPTY;
-    }
-
-    
-    public List<String> selectProfiles(String message, String actualProfileName) throws SQLException {
-        List<AbstractPlatform> allPlatformList = platformService.listAllPlatforms();
-        List<Profile> allProfileList = profileService.listAllProfiles();
-        List<PlatformProfile> platformProfileList = new ArrayList<PlatformProfile>();
-        for (Profile profile: allProfileList) {
-            for (AbstractPlatform platform: allPlatformList) {
-                platformProfileList.add(new PlatformProfile(platform, profile));
-            }
-        }
-
-        List<String> selectedProfileNameList = new ArrayList<String>();
-        selectedProfileNameList.add(actualProfileName);
-
-        List<PlatformProfileToDisplay> selectedProfiles = Utils.selectPlatformProfilesDialog(message + ":", platformProfileList, selectedProfileNameList);
-        return selectedProfiles.stream().map(dto -> dto.getProfileName()).collect(Collectors.toList());
-    }
-
-
-    
-    public String selectProfile(String message, String actualProfileName) throws SQLException {
-        List<AbstractPlatform> allPlatformList = platformService.listAllPlatforms();
-        List<Profile> allProfileList = profileService.listAllProfiles();
-        List<PlatformProfile> platformProfileList = new ArrayList<PlatformProfile>();
-        for (Profile profile: allProfileList) {
-            for (AbstractPlatform platform: allPlatformList) {
-                platformProfileList.add(new PlatformProfile(platform, profile));
-            }
-        }
-        List<String> selectedProfileNameList = new ArrayList<String>();
-        selectedProfileNameList.add(actualProfileName);
-        Optional<PlatformProfileToDisplay> selectedProfile = Utils.selectProfileDialog(message + ":", platformProfileList, selectedProfileNameList);
-        if (selectedProfile.isPresent()) {
-            return selectedProfile.get().getProfileName();
-        }
-        return null;
-    }
-
-    
     public boolean isCorrectInstallationFolder(String platformName) throws SQLException {
         Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(platformName);
         if (!platformOptional.isPresent()) {
@@ -138,17 +72,4 @@ public class OldMainContentFacadeImpl extends OldAFacade {
         Kf2Common kf2Common = Kf2Factory.getInstance(platformOptional.get());
         return kf2Common.isValidInstallationFolder();
     }
-
-
-
-    public void runExecutableFile(String platformName) throws SQLException {
-        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(platformName);
-        if (!platformOptional.isPresent()) {
-            Utils.warningDialog("Run operation aborted!", "The platform can not be found");
-            return;
-        }
-        Kf2Common kf2Common = Kf2Factory.getInstance(platformOptional.get());
-        kf2Common.runExecutableFile();
-    }
-
 }

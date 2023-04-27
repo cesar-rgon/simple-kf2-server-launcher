@@ -236,7 +236,11 @@ public class MainContentController implements Initializable {
                     lengthSelect.setItems(result.getLengthDtoList());
                     maxPlayersSelect.setItems(result.getPlayerDtoList());
                     platformSelect.setItems(result.getPlatformDtoList());
-                    platformSelect.getSelectionModel().select(0);
+
+                    platformSelect.getSelectionModel().select(
+                            Session.getInstance().getPlatform() != null ?
+                            EnumPlatform.getByName(Session.getInstance().getPlatform().getKey()).getIndex(): 0
+                    );
 
                     if (profileSelect.getValue() == null) {
                         File file = new File(System.getProperty("user.dir") + "/external-images/photo-borders.png");
@@ -1136,7 +1140,6 @@ public class MainContentController implements Initializable {
         languageSelect.setValue(result.getProfileDto().getLanguage());
         previousSelectedLanguageCode = result.getProfileDto().getLanguage().getKey();
         gameTypeSelect.setValue(result.getProfileDto().getGametype());
-        platformSelect.setValue(result.getPlatformDto());
         profileMapSelect.getItems().clear();
         profileMapSelect.setItems(result.getFilteredMapDtoList());
 
@@ -1374,27 +1377,11 @@ public class MainContentController implements Initializable {
     @FXML
     private void joinServerOnAction() {
         try {
-            /*
-            ObservableList<ProfileDto> allProfiles = facade.listAllProfiles();
-            String selectedProfileName = null;
-            switch (allProfiles.size()) {
-                case 0:
-                    facade.joinServer(platformSelect.getValue().getKey(), null);
-                    return;
-                case 1:
-                    selectedProfileName = allProfiles.get(0).getName();
-                    profileSelect.setValue(allProfiles.get(0));
-                    break;
-                default:
-                    String message = propertyService.getPropertyValue("properties/languages/" + languageSelect.getValue().getKey() + ".properties",
-                            "prop.message.joinServer");
-                    selectedProfileName = facade.selectProfile(message, profileSelect.getValue().getName());
-            }
-            if (StringUtils.isNotBlank(selectedProfileName)) {
-                Session.getInstance().setConsole((StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n": "") +
-                        "< " + new Date() + " - Join Server >\n" + facade.joinServer(platformSelect.getValue().getKey(), selectedProfileName));
-            }
-             */
+            facade.joinServer(
+                    platformSelect.getValue().getKey(),
+                    profileSelect.getValue().getName(),
+                    languageSelect.getValue().getKey()
+            );
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);

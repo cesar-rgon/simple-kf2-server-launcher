@@ -53,10 +53,7 @@ public interface MainContentManagerFacade {
     void updateProfileSetPickupItems(String profileName, boolean isSelected) throws Exception;
     void updateProfileSetFriendlyFirePercentage(String profileName, Double friendlyFirePercentage) throws Exception;
     void runServers(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) throws Exception;
-
+    void joinServer(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) throws Exception;
     ProfileDto findProfileDtoByName(String name) throws Exception;
-
-    String joinServer(String platformName, String profileName) throws Exception;
-    String selectProfile(String message, String actualProfileName) throws SQLException;
     boolean isCorrectInstallationFolder(String platformName) throws SQLException;
 }

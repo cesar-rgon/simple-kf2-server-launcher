@@ -5,8 +5,11 @@ import framework.AbstractManagerFacade;
 import framework.EmptyModelContext;
 import services.PropertyService;
 import services.PropertyServiceImpl;
-import stories.runServers.RunServersFacade;
-import stories.runServers.RunServersFacadeImpl;
+import stories.joinservers.JoinServersFacade;
+import stories.joinservers.JoinServersFacadeImpl;
+import stories.joinservers.JoinServersModelContext;
+import stories.runservers.RunServersFacade;
+import stories.runservers.RunServersFacadeImpl;
 import stories.listvaluesmaincontent.ListValuesMainContentFacade;
 import stories.listvaluesmaincontent.ListValuesMainContentFacadeImpl;
 import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
@@ -14,7 +17,7 @@ import stories.loadactualprofile.LoadActualProfileFacade;
 import stories.loadactualprofile.LoadActualProfileFacadeImpl;
 import stories.loadactualprofile.LoadActualProfileFacadeResult;
 import stories.loadactualprofile.LoadActualProfileModelContext;
-import stories.runServers.RunServersModelContext;
+import stories.runservers.RunServersModelContext;
 import stories.updateprofilesetadmincanpause.UpdateProfileSetAdminCanPauseFacade;
 import stories.updateprofilesetadmincanpause.UpdateProfileSetAdminCanPauseFacadeImpl;
 import stories.updateprofilesetadmincanpause.UpdateProfileSetAdminCanPauseModelContext;
@@ -141,7 +144,6 @@ import stories.updateprofilesetyourweblink.UpdateProfileSetYourWebLinkModelConte
 import utils.Utils;
 
 import java.sql.SQLException;
-import java.util.List;
 
 public class MainContentManagerFacadeImpl
         extends AbstractManagerFacade<EmptyModelContext, ListValuesMainContentFacadeResult>
@@ -393,13 +395,14 @@ public class MainContentManagerFacadeImpl
     }
 
     @Override
-    public String joinServer(String platformName, String profileName) throws Exception {
-        return null;
-    }
-
-    @Override
-    public String selectProfile(String message, String actualProfileName) throws SQLException {
-        return null;
+    public void joinServer(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) throws Exception {
+        JoinServersModelContext joinServersModelContext = new JoinServersModelContext(
+                platformName,
+                actualSelectedProfileName,
+                actualSelectedLanguage
+        );
+        JoinServersFacade joinServersFacade = new JoinServersFacadeImpl(joinServersModelContext);
+        joinServersFacade.execute();
     }
 
     @Override

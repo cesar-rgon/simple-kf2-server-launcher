@@ -7,19 +7,21 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public enum EnumPlatform {
-    STEAM("Steam", "images/steam-logo.png", "images/steam-small-logo.png"),
-    EPIC("Epic Games", "images/epic-logo.png", "images/epic-small-logo.png"),
-    ALL("All platforms", "", "");
+    STEAM("Steam", "images/steam-logo.png", "images/steam-small-logo.png", 0),
+    EPIC("Epic Games", "images/epic-logo.png", "images/epic-small-logo.png", 1),
+    ALL("All platforms", "", "", 2);
 
 
     private String descripcion;
     private String logoPath;
     private String smallLogoPath;
+    private Integer index;
 
-    private EnumPlatform(String descripcion, String logoPath, String smallLogoPath) {
+    private EnumPlatform(String descripcion, String logoPath, String smallLogoPath, Integer index) {
         this.descripcion = descripcion;
         this.logoPath = logoPath;
         this.smallLogoPath = smallLogoPath;
+        this.index = index;
     }
 
     public String getDescripcion() {
@@ -32,6 +34,10 @@ public enum EnumPlatform {
 
     public String getSmallLogoPath() {
         return smallLogoPath;
+    }
+
+    public Integer getIndex() {
+        return index;
     }
 
     public String toString() {

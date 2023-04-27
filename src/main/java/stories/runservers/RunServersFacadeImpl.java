@@ -1,4 +1,4 @@
-package stories.runServers;
+package stories.runservers;
 
 import entities.AbstractPlatform;
 import entities.Profile;

@@ -39,7 +39,6 @@ public class LoadActualProfileFacadeImpl
         ProfileService profileService = new ProfileServiceImpl(em);
         ProfileDtoFactory profileDtoFactory = new ProfileDtoFactory(em);
         PlatformService platformService = new PlatformServiceImpl(em);
-        PlatformDtoFactory platformDtoFactory = new PlatformDtoFactory();
 
         Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(facadeModelContext.getPlatformName());
         Optional<Profile> profileOptional = profileService.findProfileByCode(facadeModelContext.getProfileName());
@@ -73,11 +72,9 @@ public class LoadActualProfileFacadeImpl
         }
 
         ProfileDto profileDto = profileDtoFactory.newDto(profileOptional.get());
-        PlatformDto platformDto = platformDtoFactory.newDto(platformOptional.get());
 
         return new LoadActualProfileFacadeResult(
                 profileDto,
-                platformDto,
                 filteredMapDtoList,
                 selectedProfileMapOptional
         );

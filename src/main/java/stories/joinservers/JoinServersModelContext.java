@@ -1,13 +1,14 @@
-package stories.runServers;
+package stories.joinservers;
 
 import framework.ModelContext;
 
-public class RunServersModelContext extends ModelContext {
+public class JoinServersModelContext extends ModelContext {
+
     private final String platformName;
     private final String actualSelectedProfileName;
     private final String actualSelectedLanguage;
 
-    public RunServersModelContext(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) {
+    public JoinServersModelContext(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) {
         super();
         this.platformName = platformName;
         this.actualSelectedProfileName = actualSelectedProfileName;
@@ -25,4 +26,5 @@ public class RunServersModelContext extends ModelContext {
     public String getActualSelectedLanguage() {
         return actualSelectedLanguage;
     }
+
 }
