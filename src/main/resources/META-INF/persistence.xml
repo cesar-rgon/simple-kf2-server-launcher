@@ -5,13 +5,11 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <properties>
-            <property name="hibernate.connection.url" value="jdbc:derby:kf2database;create=true" />
             <property name="hibernate.connection.username" value="kf2database" />
             <property name="hibernate.connection.password" value="kf2database" />
             <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyTenSevenDialect" />
-            <property name="hibernate.hbm2ddl.auto" value="update" />
             <property name="hibernate.connection.charSet" value="UTF-8"/>
-            <property name="hibernate.show_sql" value = "true" />
+            <property name="hibernate.show_sql" value = "yes" />
             <property name="hibernate.connection.autocommit" value="false" />
         </properties>
 

@@ -5,6 +5,14 @@ import framework.AbstractManagerFacade;
 import framework.EmptyModelContext;
 import services.PropertyService;
 import services.PropertyServiceImpl;
+import stories.findprofilebyname.FindProfileByNameFacade;
+import stories.findprofilebyname.FindProfileByNameFacadeImpl;
+import stories.findprofilebyname.FindProfileByNameFacadeResult;
+import stories.findprofilebyname.FindProfileByNameModelContext;
+import stories.installationfolder.InstallationFolderFacade;
+import stories.installationfolder.InstallationFolderFacadeImpl;
+import stories.installationfolder.InstallationFolderFacadeResult;
+import stories.installationfolder.InstallationFolderModelContext;
 import stories.joinservers.JoinServersFacade;
 import stories.joinservers.JoinServersFacadeImpl;
 import stories.joinservers.JoinServersModelContext;
@@ -379,11 +387,6 @@ public class MainContentManagerFacadeImpl
     }
 
     @Override
-    public ProfileDto findProfileDtoByName(String name) throws Exception {
-        return null;
-    }
-
-    @Override
     public void runServers(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) throws Exception {
         RunServersModelContext runServersModelContext = new RunServersModelContext(
                 platformName,
@@ -406,8 +409,13 @@ public class MainContentManagerFacadeImpl
     }
 
     @Override
-    public boolean isCorrectInstallationFolder(String platformName) throws SQLException {
-        return false;
+    public boolean isCorrectInstallationFolder(String platformName) throws Exception {
+        InstallationFolderModelContext installationFolderModelContext = new InstallationFolderModelContext(
+                platformName
+        );
+        InstallationFolderFacade installationFolderFacade = new InstallationFolderFacadeImpl(installationFolderModelContext);
+        InstallationFolderFacadeResult result = installationFolderFacade.execute();
+        return result.isCorrectInstallationFolder();
     }
 
     @Override
@@ -640,4 +648,13 @@ public class MainContentManagerFacadeImpl
         updateProfileSetFriendlyFirePercentageFacade.execute();
     }
 
+    @Override
+    public ProfileDto findProfileDtoByName(String profileName) throws Exception {
+        FindProfileByNameModelContext findProfileByNameModelContext = new FindProfileByNameModelContext(
+                profileName
+        );
+        FindProfileByNameFacade findProfileByNameFacade = new FindProfileByNameFacadeImpl(findProfileByNameModelContext);
+        FindProfileByNameFacadeResult result = findProfileByNameFacade.execute();
+        return result.getProfileDto();
+    }
 }

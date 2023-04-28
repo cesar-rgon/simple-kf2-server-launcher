@@ -3,6 +3,10 @@ package framework;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import services.PropertyService;
+import services.PropertyServiceImpl;
+
+import java.util.Properties;
 
 public abstract class AbstractTransactionalFacade<M extends ModelContext, R extends FacadeResult> extends AbstractFacade {
     private static final String PERSISTENCE_UNIT = "kf2database";
@@ -27,7 +31,17 @@ public abstract class AbstractTransactionalFacade<M extends ModelContext, R exte
 
     private EntityManager beginTransaction() throws Exception {
         if (emf == null) {
-            emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT);
+            PropertyService propertyService = new PropertyServiceImpl();
+            boolean updateDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.updateDatabase"));
+            Properties properties = new Properties();
+            if (updateDatabase) {
+                properties.setProperty("hibernate.connection.url", "jdbc:derby:kf2database;create=true");
+                properties.setProperty("hibernate.hbm2ddl.auto", "update");
+            } else {
+                properties.setProperty("hibernate.connection.url", "jdbc:derby:kf2database;create=false");
+                properties.setProperty("hibernate.hbm2ddl.auto", "none");
+            }
+            emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT, properties);
         }
         EntityManager em = emf.createEntityManager();
         em.getTransaction().begin();

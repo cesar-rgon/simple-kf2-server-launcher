@@ -54,6 +54,6 @@ public interface MainContentManagerFacade {
     void updateProfileSetFriendlyFirePercentage(String profileName, Double friendlyFirePercentage) throws Exception;
     void runServers(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) throws Exception;
     void joinServer(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) throws Exception;
+    boolean isCorrectInstallationFolder(String platformName) throws Exception;
     ProfileDto findProfileDtoByName(String name) throws Exception;
-    boolean isCorrectInstallationFolder(String platformName) throws SQLException;
 }
