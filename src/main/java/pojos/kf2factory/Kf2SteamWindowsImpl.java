@@ -1,6 +1,7 @@
 package pojos.kf2factory;
 
 import entities.Profile;
+import jakarta.persistence.EntityManager;
 import net.lingala.zip4j.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -23,8 +24,8 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
 
     private static final Logger logger = LogManager.getLogger(Kf2SteamWindowsImpl.class);
 
-    public Kf2SteamWindowsImpl() {
-        super();
+    public Kf2SteamWindowsImpl(EntityManager em) {
+        super(em);
     }
 
     @Override

@@ -18,7 +18,7 @@ public class UpdateProfileSetPublicTextChatFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetPublicTextChatModelContext updateProfileSetPublicTextChatModelContext, EntityManager em) throws Exception {
         return true;
     }
 

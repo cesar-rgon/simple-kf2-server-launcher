@@ -19,7 +19,7 @@ public class UpdateProfileSetSpectatorsChatFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetSpectatorsChatModelContext updateProfileSetSpectatorsChatModelContext, EntityManager em) throws Exception {
         return true;
     }
 

@@ -9,6 +9,8 @@ import entities.SteamPlatform;
 import jakarta.persistence.EntityManager;
 import org.hibernate.Hibernate;
 import pojos.enums.EnumPlatform;
+import pojos.kf2factory.Kf2Common;
+import pojos.kf2factory.Kf2Factory;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -113,5 +115,16 @@ public class PlatformServiceImpl implements PlatformService {
             }
         }
         return true;
+    }
+
+    @Override
+    public boolean isValidInstallationFolder(String platformName) throws Exception {
+        Optional<AbstractPlatform> platformOptional = findPlatformByName(platformName);
+        if (!platformOptional.isPresent()) {
+            return false;
+        }
+        Kf2Common kf2Common = Kf2Factory.getInstance(platformOptional.get(), em);
+        assert kf2Common != null;
+        return kf2Common.isValidInstallationFolder();
     }
 }

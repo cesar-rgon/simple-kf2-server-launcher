@@ -18,7 +18,7 @@ public class UpdateProfileSetWebPortFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetWebPortModelContext updateProfileSetWebPortModelContext, EntityManager em) throws Exception {
         return true;
     }
 

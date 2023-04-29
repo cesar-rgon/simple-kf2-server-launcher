@@ -19,7 +19,7 @@ public class UpdateProfileSetWelcomeMessageFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetWelcomeMessageModelContext updateProfileSetWelcomeMessageModelContext, EntityManager em) throws Exception {
         return true;
     }
 

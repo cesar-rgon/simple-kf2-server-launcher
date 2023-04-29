@@ -23,7 +23,7 @@ public class UpdateProfileSetLanguageFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetLanguageModelContext updateProfileSetLanguageModelContext, EntityManager em) throws Exception {
         return true;
     }
 

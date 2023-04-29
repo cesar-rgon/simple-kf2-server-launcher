@@ -1,6 +1,7 @@
 package pojos.kf2factory;
 
 import entities.Profile;
+import jakarta.persistence.EntityManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -20,8 +21,8 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
 
     private static final Logger logger = LogManager.getLogger(Kf2SteamLinuxImpl.class);
 
-    public Kf2SteamLinuxImpl() {
-        super();
+    public Kf2SteamLinuxImpl(EntityManager em) {
+        super(em);
     }
 
     @Override

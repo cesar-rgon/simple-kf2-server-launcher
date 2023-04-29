@@ -20,7 +20,7 @@ public class UpdateProfileSetYourWebLinkFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetYourWebLinkModelContext updateProfileSetYourWebLinkModelContext, EntityManager em) throws Exception {
         return true;
     }
 

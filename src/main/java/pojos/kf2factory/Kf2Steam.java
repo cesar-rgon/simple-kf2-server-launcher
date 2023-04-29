@@ -21,9 +21,8 @@ public abstract class Kf2Steam extends Kf2AbstractCommon {
     private static final Logger logger = LogManager.getLogger(Kf2Steam.class);
     private final PlatformService platformService;
 
-    protected Kf2Steam() {
+    protected Kf2Steam(EntityManager em) {
         super();
-        EntityManager em = null;
         this.platformService = new PlatformServiceImpl(em);
 
         try {

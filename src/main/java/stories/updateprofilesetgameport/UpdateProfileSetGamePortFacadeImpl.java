@@ -19,7 +19,7 @@ public class UpdateProfileSetGamePortFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetGamePortModelContext updateProfileSetGamePortModelContext, EntityManager em) throws Exception {
         return true;
     }
 

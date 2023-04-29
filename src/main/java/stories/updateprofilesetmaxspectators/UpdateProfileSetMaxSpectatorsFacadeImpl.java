@@ -18,7 +18,7 @@ public class UpdateProfileSetMaxSpectatorsFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetMaxSpectatorsModelContext updateProfileSetMaxSpectatorsModelContext, EntityManager em) throws Exception {
         return true;
     }
 

@@ -19,20 +19,15 @@ public class InstallationFolderFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
-        return false;
+    public boolean assertPreconditions(InstallationFolderModelContext installationFolderModelContext, EntityManager em) throws Exception {
+        return true;
     }
 
     @Override
     protected InstallationFolderFacadeResult internalExecute(InstallationFolderModelContext facadeModelContext, EntityManager em) throws Exception {
         PlatformService platformService = new PlatformServiceImpl(em);
-
-        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(facadeModelContext.getPlatformName());
-        if (!platformOptional.isPresent()) {
-            return new InstallationFolderFacadeResult(false);
-        }
-        Kf2Common kf2Common = Kf2Factory.getInstance(platformOptional.get());
-        assert kf2Common != null;
-        return new InstallationFolderFacadeResult(kf2Common.isValidInstallationFolder());
+        return new InstallationFolderFacadeResult(
+            platformService.isValidInstallationFolder(facadeModelContext.getPlatformName())
+        );
     }
 }

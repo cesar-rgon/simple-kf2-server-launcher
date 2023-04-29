@@ -1,6 +1,7 @@
 package pojos.kf2factory;
 
 import entities.Profile;
+import jakarta.persistence.EntityManager;
 import javafx.concurrent.Task;
 import net.lingala.zip4j.ZipFile;
 import org.apache.commons.io.FileUtils;
@@ -23,8 +24,8 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
 
     private static final Logger logger = LogManager.getLogger(Kf2EpicWindowsImpl.class);
 
-    public Kf2EpicWindowsImpl() {
-        super();
+    public Kf2EpicWindowsImpl(EntityManager em) {
+        super(em);
     }
 
     @Override

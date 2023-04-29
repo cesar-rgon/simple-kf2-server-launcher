@@ -19,7 +19,7 @@ public class UpdateProfileSetAnnounceAdminLoginFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetAnnounceAdminLoginModelContext updateProfileSetAnnounceAdminLoginModelContext, EntityManager em) throws Exception {
         return true;
     }
 

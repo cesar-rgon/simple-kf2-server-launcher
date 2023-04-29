@@ -18,7 +18,7 @@ public class UpdateProfileSetServerNameFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetServerNameModelContext updateProfileSetServerNameModelContext, EntityManager em) throws Exception {
         return true;
     }
 

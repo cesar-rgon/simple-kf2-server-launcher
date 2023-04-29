@@ -18,9 +18,8 @@ public abstract class Kf2Epic extends Kf2AbstractCommon {
     private static final Logger logger = LogManager.getLogger(Kf2Epic.class);
     private final PlatformService platformService;
 
-    protected Kf2Epic() {
+    protected Kf2Epic(EntityManager em) {
         super();
-        EntityManager em = null;
         this.platformService = new PlatformServiceImpl(em);
         try {
             Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();

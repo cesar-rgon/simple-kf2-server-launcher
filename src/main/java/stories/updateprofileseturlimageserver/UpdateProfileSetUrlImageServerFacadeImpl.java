@@ -19,7 +19,7 @@ public class UpdateProfileSetUrlImageServerFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetUrlImageServerModelContext updateProfileSetUrlImageServerModelContext, EntityManager em) throws Exception {
         return true;
     }
 

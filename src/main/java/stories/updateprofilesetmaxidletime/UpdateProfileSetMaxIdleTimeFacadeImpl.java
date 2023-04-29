@@ -19,7 +19,7 @@ public class UpdateProfileSetMaxIdleTimeFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetMaxIdleTimeModelContext updateProfileSetMaxIdleTimeModelContext, EntityManager em) throws Exception {
         return true;
     }
 

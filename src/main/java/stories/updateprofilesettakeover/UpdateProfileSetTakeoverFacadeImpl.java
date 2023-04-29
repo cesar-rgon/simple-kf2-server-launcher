@@ -19,7 +19,7 @@ public class UpdateProfileSetTakeoverFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetTakeoverModelContext updateProfileSetTakeoverModelContext, EntityManager em) throws Exception {
         return true;
     }
 

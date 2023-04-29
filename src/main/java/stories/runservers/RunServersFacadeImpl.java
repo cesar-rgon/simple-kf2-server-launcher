@@ -12,6 +12,10 @@ import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import pojos.session.Session;
 import services.*;
+import stories.installationfolder.InstallationFolderFacade;
+import stories.installationfolder.InstallationFolderFacadeImpl;
+import stories.installationfolder.InstallationFolderFacadeResult;
+import stories.installationfolder.InstallationFolderModelContext;
 import utils.Utils;
 
 import java.util.ArrayList;
@@ -29,8 +33,9 @@ public class RunServersFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
-        return true;
+    public boolean assertPreconditions(RunServersModelContext runServersModelContext, EntityManager em) throws Exception {
+        PlatformService platformService = new PlatformServiceImpl(em);
+        return platformService.isValidInstallationFolder(runServersModelContext.getPlatformName());
     }
 
     @Override

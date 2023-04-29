@@ -18,7 +18,7 @@ public class UpdateProfileSetAdminCanPauseFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetAdminCanPauseModelContext updateProfileSetAdminCanPauseModelContext, EntityManager em) throws Exception {
         return true;
     }
 

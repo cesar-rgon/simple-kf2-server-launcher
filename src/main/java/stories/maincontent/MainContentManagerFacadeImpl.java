@@ -162,7 +162,7 @@ public class MainContentManagerFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(EmptyModelContext modelContext) throws Exception {
         return true;
     }
 

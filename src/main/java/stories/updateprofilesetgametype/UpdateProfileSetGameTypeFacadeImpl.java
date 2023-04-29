@@ -20,7 +20,7 @@ public class UpdateProfileSetGameTypeFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetGameTypeModelContext updateProfileSetGameTypeModelContext, EntityManager em) throws Exception {
         return true;
     }
 

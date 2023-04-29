@@ -19,7 +19,7 @@ public class UpdateProfileSetWebPageFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetWebPageModelContext updateProfileSetWebPageModelContext, EntityManager em) throws Exception {
         return true;
     }
 

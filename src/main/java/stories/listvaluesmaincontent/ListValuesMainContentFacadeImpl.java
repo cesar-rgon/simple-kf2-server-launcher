@@ -26,7 +26,7 @@ public class ListValuesMainContentFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(EmptyModelContext facadeModelContext, EntityManager em) throws Exception {
         return true;
     }
 

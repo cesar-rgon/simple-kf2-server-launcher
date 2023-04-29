@@ -20,7 +20,7 @@ public class UpdateProfileSetDifficultyFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetDifficultyModelContext updateProfileSetDifficultyModelContext, EntityManager em) throws Exception {
         return true;
     }
 

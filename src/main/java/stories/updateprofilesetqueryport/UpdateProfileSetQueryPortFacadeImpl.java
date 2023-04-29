@@ -19,7 +19,7 @@ public class UpdateProfileSetQueryPortFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetQueryPortModelContext UpdateProfileSetQueryPortModelContext, EntityManager em) throws Exception {
         return true;
     }
 

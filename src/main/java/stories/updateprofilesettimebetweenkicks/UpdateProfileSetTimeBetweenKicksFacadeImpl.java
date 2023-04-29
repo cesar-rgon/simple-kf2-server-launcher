@@ -18,7 +18,7 @@ public class UpdateProfileSetTimeBetweenKicksFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetTimeBetweenKicksModelContext updateProfileSetTimeBetweenKicksModelContext, EntityManager em) throws Exception {
         return true;
     }
 

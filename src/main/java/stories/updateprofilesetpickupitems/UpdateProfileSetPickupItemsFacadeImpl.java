@@ -18,7 +18,7 @@ public class UpdateProfileSetPickupItemsFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetPickupItemsModelContext updateProfileSetPickupItemsModelContext, EntityManager em) throws Exception {
         return true;
     }
 

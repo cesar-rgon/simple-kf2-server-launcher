@@ -1,6 +1,6 @@
 package framework;
 
-public abstract class AbstractManagerFacade<M extends ModelContext, R extends FacadeResult> extends AbstractFacade {
+public abstract class AbstractManagerFacade<M extends ModelContext, R extends FacadeResult> extends AbstractFacade<M,R> {
 
     protected AbstractManagerFacade(M facadeModelContext, Class<R> facadeResultClass) {
         super(facadeModelContext, facadeResultClass);
@@ -8,12 +8,13 @@ public abstract class AbstractManagerFacade<M extends ModelContext, R extends Fa
 
     @Override
     public R execute() throws Exception {
-        R result = (R) facadeResultClass.newInstance();
-        if (assertPreconditions()) {
-            result = internalExecute((M) facadeModelContext);
+        if (!assertPreconditions(getFacadeModelContext())) {
+            throw new RuntimeException("The preconditions have not been satisfied for the operation " + getFacadeResultClass().getName());
         }
-        return result;
+        return internalExecute(getFacadeModelContext());
     }
+
+    protected abstract boolean assertPreconditions(M facadeModelContext) throws Exception;
 
     protected abstract R internalExecute(M facadeModelContext) throws Exception;
 

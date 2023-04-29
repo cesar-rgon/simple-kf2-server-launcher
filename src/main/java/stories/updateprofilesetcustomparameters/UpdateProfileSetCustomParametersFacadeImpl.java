@@ -20,7 +20,7 @@ public class UpdateProfileSetCustomParametersFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetCustomParametersModelContext updateProfileSetCustomParametersModelContext, EntityManager em) throws Exception {
         return true;
     }
 

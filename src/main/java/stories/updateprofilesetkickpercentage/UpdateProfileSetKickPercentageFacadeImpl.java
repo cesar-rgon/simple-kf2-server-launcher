@@ -18,7 +18,7 @@ public class UpdateProfileSetKickPercentageFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetKickPercentageModelContext updateProfileSetKickPercentageModelContext, EntityManager em) throws Exception {
         return true;
     }
 

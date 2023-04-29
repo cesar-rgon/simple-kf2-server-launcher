@@ -18,7 +18,7 @@ public class UpdateProfileSetGameStartDelayFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetGameStartDelayModelContext updateProfileSetGameStartDelayModelContext, EntityManager em) throws Exception {
         return true;
     }
 

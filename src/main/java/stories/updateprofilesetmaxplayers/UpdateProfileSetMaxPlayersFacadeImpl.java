@@ -20,7 +20,7 @@ public class UpdateProfileSetMaxPlayersFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetMaxPlayersModelContext updateProfileSetMaxPlayersModelContext, EntityManager em) throws Exception {
         return true;
     }
 

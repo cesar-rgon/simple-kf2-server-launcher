@@ -18,7 +18,7 @@ public class UpdateProfileSetChatLoggingFileFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetChatLoggingFileModelContext updateProfileSetChatLoggingFileModelContext, EntityManager em) throws Exception {
         return true;
     }
 

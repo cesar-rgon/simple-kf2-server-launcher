@@ -18,7 +18,7 @@ public class UpdateProfileSetFriendlyFirePercentageFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetFriendlyFirePercentageModelContext updateProfileSetFriendlyFirePercentageModelContext, EntityManager em) throws Exception {
         return true;
     }
 

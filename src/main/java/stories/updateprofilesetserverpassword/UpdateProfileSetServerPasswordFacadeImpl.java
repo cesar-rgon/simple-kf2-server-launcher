@@ -6,6 +6,7 @@ import framework.EmptyFacadeResult;
 import jakarta.persistence.EntityManager;
 import services.ProfileService;
 import services.ProfileServiceImpl;
+import utils.Utils;
 
 import java.util.Optional;
 
@@ -19,7 +20,7 @@ public class UpdateProfileSetServerPasswordFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetServerPasswordModelContext updateProfileSetServerPasswordModelContext, EntityManager em) throws Exception {
         return true;
     }
 
@@ -33,7 +34,7 @@ public class UpdateProfileSetServerPasswordFacadeImpl
         }
         Profile profile = profileOpt.get();
 
-        profile.setServerPassword(facadeModelContext.getServerPassword());
+        profile.setServerPassword(Utils.encryptAES(facadeModelContext.getServerPassword()));
         profileService.updateItem(profile);
         return new EmptyFacadeResult();
     }

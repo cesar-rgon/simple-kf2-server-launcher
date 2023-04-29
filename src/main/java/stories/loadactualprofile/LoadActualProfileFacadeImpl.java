@@ -30,8 +30,14 @@ public class LoadActualProfileFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
-        return true;
+    public boolean assertPreconditions(LoadActualProfileModelContext loadActualProfileModelContext, EntityManager em) throws Exception {
+        PlatformService platformService = new PlatformServiceImpl(em);
+        ProfileService profileService = new ProfileServiceImpl(em);
+
+        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(loadActualProfileModelContext.getPlatformName());
+        Optional<Profile> profileOptional = profileService.findProfileByCode(loadActualProfileModelContext.getProfileName());
+
+        return platformOptional.isPresent() && profileOptional.isPresent();
     }
 
     @Override
@@ -42,9 +48,6 @@ public class LoadActualProfileFacadeImpl
 
         Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(facadeModelContext.getPlatformName());
         Optional<Profile> profileOptional = profileService.findProfileByCode(facadeModelContext.getProfileName());
-        if (!platformOptional.isPresent() || !profileOptional.isPresent() ) {
-            throw new RuntimeException("Error loading the profile information");
-        }
 
         Profile profile = profileOptional.get();
         List<PlatformProfileMapDto> platformProfileMapList = listPlatformProfileMaps(platformOptional.get(), profile, em);

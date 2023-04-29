@@ -21,7 +21,7 @@ public class UpdateProfileSetLengthFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetLengthModelContext updateProfileSetLengthModelContext, EntityManager em) throws Exception {
         return true;
     }
 

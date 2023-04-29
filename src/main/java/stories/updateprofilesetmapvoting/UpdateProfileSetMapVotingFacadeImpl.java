@@ -20,7 +20,7 @@ public class UpdateProfileSetMapVotingFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetMapVotingModelContext UpdateProfileSetMapVotingModelContext, EntityManager em) throws Exception {
         return true;
     }
 

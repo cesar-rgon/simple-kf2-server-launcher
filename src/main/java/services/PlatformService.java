@@ -20,5 +20,5 @@ public interface PlatformService {
     EpicPlatform createEpicPlatform(EpicPlatform epicPlatform) throws SQLException;
     boolean updateSteamPlatform(SteamPlatform steamPlatform) throws Exception;
     boolean updateEpicPlatform(EpicPlatform epicPlatform) throws Exception;
-
+    boolean isValidInstallationFolder(String platformName) throws Exception;
 }

@@ -6,6 +6,7 @@ import framework.EmptyFacadeResult;
 import jakarta.persistence.EntityManager;
 import services.ProfileService;
 import services.ProfileServiceImpl;
+import utils.Utils;
 
 import java.util.Optional;
 
@@ -20,7 +21,7 @@ public class UpdateProfileSetWebPasswordFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetWebPasswordModelContext updateProfileSetWebPasswordModelContext, EntityManager em) throws Exception {
         return true;
     }
 
@@ -34,7 +35,7 @@ public class UpdateProfileSetWebPasswordFacadeImpl
         }
         Profile profile = profileOpt.get();
 
-        profile.setWebPassword(facadeModelContext.getWebPassword());
+        profile.setWebPassword(Utils.encryptAES(facadeModelContext.getWebPassword()));
         profileService.updateItem(profile);
         return new EmptyFacadeResult();
     }

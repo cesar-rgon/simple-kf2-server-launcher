@@ -19,7 +19,7 @@ public class UpdateProfileSetTeamCollisionFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetTeamCollisionModelContext updateProfileSetTeamCollisionModelContext, EntityManager em) throws Exception {
         return true;
     }
 

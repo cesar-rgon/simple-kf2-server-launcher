@@ -18,7 +18,7 @@ public class UpdateProfileSetDeadPlayersCanTalkFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetDeadPlayersCanTalkModelContext updateProfileSetDeadPlayersCanTalkModelContext, EntityManager em) throws Exception {
         return true;
     }
 

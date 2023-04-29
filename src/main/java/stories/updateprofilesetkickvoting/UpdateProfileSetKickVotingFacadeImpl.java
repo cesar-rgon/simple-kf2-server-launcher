@@ -19,7 +19,7 @@ public class UpdateProfileSetKickVotingFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetKickVotingModelContext updateProfileSetKickVotingModelContext, EntityManager em) throws Exception {
         return true;
     }
 

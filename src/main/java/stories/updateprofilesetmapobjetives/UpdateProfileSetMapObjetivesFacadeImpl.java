@@ -18,7 +18,7 @@ public class UpdateProfileSetMapObjetivesFacadeImpl
     }
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetMapObjetivesModelContext updateProfileSetMapObjetivesModelContext, EntityManager em) throws Exception {
         return true;
     }
 

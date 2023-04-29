@@ -20,7 +20,7 @@ public class UpdateProfileSetVoipFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(UpdateProfileSetVoipModelContext updateProfileSetVoipModelContext, EntityManager em) throws Exception {
         return true;
     }
 

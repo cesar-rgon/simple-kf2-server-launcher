@@ -30,8 +30,9 @@ public class JoinServersFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
-        return true;
+    public boolean assertPreconditions(JoinServersModelContext joinServersModelContext, EntityManager em) throws Exception {
+        PlatformService platformService = new PlatformServiceImpl(em);
+        return platformService.isValidInstallationFolder(joinServersModelContext.getPlatformName());
     }
 
     @Override

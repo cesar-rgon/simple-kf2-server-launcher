@@ -20,7 +20,7 @@ public class FindProfileByNameFacadeImpl
 
 
     @Override
-    public boolean assertPreconditions() throws Exception {
+    public boolean assertPreconditions(FindProfileByNameModelContext findProfileByNameModelContext, EntityManager em) throws Exception {
         return true;
     }
 
