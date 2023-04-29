@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -43,7 +44,6 @@ public class MainContentController implements Initializable {
     private static final Logger logger = LogManager.getLogger(MainContentController.class);
 
     private MainContentManagerFacade facade;
-    private PropertyService propertyService;
     private String previousSelectedLanguageCode;
 
     @FXML private ComboBox<ProfileDto> profileSelect;
@@ -195,15 +195,8 @@ public class MainContentController implements Initializable {
     @FXML ProgressIndicator progressIndicator;
 
     public MainContentController() {
-        try {
-            facade = new MainContentManagerFacadeImpl();
-            propertyService = new PropertyServiceImpl();
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), e);
-        }
+        facade = new MainContentManagerFacadeImpl();
     }
-
 
     @FXML
     @Override
@@ -340,21 +333,21 @@ public class MainContentController implements Initializable {
             public ListCell<PlatformProfileMapDto> call(ListView<PlatformProfileMapDto> p) {
                 ListCell<PlatformProfileMapDto> listCell = new ListCell<PlatformProfileMapDto>() {
 
-                    private GridPane createMapGridPane(PlatformProfileMapDto profileMapDto) {
-                        Label aliasLabel = new Label(profileMapDto.getAlias());
+                    private GridPane createMapGridPane(PlatformProfileMapDto platformProfileMapDto) {
+                        Label aliasLabel = new Label(platformProfileMapDto.getAlias());
                         aliasLabel.setStyle("-fx-padding: 5;");
                         Label mapType;
                         String languageCode = languageSelect.getValue().getKey();
                         String officialText;
                         String customText;
                         try {
-                            officialText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.official");
-                            customText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.custom");
+                            officialText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.official");
+                            customText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.custom");
                         } catch (Exception e) {
                             officialText = "OFFICIAL";
                             customText = "CUSTOM";
                         }
-                        if (profileMapDto.getMapDto().isOfficial()) {
+                        if (platformProfileMapDto.getMapDto().isOfficial()) {
                             mapType = new Label(officialText);
                             mapType.setStyle("-fx-text-fill: plum; -fx-padding: 5;");
                         } else {
@@ -365,8 +358,10 @@ public class MainContentController implements Initializable {
                         ImageView mapPreview = new ImageView();
                         try {
                             Image image;
-                            if (facade.isCorrectInstallationFolder(platformSelect.getValue().getKey()) && StringUtils.isNotBlank(profileMapDto.getUrlPhoto())) {
-                                image = new Image("file:" + platformSelect.getValue().getInstallationFolder() + "/" + profileMapDto.getUrlPhoto());
+                            if (facade.isCorrectInstallationFolder(platformSelect.getValue().getKey()) &&
+                                    StringUtils.isNotBlank(platformProfileMapDto.getUrlPhoto()) &&
+                                    new File(platformSelect.getValue().getInstallationFolder() + "/" + platformProfileMapDto.getUrlPhoto()).exists()) {
+                                image = new Image("file:" + platformSelect.getValue().getInstallationFolder() + "/" + platformProfileMapDto.getUrlPhoto());
                             } else {
                                 File file = new File(System.getProperty("user.dir") + "/external-images/no-photo.png");
                                 InputStream inputStream;
@@ -416,7 +411,9 @@ public class MainContentController implements Initializable {
                 ImageView mapPreview = new ImageView();
                 try {
                     Image image;
-                    if (facade.isCorrectInstallationFolder(platformSelect.getValue().getKey()) && StringUtils.isNotBlank(platformProfileMapDto.getUrlPhoto())) {
+                    if (facade.isCorrectInstallationFolder(platformSelect.getValue().getKey()) &&
+                            StringUtils.isNotBlank(platformProfileMapDto.getUrlPhoto()) &&
+                            new File(platformSelect.getValue().getInstallationFolder() + "/" + platformProfileMapDto.getUrlPhoto()).exists()) {
                         image = new Image("file:" + platformSelect.getValue().getInstallationFolder() + "/" + platformProfileMapDto.getUrlPhoto());
                     } else {
                         File file = new File(System.getProperty("user.dir") + "/external-images/no-photo.png");
@@ -430,8 +427,8 @@ public class MainContentController implements Initializable {
                     }
                     mapPreview = new ImageView(image);
                     mapPreview.setPreserveRatio(false);
-                    mapPreview.setFitWidth(350);
-                    mapPreview.setFitHeight(160);
+                    mapPreview.setFitWidth(475);
+                    mapPreview.setFitHeight(260);
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 }
@@ -441,8 +438,8 @@ public class MainContentController implements Initializable {
                 String officialText;
                 String customText;
                 try {
-                    officialText = "  " + propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.official") + "  ";
-                    customText = "  " + propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.custom") + "  ";
+                    officialText = "  " + facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.official") + "  ";
+                    customText = "  " + facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.custom") + "  ";
                 } catch (Exception e) {
                     officialText = "  OFFICIAL  ";
                     customText = "  CUSTOM  ";
@@ -450,17 +447,17 @@ public class MainContentController implements Initializable {
 
                 if (platformProfileMapDto.getMapDto().isOfficial()) {
                     mapType = new Label(officialText);
-                    mapType.setStyle("-fx-text-fill: plum; -fx-padding: 3; -fx-border-color: plum; -fx-border-radius: 5;");
+                    mapType.setStyle("-fx-text-fill: plum; -fx-padding: 5; -fx-border-color: plum; -fx-border-radius: 5;");
                 } else {
                     mapType = new Label(customText);
-                    mapType.setStyle("-fx-text-fill: gold; -fx-padding: 3; -fx-border-color: gold; -fx-border-radius: 5;");
+                    mapType.setStyle("-fx-text-fill: gold; -fx-padding: 5; -fx-border-color: gold; -fx-border-radius: 5;");
                 }
-                aliasLabel.setPadding(new Insets(0,10,4,0));
+                aliasLabel.setPadding(new Insets(0,13,4,0));
 
                 ImageView darkPanel = new ImageView(new Image("images/darkPanel.png"));
                 darkPanel.setPreserveRatio(false);
-                darkPanel.setFitWidth(350);
-                darkPanel.setFitHeight(25);
+                darkPanel.setFitWidth(475);
+                darkPanel.setFitHeight(30);
                 darkPanel.setOpacity(0.7);
 
                 GridPane gridpane = new GridPane();
@@ -471,6 +468,7 @@ public class MainContentController implements Initializable {
                 GridPane.setHalignment(darkPanel, HPos.CENTER);
                 GridPane.setValignment(darkPanel, VPos.BOTTOM);
                 GridPane.setHalignment(mapType, HPos.LEFT);
+                GridPane.setMargin(mapType, new Insets(0,0,0,10));
                 GridPane.setValignment(mapType, VPos.BOTTOM);
                 GridPane.setHalignment(aliasLabel, HPos.RIGHT);
                 GridPane.setValignment(aliasLabel, VPos.BOTTOM);
@@ -627,8 +625,8 @@ public class MainContentController implements Initializable {
                     NodeList imgList = doc.getElementsByTagName("img");
                     if (imgList != null && imgList.getLength() > 0) {
                         Element img = (Element) imgList.item(0);
-                        img.setAttribute("width", "512");
-                        img.setAttribute("height", "256");
+                        img.setAttribute("width", "390");
+                        img.setAttribute("height", "195");
                     }
                 }
             }
@@ -854,9 +852,9 @@ public class MainContentController implements Initializable {
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, ComboBox<?> combo) throws Exception {
         Double tooltipDuration = Double.parseDouble(
-                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
         );
-        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        Tooltip tooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
         tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         if (label != null) {
@@ -867,9 +865,9 @@ public class MainContentController implements Initializable {
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, TextField textField) throws Exception {
         Double tooltipDuration = Double.parseDouble(
-                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
         );
-        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        Tooltip tooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
         tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
@@ -878,9 +876,9 @@ public class MainContentController implements Initializable {
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, TextField[] textFieldArray) throws Exception {
         Double tooltipDuration = Double.parseDouble(
-                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
         );
-        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        Tooltip tooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
         tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
@@ -891,9 +889,9 @@ public class MainContentController implements Initializable {
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, CheckBox checkBox, TextField textField) throws Exception {
         Double tooltipDuration = Double.parseDouble(
-                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
         );
-        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        Tooltip tooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
         tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
@@ -903,9 +901,9 @@ public class MainContentController implements Initializable {
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, CheckBox checkBox) throws Exception {
         Double tooltipDuration = Double.parseDouble(
-                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
         );
-        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        Tooltip tooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
         tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
@@ -914,9 +912,9 @@ public class MainContentController implements Initializable {
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, TextArea textArea) throws Exception {
         Double tooltipDuration = Double.parseDouble(
-                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
         );
-        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        Tooltip tooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
         tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
@@ -924,207 +922,207 @@ public class MainContentController implements Initializable {
     }
 
     private void loadLanguageTexts(String languageCode) throws Exception {
-        String profileLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.profile") + "*";
+        String profileLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.profile") + "*";
         profileLabel.setText(profileLabelText);
         loadTooltip(languageCode, "prop.tooltip.profile", profileImg, profileLabel, profileSelect);
 
-        String basicParametersText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.basicParameters");
+        String basicParametersText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.basicParameters");
         basicParameters.setText(basicParametersText);
 
-        String advancedParametersText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.advancedParameters");
+        String advancedParametersText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.advancedParameters");
         advancedParameters.setText(advancedParametersText);
 
         loadTooltip(languageCode, "prop.tooltip.language", languageImg, languageLabel, languageSelect);
 
-        String gameTypeLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.gameType") + "*";
+        String gameTypeLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.gameType") + "*";
         gameTypeLabel.setText(gameTypeLabelText);
         loadTooltip(languageCode, "prop.tooltip.gameType", gameTypeImg, gameTypeLabel, gameTypeSelect);
 
         loadTooltip(languageCode, "prop.tooltip.map", mapImg, null, profileMapSelect);
 
-        String difficultyLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.difficulty") + "*";
+        String difficultyLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.difficulty") + "*";
         difficultyLabel.setText(difficultyLabelText);
         loadTooltip(languageCode, "prop.tooltip.difficulty", difficultyImg, difficultyLabel, difficultySelect);
 
-        String lengthLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.length") + "*";
+        String lengthLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.length") + "*";
         lengthLabel.setText(lengthLabelText);
         loadTooltip(languageCode, "prop.tooltip.length", lengthImg, lengthLabel, lengthSelect);
 
-        String maxPlayersLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.maxPlayers") + "*";
+        String maxPlayersLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.maxPlayers") + "*";
         maxPlayersLabel.setText(maxPlayersLabelText);
         loadTooltip(languageCode, "prop.tooltip.maxPlayers", maxPlayersImg, maxPlayersLabel, maxPlayersSelect);
 
-        String serverNameLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.serverName") + "*";
+        String serverNameLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.serverName") + "*";
         serverNameLabel.setText(serverNameLabelText);
         loadTooltip(languageCode, "prop.tooltip.serverName", serverNameImg, serverNameLabel, serverName);
 
-        String serverPasswordLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.serverPassword");
+        String serverPasswordLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.serverPassword");
         serverPasswordLabel.setText(serverPasswordLabelText);
         loadTooltip(languageCode, "prop.tooltip.serverPassword", serverPasswordImg, serverPasswordLabel, serverPassword);
 
-        String webPageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.webPage");
+        String webPageLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.webPage");
         webPageLabel.setText(webPageLabelText);
         loadTooltip(languageCode, "prop.tooltip.webPage", webPageImg, webPageLabel, webPage, webPassword);
 
-        String takeoverLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.takeover");
+        String takeoverLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.takeover");
         takeoverLabel.setText(takeoverLabelText);
-        String takeoverText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.takeoverEnable");
+        String takeoverText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.takeoverEnable");
         takeover.setText(takeoverText);
         loadTooltip(languageCode, "prop.tooltip.takeover", takeoverImg, takeoverLabel, takeover);
 
-        String clanLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.clan");
+        String clanLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.clan");
         clanLabel.setText(clanLabelText);
         loadTooltip(languageCode, "prop.tooltip.clan", clanImg, clanLabel, yourClan);
 
-        String webLinkLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.webLink");
+        String webLinkLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.webLink");
         webLinkLabel.setText(webLinkLabelText);
         loadTooltip(languageCode, "prop.tooltip.weblink", webLinkImg, webLinkLabel, yourWebLink);
 
-        String urlImageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.urlImage");
+        String urlImageLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.urlImage");
         urlImageLabel.setText(urlImageLabelText);
         loadTooltip(languageCode, "prop.tooltip.urlImage", urlImageServerImg, urlImageLabel, urlImageServer);
 
-        String welcomeLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.welcome");
+        String welcomeLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.welcome");
         welcomeLabel.setText(welcomeLabelText);
         loadTooltip(languageCode, "prop.tooltip.welcomeMessage", welcomeImg, welcomeLabel, welcomeMessage);
 
         Double tooltipDuration = Double.parseDouble(
-                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
         );
 
-        String runServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.runServer");
+        String runServerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.runServer");
         runServer.setText(runServerText);
-        Tooltip runServerTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.runServer"));
+        Tooltip runServerTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.runServer"));
         runServerTooltip.setShowDuration(Duration.seconds(tooltipDuration));
         runServer.setTooltip(runServerTooltip);
 
-        String joinServerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.joinServer");
+        String joinServerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.joinServer");
         joinServer.setText(joinServerText);
-        Tooltip joinServerTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.joinServer"));
+        Tooltip joinServerTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.joinServer"));
         joinServerTooltip.setShowDuration(Duration.seconds(tooltipDuration));
         joinServer.setTooltip(joinServerTooltip);
 
-        Tooltip thumbnailTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.thumbnail"));
+        Tooltip thumbnailTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.thumbnail"));
         thumbnailTooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(imageWebView,thumbnailTooltip);
 
         // Advanced Parameters
-        String portsLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.ports");
+        String portsLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.ports");
         portsLabel.setText(portsLabelText);
         TextField[] portsArray = {gamePort, queryPort, webPort};
         loadTooltip(languageCode, "prop.tooltip.ports", portsImg, portsLabel, portsArray);
 
-        String customParametersLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.customParameters");
+        String customParametersLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.customParameters");
         customParametersLabel.setText(customParametersLabelText);
         loadTooltip(languageCode, "prop.tooltip.customParameters", customParametersImg, customParametersLabel, customParameters);
 
-        String teamCollisionLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.teamCollision");
-        String teamCollisionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.teamCollisionEnable");
+        String teamCollisionLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.teamCollision");
+        String teamCollisionText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.teamCollisionEnable");
         teamCollisionLabel.setText(teamCollisionLabelText);
         teamCollision.setText(teamCollisionText);
         loadTooltip(languageCode, "prop.tooltip.teamCollision", teamCollisionImg, teamCollisionLabel, teamCollision);
 
-        String adminPauseLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.adminPause");
-        String adminPauseText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.adminPauseEnable");
+        String adminPauseLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.adminPause");
+        String adminPauseText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.adminPauseEnable");
         adminPauseLabel.setText(adminPauseLabelText);
         adminPause.setText(adminPauseText);
         loadTooltip(languageCode, "prop.tooltip.adminPause", adminPauseImg, adminPauseLabel, adminPause);
 
-        String adminLoginLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.adminLogin");
-        String adminLoginText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.adminLoginEnable");
+        String adminLoginLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.adminLogin");
+        String adminLoginText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.adminLoginEnable");
         adminLoginLabel.setText(adminLoginLabelText);
         adminLogin.setText(adminLoginText);
         loadTooltip(languageCode, "prop.tooltip.adminLogin", adminLoginImg, adminLoginLabel, adminLogin);
 
-        String mapVotingLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.mapVoting");
-        String mapVotingText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.mapVotingEnable");
+        String mapVotingLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.mapVoting");
+        String mapVotingText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.mapVotingEnable");
         mapVotingLabel.setText(mapVotingLabelText);
         mapVoting.setText(mapVotingText);
         loadTooltip(languageCode, "prop.tooltip.mapVoting", mapVotingImg, mapVotingLabel, mapVoting);
 
-        String kickVotingLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.kickVoting");
-        String kickVotingText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.kickVotingEnable");
+        String kickVotingLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.kickVoting");
+        String kickVotingText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.kickVotingEnable");
         kickVotingLabel.setText(kickVotingLabelText);
         kickVoting.setText(kickVotingText);
         loadTooltip(languageCode, "prop.tooltip.kickVoting", kickVotingImg, kickVotingLabel, kickVoting);
 
-        String publicTextChatLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.publicTextChat");
-        String publicTextChatText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.publicTextChatEnable");
+        String publicTextChatLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.publicTextChat");
+        String publicTextChatText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.publicTextChatEnable");
         publicTextChatLabel.setText(publicTextChatLabelText);
         publicTextChat.setText(publicTextChatText);
         loadTooltip(languageCode, "prop.tooltip.publicTextChat", publicTextChatImg, publicTextChatLabel, publicTextChat);
 
-        String voipLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.voip");
-        String voipText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.voipEnable");
+        String voipLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.voip");
+        String voipText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.voipEnable");
         voipLabel.setText(voipLabelText);
         voip.setText(voipText);
         loadTooltip(languageCode, "prop.tooltip.voip", voipImg, voipLabel, voip);
 
-        String chatLoggingLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.chatLogging");
-        String chatLoggingText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.chatLoggingEnable");
+        String chatLoggingLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.chatLogging");
+        String chatLoggingText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.chatLoggingEnable");
         chatLoggingLabel.setText(chatLoggingLabelText);
         chatLogging.setText(chatLoggingText);
         loadTooltip(languageCode, "prop.tooltip.chatLogging", chatLoggingImg, chatLoggingLabel, chatLogging);
 
-        String mapVotingTimeLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.mapVotingTime");
+        String mapVotingTimeLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.mapVotingTime");
         mapVotingTimeLabel.setText(mapVotingTimeLabelText);
         loadTooltip(languageCode, "prop.tooltip.mapVotingTime", mapVotingTimeImg, mapVotingTimeLabel, mapVotingTime);
 
-        String kickPercentageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.kickPercentage");
+        String kickPercentageLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.kickPercentage");
         kickPercentageLabel.setText(kickPercentageLabelText);
         loadTooltip(languageCode, "prop.tooltip.kickPercentage", kickPercentageImg, kickPercentageLabel, kickPercentage);
 
-        String spectatorsChatLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.spectatorsChat");
-        String spectatorsChatText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.spectatorsChatEnable");
+        String spectatorsChatLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.spectatorsChat");
+        String spectatorsChatText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.spectatorsChatEnable");
         spectatorsChatLabel.setText(spectatorsChatLabelText);
         spectatorsChat.setText(spectatorsChatText);
         loadTooltip(languageCode, "prop.tooltip.spectatorsChat", spectatorsChatImg, spectatorsChatLabel, spectatorsChat);
 
-        String chatLoggingFileLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.chatLoggingFile");
-        String chatLoggingFileTimestampText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.chatLoggingFileTimestamp");
+        String chatLoggingFileLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.chatLoggingFile");
+        String chatLoggingFileTimestampText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.chatLoggingFileTimestamp");
         chatLoggingFileLabel.setText(chatLoggingFileLabelText);
         chatLoggingFileTimestamp.setText(chatLoggingFileTimestampText);
         loadTooltip(languageCode, "prop.tooltip.chatLoggingFile", chatLoggingFileImg, chatLoggingFileLabel, chatLoggingFileTimestamp, chatLoggingFile);
 
-        String timeBetweenKicksLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.timeBetweenKicks");
+        String timeBetweenKicksLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.timeBetweenKicks");
         timeBetweenKicksLabel.setText(timeBetweenKicksLabelText);
         loadTooltip(languageCode, "prop.tooltip.timeBetweenKicks", timeBetweenKicksImg, timeBetweenKicksLabel, timeBetweenKicks);
 
-        String maxIdleTimeLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.maxIdleTime");
+        String maxIdleTimeLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.maxIdleTime");
         maxIdleTimeLabel.setText(maxIdleTimeLabelText);
         loadTooltip(languageCode, "prop.tooltip.maxIdleTime", maxIdleTimeImg, maxIdleTimeLabel, maxIdleTime);
 
-        String deadPlayersCanTalkLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.deadPlayersCanTalk");
-        String deadPlayersCanTalkText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.deadPlayersCanTalkEnable");
+        String deadPlayersCanTalkLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.deadPlayersCanTalk");
+        String deadPlayersCanTalkText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.deadPlayersCanTalkEnable");
         deadPlayersCanTalkLabel.setText(deadPlayersCanTalkLabelText);
         deadPlayersCanTalk.setText(deadPlayersCanTalkText);
         loadTooltip(languageCode, "prop.tooltip.deadPlayersCanTalk", deadPlayersCanTalkImg, deadPlayersCanTalkLabel, deadPlayersCanTalk);
 
-        String readyUpDelayLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.readyUpDelay");
+        String readyUpDelayLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.readyUpDelay");
         readyUpDelayLabel.setText(readyUpDelayLabelText);
         loadTooltip(languageCode, "prop.tooltip.readyUpDelay", readyUpDelayImg, readyUpDelayLabel, readyUpDelay);
 
-        String gameStartDelayLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.gameStartDelay");
+        String gameStartDelayLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.gameStartDelay");
         gameStartDelayLabel.setText(gameStartDelayLabelText);
         loadTooltip(languageCode, "prop.tooltip.gameStartDelay", gameStartDelayImg, gameStartDelayLabel, gameStartDelay);
 
-        String maxSpectatorsLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.maxSpectators");
+        String maxSpectatorsLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.maxSpectators");
         maxSpectatorsLabel.setText(maxSpectatorsLabelText);
         loadTooltip(languageCode, "prop.tooltip.maxSpectators", maxSpectatorsImg, maxSpectatorsLabel, maxSpectators);
 
-        String mapObjetivesLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.mapObjetives");
-        String mapObjetivesText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.mapObjetivesEnable");
+        String mapObjetivesLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.mapObjetives");
+        String mapObjetivesText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.mapObjetivesEnable");
         mapObjetivesLabel.setText(mapObjetivesLabelText);
         mapObjetives.setText(mapObjetivesText);
         loadTooltip(languageCode, "prop.tooltip.mapObjetives", mapObjetivesImg, mapObjetivesLabel, mapObjetives);
 
-        String pickupItemsLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.pickupItems");
-        String pickupItemsText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.pickupItemsEnable");
+        String pickupItemsLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.pickupItems");
+        String pickupItemsText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.pickupItemsEnable");
         pickupItemsLabel.setText(pickupItemsLabelText);
         pickupItems.setText(pickupItemsText);
         loadTooltip(languageCode, "prop.tooltip.pickupItems", pickupItemsImg, pickupItemsLabel, pickupItems);
 
-        String friendlyFirePercentageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.friendlyFirePercentage");
+        String friendlyFirePercentageLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.friendlyFirePercentage");
         friendlyFirePercentageLabel.setText(friendlyFirePercentageLabelText);
         loadTooltip(languageCode, "prop.tooltip.friendlyFirePercentage", friendlyFirePercentageImg, friendlyFirePercentageLabel, friendlyFirePercentage);
 

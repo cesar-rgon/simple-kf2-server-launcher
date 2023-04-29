@@ -58,7 +58,8 @@ public class MainApplication extends Application {
         primaryStage.show();
         TimerTask timeListener = new TimeListener();
         timer = new Timer();
-        timer.schedule(timeListener, 0, 30000);
+        String checkDownloadedMapsEveryMilliseconds = propertyService.getPropertyValue("properties/config.properties", "prop.config.checkDownloadedMapsEveryMilliseconds");
+        timer.schedule(timeListener, 0, Long.parseLong(checkDownloadedMapsEveryMilliseconds));
         this.primaryStage = primaryStage;
 
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");

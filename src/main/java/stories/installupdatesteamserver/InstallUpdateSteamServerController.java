@@ -1,6 +1,5 @@
-package old.installupdatesteamserver;
+package stories.installupdatesteamserver;
 
-import entities.SteamPlatform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
@@ -13,24 +12,18 @@ import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.kf2factory.Kf2Common;
-import pojos.kf2factory.Kf2Factory;
-import pojos.kf2factory.Kf2Steam;
-import services.PropertyService;
-import services.PropertyServiceImpl;
 import start.MainApplication;
+import stories.getplatforminstallationfolder.GetPlatformInstallationFolderFacadeResult;
 import utils.Utils;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class InstallUpdateSteamServerController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(InstallUpdateSteamServerController.class);
-    private final InstallUpdateSteamServerFacade facade;
-    private final PropertyService propertyService;
+    private final InstallUpdateSteamServerManagerFacade facade;
     protected String languageCode;
 
     @FXML private Label titleConfigLabel;
@@ -53,54 +46,54 @@ public class InstallUpdateSteamServerController implements Initializable {
 
     public InstallUpdateSteamServerController() {
         super();
-        facade = new InstallUpdateSteamServerFacadeImpl();
-        propertyService = new PropertyServiceImpl();
+        facade = new InstallUpdateSteamServerManagerFacadeImpl();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
 
-            String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.titleInstallSteamServer");
+            String titleConfigLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.titleInstallSteamServer");
             titleConfigLabel.setText(titleConfigLabelText);
 
-            String installationFolderLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.installationFolder");
+            String installationFolderLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.installationFolder");
             installationFolderLabel.setText(installationFolderLabelText + "*");
-            installationFolder.setText(facade.getPlatformInstallationFolder());
+            GetPlatformInstallationFolderFacadeResult result = facade.execute();
+            installationFolder.setText(result.getPlatformInstallationFolder());
             loadTooltip("prop.tooltip.installationFolder", installationFolderImg, installationFolderLabel, installationFolder);
 
-            String validateFilesLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.validateFiles");
+            String validateFilesLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.validateFiles");
             validateFilesLabel.setText(validateFilesLabelText);
-            String validateFilesText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.validateFilesCheck");
+            String validateFilesText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.validateFilesCheck");
             validateFiles.setText(validateFilesText);
             loadTooltip("prop.tooltip.validateFiles", validateFilesImg, validateFilesLabel, validateFiles);
 
-            isBeta.setSelected(Boolean.parseBoolean(facade.findPropertyValue("prop.config.isBeta")));
-            String isBetaText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.isBetaCheck");
+            isBeta.setSelected(Boolean.parseBoolean(facade.findPropertyValue("properties/config.properties", "prop.config.isBeta")));
+            String isBetaText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.isBetaCheck");
             isBeta.setText(isBetaText);
-            String updateBetaLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.updateBeta");
+            String updateBetaLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.updateBeta");
             updateBetaLabel.setText(updateBetaLabelText);
             loadTooltip("prop.tooltip.updateBeta", updateBetaImg, updateBetaLabel, isBeta);
 
-            betaBrunch.setText(facade.findPropertyValue("prop.config.betaBrunch"));
-            String betaBrunchLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.betaBrunch");
+            betaBrunch.setText(facade.findPropertyValue("properties/config.properties","prop.config.betaBrunch"));
+            String betaBrunchLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.betaBrunch");
             betaBrunchLabel.setText(betaBrunchLabelText);
             loadTooltip("prop.tooltip.betaBrunch", betaBrunchImg, betaBrunchLabel, betaBrunch);
 
             Double tooltipDuration = Double.parseDouble(
-                    propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                    facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
             );
 
-            String exploreFolderText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.exploreFolder");
+            String exploreFolderText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.exploreFolder");
             exploreFolder.setText(exploreFolderText);
-            Tooltip exploreFolderTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.exploreFolder"));
+            Tooltip exploreFolderTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.exploreFolder"));
             exploreFolderTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             exploreFolder.setTooltip(exploreFolderTooltip);
 
-            String installUpdateText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.installUpdate");
+            String installUpdateText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.installUpdate");
             installUpdate.setText(installUpdateText);
-            Tooltip installUpdateTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.installUpdate"));
+            Tooltip installUpdateTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.installUpdate"));
             installUpdateTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             installUpdate.setTooltip(installUpdateTooltip);
         } catch (Exception e) {
@@ -115,8 +108,8 @@ public class InstallUpdateSteamServerController implements Initializable {
                     if (!newPropertyValue) {
                         if (!facade.updatePlatformInstallationFolder(installationFolder.getText())) {
                             logger.warn("The installation folder value could not be saved!:" + installationFolder.getText());
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");
+                            String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                            String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");
                             Utils.warningDialog(headerText, contentText);
                         }
                     }
@@ -132,10 +125,10 @@ public class InstallUpdateSteamServerController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
-                        if (!facade.saveOrUpdateProperty("prop.config.betaBrunch", betaBrunch.getText())) {
+                        if (!facade.saveOrUpdateProperty("properties/config.properties","prop.config.betaBrunch", betaBrunch.getText())) {
                             logger.warn("The beta brunch value could not be saved!: " + betaBrunch.getText());
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.betaBrunchNotSaved");
+                            String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                            String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.betaBrunchNotSaved");
                             Utils.warningDialog(headerText, contentText);
                         }
                     }
@@ -149,9 +142,9 @@ public class InstallUpdateSteamServerController implements Initializable {
 
     private void loadTooltip(String propKey, javafx.scene.image.ImageView img, Label label, TextField textField) throws Exception {
         Double tooltipDuration = Double.parseDouble(
-                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
         );
-        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        Tooltip tooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
         tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
@@ -160,9 +153,9 @@ public class InstallUpdateSteamServerController implements Initializable {
 
     private void loadTooltip(String propKey, javafx.scene.image.ImageView img, Label label, CheckBox checkBox) throws Exception {
         Double tooltipDuration = Double.parseDouble(
-                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
         );
-        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        Tooltip tooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
         tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
@@ -173,15 +166,15 @@ public class InstallUpdateSteamServerController implements Initializable {
     private void exploreFolderOnAction() {
         try {
             DirectoryChooser directoryChooser = new DirectoryChooser();
-            String message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.browseFolder");
+            String message = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.browseFolder");
             directoryChooser.setTitle(message);
             File selectedDirectory = directoryChooser.showDialog(MainApplication.getPrimaryStage());
             if (selectedDirectory != null) {
                 installationFolder.setText(selectedDirectory.getAbsolutePath());
                 if (!facade.updatePlatformInstallationFolder(installationFolder.getText())) {
                     logger.warn("The installation folder value could not be saved!: " + installationFolder.getText());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");
+                    String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                    String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");
                     Utils.warningDialog(headerText, contentText);
                 }
             }
@@ -194,10 +187,10 @@ public class InstallUpdateSteamServerController implements Initializable {
     @FXML
     private void isBetaOnAction() {
         try {
-            if (!facade.saveOrUpdateProperty("prop.config.isBeta", String.valueOf(isBeta.isSelected()))) {
+            if (!facade.saveOrUpdateProperty("properties/config.properties","prop.config.isBeta", String.valueOf(isBeta.isSelected()))) {
                 logger.warn("The is-beta value could not be saved!: " + isBeta.isSelected());
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.isBetaNotSaved");
+                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.isBetaNotSaved");
                 Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
@@ -210,10 +203,10 @@ public class InstallUpdateSteamServerController implements Initializable {
     @FXML
     private void validateFilesOnAction() {
         try {
-            if (!facade.saveOrUpdateProperty("prop.config.validateFiles", String.valueOf(validateFiles.isSelected()))) {
+            if (!facade.saveOrUpdateProperty("properties/config.properties","prop.config.validateFiles", String.valueOf(validateFiles.isSelected()))) {
                 logger.warn("The validate files value could not be saved!: " + validateFiles.isSelected());
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.validateFilesNotSaved");
+                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.validateFilesNotSaved");
                 Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
@@ -227,29 +220,22 @@ public class InstallUpdateSteamServerController implements Initializable {
     private void installUpdateServer() {
         progressIndicator.setVisible(true);
 
-        Task<SteamPlatform> task = new Task<SteamPlatform>() {
+        Task<Void> task = new Task<Void>() {
             @Override
-            protected SteamPlatform call() throws Exception {
+            protected Void call() throws Exception {
                 if (StringUtils.isNotBlank(installationFolder.getText())) {
                     installationFolder.setText(installationFolder.getText().replaceAll(" ", "_"));
                 }
                 facade.updatePlatformInstallationFolder(installationFolder.getText());
-
-                Optional<SteamPlatform> steamPlatformOptional = facade.findSteamPlatform();
-                if (!steamPlatformOptional.isPresent()) {
-                    throw new RuntimeException("Steam platform not found");
-                }
-                return steamPlatformOptional.get();
+                return null;
             }
         };
         task.setOnSucceeded(wse -> {
-            SteamPlatform steamPlatform = task.getValue();
-            Kf2Common kf2Common = Kf2Factory.getInstance(steamPlatform);
-            ((Kf2Steam) kf2Common).installOrUpdateServer(
-                    validateFiles.isSelected(),
-                    isBeta.isSelected(),
-                    betaBrunch.getText()
-            );
+            try {
+                facade.installUpdateServer(validateFiles.isSelected(), isBeta.isSelected(), betaBrunch.getText());
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage(), e);
+            }
             progressIndicator.setVisible(false);
         });
         task.setOnFailed(wse -> {

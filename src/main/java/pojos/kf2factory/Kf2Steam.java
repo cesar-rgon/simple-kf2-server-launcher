@@ -27,7 +27,7 @@ public abstract class Kf2Steam extends Kf2AbstractCommon {
 
         try {
             Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();;
-            this.platform = steamPlatformOptional.isPresent() ? steamPlatformOptional.get() : null;
+            this.platform = steamPlatformOptional.orElse(null);
         } catch (SQLException e) {
             logger.error(e.getMessage(), e);
             this.platform = null;

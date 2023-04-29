@@ -90,7 +90,7 @@
                         <ColumnConstraints />
                     </columnConstraints>
                     <rowConstraints>
-                      <RowConstraints minHeight="10.0" prefHeight="195.0" vgrow="ALWAYS" />
+                      <RowConstraints minHeight="10.0" prefHeight="215.0" vgrow="ALWAYS" />
                       <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
                       <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
                         <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="ALWAYS" />
@@ -120,16 +120,16 @@
                             </GridPane.margin>
                         </Label>
                         <ComboBox fx:id="languageSelect" onAction="#languageOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
-                        <ComboBox fx:id="profileMapSelect" onAction="#mapOnAction" prefHeight="173.0" prefWidth="390.0" GridPane.columnSpan="2" GridPane.valignment="CENTER">
+                        <ComboBox fx:id="profileMapSelect" onAction="#mapOnAction" prefHeight="270.0" prefWidth="512.0" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowSpan="3" GridPane.valignment="CENTER">
                            <GridPane.margin>
                               <Insets />
                            </GridPane.margin></ComboBox>
-                        <ImageView fx:id="noSelectedMapImage" fitHeight="162.0" fitWidth="358.0" pickOnBounds="true" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+                        <ImageView fx:id="noSelectedMapImage" fitHeight="260.0" fitWidth="485.0" pickOnBounds="true" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowSpan="3" GridPane.valignment="CENTER">
                            <image>
                               <Image url="@../external-images/no-photo.png" />
                            </image>
                            <GridPane.margin>
-                              <Insets right="24.0" />
+                              <Insets left="5.0" />
                            </GridPane.margin>
                         </ImageView>
 
@@ -233,9 +233,9 @@
                         </Label>
                         <CheckBox fx:id="takeover" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#takeoverOnAction" opacity="0.75" text="Enable takeover" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="8" GridPane.valignment="CENTER" />
 
-                        <WebView fx:id="imageWebView" maxHeight="256.0" maxWidth="512.0" prefHeight="-1.0" prefWidth="-1.0" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowSpan="3" GridPane.valignment="CENTER">
+                        <WebView fx:id="imageWebView" maxHeight="195.0" maxWidth="390.0" prefHeight="-1.0" prefWidth="-1.0" GridPane.columnSpan="2" GridPane.valignment="CENTER">
                            <GridPane.margin>
-                              <Insets bottom="1.0" left="-2.0" />
+                              <Insets />
                            </GridPane.margin></WebView>
 
                         <ImageView fx:id="urlImageServerImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="3" GridPane.valignment="CENTER">

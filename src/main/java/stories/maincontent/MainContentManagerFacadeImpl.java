@@ -657,4 +657,10 @@ public class MainContentManagerFacadeImpl
         FindProfileByNameFacadeResult result = findProfileByNameFacade.execute();
         return result.getProfileDto();
     }
+
+    @Override
+    public String findPropertyValue(String propertyFilePath, String key) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+        return propertyService.getPropertyValue(propertyFilePath, key);
+    }
 }

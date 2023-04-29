@@ -56,4 +56,5 @@ public interface MainContentManagerFacade {
     void joinServer(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) throws Exception;
     boolean isCorrectInstallationFolder(String platformName) throws Exception;
     ProfileDto findProfileDtoByName(String name) throws Exception;
+    String findPropertyValue(String propertyFilePath, String key) throws Exception;
 }

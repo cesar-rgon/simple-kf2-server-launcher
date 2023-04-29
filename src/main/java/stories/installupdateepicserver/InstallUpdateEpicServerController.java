@@ -1,4 +1,4 @@
-package old.installupdateepicserver;
+package stories.installupdateepicserver;
 
 import entities.EpicPlatform;
 import javafx.beans.value.ChangeListener;
@@ -10,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.kf2factory.Kf2Common;
@@ -18,6 +19,7 @@ import pojos.kf2factory.Kf2Factory;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
+import stories.getplatforminstallationfolder.GetPlatformInstallationFolderFacadeResult;
 import utils.Utils;
 
 import java.io.File;
@@ -28,8 +30,8 @@ import java.util.ResourceBundle;
 public class InstallUpdateEpicServerController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(InstallUpdateEpicServerController.class);
-    private final InstallUpdateEpicServerFacade facade;
-    private final PropertyService propertyService;
+    private final InstallUpdateEpicServerManagerFacade facade;
+
     protected String languageCode;
 
     @FXML private Label titleConfigLabel;
@@ -42,36 +44,36 @@ public class InstallUpdateEpicServerController implements Initializable {
 
     public InstallUpdateEpicServerController() {
         super();
-        facade = new InstallUpdateEpicServerFacadeImpl();
-        propertyService = new PropertyServiceImpl();
+        facade = new InstallUpdateEpicServerManagerFacadeImpl();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
 
-            String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.titleInstallEpicServer");
+            String titleConfigLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.titleInstallEpicServer");
             titleConfigLabel.setText(titleConfigLabelText);
 
-            String installationFolderLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.installationFolder");
+            String installationFolderLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.installationFolder");
             installationFolderLabel.setText(installationFolderLabelText + "*");
-            installationFolder.setText(facade.getPlatformInstallationFolder());
+            GetPlatformInstallationFolderFacadeResult result = facade.execute();
+            installationFolder.setText(result.getPlatformInstallationFolder());
             loadTooltip("prop.tooltip.installationFolder", installationFolderImg, installationFolderLabel, installationFolder);
 
             Double tooltipDuration = Double.parseDouble(
-                    propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                    facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
             );
 
-            String exploreFolderText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.exploreFolder");
+            String exploreFolderText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.exploreFolder");
             exploreFolder.setText(exploreFolderText);
-            Tooltip exploreFolderTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.exploreFolder"));
+            Tooltip exploreFolderTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.exploreFolder"));
             exploreFolderTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             exploreFolder.setTooltip(exploreFolderTooltip);
 
-            String installUpdateText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.installUpdate");
+            String installUpdateText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.installUpdate");
             installUpdate.setText(installUpdateText);
-            Tooltip installUpdateTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.installUpdate"));
+            Tooltip installUpdateTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.installUpdate"));
             installUpdateTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             installUpdate.setTooltip(installUpdateTooltip);
 
@@ -87,8 +89,8 @@ public class InstallUpdateEpicServerController implements Initializable {
                     if (!newPropertyValue) {
                         if (!facade.updatePlatformInstallationFolder(installationFolder.getText())) {
                             logger.warn("The installation folder value could not be saved!:" + installationFolder.getText());
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");
+                            String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                            String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");
                             Utils.warningDialog(headerText, contentText);
                         }
                     }
@@ -104,15 +106,15 @@ public class InstallUpdateEpicServerController implements Initializable {
     private void exploreFolderOnAction() {
         try {
             DirectoryChooser directoryChooser = new DirectoryChooser();
-            String message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.browseFolder");
+            String message = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.browseFolder");
             directoryChooser.setTitle(message);
             File selectedDirectory = directoryChooser.showDialog(MainApplication.getPrimaryStage());
             if (selectedDirectory != null) {
                 installationFolder.setText(selectedDirectory.getAbsolutePath());
                 if (!facade.updatePlatformInstallationFolder(installationFolder.getText())) {
                     logger.warn("The installation folder value could not be saved!: " + installationFolder.getText());
-                    String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                    String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");
+                    String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                    String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");
                     Utils.warningDialog(headerText, contentText);
                 }
             }
@@ -126,22 +128,23 @@ public class InstallUpdateEpicServerController implements Initializable {
     private void installUpdateServer() {
         progressIndicator.setVisible(true);
 
-        Task<EpicPlatform> task = new Task<EpicPlatform>() {
+        Task<Void> task = new Task<Void>() {
             @Override
-            protected EpicPlatform call() throws Exception {
-                Optional<EpicPlatform> epicPlatformOptional = facade.findEpicPlatform();
-                if (!epicPlatformOptional.isPresent()) {
-                    throw new RuntimeException("Epic Games platform not found");
+            protected Void call() throws Exception {
+                if (StringUtils.isNotBlank(installationFolder.getText())) {
+                    installationFolder.setText(installationFolder.getText().replaceAll(" ", "_"));
                 }
-                return epicPlatformOptional.get();
+                facade.updatePlatformInstallationFolder(installationFolder.getText());
+                return null;
             }
         };
 
         task.setOnSucceeded(wse -> {
-            EpicPlatform epicPlatform = task.getValue();
-            Kf2Common kf2Common = Kf2Factory.getInstance(epicPlatform);
-            ((Kf2Epic) kf2Common).installOrUpdateServer();
-
+            try {
+                facade.installUpdateServer();
+            } catch (Exception e) {
+                throw new RuntimeException(e.getMessage(), e);
+            }
             progressIndicator.setVisible(false);
         });
         task.setOnFailed(wse -> {
@@ -154,9 +157,9 @@ public class InstallUpdateEpicServerController implements Initializable {
 
     private void loadTooltip(String propKey, javafx.scene.image.ImageView img, Label label, TextField textField) throws Exception {
         Double tooltipDuration = Double.parseDouble(
-                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
         );
-        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        Tooltip tooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
         tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);

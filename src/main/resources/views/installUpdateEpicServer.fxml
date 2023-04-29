@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<fx:root id="centerPane" fx:id="installUpdateServerContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="old.installupdateepicserver.InstallUpdateEpicServerController">
+<fx:root id="centerPane" fx:id="installUpdateServerContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.installupdateepicserver.InstallUpdateEpicServerController">
     <rowConstraints>
         <RowConstraints minHeight="94.0" prefHeight="94.0" />
         <RowConstraints minHeight="470.0" prefHeight="470.0" />
