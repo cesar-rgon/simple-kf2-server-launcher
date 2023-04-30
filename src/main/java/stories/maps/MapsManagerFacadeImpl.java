@@ -14,34 +14,56 @@ import pojos.MapToDisplay;
 import pojos.PlatformProfileMapToImport;
 import pojos.PlatformProfileToDisplay;
 import pojos.kf2factory.Kf2Common;
+import services.PropertyService;
+import services.PropertyServiceImpl;
+import stories.listProfiles.ListProfilesFacade;
+import stories.listProfiles.ListProfilesFacadeImpl;
+import stories.listProfiles.ListProfilesFacadeResult;
+import stories.listProfiles.ListProfilesModelContext;
+import stories.mapsinitialize.MapsInitializeFacade;
+import stories.mapsinitialize.MapsInitializeFacadeImpl;
+import stories.mapsinitialize.MapsInitializeFacadeResult;
+import stories.mapsinitialize.MapsInitializeModelContext;
 
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
 public class MapsManagerFacadeImpl
-        extends AbstractManagerFacade<EmptyModelContext, EmptyFacadeResult>
+        extends AbstractManagerFacade<MapsInitializeModelContext, MapsInitializeFacadeResult>
         implements MapsManagerFacade {
 
-    public MapsManagerFacadeImpl() {
-        super(new EmptyModelContext(), EmptyFacadeResult.class);
+    public MapsManagerFacadeImpl(MapsInitializeModelContext mapsInitializeModelContext) {
+        super(mapsInitializeModelContext, MapsInitializeFacadeResult.class);
     }
 
 
     @Override
-    protected boolean assertPreconditions(EmptyModelContext facadeModelContext) throws Exception {
+    protected boolean assertPreconditions(MapsInitializeModelContext mapsInitializeModelContext) throws Exception {
         return true;
     }
 
     @Override
-    protected EmptyFacadeResult internalExecute(EmptyModelContext facadeModelContext) throws Exception {
-        return null;
+    protected MapsInitializeFacadeResult internalExecute(MapsInitializeModelContext mapsInitializeModelContext) throws Exception {
+        MapsInitializeFacade mapsInitializeFacade = new MapsInitializeFacadeImpl(mapsInitializeModelContext);
+        return mapsInitializeFacade.execute();
     }
 
     @Override
-    public String findConfigPropertyValue(String key) throws Exception {
-        return null;
+    public ListProfilesFacadeResult listAllProfiles(String profileName) throws Exception {
+        ListProfilesModelContext listProfilesModelContext = new ListProfilesModelContext(
+                profileName
+        );
+        ListProfilesFacade listProfilesFacade = new ListProfilesFacadeImpl(listProfilesModelContext);
+        return listProfilesFacade.execute();
     }
+
+    @Override
+    public String findPropertyValue(String propertyFilePath, String key) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+        return propertyService.getPropertyValue(propertyFilePath, key);
+    }
+
 
     @Override
     public void setConfigPropertyValue(String key, String value) throws Exception {
@@ -51,11 +73,6 @@ public class MapsManagerFacadeImpl
     @Override
     public boolean isCorrectInstallationFolder(String platformName) {
         return false;
-    }
-
-    @Override
-    public ObservableList<ProfileDto> listAllProfiles() throws SQLException {
-        return null;
     }
 
     @Override

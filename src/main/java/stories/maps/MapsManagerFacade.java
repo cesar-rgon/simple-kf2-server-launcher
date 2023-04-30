@@ -12,6 +12,8 @@ import pojos.MapToDisplay;
 import pojos.PlatformProfileMapToImport;
 import pojos.PlatformProfileToDisplay;
 import pojos.kf2factory.Kf2Common;
+import stories.listProfiles.ListProfilesFacadeResult;
+import stories.mapsinitialize.MapsInitializeFacadeResult;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -19,12 +21,15 @@ import java.util.Optional;
 
 public interface MapsManagerFacade {
 
-    EmptyFacadeResult execute() throws Exception;
+    MapsInitializeFacadeResult execute() throws Exception;
+    ListProfilesFacadeResult listAllProfiles(String profileName) throws Exception;
+    String findPropertyValue(String propertyFilePath, String key) throws Exception;
 
-    String findConfigPropertyValue(String key) throws Exception;
+    // ------------------------------------------------------------------------
+
     void setConfigPropertyValue(String key, String value) throws Exception;
     boolean isCorrectInstallationFolder(String platformName);
-    ObservableList<ProfileDto> listAllProfiles() throws SQLException;
+
     public void addPlatformProfileMapList(List<PlatformProfileMap> platformProfileMapListToAdd, StringBuffer success, StringBuffer errors) throws SQLException;
     AbstractMapDto deleteMapFromPlatformProfile(String platformName, String mapName, String profileName) throws Exception;
     void unselectProfileMap(String profileName) throws Exception;
