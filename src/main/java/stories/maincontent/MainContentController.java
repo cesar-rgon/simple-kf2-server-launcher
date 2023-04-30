@@ -427,8 +427,8 @@ public class MainContentController implements Initializable {
                     }
                     mapPreview = new ImageView(image);
                     mapPreview.setPreserveRatio(false);
-                    mapPreview.setFitWidth(475);
-                    mapPreview.setFitHeight(260);
+                    mapPreview.setFitWidth(440);
+                    mapPreview.setFitHeight(220);
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                 }
@@ -438,11 +438,11 @@ public class MainContentController implements Initializable {
                 String officialText;
                 String customText;
                 try {
-                    officialText = "  " + facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.official") + "  ";
-                    customText = "  " + facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.custom") + "  ";
+                    officialText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.official");
+                    customText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.custom");
                 } catch (Exception e) {
-                    officialText = "  OFFICIAL  ";
-                    customText = "  CUSTOM  ";
+                    officialText = "OFFICIAL";
+                    customText = "CUSTOM";
                 }
 
                 if (platformProfileMapDto.getMapDto().isOfficial()) {
@@ -452,26 +452,29 @@ public class MainContentController implements Initializable {
                     mapType = new Label(customText);
                     mapType.setStyle("-fx-text-fill: gold; -fx-padding: 5; -fx-border-color: gold; -fx-border-radius: 5;");
                 }
-                aliasLabel.setPadding(new Insets(0,13,4,0));
 
                 ImageView darkPanel = new ImageView(new Image("images/darkPanel.png"));
                 darkPanel.setPreserveRatio(false);
-                darkPanel.setFitWidth(475);
-                darkPanel.setFitHeight(30);
+                darkPanel.setFitWidth(440);
+                darkPanel.setFitHeight(40);
                 darkPanel.setOpacity(0.7);
 
                 GridPane gridpane = new GridPane();
                 gridpane.add(mapPreview, 1, 1);
+                GridPane.setHalignment(mapPreview, HPos.LEFT);
+                GridPane.setMargin(mapPreview, new Insets(0,0,0,-5));
                 gridpane.add(darkPanel, 1, 1);
+                GridPane.setHalignment(darkPanel, HPos.LEFT);
+                GridPane.setValignment(darkPanel, VPos.BOTTOM);
+                GridPane.setMargin(darkPanel, new Insets(0,0,0,-5));
                 gridpane.add(mapType, 1, 1);
                 gridpane.add(aliasLabel, 1, 1);
-                GridPane.setHalignment(darkPanel, HPos.CENTER);
-                GridPane.setValignment(darkPanel, VPos.BOTTOM);
                 GridPane.setHalignment(mapType, HPos.LEFT);
-                GridPane.setMargin(mapType, new Insets(0,0,0,10));
+                GridPane.setMargin(mapType, new Insets(0,0,6,5));
                 GridPane.setValignment(mapType, VPos.BOTTOM);
                 GridPane.setHalignment(aliasLabel, HPos.RIGHT);
                 GridPane.setValignment(aliasLabel, VPos.BOTTOM);
+                GridPane.setMargin(aliasLabel, new Insets(0,15,12,0));
                 return gridpane;
             }
 
