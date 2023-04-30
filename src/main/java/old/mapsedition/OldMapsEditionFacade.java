@@ -13,7 +13,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public interface MapsEditionFacade {
+public interface OldMapsEditionFacade {
     String findConfigPropertyValue(String key) throws Exception;
     void setConfigPropertyValue(String key, String value) throws Exception;
     boolean isCorrectInstallationFolder(String platformName);

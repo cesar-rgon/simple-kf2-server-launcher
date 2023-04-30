@@ -1,4 +1,4 @@
-package old.webadmin;
+package stories.webadmin;
 
 import dtos.ProfileDto;
 import javafx.beans.value.ChangeListener;
@@ -34,7 +34,10 @@ public class WebAdminController implements Initializable {
 
     public WebAdminController() {
         super();
-        this.facade = new WebAdminFacadeImpl();
+        WebAdminModelContext webAdminModelContext = new WebAdminModelContext(
+                Session.getInstance().getActualProfileName()
+        );
+        this.facade = new WebAdminFacadeImpl(webAdminModelContext);
     }
 
     @Override
@@ -57,9 +60,9 @@ public class WebAdminController implements Initializable {
                             Element passwordInput = doc.getElementById("password");
                             if (passwordInput != null) {
                                 try {
-                                    ProfileDto actualProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfileName());
-                                    if (actualProfile != null) {
-                                        String decryptedPassword = Utils.decryptAES(actualProfile.getWebPassword());
+                                    WebAdminFacadeResult result = facade.execute();
+                                    if (result.getProfileDto() != null) {
+                                        String decryptedPassword = Utils.decryptAES(result.getProfileDto().getWebPassword());
                                         if (StringUtils.isNotEmpty(decryptedPassword)) {
                                             passwordInput.setAttribute("value", decryptedPassword);
                                         } else {
@@ -85,12 +88,12 @@ public class WebAdminController implements Initializable {
             com.sun.webkit.WebPage page = (com.sun.webkit.WebPage) f.get(webEngine);
             page.setBackgroundColor((new java.awt.Color(0.0f, 0.0f, 0.0f, 1f)).getRGB());
 
-            if (Session.getInstance().isRunningProcess() && facade.findProfileDtoByName(Session.getInstance().getActualProfileName()) != null) {
-                ProfileDto databaseProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfileName());
-                if (databaseProfile.getWebPage() != null && databaseProfile.getWebPage()) {
+            WebAdminFacadeResult result = facade.execute();
+            if (Session.getInstance().isRunningProcess() && result.getProfileDto() != null) {
+                if (result.getProfileDto().getWebPage() != null && result.getProfileDto().getWebPage()) {
                     message.setVisible(false);
                     progressIndicator.setVisible(true);
-                    webEngine.load("http://127.0.0.1:" + databaseProfile.getWebPort() + "/ServerAdmin");
+                    webEngine.load("http://127.0.0.1:" + result.getProfileDto().getWebPort() + "/ServerAdmin");
                 }
             }
         } catch (Exception e) {

@@ -27,9 +27,9 @@ import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MapsEditionFacadeImpl extends OldAFacade implements MapsEditionFacade {
+public class OldMapsEditionFacadeImpl extends OldAFacade implements OldMapsEditionFacade {
 
-    private static final Logger logger = LogManager.getLogger(MapsEditionFacadeImpl.class);
+    private static final Logger logger = LogManager.getLogger(OldMapsEditionFacadeImpl.class);
 
     private final MapDtoFactory mapDtoFactory;
     private final PropertyService propertyService;
@@ -43,7 +43,7 @@ public class MapsEditionFacadeImpl extends OldAFacade implements MapsEditionFaca
     private final CustomMapModServiceImpl customMapService;
     private final PlatformService platformService;
 
-    public MapsEditionFacadeImpl() {
+    public OldMapsEditionFacadeImpl() {
         super(null);
         this.mapDtoFactory = new MapDtoFactory(em);
         this.propertyService = new PropertyServiceImpl();

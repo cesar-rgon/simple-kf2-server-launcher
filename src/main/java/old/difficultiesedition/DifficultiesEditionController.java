@@ -1,4 +1,4 @@
-package old.console.difficultiesedition;
+package stories.console.difficultiesedition;
 
 import dtos.ProfileDto;
 import dtos.SelectDto;

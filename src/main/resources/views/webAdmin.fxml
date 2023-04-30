@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.*?>
 
-<fx:root id="centerPane" fx:id="kf2WebAdmin" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="old.webadmin.WebAdminController">
+<fx:root id="centerPane" fx:id="kf2WebAdmin" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.webadmin.WebAdminController">
    <columnConstraints>
       <ColumnConstraints minWidth="1004.0" />
       <ColumnConstraints />

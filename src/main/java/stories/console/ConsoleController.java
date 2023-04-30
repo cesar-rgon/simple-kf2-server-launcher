@@ -1,4 +1,4 @@
-package old.console;
+package stories.console;
 
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;

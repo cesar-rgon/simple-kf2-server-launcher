@@ -1,4 +1,4 @@
-package old.mapsedition;
+package stories.maps;
 
 import dtos.*;
 import entities.PlatformProfileMap;
@@ -26,6 +26,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import old.mapsedition.OldMapsEditionFacade;
+import old.mapsedition.OldMapsEditionFacadeImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,11 +53,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MapsEditionController implements Initializable {
+public class MapsController implements Initializable {
 
-    private static final Logger logger = LogManager.getLogger(MapsEditionController.class);
+    private static final Logger logger = LogManager.getLogger(MapsController.class);
 
-    private final MapsEditionFacade facade;
+    private final MapsManagerFacade facade;
     private final PropertyService propertyService;
     protected String languageCode;
     private List<PlatformProfileMapDto> steamPlatformProfileMapDtoList;
@@ -90,9 +92,9 @@ public class MapsEditionController implements Initializable {
     @FXML private MenuItem editMaps;
     @FXML ProgressIndicator progressIndicator;
 
-    public MapsEditionController() {
+    public MapsController() {
         super();
-        facade = new MapsEditionFacadeImpl();
+        facade = new MapsManagerFacadeImpl();
         propertyService = new PropertyServiceImpl();
         steamPlatformProfileMapDtoList = new ArrayList<PlatformProfileMapDto>();
         epicPlatformProfileMapDtoList = new ArrayList<>();
