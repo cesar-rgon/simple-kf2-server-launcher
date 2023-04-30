@@ -23,9 +23,8 @@ public abstract class AbstractPopulateDatabase {
     protected final PlatformProfileMapService platformProfileMapService;
     protected final ProfileService profileService;
 
-    protected AbstractPopulateDatabase() {
+    protected AbstractPopulateDatabase(EntityManager em) {
         super();
-        EntityManager em = null;
         this.platformService = new PlatformServiceImpl(em);
         this.difficultyService = new DifficultyServiceImpl(em);
         this.gameTypeService = new GameTypeServiceImpl(em);

@@ -620,22 +620,6 @@ public class MainContentController implements Initializable {
             }
         });
 
-
-        imageWebView.getEngine().documentProperty().addListener(new ChangeListener<Document>() {
-            @Override
-            public void changed(ObservableValue<? extends Document> observable, Document oldDoc, Document doc) {
-                if (doc != null) {
-                    NodeList imgList = doc.getElementsByTagName("img");
-                    if (imgList != null && imgList.getLength() > 0) {
-                        Element img = (Element) imgList.item(0);
-                        img.setAttribute("width", "390");
-                        img.setAttribute("height", "195");
-                    }
-                }
-            }
-        });
-
-
         urlImageServer.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {

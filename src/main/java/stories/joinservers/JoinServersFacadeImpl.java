@@ -49,14 +49,14 @@ public class JoinServersFacadeImpl
         List<Profile> allProfileList = profileService.listAllProfiles();
         switch (allProfileList.size()) {
             case 0:
-                joinServer(platformOptional.get(), Optional.empty());
+                joinServer(platformOptional.get(), Optional.empty(), em);
                 break;
 
             case 1:
                 Session.getInstance().setConsole(
                         (StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
                                 "< " + new Date() + " - Join Server >\n" +
-                                joinServer(platformOptional.get(), Optional.ofNullable(allProfileList.get(0)))
+                                joinServer(platformOptional.get(), Optional.ofNullable(allProfileList.get(0)), em)
                 );
                 break;
 
@@ -70,7 +70,7 @@ public class JoinServersFacadeImpl
                 Session.getInstance().setConsole(
                         (StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
                                 "< " + new Date() + " - Join Server >\n" +
-                                joinServer(platformOptional.get(), Optional.ofNullable(selectedProfile))
+                                joinServer(platformOptional.get(), Optional.ofNullable(selectedProfile), em)
                 );
                 break;
         }
@@ -78,8 +78,8 @@ public class JoinServersFacadeImpl
         return new EmptyFacadeResult();
     }
 
-    private String joinServer(AbstractPlatform platform, Optional<Profile> profileOptional) {
-        Kf2Common kf2Common = Kf2Factory.getInstance(platform);
+    private String joinServer(AbstractPlatform platform, Optional<Profile> profileOptional, EntityManager em) {
+        Kf2Common kf2Common = Kf2Factory.getInstance(platform, em);
         assert kf2Common != null;
         return kf2Common.joinServer(profileOptional.orElse(null));
     }

@@ -22,7 +22,7 @@ public abstract class Kf2Steam extends Kf2AbstractCommon {
     private final PlatformService platformService;
 
     protected Kf2Steam(EntityManager em) {
-        super();
+        super(em);
         this.platformService = new PlatformServiceImpl(em);
 
         try {

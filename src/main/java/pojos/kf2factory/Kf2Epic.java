@@ -19,7 +19,7 @@ public abstract class Kf2Epic extends Kf2AbstractCommon {
     private final PlatformService platformService;
 
     protected Kf2Epic(EntityManager em) {
-        super();
+        super(em);
         this.platformService = new PlatformServiceImpl(em);
         try {
             Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();

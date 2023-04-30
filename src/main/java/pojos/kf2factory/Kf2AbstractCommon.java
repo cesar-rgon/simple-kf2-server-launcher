@@ -2,6 +2,7 @@ package pojos.kf2factory;
 
 import entities.AbstractPlatform;
 import entities.Profile;
+import jakarta.persistence.EntityManager;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,8 +17,8 @@ public abstract class Kf2AbstractCommon extends Kf2Utils implements Kf2Common {
 
     protected AbstractPlatform platform;
 
-    protected Kf2AbstractCommon() {
-        super();
+    protected Kf2AbstractCommon(EntityManager em) {
+        super(em);
     }
 
     public abstract boolean isValidInstallationFolder();

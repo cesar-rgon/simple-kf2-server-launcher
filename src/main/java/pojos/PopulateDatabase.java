@@ -2,6 +2,7 @@ package pojos;
 
 import daos.*;
 import entities.*;
+import jakarta.persistence.EntityManager;
 import pojos.enums.EnumLanguage;
 import pojos.enums.EnumPlatform;
 
@@ -12,8 +13,8 @@ import java.util.Optional;
 
 public class PopulateDatabase extends AbstractPopulateDatabase {
 
-    public PopulateDatabase() {
-        super();
+    public PopulateDatabase(EntityManager em) {
+        super(em);
     }
 
     @Override
@@ -148,7 +149,7 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
                     27015,
                     null,
                     null,
-                    null,
+                    "http://art.tripwirecdn.com/TestItemIcons/MOTDServer.png",
                     null,
                     null,
                     false,

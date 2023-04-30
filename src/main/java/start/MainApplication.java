@@ -1,5 +1,6 @@
 package start;
 
+import jakarta.persistence.EntityManager;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -16,10 +17,15 @@ import services.ConsoleService;
 import services.ConsoleServiceImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
+import stories.populatedatabase.PopulateDatabaseFacade;
+import stories.populatedatabase.PopulateDatabaseFacadeImpl;
 import utils.Utils;
 
 import java.io.File;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainApplication extends Application {
 
@@ -87,14 +93,13 @@ public class MainApplication extends Application {
 
     public static void main(String[] args) {
         try {
-            File databaseFolder = new File("kf2database");
-            if (!databaseFolder.exists()) {
-                logger.info("----- Starting the populate process over the application database -----");
-                PopulateDatabase populateDatabase = new PopulateDatabase();
-                populateDatabase.start();
-                logger.info("----- Ending the populate process over the application database -----");
-            }
+            PopulateDatabaseFacade populateDatabaseFacade = new PopulateDatabaseFacadeImpl();
+            populateDatabaseFacade.execute();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
 
+        try {
             if (args == null || args.length == 0) {
                 PropertyService propertyService = new PropertyServiceImpl();
                 String applicationVersion = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion");

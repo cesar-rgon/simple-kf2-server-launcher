@@ -52,20 +52,20 @@ public class RunServersFacadeImpl
         List<Profile> allProfileList = profileService.listAllProfiles();
         switch (allProfileList.size()) {
             case 0:
-                runServer(platformOptional.get(), Optional.empty());
+                runServer(platformOptional.get(), Optional.empty(), em);
                 break;
 
             case 1:
-                runExecutableFile(platformOptional.get());
+                runExecutableFile(platformOptional.get(), em);
                 Session.getInstance().setConsole(
                         (StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
                         "< " + new Date() + " - Run Server >\n" +
-                        runServer(platformOptional.get(), Optional.ofNullable(allProfileList.get(0)))
+                        runServer(platformOptional.get(), Optional.ofNullable(allProfileList.get(0)), em)
                 );
                 break;
 
             default:
-                runExecutableFile(platformOptional.get());
+                runExecutableFile(platformOptional.get(), em);
                 List<Profile> selectedProfileList = selectProfiles(
                         allProfileList,
                         runServersModelContext.getActualSelectedProfileName(),
@@ -77,7 +77,7 @@ public class RunServersFacadeImpl
                     Session.getInstance().setConsole(
                             (StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
                             "< " + new Date() + " - Run Server >\n" +
-                            runServer(platformOptional.get(), Optional.ofNullable(profile))
+                            runServer(platformOptional.get(), Optional.ofNullable(profile), em)
                     );
                 }
                 break;
@@ -86,14 +86,14 @@ public class RunServersFacadeImpl
         return new EmptyFacadeResult();
     }
 
-    private void runExecutableFile(AbstractPlatform platform) {
-        Kf2Common kf2Common = Kf2Factory.getInstance(platform);
+    private void runExecutableFile(AbstractPlatform platform, EntityManager em) {
+        Kf2Common kf2Common = Kf2Factory.getInstance(platform, em);
         assert kf2Common != null;
         kf2Common.runExecutableFile();
     }
 
-    private String runServer(AbstractPlatform platform, Optional<Profile> profileOptional) {
-        Kf2Common kf2Common = Kf2Factory.getInstance(platform);
+    private String runServer(AbstractPlatform platform, Optional<Profile> profileOptional, EntityManager em) {
+        Kf2Common kf2Common = Kf2Factory.getInstance(platform, em);
         assert kf2Common != null;
         return kf2Common.runServer(profileOptional.orElse(null));
     }

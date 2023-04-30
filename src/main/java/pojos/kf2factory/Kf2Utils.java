@@ -38,9 +38,8 @@ public class Kf2Utils {
     private final AbstractMapService officialMapService;
     private final PlatformProfileMapService platformProfileMapService;
 
-    protected Kf2Utils() {
+    protected Kf2Utils(EntityManager em) {
         super();
-        EntityManager em = null;
         propertyService = new PropertyServiceImpl();
         customMapService = new CustomMapModServiceImpl(em);
         officialMapService = new OfficialMapServiceImpl(em);
