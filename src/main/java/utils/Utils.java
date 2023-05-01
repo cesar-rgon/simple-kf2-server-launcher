@@ -24,11 +24,13 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
+import javafx.util.Duration;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1456,6 +1458,83 @@ public class Utils {
         } finally {
             IOUtils.closeQuietly(maxNumberOfTipsIS);
         }
+    }
+
+    public static void loadTooltip(String languageCode, String propKey, ImageView img, Label label, ComboBox<?> combo) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
+        Tooltip.install(img, tooltip);
+        if (label != null) {
+            label.setTooltip(tooltip);
+        }
+        combo.setTooltip(tooltip);
+    }
+
+    public static void loadTooltip(String languageCode, String propKey, ImageView img, Label label, TextField textField) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
+        Tooltip.install(img, tooltip);
+        label.setTooltip(tooltip);
+        textField.setTooltip(tooltip);
+    }
+
+    public static void loadTooltip(String languageCode, String propKey, ImageView img, Label label, TextField[] textFieldArray) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
+        Tooltip.install(img, tooltip);
+        label.setTooltip(tooltip);
+        for (int i=0; i<textFieldArray.length; i++) {
+            textFieldArray[i].setTooltip(tooltip);
+        }
+    }
+
+    public static void loadTooltip(String languageCode, String propKey, ImageView img, Label label, CheckBox checkBox, TextField textField) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
+        Tooltip.install(img, tooltip);
+        label.setTooltip(tooltip);
+        checkBox.setTooltip(tooltip);
+        textField.setTooltip(tooltip);
+    }
+
+    public static void loadTooltip(String languageCode, String propKey, ImageView img, Label label, CheckBox checkBox) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
+        Tooltip.install(img, tooltip);
+        label.setTooltip(tooltip);
+        checkBox.setTooltip(tooltip);
+    }
+
+    public static void loadTooltip(String languageCode, String propKey, ImageView img, Label label, TextArea textArea) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
+        Tooltip.install(img, tooltip);
+        label.setTooltip(tooltip);
+        textArea.setTooltip(tooltip);
     }
 
 }

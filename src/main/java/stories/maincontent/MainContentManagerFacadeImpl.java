@@ -3,8 +3,11 @@ package stories.maincontent;
 import dtos.ProfileDto;
 import framework.AbstractManagerFacade;
 import framework.EmptyModelContext;
+import javafx.scene.text.Text;
+import javafx.stage.Popup;
 import services.PropertyService;
 import services.PropertyServiceImpl;
+import start.MainApplication;
 import stories.findprofilebyname.FindProfileByNameFacade;
 import stories.findprofilebyname.FindProfileByNameFacadeImpl;
 import stories.findprofilebyname.FindProfileByNameFacadeResult;
@@ -26,6 +29,7 @@ import stories.loadactualprofile.LoadActualProfileFacadeImpl;
 import stories.loadactualprofile.LoadActualProfileFacadeResult;
 import stories.loadactualprofile.LoadActualProfileModelContext;
 import stories.runservers.RunServersModelContext;
+import stories.template.TemplateController;
 import stories.updateprofilesetadmincanpause.UpdateProfileSetAdminCanPauseFacade;
 import stories.updateprofilesetadmincanpause.UpdateProfileSetAdminCanPauseFacadeImpl;
 import stories.updateprofilesetadmincanpause.UpdateProfileSetAdminCanPauseModelContext;
@@ -187,11 +191,9 @@ public class MainContentManagerFacadeImpl
 
         if (!languageCode.equals(result.getProfileDto().getLanguage().getKey())) {
             propertyService.setProperty("properties/config.properties", "prop.config.selectedLanguageCode", result.getProfileDto().getLanguage().getKey());
-            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                    "prop.message.languageChanged");
-            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                    "prop.message.applicationMustBeRestarted");
-            Utils.infoDialog(headerText, contentText);
+
+            TemplateController templateController = (TemplateController) MainApplication.getTemplate().getController();
+            templateController.initialize(null, null);
         }
 
         return result;
@@ -259,11 +261,9 @@ public class MainContentManagerFacadeImpl
 
         PropertyService propertyService = new PropertyServiceImpl();
         propertyService.setProperty("properties/config.properties", "prop.config.selectedLanguageCode", languageCode);
-        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                "prop.message.languageChanged");
-        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                "prop.message.applicationMustBeRestarted");
-        Utils.infoDialog(headerText, contentText);
+
+        TemplateController templateController = (TemplateController) MainApplication.getTemplate().getController();
+        templateController.initialize(null, null);
     }
 
     @Override

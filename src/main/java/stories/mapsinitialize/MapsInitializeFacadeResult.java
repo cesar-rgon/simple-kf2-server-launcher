@@ -1,34 +1,45 @@
 package stories.mapsinitialize;
 
-import dtos.PlatformProfileMapDto;
 import dtos.ProfileDto;
 import framework.FacadeResult;
 import javafx.collections.ObservableList;
 
-import java.util.List;
-
 public class MapsInitializeFacadeResult extends FacadeResult {
 
+    private ObservableList<ProfileDto> allProfileDtoList;
+    private ProfileDto actualProfileDto;
     private boolean steamHasCorrectInstallationFolder;
     private boolean epicHasCorrectInstallationFolder;
-    private List<PlatformProfileMapDto> steamPlatformProfileMapDtoList;
-    private List<PlatformProfileMapDto> epicPlatformProfileMapDtoList;
 
     public MapsInitializeFacadeResult() {
         super();
     }
 
-    public MapsInitializeFacadeResult(
-            boolean steamHasCorrectInstallationFolder,
-            boolean epicHasCorrectInstallationFolder,
-            List<PlatformProfileMapDto> steamPlatformProfileMapDtoList,
-            List<PlatformProfileMapDto> epicPlatformProfileMapDtoList
-    ) {
+    public MapsInitializeFacadeResult(ObservableList<ProfileDto> allProfileDtoList,
+                                      ProfileDto actualProfileDto,
+                                      boolean steamHasCorrectInstallationFolder,
+                                      boolean epicHasCorrectInstallationFolder) {
         super();
+        this.allProfileDtoList = allProfileDtoList;
+        this.actualProfileDto = actualProfileDto;
         this.steamHasCorrectInstallationFolder = steamHasCorrectInstallationFolder;
         this.epicHasCorrectInstallationFolder = epicHasCorrectInstallationFolder;
-        this.steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList;
-        this.epicPlatformProfileMapDtoList = epicPlatformProfileMapDtoList;
+    }
+
+    public ObservableList<ProfileDto> getAllProfileDtoList() {
+        return allProfileDtoList;
+    }
+
+    public void setAllProfileDtoList(ObservableList<ProfileDto> allProfileDtoList) {
+        this.allProfileDtoList = allProfileDtoList;
+    }
+
+    public ProfileDto getActualProfileDto() {
+        return actualProfileDto;
+    }
+
+    public void setActualProfileDto(ProfileDto actualProfileDto) {
+        this.actualProfileDto = actualProfileDto;
     }
 
     public boolean isSteamHasCorrectInstallationFolder() {
@@ -45,21 +56,5 @@ public class MapsInitializeFacadeResult extends FacadeResult {
 
     public void setEpicHasCorrectInstallationFolder(boolean epicHasCorrectInstallationFolder) {
         this.epicHasCorrectInstallationFolder = epicHasCorrectInstallationFolder;
-    }
-
-    public List<PlatformProfileMapDto> getSteamPlatformProfileMapDtoList() {
-        return steamPlatformProfileMapDtoList;
-    }
-
-    public void setSteamPlatformProfileMapDtoList(List<PlatformProfileMapDto> steamPlatformProfileMapDtoList) {
-        this.steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList;
-    }
-
-    public List<PlatformProfileMapDto> getEpicPlatformProfileMapDtoList() {
-        return epicPlatformProfileMapDtoList;
-    }
-
-    public void setEpicPlatformProfileMapDtoList(List<PlatformProfileMapDto> epicPlatformProfileMapDtoList) {
-        this.epicPlatformProfileMapDtoList = epicPlatformProfileMapDtoList;
     }
 }

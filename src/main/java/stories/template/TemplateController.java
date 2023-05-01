@@ -71,7 +71,7 @@ public class TemplateController implements Initializable {
             webAdmin.setGraphic(getLabelWithHandler(webAdminTitle, "/views/webAdmin.fxml"));
 
             String mapsTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.maps");
-            maps.setGraphic(getLabelWithHandler(mapsTitle, "/views/mapsEdition.fxml"));
+            maps.setGraphic(getLabelWithHandler(mapsTitle, "/views/maps.fxml"));
 
             String consoleTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.console");
             console.setGraphic(getLabelWithHandler(consoleTitle, "/views/console.fxml"));

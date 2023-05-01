@@ -7,23 +7,20 @@ import dtos.ProfileDto;
 import entities.AbstractMap;
 import entities.PlatformProfileMap;
 import framework.AbstractManagerFacade;
-import framework.EmptyFacadeResult;
-import framework.EmptyModelContext;
-import javafx.collections.ObservableList;
 import pojos.MapToDisplay;
 import pojos.PlatformProfileMapToImport;
 import pojos.PlatformProfileToDisplay;
 import pojos.kf2factory.Kf2Common;
 import services.PropertyService;
 import services.PropertyServiceImpl;
-import stories.listProfiles.ListProfilesFacade;
-import stories.listProfiles.ListProfilesFacadeImpl;
-import stories.listProfiles.ListProfilesFacadeResult;
-import stories.listProfiles.ListProfilesModelContext;
 import stories.mapsinitialize.MapsInitializeFacade;
 import stories.mapsinitialize.MapsInitializeFacadeImpl;
 import stories.mapsinitialize.MapsInitializeFacadeResult;
 import stories.mapsinitialize.MapsInitializeModelContext;
+import stories.listplatformprofilemap.ListPlatformProfileMapFacade;
+import stories.listplatformprofilemap.ListPlatformProfileMapFacadeImpl;
+import stories.listplatformprofilemap.ListPlatformProfileMapFacadeResult;
+import stories.listplatformprofilemap.ListPlatformProfileMapModelContext;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -50,12 +47,12 @@ public class MapsManagerFacadeImpl
     }
 
     @Override
-    public ListProfilesFacadeResult listAllProfiles(String profileName) throws Exception {
-        ListProfilesModelContext listProfilesModelContext = new ListProfilesModelContext(
+    public ListPlatformProfileMapFacadeResult getPlatformProfileMapList(String profileName) throws Exception {
+        ListPlatformProfileMapModelContext listPlatformProfileMapModelContext = new ListPlatformProfileMapModelContext(
                 profileName
         );
-        ListProfilesFacade listProfilesFacade = new ListProfilesFacadeImpl(listProfilesModelContext);
-        return listProfilesFacade.execute();
+        ListPlatformProfileMapFacade listPlatformProfileMapFacade = new ListPlatformProfileMapFacadeImpl(listPlatformProfileMapModelContext);
+        return listPlatformProfileMapFacade.execute();
     }
 
     @Override
@@ -128,11 +125,6 @@ public class MapsManagerFacadeImpl
     @Override
     public Optional<PlatformProfileMap> findPlatformProfileMapByNames(String platformName, String profileName, String mapName) throws SQLException {
         return Optional.empty();
-    }
-
-    @Override
-    public List<PlatformProfileMapDto> listPlatformProfileMaps(String platformName, String profileName) throws Exception {
-        return null;
     }
 
     @Override

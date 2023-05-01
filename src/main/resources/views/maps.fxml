@@ -116,7 +116,7 @@
       </ImageView>
       <Label fx:id="actionsLabel" text="ACTIONS" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
          <GridPane.margin>
-            <Insets right="50.0" top="26.0" />
+            <Insets right="40.0" top="26.0" />
          </GridPane.margin>
       </Label>
 

@@ -150,7 +150,7 @@ public class MapWebInfoController implements Initializable {
 
     @FXML
     private void backButtonOnAction(){
-        loadNewContent("/views/mapsEdition.fxml");
+        loadNewContent("/views/maps.fxml");
     }
 
     private void loadNewContent(String fxmlFilePath) {

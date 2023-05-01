@@ -637,6 +637,6 @@
          <GridPane.margin>
             <Insets right="5.0" top="70.0" />
          </GridPane.margin></Button>
-        <ProgressIndicator fx:id="progressIndicator" maxHeight="150.0" maxWidth="150.0" visible="false" GridPane.columnSpan="7" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+        <ProgressIndicator fx:id="progressIndicator" maxHeight="150.0" maxWidth="150.0" visible="false" GridPane.columnSpan="6" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
     </children>
 </fx:root>
