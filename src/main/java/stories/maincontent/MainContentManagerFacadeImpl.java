@@ -178,23 +178,18 @@ public class MainContentManagerFacadeImpl
 
     @Override
     public LoadActualProfileFacadeResult loadActualProfile(String platformName, String profileName) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
         LoadActualProfileModelContext loadActualProfileModelContext = new LoadActualProfileModelContext(
                 platformName,
                 profileName
         );
         LoadActualProfileFacade loadActualProfileFacade = new LoadActualProfileFacadeImpl(loadActualProfileModelContext);
         LoadActualProfileFacadeResult result = loadActualProfileFacade.execute();
-
-        PropertyService propertyService = new PropertyServiceImpl();
         propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", profileName);
-        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+        propertyService.setProperty("properties/config.properties", "prop.config.selectedLanguageCode", result.getProfileDto().getLanguage().getKey());
 
-        if (!languageCode.equals(result.getProfileDto().getLanguage().getKey())) {
-            propertyService.setProperty("properties/config.properties", "prop.config.selectedLanguageCode", result.getProfileDto().getLanguage().getKey());
-
-            TemplateController templateController = (TemplateController) MainApplication.getTemplate().getController();
-            templateController.initialize(null, null);
-        }
+        TemplateController templateController = (TemplateController) MainApplication.getTemplate().getController();
+        templateController.initialize(null, null);
 
         return result;
     }

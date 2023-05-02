@@ -32,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class MainContentController implements Initializable {
 
@@ -43,7 +44,7 @@ public class MainContentController implements Initializable {
     @FXML private ComboBox<ProfileDto> profileSelect;
     @FXML private ComboBox<SelectDto> languageSelect;
     @FXML private ComboBox<GameTypeDto> gameTypeSelect;
-    @FXML private ComboBox<PlatformProfileMapDto> profileMapSelect;
+    @FXML private ComboBox<PlatformProfileMapDto> platformProfileMapSelect;
     @FXML private ComboBox<SelectDto> difficultySelect;
     @FXML private ComboBox<SelectDto> lengthSelect;
     @FXML private ComboBox<SelectDto> maxPlayersSelect;
@@ -195,21 +196,6 @@ public class MainContentController implements Initializable {
         facade = new MainContentManagerFacadeImpl();
     }
 
-
-    private void updateMainContent(ListValuesMainContentFacadeResult result) throws Exception {
-        loadLanguageTexts(languageSelect.getValue() != null ? languageSelect.getValue().getKey() : "en");
-
-        gameTypeSelect.getItems().clear();
-        difficultySelect.getItems().clear();
-        lengthSelect.getItems().clear();
-        maxPlayersSelect.getItems().clear();
-
-        gameTypeSelect.setItems(result.getGameTypeDtoList());
-        difficultySelect.setItems(result.getDifficultyDtoList());
-        lengthSelect.setItems(result.getLengthDtoList());
-        maxPlayersSelect.setItems(result.getPlayerDtoList());
-    }
-
     @FXML
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -237,15 +223,11 @@ public class MainContentController implements Initializable {
 
         task.setOnSucceeded(wse -> {
             try {
-                languageSelect.setItems(task.getValue().getLanguageDtoList());
                 platformSelect.setItems(task.getValue().getPlatformDtoList());
+                languageSelect.setItems(task.getValue().getLanguageDtoList());
                 ObservableList<ProfileDto> profileOptions = task.getValue().getProfileDtoList();
                 profileSelect.setItems(profileOptions);
 
-                platformSelect.getSelectionModel().select(
-                        Session.getInstance().getPlatform() != null ?
-                                EnumPlatform.getByName(Session.getInstance().getPlatform().getKey()).getIndex() : 0
-                );
                 languageSelect.setValue(actualProfile.getLanguage());
 
                 if (profileSelect.getValue() == null) {
@@ -333,7 +315,7 @@ public class MainContentController implements Initializable {
             }
         });
 
-        profileMapSelect.setCellFactory(new Callback<ListView<PlatformProfileMapDto>, ListCell<PlatformProfileMapDto>>() {
+        platformProfileMapSelect.setCellFactory(new Callback<ListView<PlatformProfileMapDto>, ListCell<PlatformProfileMapDto>>() {
             @Override
             public ListCell<PlatformProfileMapDto> call(ListView<PlatformProfileMapDto> p) {
                 ListCell<PlatformProfileMapDto> listCell = new ListCell<PlatformProfileMapDto>() {
@@ -408,7 +390,7 @@ public class MainContentController implements Initializable {
             }
         });
 
-        profileMapSelect.setButtonCell(new ListCell<PlatformProfileMapDto>() {
+        platformProfileMapSelect.setButtonCell(new ListCell<PlatformProfileMapDto>() {
             private GridPane createMapGridPane(PlatformProfileMapDto platformProfileMapDto) {
                 Label aliasLabel = new Label(platformProfileMapDto.getAlias());
                 aliasLabel.setStyle("-fx-font-weight: bold;");
@@ -841,6 +823,30 @@ public class MainContentController implements Initializable {
         });
     }
 
+    private void loadPlatformProfileMapSelect() throws Exception {
+        LoadActualProfileFacadeResult result = facade.loadActualProfile(
+                platformSelect.getValue().getKey(),
+                profileSelect.getValue().getName()
+        );
+        platformProfileMapSelect.getItems().clear();
+        platformProfileMapSelect.setItems(result.getFilteredMapDtoList());
+    }
+
+    private void loadSelects() throws Exception {
+        ListValuesMainContentFacadeResult listValuesMainContentFacadeResult = facade.execute();
+
+        gameTypeSelect.getItems().clear();
+        difficultySelect.getItems().clear();
+        lengthSelect.getItems().clear();
+        maxPlayersSelect.getItems().clear();
+
+        gameTypeSelect.setItems(listValuesMainContentFacadeResult.getGameTypeDtoList());
+        difficultySelect.setItems(listValuesMainContentFacadeResult.getDifficultyDtoList());
+        lengthSelect.setItems(listValuesMainContentFacadeResult.getLengthDtoList());
+        maxPlayersSelect.setItems(listValuesMainContentFacadeResult.getPlayerDtoList());
+    }
+
+
     private void loadLanguageTexts(String languageCode) throws Exception {
 
         String platformText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.platform");
@@ -863,7 +869,7 @@ public class MainContentController implements Initializable {
         gameTypeLabel.setText(gameTypeLabelText);
         Utils.loadTooltip(languageCode, "prop.tooltip.gameType", gameTypeImg, gameTypeLabel, gameTypeSelect);
 
-        Utils.loadTooltip(languageCode, "prop.tooltip.map", mapImg, null, profileMapSelect);
+        Utils.loadTooltip(languageCode, "prop.tooltip.map", mapImg, null, platformProfileMapSelect);
 
         String difficultyLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.difficulty") + "*";
         difficultyLabel.setText(difficultyLabelText);
@@ -1051,34 +1057,39 @@ public class MainContentController implements Initializable {
 
     private void loadActualProfile() throws Exception {
 
+        platformSelect.getSelectionModel().select(
+                Session.getInstance().getPlatform() != null ?
+                        EnumPlatform.getByName(Session.getInstance().getPlatform().getKey()).getIndex() : 0
+        );
+
         LoadActualProfileFacadeResult result = facade.loadActualProfile(
                 platformSelect.getValue().getKey(),
                 profileSelect.getValue().getName()
         );
 
-        gameTypeSelect.setValue(result.getProfileDto().getGametype());
-
-        if (!profileMapSelect.getItems().isEmpty()) {
-            profileMapSelect.getItems().clear();
-        }
-        profileMapSelect.setItems(result.getFilteredMapDtoList());
+        gameTypeSelect.getSelectionModel().select(
+            gameTypeSelect.getItems().stream().map(GameTypeDto::getKey).collect(Collectors.toList()).indexOf(result.getProfileDto().getGametype().getKey())
+        );
+        difficultySelect.setDisable(gameTypeSelect.getValue() != null ? !gameTypeSelect.getValue().isDifficultyEnabled(): false);
+        difficultySelect.getSelectionModel().select(
+                difficultySelect.getItems().stream().map(SelectDto::getKey).collect(Collectors.toList()).indexOf(result.getProfileDto().getDifficulty().getKey())
+        );
+        lengthSelect.setDisable(gameTypeSelect.getValue() != null ? !gameTypeSelect.getValue().isLengthEnabled(): false);
+        lengthSelect.getSelectionModel().select(
+                lengthSelect.getItems().stream().map(SelectDto::getKey).collect(Collectors.toList()).indexOf(result.getProfileDto().getLength().getKey())
+        );
+        maxPlayersSelect.getSelectionModel().select(
+                maxPlayersSelect.getItems().stream().map(SelectDto::getKey).collect(Collectors.toList()).indexOf(result.getProfileDto().getMaxPlayers().getKey())
+        );
 
         if (result.getProfileDto().getMap() != null && result.getSelectedProfileMapOptional().isPresent()) {
-            profileMapSelect.getSelectionModel().select(result.getFilteredMapDtoList().indexOf(result.getSelectedProfileMapOptional().get()));
+            platformProfileMapSelect.getSelectionModel().select(result.getFilteredMapDtoList().indexOf(result.getSelectedProfileMapOptional().get()));
         }
-
-        if (profileMapSelect.getValue() != null) {
+        if (platformProfileMapSelect.getValue() != null) {
             noSelectedMapImage.setVisible(false);
         } else {
             noSelectedMapImage.setVisible(true);
         }
-
-        joinServerVisibility();
-        difficultySelect.setDisable(gameTypeSelect.getValue() != null ? !gameTypeSelect.getValue().isDifficultyEnabled(): false);
-        difficultySelect.setValue(result.getProfileDto().getDifficulty());
-        lengthSelect.setDisable(gameTypeSelect.getValue() != null ? !gameTypeSelect.getValue().isLengthEnabled(): false);
-        lengthSelect.setValue(result.getProfileDto().getLength());
-        maxPlayersSelect.setValue(result.getProfileDto().getMaxPlayers());
 
         serverName.setText(result.getProfileDto().getServerName());
         Integer webPortValue = result.getProfileDto().getWebPort();
@@ -1173,10 +1184,10 @@ public class MainContentController implements Initializable {
     @FXML
     private void mapOnAction() {
         try {
-            if (profileSelect.getValue() != null && profileMapSelect.getValue() != null) {
+            if (profileSelect.getValue() != null && platformProfileMapSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
-                String mapCode = profileMapSelect.getValue().getMapDto().getKey();
-                boolean isOfficial = profileMapSelect.getValue().getMapDto().isOfficial();
+                String mapCode = platformProfileMapSelect.getValue().getMapDto().getKey();
+                boolean isOfficial = platformProfileMapSelect.getValue().getMapDto().isOfficial();
                 facade.updateProfileSetMap(profileName, mapCode, isOfficial);
                 ProfileDto databaseProfile = facade.findProfileDtoByName(profileSelect.getValue().getName());
                 Session.getInstance().setActualProfileName(databaseProfile.getName());
@@ -1236,13 +1247,18 @@ public class MainContentController implements Initializable {
     @FXML
     private void languageOnAction() {
         try {
-            String profileName = actualProfile.getName();
-            String languageCode = languageSelect.getValue().getKey();
-            facade.updateProfileSetLanguage(profileName, languageCode);
-            ListValuesMainContentFacadeResult result = facade.execute();
-            updateMainContent(result);
-            actualProfile = facade.findProfileDtoByName(profileName);
+            loadLanguageTexts(languageSelect.getValue() != null ? languageSelect.getValue().getKey() : "en");
+            if (profileSelect.getValue() != null) {
+                String profileName = profileSelect.getValue().getName();
+                String languageCode = languageSelect.getValue().getKey();
+                facade.updateProfileSetLanguage(profileName, languageCode);
+                actualProfile = facade.findProfileDtoByName(
+                                    profileSelect.getValue().getName()
+                                );
+            }
+            loadSelects();
             profileSelect.setValue(actualProfile);
+
         } catch (Exception e) {
             String headerText = "The language value could not be saved!";
             logger.error(headerText, e);
@@ -1492,10 +1508,10 @@ public class MainContentController implements Initializable {
     private void platformOnAction() {
         joinServerVisibility();
         try {
-            Session.getInstance().setPlatform(platformSelect.getValue());
             if (profileSelect.getValue() != null) {
-                loadActualProfile();
+                loadPlatformProfileMapSelect();
             }
+            Session.getInstance().setPlatform(platformSelect.getValue());
         } catch (Exception e) {
             String headerText = "The platform value could not be saved!";
             logger.error(headerText, e);

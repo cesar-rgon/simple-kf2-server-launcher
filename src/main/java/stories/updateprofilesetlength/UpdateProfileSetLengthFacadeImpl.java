@@ -1,11 +1,13 @@
 package stories.updateprofilesetlength;
 
 import entities.Difficulty;
+import entities.Length;
 import entities.Profile;
 import framework.AbstractTransactionalFacade;
 import framework.EmptyFacadeResult;
 import jakarta.persistence.EntityManager;
 import services.DifficultyServiceImpl;
+import services.LengthServiceImpl;
 import services.ProfileService;
 import services.ProfileServiceImpl;
 
@@ -28,7 +30,7 @@ public class UpdateProfileSetLengthFacadeImpl
     @Override
     protected EmptyFacadeResult internalExecute(UpdateProfileSetLengthModelContext facadeModelContext, EntityManager em) throws Exception {
         ProfileService profileService = new ProfileServiceImpl(em);
-        DifficultyServiceImpl difficultyService = new DifficultyServiceImpl(em);
+        LengthServiceImpl lengthServiceImpl = new LengthServiceImpl(em);
 
         Optional<Profile> profileOpt = profileService.findProfileByCode(facadeModelContext.getProfileName());
         if (!profileOpt.isPresent()) {
@@ -36,12 +38,12 @@ public class UpdateProfileSetLengthFacadeImpl
         }
         Profile profile = profileOpt.get();
 
-        Optional<Difficulty> difficultyOpt = difficultyService.findByCode(facadeModelContext.getLengthCode());
-        if (!difficultyOpt.isPresent()) {
-            throw new RuntimeException("Error updating difficulty in Profile. The difficulty can not be found [difficulty name: " + facadeModelContext.getLengthCode() + "]");
+        Optional<Length> lengthOpt = lengthServiceImpl.findByCode(facadeModelContext.getLengthCode());
+        if (!lengthOpt.isPresent()) {
+            throw new RuntimeException("Error updating difficulty in Profile. The length can not be found [length name: " + facadeModelContext.getLengthCode() + "]");
         }
 
-        profile.setDifficulty(difficultyOpt.get());
+        profile.setLength(lengthOpt.get());
         profileService.updateItem(profile);
         return new EmptyFacadeResult();
     }
