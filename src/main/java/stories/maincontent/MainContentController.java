@@ -362,8 +362,8 @@ public class MainContentController implements Initializable {
 
                             mapPreview = new ImageView(image);
                             mapPreview.setPreserveRatio(false);
-                            mapPreview.setFitWidth(128);
-                            mapPreview.setFitHeight(64);
+                            mapPreview.setFitWidth(200);
+                            mapPreview.setFitHeight(100);
                         } catch (Exception e) {
                             logger.error(e.getMessage(), e);
                         }
@@ -374,6 +374,7 @@ public class MainContentController implements Initializable {
                         gridpane.add(aliasLabel, 2, 2);
                         gridpane.add(mapType, 2, 3);
                         GridPane.setRowSpan(mapPreview, 3);
+                        gridpane.setPadding(new Insets(5,0,5,0));
                         return gridpane;
                     }
 
@@ -393,7 +394,7 @@ public class MainContentController implements Initializable {
         platformProfileMapSelect.setButtonCell(new ListCell<PlatformProfileMapDto>() {
             private GridPane createMapGridPane(PlatformProfileMapDto platformProfileMapDto) {
                 Label aliasLabel = new Label(platformProfileMapDto.getAlias());
-                aliasLabel.setStyle("-fx-font-weight: bold;");
+                aliasLabel.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
 
                 ImageView mapPreview = new ImageView();
                 try {
@@ -461,7 +462,7 @@ public class MainContentController implements Initializable {
                 GridPane.setValignment(mapType, VPos.BOTTOM);
                 GridPane.setHalignment(aliasLabel, HPos.RIGHT);
                 GridPane.setValignment(aliasLabel, VPos.BOTTOM);
-                GridPane.setMargin(aliasLabel, new Insets(0,15,12,0));
+                GridPane.setMargin(aliasLabel, new Insets(0,15,10,0));
                 return gridpane;
             }
 
