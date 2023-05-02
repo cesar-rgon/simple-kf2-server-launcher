@@ -38,7 +38,6 @@ public class MainContentController implements Initializable {
     private static final Logger logger = LogManager.getLogger(MainContentController.class);
 
     private MainContentManagerFacade facade;
-    private String previousSelectedLanguageCode;
     private ProfileDto actualProfile;
 
     @FXML private ComboBox<ProfileDto> profileSelect;
@@ -196,6 +195,21 @@ public class MainContentController implements Initializable {
         facade = new MainContentManagerFacadeImpl();
     }
 
+
+    private void updateMainContent(ListValuesMainContentFacadeResult result) throws Exception {
+        loadLanguageTexts(languageSelect.getValue() != null ? languageSelect.getValue().getKey() : "en");
+
+        gameTypeSelect.getItems().clear();
+        difficultySelect.getItems().clear();
+        lengthSelect.getItems().clear();
+        maxPlayersSelect.getItems().clear();
+
+        gameTypeSelect.setItems(result.getGameTypeDtoList());
+        difficultySelect.setItems(result.getDifficultyDtoList());
+        lengthSelect.setItems(result.getLengthDtoList());
+        maxPlayersSelect.setItems(result.getPlayerDtoList());
+    }
+
     @FXML
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -212,10 +226,10 @@ public class MainContentController implements Initializable {
                                 profileSelect.getValue().getName()
                         ):
                         Session.getInstance().getActualProfileName() != null ?
-                        facade.findProfileDtoByName(
-                                Session.getInstance().getActualProfileName()
-                        ):
-                        result.getLastSelectedProfile();
+                                facade.findProfileDtoByName(
+                                        Session.getInstance().getActualProfileName()
+                                ):
+                                result.getLastSelectedProfile();
 
                 return result;
             }
@@ -223,38 +237,17 @@ public class MainContentController implements Initializable {
 
         task.setOnSucceeded(wse -> {
             try {
+                languageSelect.setItems(task.getValue().getLanguageDtoList());
+                platformSelect.setItems(task.getValue().getPlatformDtoList());
                 ObservableList<ProfileDto> profileOptions = task.getValue().getProfileDtoList();
-                if (languageSelect.getItems().isEmpty()) {
-                    languageSelect.setItems(task.getValue().getLanguageDtoList());
-                }
-                //gameTypeSelect.getItems().clear();
-                gameTypeSelect.setItems(task.getValue().getGameTypeDtoList());
-                //difficultySelect.getItems().clear();
-                difficultySelect.setItems(task.getValue().getDifficultyDtoList());
-                //lengthSelect.getItems().clear();
-                lengthSelect.setItems(task.getValue().getLengthDtoList());
-                //maxPlayersSelect.getItems().clear();
-                maxPlayersSelect.setItems(task.getValue().getPlayerDtoList());
+                profileSelect.setItems(profileOptions);
 
-                if (profileSelect.getItems().isEmpty()) {
-                    profileSelect.setItems(profileOptions);
-                }
+                platformSelect.getSelectionModel().select(
+                        Session.getInstance().getPlatform() != null ?
+                                EnumPlatform.getByName(Session.getInstance().getPlatform().getKey()).getIndex() : 0
+                );
+                languageSelect.setValue(actualProfile.getLanguage());
 
-                if (platformSelect.getItems().isEmpty()) {
-                    platformSelect.setItems(task.getValue().getPlatformDtoList());
-                    platformSelect.getSelectionModel().select(
-                            Session.getInstance().getPlatform() != null ?
-                                    EnumPlatform.getByName(Session.getInstance().getPlatform().getKey()).getIndex() : 0
-                    );
-                }
-
-                if (!profileOptions.isEmpty() && !actualProfile.equals(profileSelect.getValue())) {
-                    profileSelect.setValue(actualProfile);
-                } else {
-                    profileSelect.setValue(null);
-                    profileMapSelect.setItems(null);
-                    noSelectedMapImage.setVisible(true);
-                }
                 if (profileSelect.getValue() == null) {
                     File file = new File(System.getProperty("user.dir") + "/external-images/photo-borders.png");
                     if (file.exists()) {
@@ -264,7 +257,6 @@ public class MainContentController implements Initializable {
                     }
                 }
 
-                loadLanguageTexts(languageSelect.getValue() != null ? languageSelect.getValue().getKey() : "en");
                 Session.getInstance().setActualProfileName(profileSelect.getValue() != null ? profileSelect.getValue().getName(): StringUtils.EMPTY);
                 progressIndicator.setVisible(false);
 
@@ -1064,12 +1056,11 @@ public class MainContentController implements Initializable {
                 profileSelect.getValue().getName()
         );
 
-        if (languageSelect.getValue() == null || !result.getProfileDto().getLanguage().getKey().equals(languageSelect.getValue().getKey())) {
-            languageSelect.setValue(result.getProfileDto().getLanguage());
-        }
-        previousSelectedLanguageCode = result.getProfileDto().getLanguage().getKey();
         gameTypeSelect.setValue(result.getProfileDto().getGametype());
-        profileMapSelect.getItems().clear();
+
+        if (!profileMapSelect.getItems().isEmpty()) {
+            profileMapSelect.getItems().clear();
+        }
         profileMapSelect.setItems(result.getFilteredMapDtoList());
 
         if (result.getProfileDto().getMap() != null && result.getSelectedProfileMapOptional().isPresent()) {
@@ -1152,13 +1143,12 @@ public class MainContentController implements Initializable {
 
     @FXML
     private void profileOnAction() {
+        Session.getInstance().setActualProfileName(profileSelect.getValue().getName());
         try {
             loadActualProfile();
-            Session.getInstance().setActualProfileName(profileSelect.getValue().getName());
         } catch (Exception e) {
-            String headerText = "Error loading the profile information";
-            logger.error(headerText, e);
-            Utils.errorDialog(headerText, e);
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 
@@ -1246,17 +1236,13 @@ public class MainContentController implements Initializable {
     @FXML
     private void languageOnAction() {
         try {
-            if (!languageSelect.getValue().getKey().equals(previousSelectedLanguageCode)) {
-                if (profileSelect.getValue() != null) {
-                    String profileName = profileSelect.getValue().getName();
-                    String languageCode = languageSelect.getValue().getKey();
-                    facade.updateProfileSetLanguage(profileName, languageCode);
-                    if (StringUtils.isNotBlank(previousSelectedLanguageCode)) {
-                        this.initialize(null, null);
-                    }
-                }
-                previousSelectedLanguageCode = languageSelect.getValue().getKey();
-            }
+            String profileName = actualProfile.getName();
+            String languageCode = languageSelect.getValue().getKey();
+            facade.updateProfileSetLanguage(profileName, languageCode);
+            ListValuesMainContentFacadeResult result = facade.execute();
+            updateMainContent(result);
+            actualProfile = facade.findProfileDtoByName(profileName);
+            profileSelect.setValue(actualProfile);
         } catch (Exception e) {
             String headerText = "The language value could not be saved!";
             logger.error(headerText, e);
