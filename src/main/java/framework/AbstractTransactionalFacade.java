@@ -35,13 +35,11 @@ public abstract class AbstractTransactionalFacade<M extends ModelContext, R exte
     private EntityManager beginTransaction() throws Exception {
         if (emf == null) {
             PropertyService propertyService = new PropertyServiceImpl();
-            boolean updateDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.updateDatabase"));
+            boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
             Properties properties = new Properties();
-            if (updateDatabase) {
-                properties.setProperty("hibernate.connection.url", "jdbc:derby:kf2database;create=true");
-                properties.setProperty("hibernate.hbm2ddl.auto", "update");
+            if (createDatabase) {
+                properties.setProperty("hibernate.hbm2ddl.auto", "create");
             } else {
-                properties.setProperty("hibernate.connection.url", "jdbc:derby:kf2database;create=false");
                 properties.setProperty("hibernate.hbm2ddl.auto", "none");
             }
             emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT, properties);

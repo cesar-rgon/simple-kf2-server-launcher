@@ -231,11 +231,11 @@ public class MainContentController implements Initializable {
                 languageSelect.setValue(actualProfile.getLanguage());
 
                 if (profileSelect.getValue() == null) {
-                    File file = new File(System.getProperty("user.dir") + "/external-images/photo-borders.png");
+                    File file = new File(System.getProperty("user.dir") + "/external-images/no-server-photo.png");
                     if (file.exists()) {
-                        imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/photo-borders.png");
+                        imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/no-server-photo.png");
                     } else {
-                        imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/photo-borders.png").getPath());
+                        imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/no-server-photo.png").getPath());
                     }
                 }
 
@@ -618,11 +618,11 @@ public class MainContentController implements Initializable {
                         if (StringUtils.isNotEmpty(urlImageServer.getText())) {
                             imageWebView.getEngine().load(urlImageServer.getText());
                         } else {
-                            File file = new File(System.getProperty("user.dir") + "/external-images/photo-borders.png");
+                            File file = new File(System.getProperty("user.dir") + "/external-images/no-server-photo.png");
                             if (file.exists()) {
-                                imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/photo-borders.png");
+                                imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/no-server-photo.png");
                             } else {
-                                imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/photo-borders.png").getPath());
+                                imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/no-server-photo.png").getPath());
                             }
                         }
                     }
@@ -1110,11 +1110,11 @@ public class MainContentController implements Initializable {
             if (StringUtils.isNotEmpty(urlImageServer.getText())) {
                 imageWebView.getEngine().load(urlImageServer.getText());
             } else {
-                File file = new File(System.getProperty("user.dir") + "/external-images/photo-borders.png");
+                File file = new File(System.getProperty("user.dir") + "/external-images/no-server-photo.png");
                 if (file.exists()) {
-                    imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/photo-borders.png");
+                    imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/no-server-photo.png");
                 } else {
-                    imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/photo-borders.png").getPath());
+                    imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/no-server-photo.png").getPath());
                 }
             }
             serverPassword.setText(Utils.decryptAES(result.getProfileDto().getServerPassword()));

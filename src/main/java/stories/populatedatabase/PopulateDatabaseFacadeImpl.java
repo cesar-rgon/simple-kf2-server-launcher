@@ -26,7 +26,7 @@ public class PopulateDatabaseFacadeImpl
     @Override
     protected boolean assertPreconditions(EmptyModelContext facadeModelContext, EntityManager em) throws Exception {
         PropertyService propertyService = new PropertyServiceImpl();
-        return Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.updateDatabase"));
+        return Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
     }
 
     @Override

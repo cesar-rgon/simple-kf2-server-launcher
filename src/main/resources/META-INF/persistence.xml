@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
-    <persistence-unit name="kf2database">
-        <description>Killing Floor 2 DataBase</description>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+
+    <persistence-unit name="kf2database" transaction-type="RESOURCE_LOCAL">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <properties>
-            <property name="hibernate.connection.username" value="kf2database" />
-            <property name="hibernate.connection.password" value="kf2database" />
-            <property name="hibernate.dialect" value="org.hibernate.dialect.DerbyTenSevenDialect" />
-            <property name="hibernate.connection.charSet" value="UTF-8"/>
-            <property name="hibernate.show_sql" value = "yes" />
-            <property name="hibernate.connection.autocommit" value="false" />
+            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
+            <property name="javax.persistence.jdbc.url" value="jdbc:h2:file:./kf2database" />
+            <property name="javax.persistence.jdbc.user" value="kf2database"/>
+            <property name="javax.persistence.jdbc.password" value="kf2database"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"/>
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="false"/>
         </properties>
 
     </persistence-unit>
