@@ -148,7 +148,7 @@
     -fx-background-color: #c15d11;
 }
 
-#viewPaneCombo, #profileSelect {
+#viewPaneCombo {
     -fx-background-color: #c15d11;
 }
 
@@ -207,18 +207,10 @@
     -fx-background-color: transparent;
 }
 
-#runServer:hover, #joinServer:hover {
-    -fx-effect: dropshadow(three-pass-box, #22573d, 20, 0, 0, 0);
-}
-
 .pane {
     -fx-border-color: #c15d11;
     -fx-border-width:3px;
     -fx-border-radius: 10px;
-}
-
-.web-view {
-   -fx-effect: dropshadow(three-pass-box, red, 20, 0, 0, 0);
 }
 
 .date-picker > .text-field  {
@@ -254,10 +246,12 @@
     -fx-progress-color: #c15d11;
 }
 
-#platformSelect, #platformSelect .combo-box, #platformSelect .combo-box-popup .list-view .list-cell {
+#platformSelect, #platformSelect .combo-box, #platformSelect .combo-box-popup .list-view .list-cell,
+#profileSelect, #profileSelect .combo-box, #profileSelect .combo-box-popup .list-view .list-cell {
     -fx-background-color: #0f3a3f;
 }
 
-#platformSelect .combo-box:hover, #platformSelect .combo-box-popup .list-view .list-cell:hover {
+#platformSelect:hover, #platformSelect .combo-box:hover, #platformSelect .combo-box-popup .list-view .list-cell:hover,
+#profileSelect:hover, #profileSelect .combo-box:hover, #profileSelect .combo-box-popup .list-view .list-cell:hover {
     -fx-background-color: #c15d11;
 }

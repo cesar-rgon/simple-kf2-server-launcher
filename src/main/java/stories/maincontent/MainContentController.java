@@ -5,6 +5,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
@@ -13,6 +14,7 @@ import javafx.geometry.VPos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.web.WebView;
@@ -27,6 +29,8 @@ import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
 import stories.loadactualprofile.LoadActualProfileFacadeResult;
 import utils.Utils;
 
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -79,6 +83,7 @@ public class MainContentController implements Initializable {
     @FXML private Label customParametersLabel;
     @FXML private Button runServer;
     @FXML private Button joinServer;
+    @FXML private ImageView runServerImage;
     @FXML private ImageView joinServerImage;
     @FXML private ImageView profileImg;
     @FXML private ImageView languageImg;
@@ -608,6 +613,45 @@ public class MainContentController implements Initializable {
             }
         });
 
+        runServer.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                runServerImage.setStyle("-fx-effect: dropshadow(three-pass-box, #c15d11, 20, 0, 0, 0);");
+            }
+        });
+        runServer.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                runServerImage.setStyle("-fx-effect: none;");
+            }
+        });
+
+        joinServer.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                joinServerImage.setStyle("-fx-effect: dropshadow(three-pass-box, #c15d11, 20, 0, 0, 0);");
+            }
+        });
+        joinServer.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                joinServerImage.setStyle("-fx-effect: none;");
+            }
+        });
+
+        urlImageServer.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                imageWebView.setStyle("-fx-effect: dropshadow(three-pass-box, #c15d11, 60, 0, 0, 0);");
+            }
+        });
+        urlImageServer.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                imageWebView.setStyle("-fx-effect: none;");
+            }
+        });
+
         urlImageServer.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
@@ -917,6 +961,10 @@ public class MainContentController implements Initializable {
         Double tooltipDuration = Double.parseDouble(
                 facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
         );
+
+        Tooltip urlImageServerTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.urlImage"));
+        urlImageServerTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+        urlImageServer.setTooltip(urlImageServerTooltip);
 
         String runServerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.runServer");
         runServer.setText(runServerText);

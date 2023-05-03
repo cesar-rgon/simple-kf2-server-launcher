@@ -235,7 +235,7 @@
                         <StackPane GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowSpan="2" GridPane.valignment="TOP">
                            <children>
       
-                              <WebView fx:id="imageWebView" maxHeight="200.0" maxWidth="400.0" opacity="0.9" prefHeight="-1.0" prefWidth="-1.0" StackPane.alignment="TOP_CENTER">
+                              <WebView fx:id="imageWebView" maxHeight="200.0" maxWidth="400.0" prefHeight="-1.0" prefWidth="-1.0" StackPane.alignment="TOP_CENTER">
                                  <StackPane.margin>
                                     <Insets />
                                  </StackPane.margin>
@@ -627,7 +627,7 @@
                 <Insets right="13.0" top="70.0" />
             </GridPane.margin></Button>
 
-        <ImageView GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
+        <ImageView fx:id="runServerImage" GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
             <Image url="@../images/run-server.png" />
          <GridPane.margin>
             <Insets top="70.0" />
