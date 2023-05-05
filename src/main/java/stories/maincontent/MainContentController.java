@@ -195,7 +195,9 @@ public class MainContentController implements Initializable {
 
     @FXML private ImageView platformImg;
     @FXML private Label platformLabel;
-    @FXML ProgressIndicator progressIndicator;
+    @FXML private ProgressIndicator progressIndicator;
+    @FXML private ImageView kf2logo;
+    @FXML private ImageView kf2animated;
 
     public MainContentController() {
         facade = new MainContentManagerFacadeImpl();
@@ -613,10 +615,25 @@ public class MainContentController implements Initializable {
             }
         });
 
+        kf2logo.setOnMouseClicked(new EventHandler<MouseEvent>() {
+              @Override
+              public void handle(MouseEvent mouseEvent) {
+                  kf2animated.setVisible(true);
+              }
+        });
+
+        kf2animated.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                kf2animated.setVisible(false);
+            }
+        });
+
         runServer.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 runServerImage.setStyle("-fx-effect: dropshadow(three-pass-box, #c15d11, 20, 0, 0, 0);");
+                kf2animated.setVisible(true);
             }
         });
         runServer.setOnMouseExited(new EventHandler<MouseEvent>() {
@@ -630,6 +647,7 @@ public class MainContentController implements Initializable {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 joinServerImage.setStyle("-fx-effect: dropshadow(three-pass-box, #c15d11, 20, 0, 0, 0);");
+                kf2animated.setVisible(true);
             }
         });
         joinServer.setOnMouseExited(new EventHandler<MouseEvent>() {

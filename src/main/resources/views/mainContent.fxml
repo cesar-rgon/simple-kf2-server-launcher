@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
@@ -67,13 +68,28 @@
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <ImageView fitHeight="87.0" fitWidth="414.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.rowSpan="2">
+        <ImageView fx:id="kf2logo" fitHeight="94.0" fitWidth="453.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.rowSpan="2">
             <image>
                 <Image url="@../images/kf2logo.png" />
             </image>
          <GridPane.margin>
-            <Insets right="-172.0" top="-10.0" />
+            <Insets right="-172.0" />
          </GridPane.margin>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
+        </ImageView>
+
+        <ImageView fx:id="kf2animated" fitHeight="150.0" fitWidth="495.0" pickOnBounds="true" style="-fx-effect: dropshadow(three-pass-box, #830106, 20, 0, 0, 0);" visible="false" GridPane.columnIndex="4" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.rowSpan="3" GridPane.valignment="TOP">
+            <image>
+                <Image url="@../images/Killing_Floor_2_animated.gif" />
+            </image>
+         <GridPane.margin>
+            <Insets top="-10.0" />
+         </GridPane.margin>
+         <cursor>
+            <Cursor fx:constant="HAND" />
+         </cursor>
         </ImageView>
 
       <TabPane prefHeight="200.0" prefWidth="1210.0" scaleShape="false" tabClosingPolicy="UNAVAILABLE" GridPane.columnIndex="1" GridPane.columnSpan="5" GridPane.rowIndex="3">
@@ -619,23 +635,23 @@
         <ImageView fx:id="joinServerImage" GridPane.columnIndex="4" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
             <Image url="@../images/join-server.png" />
             <GridPane.margin>
-                <Insets right="190.0" top="70.0" />
+                <Insets right="190.0" top="85.0" />
             </GridPane.margin>
         </ImageView>
         <Button fx:id="joinServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#joinServerOnAction" text="JOIN" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
             <GridPane.margin>
-                <Insets right="13.0" top="70.0" />
+                <Insets right="13.0" top="85.0" />
             </GridPane.margin></Button>
 
         <ImageView fx:id="runServerImage" GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
             <Image url="@../images/run-server.png" />
          <GridPane.margin>
-            <Insets top="70.0" />
+            <Insets top="85.0" />
          </GridPane.margin>
         </ImageView>
         <Button fx:id="runServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#runServerOnAction" text="RUN" GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
          <GridPane.margin>
-            <Insets right="5.0" top="70.0" />
+            <Insets right="5.0" top="85.0" />
          </GridPane.margin></Button>
         <ProgressIndicator fx:id="progressIndicator" maxHeight="150.0" maxWidth="150.0" visible="false" GridPane.columnSpan="7" GridPane.halignment="CENTER" GridPane.rowSpan="5" GridPane.valignment="CENTER" />
     </children>
