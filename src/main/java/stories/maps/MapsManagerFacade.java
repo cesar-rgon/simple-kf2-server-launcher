@@ -10,6 +10,7 @@ import pojos.MapToDisplay;
 import pojos.PlatformProfileMapToImport;
 import pojos.PlatformProfileToDisplay;
 import pojos.kf2factory.Kf2Common;
+import stories.addcustommapstoprofile.AddCustomMapsToProfileFacadeResult;
 import stories.listplatformprofilemap.ListPlatformProfileMapFacadeResult;
 import stories.mapsinitialize.MapsInitializeFacadeResult;
 
@@ -22,6 +23,7 @@ public interface MapsManagerFacade {
     MapsInitializeFacadeResult execute() throws Exception;
     ListPlatformProfileMapFacadeResult getPlatformProfileMapList(String profileName) throws Exception;
     String findPropertyValue(String propertyFilePath, String key) throws Exception;
+    AddCustomMapsToProfileFacadeResult addCustomMapsToProfile(List<String> platformNameList, String profileName, String mapNameList, String languageCode, String actualSelectedProfile) throws Exception;
 
     // ------------------------------------------------------------------------
 
@@ -33,7 +35,6 @@ public interface MapsManagerFacade {
     void unselectProfileMap(String profileName) throws Exception;
     List<PlatformProfileToDisplay> selectProfilesToImport(String defaultSelectedProfileName) throws Exception;
     String runServer(String platformName, String profileName) throws Exception;
-    List<PlatformProfileMapDto> addCustomMapsToProfile(List<String> platformNameList, String profileName, String mapNameList, String languageCode, String actualSelectedProfile, StringBuffer success, StringBuffer errors);
     PlatformProfileMapToImport importCustomMapModFromServer(PlatformProfileMapToImport ppmToImport, String selectedProfileName) throws Exception;
     PlatformProfileMapToImport importOfficialMapFromServer(PlatformProfileMapToImport ppmToImport, String selectedProfileName) throws Exception;
     Optional<AbstractMap> findMapByName(String mapName) throws Exception;

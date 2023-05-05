@@ -36,6 +36,7 @@ import pojos.enums.EnumSortedMapsCriteria;
 import pojos.kf2factory.Kf2Common;
 import pojos.session.Session;
 import start.MainApplication;
+import stories.addcustommapstoprofile.AddCustomMapsToProfileFacadeResult;
 import stories.listplatformprofilemap.ListPlatformProfileMapFacadeResult;
 import stories.mapsinitialize.MapsInitializeFacadeResult;
 import stories.mapsinitialize.MapsInitializeModelContext;
@@ -702,14 +703,16 @@ public class MapsController implements Initializable {
                             case "Steam":
                                 platformNameList.add(EnumPlatform.STEAM.name());
                                 if (facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
-                                    List<PlatformProfileMapDto> mapAddedList = facade.addCustomMapsToProfile(
+                                    AddCustomMapsToProfileFacadeResult result = facade.addCustomMapsToProfile(
                                             platformNameList,
                                             addMapsToPlatformProfile.getProfileName(),
                                             addMapsToPlatformProfile.getMapList(),
                                             languageCode,
-                                            profileSelect.getValue().getName(),
-                                            success,
-                                            errors);
+                                            profileSelect.getValue().getName()
+                                    );
+                                    List<PlatformProfileMapDto> mapAddedList = result.getPlatformProfileMapDtoList();
+                                    success.append(result.getSuccess());
+                                    errors.append(result.getErrors());
 
                                     if (addMapsToPlatformProfile.getProfileName().equals(profileSelect.getValue().getName())) {
                                         mapAddedListToActualPlatformProfile.addAll(mapAddedList);
@@ -723,14 +726,16 @@ public class MapsController implements Initializable {
                             case "Epic Games":
                                 platformNameList.add(EnumPlatform.EPIC.name());
                                 if (facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
-                                    List<PlatformProfileMapDto> mapAddedList = facade.addCustomMapsToProfile(
+                                    AddCustomMapsToProfileFacadeResult result = facade.addCustomMapsToProfile(
                                             platformNameList,
                                             addMapsToPlatformProfile.getProfileName(),
                                             addMapsToPlatformProfile.getMapList(),
                                             languageCode,
-                                            profileSelect.getValue().getName(),
-                                            success,
-                                            errors);
+                                            profileSelect.getValue().getName()
+                                    );
+                                    List<PlatformProfileMapDto> mapAddedList = result.getPlatformProfileMapDtoList();
+                                    success.append(result.getSuccess());
+                                    errors.append(result.getErrors());
 
                                     if (addMapsToPlatformProfile.getProfileName().equals(profileSelect.getValue().getName())) {
                                         mapAddedListToActualPlatformProfile.addAll(mapAddedList);
@@ -756,14 +761,16 @@ public class MapsController implements Initializable {
                                     errors.append(errorMessage + "\n");
                                 }
 
-                                List<PlatformProfileMapDto> mapAddedList = facade.addCustomMapsToProfile(
+                                AddCustomMapsToProfileFacadeResult result = facade.addCustomMapsToProfile(
                                         platformNameList,
                                         addMapsToPlatformProfile.getProfileName(),
                                         addMapsToPlatformProfile.getMapList(),
                                         languageCode,
-                                        profileSelect.getValue().getName(),
-                                        success,
-                                        errors);
+                                        profileSelect.getValue().getName()
+                                );
+                                List<PlatformProfileMapDto> mapAddedList = result.getPlatformProfileMapDtoList();
+                                success.append(result.getSuccess());
+                                errors.append(result.getErrors());
 
                                 if (addMapsToPlatformProfile.getProfileName().equals(profileSelect.getValue().getName())) {
                                     mapAddedListToActualPlatformProfile.addAll(mapAddedList);

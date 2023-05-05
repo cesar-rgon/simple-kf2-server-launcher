@@ -13,6 +13,10 @@ import pojos.PlatformProfileToDisplay;
 import pojos.kf2factory.Kf2Common;
 import services.PropertyService;
 import services.PropertyServiceImpl;
+import stories.addcustommapstoprofile.AddCustomMapsToProfileFacade;
+import stories.addcustommapstoprofile.AddCustomMapsToProfileFacadeImpl;
+import stories.addcustommapstoprofile.AddCustomMapsToProfileFacadeResult;
+import stories.addcustommapstoprofile.AddCustomMapsToProfileModelContext;
 import stories.mapsinitialize.MapsInitializeFacade;
 import stories.mapsinitialize.MapsInitializeFacadeImpl;
 import stories.mapsinitialize.MapsInitializeFacadeResult;
@@ -98,8 +102,16 @@ public class MapsManagerFacadeImpl
     }
 
     @Override
-    public List<PlatformProfileMapDto> addCustomMapsToProfile(List<String> platformNameList, String profileName, String mapNameList, String languageCode, String actualSelectedProfile, StringBuffer success, StringBuffer errors) {
-        return null;
+    public AddCustomMapsToProfileFacadeResult addCustomMapsToProfile(List<String> platformNameList, String profileName, String mapNameList, String languageCode, String actualSelectedProfile) throws Exception {
+        AddCustomMapsToProfileModelContext addCustomMapsToProfileModelContext = new AddCustomMapsToProfileModelContext(
+                platformNameList,
+                profileName,
+                mapNameList,
+                languageCode,
+                actualSelectedProfile
+        );
+        AddCustomMapsToProfileFacade addCustomMapsToProfileFacade = new AddCustomMapsToProfileFacadeImpl(addCustomMapsToProfileModelContext);
+        return addCustomMapsToProfileFacade.execute();
     }
 
     @Override
