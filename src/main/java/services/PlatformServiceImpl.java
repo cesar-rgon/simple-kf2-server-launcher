@@ -7,6 +7,8 @@ import entities.EpicPlatform;
 import entities.PlatformProfileMap;
 import entities.SteamPlatform;
 import jakarta.persistence.EntityManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hibernate.Hibernate;
 import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Common;
@@ -16,8 +18,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class PlatformServiceImpl implements PlatformService {
+
+    private static final Logger logger = LogManager.getLogger(PlatformServiceImpl.class);
 
     private final EntityManager em;
     private final PlatformProfileMapService platformProfileMapService;
@@ -126,5 +131,34 @@ public class PlatformServiceImpl implements PlatformService {
         Kf2Common kf2Common = Kf2Factory.getInstance(platformOptional.get(), em);
         assert kf2Common != null;
         return kf2Common.isValidInstallationFolder();
+    }
+
+    @Override
+    public List<AbstractPlatform> getPlatformListByNames(List<String> platformNameList, StringBuffer success, StringBuffer errors) {
+
+        List<AbstractPlatform> platformList = platformNameList.stream().map(pn -> {
+            String message = "Error finding the platform with name" + pn;
+            try {
+                Optional<AbstractPlatform> steamPlatformOptional = findPlatformByName(pn);
+                if (steamPlatformOptional.isPresent()) {
+                    success.append("The platform [" + pn + "] has been found!\n");
+                    return steamPlatformOptional.get();
+                }
+                errors.append(message + "\n");
+                return null;
+
+            } catch (SQLException e) {
+                errors.append(message + "\n");
+                logger.error(message, e);
+                throw new RuntimeException(message, e);
+            }
+        }).collect(Collectors.toList());
+        if (platformList == null || platformList.isEmpty()) {
+            String message = "No platforms were found";
+            errors.append(message + "\n");
+            throw new RuntimeException(message);
+        }
+
+        return platformList;
     }
 }

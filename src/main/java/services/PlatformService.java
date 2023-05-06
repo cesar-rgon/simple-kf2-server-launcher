@@ -5,6 +5,7 @@ import daos.SteamPlatformDao;
 import entities.AbstractPlatform;
 import entities.EpicPlatform;
 import entities.SteamPlatform;
+import jakarta.persistence.EntityManager;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -21,4 +22,5 @@ public interface PlatformService {
     boolean updateSteamPlatform(SteamPlatform steamPlatform) throws Exception;
     boolean updateEpicPlatform(EpicPlatform epicPlatform) throws Exception;
     boolean isValidInstallationFolder(String platformName) throws Exception;
+    List<AbstractPlatform> getPlatformListByNames(List<String> platformNameList, StringBuffer success, StringBuffer errors);
 }

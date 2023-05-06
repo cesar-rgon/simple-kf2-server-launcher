@@ -14,7 +14,6 @@ import services.*;
 import utils.Utils;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.SQLException;
@@ -44,6 +43,7 @@ public class AddCustomMapsToProfileFacadeImpl
     @Override
     protected AddCustomMapsToProfileFacadeResult internalExecute(AddCustomMapsToProfileModelContext facadeModelContext, EntityManager em) throws Exception {
         ProfileService profileService = new ProfileServiceImpl(em);
+        PlatformService platformService = new PlatformServiceImpl(em);
         CustomMapModServiceImpl customMapService = new CustomMapModServiceImpl(em);
         PlatformProfileMapDtoFactory platformProfileMapDtoFactory = new PlatformProfileMapDtoFactory(em);
         CustomMapModServiceImpl customMapModService = new CustomMapModServiceImpl(em);
@@ -52,7 +52,7 @@ public class AddCustomMapsToProfileFacadeImpl
         StringBuffer errors = new StringBuffer();
 
         Optional<Profile> profileOpt = profileService.findProfileByCode(facadeModelContext.getProfileName());
-        List<AbstractPlatform> platformList = getPlatformListByNames(facadeModelContext.getPlatformNameList(), success, errors, em);
+        List<AbstractPlatform> platformList = platformService.getPlatformListByNames(facadeModelContext.getPlatformNameList(), success, errors);
 
         List<PlatformProfileMapDto> mapAddedList = new ArrayList<PlatformProfileMapDto>();
         if (StringUtils.isNotBlank(facadeModelContext.getMapNameList())) {
@@ -78,8 +78,8 @@ public class AddCustomMapsToProfileFacadeImpl
                         List<String> profileNameList = new ArrayList<String>();
                         profileNameList.add(facadeModelContext.getProfileName());
 
-                        CustomMapMod customMap = createNewCustomMapFromWorkshop(
-                                facadeModelContext.getPlatformNameList(), idWorkShop, profileNameList, mapName, strUrlMapImage, success, errors, em
+                        CustomMapMod customMap = customMapService.createNewCustomMapFromWorkshop(
+                                facadeModelContext.getPlatformNameList(), idWorkShop, profileNameList, mapName, strUrlMapImage, success, errors
                         );
                         if (customMap != null) {
                             if (facadeModelContext.getProfileName().equalsIgnoreCase(facadeModelContext.getActualSelectedProfile())) {
@@ -130,34 +130,6 @@ public class AddCustomMapsToProfileFacadeImpl
         );
     }
 
-    private List<AbstractPlatform> getPlatformListByNames(List<String> platformNameList, StringBuffer success, StringBuffer errors, EntityManager em) {
-        PlatformService platformService = new PlatformServiceImpl(em);
-
-        List<AbstractPlatform> platformList = platformNameList.stream().map(pn -> {
-            String message = "Error finding the platform with name" + pn;
-            try {
-                Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(pn);
-                if (platformOptional.isPresent()) {
-                    return platformOptional.get();
-                }
-                errors.append(message + "\n");
-                return null;
-
-            } catch (SQLException e) {
-                errors.append(message + "\n");
-                logger.error(message, e);
-                throw new RuntimeException(message, e);
-            }
-        }).collect(Collectors.toList());
-        if (platformList == null || platformList.isEmpty()) {
-            String message = "No platforms were found";
-            errors.append(message + "\n");
-            throw new RuntimeException(message);
-        }
-
-        return platformList;
-    }
-
     private String[] getMapNameAndUrlImage(Long idWorkShop) throws Exception {
         PropertyService propertyService = new PropertyServiceImpl();
 
@@ -185,61 +157,6 @@ public class AddCustomMapsToProfileFacadeImpl
         }
         reader.close();
         return new String[]{mapName, strUrlMapImage};
-    }
-
-    private CustomMapMod createNewCustomMapFromWorkshop(List<String> platformNameList, Long idWorkShop, List<String> profileNameList, String mapName, String strUrlMapImage, StringBuffer success, StringBuffer errors, EntityManager em) throws Exception {
-        ProfileService profileService = new ProfileServiceImpl(em);
-        PlatformService platformService = new PlatformServiceImpl(em);
-        PropertyService propertyService = new PropertyServiceImpl();
-
-        List<Profile> profileList = profileNameList.stream().map(pn -> {
-            try {
-                Optional<Profile> profileOpt = profileService.findProfileByCode(pn);
-                return profileOpt.orElse(null);
-            } catch (Exception e) {
-                logger.error("Error finding a profile by name " + pn, e);
-                return null;
-            }
-        }).collect(Collectors.toList());
-        if (profileList == null || profileList.isEmpty()) {
-            return null;
-        }
-        List<AbstractPlatform> platformList = platformNameList.stream().map(pn -> {
-            try {
-                Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(pn);
-                return platformOptional.orElse(null);
-            } catch (SQLException e) {
-                logger.error("Error finding a platform by name " + pn, e);
-                return null;
-            }
-        }).collect(Collectors.toList());
-        if (platformList == null || platformList.isEmpty()) {
-            return null;
-        }
-
-        String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
-
-        File localfile = new File(StringUtils.EMPTY);
-        for (AbstractPlatform platform: platformList) {
-            String absoluteTargetFolder = platform.getInstallationFolder() + customMapLocalFolder;
-            localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
-        }
-        String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
-
-        return createNewCustomMap(platformList, mapName, idWorkShop, relativeTargetFolder, profileList, success, errors, em);
-    }
-
-    private CustomMapMod createNewCustomMap(List<AbstractPlatform> platformList, String mapName, Long idWorkShop, String urlPhoto, List<Profile> profileList, StringBuffer success, StringBuffer errors, EntityManager em) throws Exception {
-        PropertyService propertyService = new PropertyServiceImpl();
-        CustomMapModServiceImpl customMapModService = new CustomMapModServiceImpl(em);
-
-        if ((StringUtils.isBlank(mapName) || idWorkShop == null)) {
-            return null;
-        }
-        String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
-        String urlInfo = baseUrlWorkshop + idWorkShop;
-        CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop);
-        return (CustomMapMod) customMapModService.createMap(platformList, customMap, profileList, success, errors);
     }
 
     private List<PlatformProfile> getPlatformProfileListWithoutMap(Long idWorkShop, EntityManager em) throws SQLException {

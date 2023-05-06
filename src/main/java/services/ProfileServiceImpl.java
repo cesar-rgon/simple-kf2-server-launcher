@@ -1002,4 +1002,30 @@ public class ProfileServiceImpl implements ProfileService {
         AbstractMap insertedMap = customMapModService.createItem(map);;
         return (insertedMap != null);
     }
+
+    @Override
+    public List<Profile> getProfileListByNames(List<String> profileNameList, StringBuffer success, StringBuffer errors) {
+        List<Profile> profileList = profileNameList.stream().map(pn -> {
+            String message = "Error finding the profile with name" + pn;
+            try {
+                Optional<Profile> profileOptional = findProfileByCode(pn);
+                if (profileOptional.isPresent()) {
+                    success.append("The profile [" + pn + "] has been found!\n");
+                    return profileOptional.get();
+                }
+                errors.append(message + "\n");
+                return null;
+            } catch (Exception e) {
+                errors.append(message + "\n");
+                logger.error(message, e);
+                throw new RuntimeException(message, e);
+            }
+        }).collect(Collectors.toList());
+        if (profileList == null || profileList.isEmpty()) {
+            String message = "No profiles were found";
+            errors.append(message + "\n");
+            throw new RuntimeException(message);
+        }
+        return profileList;
+    }
 }

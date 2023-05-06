@@ -4,6 +4,8 @@ import daos.CustomMapModDao;
 import entities.*;
 import jakarta.persistence.EntityManager;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
+import utils.Utils;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -15,11 +17,15 @@ public class CustomMapModServiceImpl extends AbstractMapService {
 
     private final EntityManager em;
     private final PlatformProfileMapService platformProfileMapService;
+    private final PlatformService platformService;
+    private final PropertyService propertyService;
 
     public CustomMapModServiceImpl(EntityManager em) {
         super(em);
         this.em = em;
         this.platformProfileMapService = new PlatformProfileMapServiceImpl(em);
+        this.platformService = new PlatformServiceImpl(em);
+        this.propertyService = new PropertyServiceImpl();
     }
 
     @Override
@@ -77,5 +83,50 @@ public class CustomMapModServiceImpl extends AbstractMapService {
 
     public Optional findByIdWorkShop(Long idWorkShop) throws SQLException {
         return new CustomMapModDao(em).findByIdWorkShop(idWorkShop);
+    }
+
+
+    public CustomMapMod createNewCustomMapFromWorkshop(List<String> platformNameList, Long idWorkShop, List<String> profileNameList, String mapName, String strUrlMapImage, StringBuffer success, StringBuffer errors) throws Exception {
+        ProfileService profileService = new ProfileServiceImpl(em);
+
+        List<Profile> profileList = profileService.getProfileListByNames(profileNameList, success, errors);
+        List<AbstractPlatform> platformList = platformService.getPlatformListByNames(platformNameList, success, errors);
+        String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
+
+        File localfile = null;
+        for (AbstractPlatform platform: platformList) {
+            String absoluteTargetFolder = platform.getInstallationFolder() + customMapLocalFolder;
+            localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
+        }
+
+        if (localfile == null) {
+            String message = "The map with name " + mapName + " could not be added to all selected profiles and platforms";
+            errors.append(message + "\n");
+            return null;
+        }
+
+        String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
+        CustomMapMod insertedMap = createNewCustomMap(platformList, mapName, idWorkShop, relativeTargetFolder, profileList, success, errors, em);
+        if (insertedMap == null) {
+            String message = "The map with name " + mapName + " could not be added to the launcher";
+            errors.append(message + "\n");
+            return null;
+        }
+
+        success.append("The map with name " + mapName + " was added to all selected profiles and platforms" + "\n");
+        return insertedMap;
+    }
+
+    private CustomMapMod createNewCustomMap(List<AbstractPlatform> platformList, String mapName, Long idWorkShop, String urlPhoto, List<Profile> profileList, StringBuffer success, StringBuffer errors, EntityManager em) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+        CustomMapModServiceImpl customMapModService = new CustomMapModServiceImpl(em);
+
+        if (platformList.isEmpty() || StringUtils.isBlank(mapName) || idWorkShop == null) {
+            return null;
+        }
+        String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
+        String urlInfo = baseUrlWorkshop + idWorkShop;
+        CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop);
+        return (CustomMapMod) customMapModService.createMap(platformList, customMap, profileList, success, errors);
     }
 }
