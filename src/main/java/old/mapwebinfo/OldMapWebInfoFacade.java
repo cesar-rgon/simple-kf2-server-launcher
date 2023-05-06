@@ -7,7 +7,7 @@ import pojos.PlatformProfile;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface MapWebInfoFacade {
+public interface OldMapWebInfoFacade {
     boolean isCorrectInstallationFolder(String installationFolder);
     CustomMapModDto createNewCustomMapFromWorkshop(List<String> platformNameList, Long idWorkShop, String mapName, String strUrlMapImage, List<String> profileNameList, StringBuffer success, StringBuffer errors) throws Exception;
     CustomMapModDto findMapOrModByIdWorkShop(Long idWorkShop) throws SQLException;

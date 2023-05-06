@@ -23,9 +23,9 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MapWebInfoFacadeImpl extends OldAFacade implements MapWebInfoFacade {
+public class OldMapWebInfoFacadeImpl extends OldAFacade implements OldMapWebInfoFacade {
 
-    private static final Logger logger = LogManager.getLogger(MapWebInfoFacadeImpl.class);
+    private static final Logger logger = LogManager.getLogger(OldMapWebInfoFacadeImpl.class);
 
     private final PropertyService propertyService;
     private final MapDtoFactory mapDtoFactory;
@@ -36,7 +36,7 @@ public class MapWebInfoFacadeImpl extends OldAFacade implements MapWebInfoFacade
     private final PlatformService platformService;
     private final PlatformProfileMapService platformProfileMapService;
 
-    public MapWebInfoFacadeImpl() {
+    public OldMapWebInfoFacadeImpl() {
         super(null);
         this.propertyService = new PropertyServiceImpl();
         this.mapDtoFactory = new MapDtoFactory(em);

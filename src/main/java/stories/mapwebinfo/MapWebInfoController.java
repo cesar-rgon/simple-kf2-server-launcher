@@ -1,4 +1,4 @@
-package old.mapwebinfo;
+package stories.mapwebinfo;
 
 import dtos.CustomMapModDto;
 import dtos.ProfileDto;
@@ -26,17 +26,24 @@ import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
+import stories.addplatformprofilestomap.AddPlatformProfilesToMapFacadeResult;
+import stories.createcustommapfromworkshop.CreateCustomMapFromWorkshopFacadeResult;
+import stories.getplatformprofilelistbyidworkshop.GetPlatformProfileListByIdworkshopFacadeResult;
+import stories.getplatformprofilelistbyidworkshop.GetPlatformProfileListByIdworkshopModelContext;
 import utils.Utils;
 
 import java.lang.reflect.Field;
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class MapWebInfoController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(MapWebInfoController.class);
-    private final MapWebInfoFacade facade;
+    private MapWebInfoManagerFacade facade;
     private Long idWorkShop;
     private String mapName;
     private String strUrlMapImage;
@@ -52,7 +59,6 @@ public class MapWebInfoController implements Initializable {
 
     public MapWebInfoController() {
         super();
-        facade = new MapWebInfoFacadeImpl();
         propertyService = new PropertyServiceImpl();
         idWorkShop = null;
         mapName = null;
@@ -128,7 +134,12 @@ public class MapWebInfoController implements Initializable {
                                 }
                             }
                             mapNameLabel.setText(mapName);
-                            List<PlatformProfile> platformProfilesWithoutMap = facade.getPlatformProfileListWithoutMap(idWorkShop);
+                            GetPlatformProfileListByIdworkshopModelContext modelContext = new GetPlatformProfileListByIdworkshopModelContext(
+                                    idWorkShop
+                            );
+                            facade = new MapWebInfoManagerFacadeImpl(modelContext);
+                            GetPlatformProfileListByIdworkshopFacadeResult result = facade.execute();
+                            List<PlatformProfile> platformProfilesWithoutMap = result.getPlatformProfileList();
                             if (idWorkShop != null && (platformProfilesWithoutMap == null || platformProfilesWithoutMap.isEmpty())) {
                                 addMap.setVisible(false);
                                 alreadyInLauncher.setVisible(true);
@@ -178,7 +189,12 @@ public class MapWebInfoController implements Initializable {
                 return;
             }
 
-            List<PlatformProfile> platformProfileListWithoutMap = facade.getPlatformProfileListWithoutMap(idWorkShop);
+            GetPlatformProfileListByIdworkshopModelContext modelContext = new GetPlatformProfileListByIdworkshopModelContext(
+                    idWorkShop
+            );
+            facade = new MapWebInfoManagerFacadeImpl(modelContext);
+            GetPlatformProfileListByIdworkshopFacadeResult getPlatformProfileListByIdworkshopFacadeResult = facade.execute();
+            List<PlatformProfile> platformProfileListWithoutMap = getPlatformProfileListByIdworkshopFacadeResult.getPlatformProfileList();
             String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfiles");
 
             List<ProfileDto> fullProfileList = facade.getAllProfileList();
@@ -236,28 +252,29 @@ public class MapWebInfoController implements Initializable {
                         profileNameList.add(selectedProfileName);
 
                         if (mapModInDataBase == null) {
-                            mapModInDataBase = facade.createNewCustomMapFromWorkshop(
+                            CreateCustomMapFromWorkshopFacadeResult result = facade.createNewCustomMapFromWorkshop(
                                     platformNameList,
                                     idWorkShop,
                                     mapName,
                                     strUrlMapImage,
-                                    profileNameList,
-                                    success,
-                                    errors
+                                    profileNameList
                             );
+                            mapModInDataBase = result.getCustomMapDto();
+                            success.append(result.getSuccess());
+                            errors.append(result.getErrors());
 
                             if (mapModInDataBase == null) {
                                 throw new RuntimeException("Error adding map/mod with name " + mapName);
                             }
                         } else {
-                            facade.addProfilesToMap(
+                            AddPlatformProfilesToMapFacadeResult result = facade.addPlatformProfilesToMap(
                                     platformNameList,
                                     mapModInDataBase.getKey(),
                                     strUrlMapImage,
-                                    profileNameList,
-                                    success,
-                                    errors
+                                    profileNameList
                             );
+                            success.append(result.getSuccess());
+                            errors.append(result.getErrors());
 
                         }
                     } catch (Exception e) {

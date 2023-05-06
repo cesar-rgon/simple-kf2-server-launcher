@@ -17,6 +17,14 @@ import stories.addcustommapstoprofile.AddCustomMapsToProfileFacade;
 import stories.addcustommapstoprofile.AddCustomMapsToProfileFacadeImpl;
 import stories.addcustommapstoprofile.AddCustomMapsToProfileFacadeResult;
 import stories.addcustommapstoprofile.AddCustomMapsToProfileModelContext;
+import stories.findplatformprofilemapbynames.FindPlatformProfileMapByNameFacade;
+import stories.findplatformprofilemapbynames.FindPlatformProfileMapByNameFacadeImpl;
+import stories.findplatformprofilemapbynames.FindPlatformProfileMapByNameFacadeResult;
+import stories.findplatformprofilemapbynames.FindPlatformProfileMapByNameModelContext;
+import stories.installationfolder.InstallationFolderFacade;
+import stories.installationfolder.InstallationFolderFacadeImpl;
+import stories.installationfolder.InstallationFolderFacadeResult;
+import stories.installationfolder.InstallationFolderModelContext;
 import stories.mapsinitialize.MapsInitializeFacade;
 import stories.mapsinitialize.MapsInitializeFacadeImpl;
 import stories.mapsinitialize.MapsInitializeFacadeResult;
@@ -72,8 +80,13 @@ public class MapsManagerFacadeImpl
     }
 
     @Override
-    public boolean isCorrectInstallationFolder(String platformName) {
-        return false;
+    public boolean isCorrectInstallationFolder(String platformName) throws Exception {
+        InstallationFolderModelContext installationFolderModelContext = new InstallationFolderModelContext(
+                platformName
+        );
+        InstallationFolderFacade installationFolderFacade = new InstallationFolderFacadeImpl(installationFolderModelContext);
+        InstallationFolderFacadeResult result = installationFolderFacade.execute();
+        return result.isCorrectInstallationFolder();
     }
 
     @Override
@@ -130,8 +143,15 @@ public class MapsManagerFacadeImpl
     }
 
     @Override
-    public Optional<PlatformProfileMapDto> findPlatformProfileMapDtoByNames(String platformName, String profileName, String mapName) throws SQLException {
-        return Optional.empty();
+    public Optional<PlatformProfileMapDto> findPlatformProfileMapDtoByName(String platformName, String profileName, String mapName) throws Exception {
+        FindPlatformProfileMapByNameModelContext findPlatformProfileMapByNameModelContext = new FindPlatformProfileMapByNameModelContext(
+                platformName,
+                profileName,
+                mapName
+        );
+        FindPlatformProfileMapByNameFacade findPlatformProfileMapByNameFacade = new FindPlatformProfileMapByNameFacadeImpl(findPlatformProfileMapByNameModelContext);
+        FindPlatformProfileMapByNameFacadeResult result = findPlatformProfileMapByNameFacade.execute();
+        return result.getPlatformProfileMapDtoOptional();
     }
 
     @Override

@@ -24,12 +24,12 @@ public interface MapsManagerFacade {
     ListPlatformProfileMapFacadeResult getPlatformProfileMapList(String profileName) throws Exception;
     String findPropertyValue(String propertyFilePath, String key) throws Exception;
     AddCustomMapsToProfileFacadeResult addCustomMapsToProfile(List<String> platformNameList, String profileName, String mapNameList, String languageCode, String actualSelectedProfile) throws Exception;
+    Optional<PlatformProfileMapDto> findPlatformProfileMapDtoByName(String platformName, String profileName, String mapName) throws Exception;
+    boolean isCorrectInstallationFolder(String platformName) throws Exception;
 
     // ------------------------------------------------------------------------
 
     void setConfigPropertyValue(String key, String value) throws Exception;
-    boolean isCorrectInstallationFolder(String platformName);
-
     public void addPlatformProfileMapList(List<PlatformProfileMap> platformProfileMapListToAdd, StringBuffer success, StringBuffer errors) throws SQLException;
     AbstractMapDto deleteMapFromPlatformProfile(String platformName, String mapName, String profileName) throws Exception;
     void unselectProfileMap(String profileName) throws Exception;
@@ -38,7 +38,6 @@ public interface MapsManagerFacade {
     PlatformProfileMapToImport importCustomMapModFromServer(PlatformProfileMapToImport ppmToImport, String selectedProfileName) throws Exception;
     PlatformProfileMapToImport importOfficialMapFromServer(PlatformProfileMapToImport ppmToImport, String selectedProfileName) throws Exception;
     Optional<AbstractMap> findMapByName(String mapName) throws Exception;
-    Optional<PlatformProfileMapDto> findPlatformProfileMapDtoByNames(String platformName, String profileName, String mapName) throws SQLException;
     Optional<PlatformProfileMap> findPlatformProfileMapByNames(String platformName, String profileName, String mapName) throws SQLException;
     String[] getMapNameAndUrlImage(Long idWorkShop) throws Exception;
     List<PlatformDto> listAllPlatforms() throws SQLException;

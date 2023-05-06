@@ -797,7 +797,7 @@ public class MapsController implements Initializable {
 
                         if (!firstSteamPlatformProfileMap.isPresent()) {
                             try {
-                                Optional<PlatformProfileMapDto> platformProfileMapDtoOptional = facade.findPlatformProfileMapDtoByNames(EnumPlatform.STEAM.name(), profileSelect.getValue().getName(), platformProfileMap.getMapDto().getKey());
+                                Optional<PlatformProfileMapDto> platformProfileMapDtoOptional = facade.findPlatformProfileMapDtoByName(EnumPlatform.STEAM.name(), profileSelect.getValue().getName(), platformProfileMap.getMapDto().getKey());
                                 if (platformProfileMapDtoOptional.isPresent()) {
                                     steamPlatformProfileMapDtoList.add(platformProfileMapDtoOptional.get());
                                     GridPane gridpane = createMapGridPane(platformProfileMapDtoOptional.get());
@@ -816,7 +816,7 @@ public class MapsController implements Initializable {
 
                         if (!firstEpicPlatformProfileMap.isPresent()) {
                             try {
-                                Optional<PlatformProfileMapDto> platformProfileMapDtoOptional = facade.findPlatformProfileMapDtoByNames(EnumPlatform.EPIC.name(), profileSelect.getValue().getName(), platformProfileMap.getMapDto().getKey());
+                                Optional<PlatformProfileMapDto> platformProfileMapDtoOptional = facade.findPlatformProfileMapDtoByName(EnumPlatform.EPIC.name(), profileSelect.getValue().getName(), platformProfileMap.getMapDto().getKey());
                                 if (platformProfileMapDtoOptional.isPresent()) {
                                     epicPlatformProfileMapDtoList.add(platformProfileMapDtoOptional.get());
                                     GridPane gridpane = createMapGridPane(platformProfileMapDtoOptional.get());
@@ -1313,7 +1313,7 @@ public class MapsController implements Initializable {
 
     }
 
-    private void addOfficialMapToPlatformTabs(PlatformProfileMapToImport importedPpm, String mapName) throws SQLException {
+    private void addOfficialMapToPlatformTabs(PlatformProfileMapToImport importedPpm, String mapName) throws Exception {
 
         if (EnumPlatform.STEAM.name().equals(importedPpm.getPlatformName()) &&
                 !steamPlatformProfileMapDtoList.stream().
@@ -1321,7 +1321,7 @@ public class MapsController implements Initializable {
                         findFirst().
                         isPresent()) {
 
-            Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByNames(
+            Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByName(
                     importedPpm.getPlatformName(),
                     importedPpm.getProfileName(),
                     mapName
@@ -1338,7 +1338,7 @@ public class MapsController implements Initializable {
                         findFirst().
                         isPresent()) {
 
-            Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByNames(
+            Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByName(
                     importedPpm.getPlatformName(),
                     importedPpm.getProfileName(),
                     mapName
@@ -1350,7 +1350,7 @@ public class MapsController implements Initializable {
         }
     }
 
-    private void addCustomMapToPlatformTabs(PlatformProfileMapToImport importedPpm, String mapName) throws SQLException {
+    private void addCustomMapToPlatformTabs(PlatformProfileMapToImport importedPpm, String mapName) throws Exception {
 
         PlatformProfileMapToImport finalImportedPpm = importedPpm;
         if (EnumPlatform.STEAM.name().equals(importedPpm.getPlatformName()) &&
@@ -1359,7 +1359,7 @@ public class MapsController implements Initializable {
                         findFirst().
                         isPresent()) {
 
-            Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByNames(
+            Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByName(
                     importedPpm.getPlatformName(),
                     importedPpm.getProfileName(),
                     mapName
@@ -1376,7 +1376,7 @@ public class MapsController implements Initializable {
                         findFirst().
                         isPresent()) {
 
-            Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByNames(
+            Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByName(
                     importedPpm.getPlatformName(),
                     importedPpm.getProfileName(),
                     mapName
@@ -1811,7 +1811,7 @@ public class MapsController implements Initializable {
         }
     }
 
-    private List<PlatformProfileMap> getSteamEditList() throws SQLException {
+    private List<PlatformProfileMap> getSteamEditList() throws Exception {
 
         List<PlatformProfileMap> editList = new ArrayList<PlatformProfileMap>();
         ObservableList<Node> nodeList = FXCollections.concat(steamOfficialMapsFlowPane.getChildren(), steamCustomMapsFlowPane.getChildren());
