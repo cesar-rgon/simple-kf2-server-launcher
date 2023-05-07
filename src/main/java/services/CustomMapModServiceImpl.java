@@ -96,7 +96,7 @@ public class CustomMapModServiceImpl extends AbstractMapService {
         File localfile = null;
         for (AbstractPlatform platform: platformList) {
             String absoluteTargetFolder = platform.getInstallationFolder() + customMapLocalFolder;
-            localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
+            localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, Long.toString(idWorkShop));
         }
 
         if (localfile == null) {

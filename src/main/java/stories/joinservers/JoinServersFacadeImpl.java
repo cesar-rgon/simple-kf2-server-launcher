@@ -8,6 +8,7 @@ import jakarta.persistence.EntityManager;
 import org.apache.commons.lang3.StringUtils;
 import pojos.PlatformProfile;
 import pojos.PlatformProfileToDisplay;
+import pojos.PlatformProfileToDisplayFactory;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import pojos.session.Session;
@@ -101,7 +102,10 @@ public class JoinServersFacadeImpl
         List<String> selectedProfileNameList = new ArrayList<String>();
         selectedProfileNameList.add(actualSelectedProfileName);
 
-        Optional<PlatformProfileToDisplay> selectedProfileOptional = Utils.selectProfileDialog(message + ":", platformProfileList, selectedProfileNameList);
+        PlatformProfileToDisplayFactory platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory(em);
+        List<PlatformProfileToDisplay> platformProfileToDisplayList = platformProfileToDisplayFactory.newOnes(platformProfileList);
+
+        Optional<PlatformProfileToDisplay> selectedProfileOptional = Utils.selectProfileDialog(message + ":", platformProfileToDisplayList, selectedProfileNameList);
         if (!selectedProfileOptional.isPresent()) {
             return null;
         }

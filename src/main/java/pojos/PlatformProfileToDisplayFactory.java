@@ -4,22 +4,34 @@ import dtos.factories.DifficultyDtoFactory;
 import dtos.factories.GameTypeDtoFactory;
 import dtos.factories.LengthDtoFactory;
 import entities.AbstractPlatform;
+import entities.GameType;
 import entities.Profile;
+import jakarta.persistence.EntityManager;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.hibernate.Hibernate;
 import pojos.enums.EnumPlatform;
+import pojos.listener.TimeListener;
+import services.ProfileService;
+import services.ProfileServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class PlatformProfileToDisplayFactory {
 
+    private static final Logger logger = LogManager.getLogger(PlatformProfileToDisplayFactory.class);
+
     private final GameTypeDtoFactory gameTypeDtoFactory;
     private final DifficultyDtoFactory difficultyDtoFactory;
     private final LengthDtoFactory lengthDtoFactory;
+    private final ProfileService profileService;
 
-    public PlatformProfileToDisplayFactory() {
+    public PlatformProfileToDisplayFactory(EntityManager em) {
         super();
+        profileService = new ProfileServiceImpl(em);
         this.gameTypeDtoFactory = new GameTypeDtoFactory();
         this.difficultyDtoFactory = new DifficultyDtoFactory();
         this.lengthDtoFactory = new LengthDtoFactory();
@@ -40,7 +52,15 @@ public class PlatformProfileToDisplayFactory {
     public List<PlatformProfileToDisplay> newOnes(List<PlatformProfile> platformProfileList) {
 
         List<Profile> profileList = platformProfileList.stream().
-                map(PlatformProfile::getProfile).
+                map(pp -> {
+                    try {
+                        Optional<Profile> databaseProfileOptional = profileService.findProfileByCode(pp.getProfile().getCode());
+                        return databaseProfileOptional.orElse(null);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                    return null;
+                }).
                 distinct().
                 collect(Collectors.toList());
 
@@ -48,7 +68,11 @@ public class PlatformProfileToDisplayFactory {
         for (Profile profile: profileList) {
 
             List<AbstractPlatform> platformList = platformProfileList.stream().
-                    filter(pp -> pp.getProfile().equals(profile)).
+                    filter(pp -> {
+                        // Profile pProfile = (Profile) Hibernate.unproxy(pp.getProfile());
+                        // return pProfile.getName().equals(profile.getName());
+                        return pp.getProfile().getName().equals(profile.getName());
+                    }).
                     map(PlatformProfile::getPlatform).
                     collect(Collectors.toList());
             if (platformList == null || platformList.isEmpty()) {
@@ -65,7 +89,7 @@ public class PlatformProfileToDisplayFactory {
                 continue;
             }
 
-            result.add(newOne(profile, enumPlatform));
+            result.add(newOne(profile,enumPlatform));
         }
 
         return result;

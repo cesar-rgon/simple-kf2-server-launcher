@@ -126,7 +126,7 @@ public class OldMapsEditionFacadeImpl extends OldAFacade implements OldMapsEditi
         File localfile = new File(StringUtils.EMPTY);
         for (AbstractPlatform platform: platformList) {
             String absoluteTargetFolder = platform.getInstallationFolder() + customMapLocalFolder;
-            localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
+            localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, Long.toString(idWorkShop));
         }
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
 
@@ -174,7 +174,7 @@ public class OldMapsEditionFacadeImpl extends OldAFacade implements OldMapsEditi
         File localfile = new File(StringUtils.EMPTY);
         for (AbstractPlatform platform: platformList) {
             String absoluteTargetFolder = platform.getInstallationFolder() + customMapLocalFolder;
-            localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
+            localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, Long.toString(idWorkShop));
         }
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
 
@@ -333,7 +333,9 @@ public class OldMapsEditionFacadeImpl extends OldAFacade implements OldMapsEditi
 
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
         String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfiles");
-        return Utils.selectPlatformProfilesDialog(headerText + ":", platformProfileList, fullProfileNameList);
+        PlatformProfileToDisplayFactory platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory(em);
+        List<PlatformProfileToDisplay> platformProfileToDisplayList = platformProfileToDisplayFactory.newOnes(platformProfileList);
+        return Utils.selectPlatformProfilesDialog(headerText + ":", platformProfileToDisplayList, fullProfileNameList);
     }
 
     @Override
@@ -477,7 +479,7 @@ public class OldMapsEditionFacadeImpl extends OldAFacade implements OldMapsEditi
                                 ppmList.add(ppm);
 
                                 String absoluteTargetFolder = ppm.getPlatform().getInstallationFolder() + customMapLocalFolder;
-                                Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapModInDataBase.get().getCode());
+                                Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, Long.toString(mapModInDataBase.get().getIdWorkShop()));
                             } else {
                                 String errorMessage = "Error creating the relation between the map " + mapName + ", the profile " + profile.getCode() + " and the platform " + platform.getDescription();
                                 errors.append(errorMessage + "\n");

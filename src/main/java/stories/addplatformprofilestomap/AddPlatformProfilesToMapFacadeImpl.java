@@ -1,9 +1,6 @@
 package stories.addplatformprofilestomap;
 
-import entities.AbstractMap;
-import entities.AbstractPlatform;
-import entities.PlatformProfileMap;
-import entities.Profile;
+import entities.*;
 import framework.AbstractTransactionalFacade;
 import jakarta.persistence.EntityManager;
 import services.*;
@@ -77,7 +74,12 @@ public class AddPlatformProfilesToMapFacadeImpl
 
         for (AbstractPlatform platform: platformList) {
             String absoluteTargetFolder = platform.getInstallationFolder() + customMapLocalFolder;
-            Utils.downloadImageFromUrlToFile(facadeModelContext.getStrUrlMapImage(), absoluteTargetFolder, facadeModelContext.getMapName());
+            if (officialMapOptional.isPresent()) {
+                Utils.downloadImageFromUrlToFile(facadeModelContext.getStrUrlMapImage(), absoluteTargetFolder, facadeModelContext.getMapName());
+            } else {
+                assert map != null;
+                Utils.downloadImageFromUrlToFile(facadeModelContext.getStrUrlMapImage(), absoluteTargetFolder, Long.toString(((CustomMapMod) map).getIdWorkShop()));
+            }
         }
 
         return new AddPlatformProfilesToMapFacadeResult(

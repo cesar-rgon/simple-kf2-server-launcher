@@ -12,6 +12,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -380,14 +381,14 @@ public class MapsController implements Initializable {
         }
 
         GridPane gridpane = new GridPane();
-        gridpane.setPrefWidth(getWidthGridPaneByNumberOfColums());
         gridpane.getStyleClass().add("gridPane");
+        gridpane.setAlignment(Pos.CENTER);
 
-        mapPreview.setPreserveRatio(false);
+        mapPreview.setPreserveRatio(true);
         mapPreview.setFitWidth(gridpane.getPrefWidth());
         mapPreview.setFitHeight(gridpane.getPrefWidth()/2);
         gridpane.add(mapPreview, 1, 1);
-
+        GridPane.setMargin(mapPreview, new Insets(3,3,0,3));
         CheckBox checkbox = new CheckBox();
         checkbox.setOpacity(0.5);
         checkbox.setOnAction(e -> {
@@ -586,14 +587,13 @@ public class MapsController implements Initializable {
     }
 
     private Double getWidthGridPaneByNumberOfColums() {
-        return (MainApplication.getPrimaryStage().getWidth() - (50 * mapsSlider.getValue()) - 98) / mapsSlider.getValue();
+        return (MainApplication.getPrimaryStage().getWidth() - (50 * mapsSlider.getValue()) - 154) / mapsSlider.getValue();
     }
 
     private void resizeGridPane(GridPane gridPane) {
         gridPane.setPrefWidth(getWidthGridPaneByNumberOfColums());
         ImageView mapPreview = (ImageView) gridPane.getChildren().get(0);
         mapPreview.setFitWidth(gridPane.getPrefWidth());
-        mapPreview.setFitHeight(gridPane.getPrefWidth()/2);
         Label mapNameLabel = (Label) gridPane.getChildren().get(2);
         mapNameLabel.setMaxWidth(mapPreview.getFitWidth() - 25);
     }

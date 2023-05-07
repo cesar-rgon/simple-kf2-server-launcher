@@ -1,7 +1,6 @@
 package stories.mapwebinfo;
 
 import dtos.CustomMapModDto;
-import dtos.ProfileDto;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -23,13 +22,11 @@ import pojos.PlatformProfile;
 import pojos.PlatformProfileToDisplay;
 import pojos.enums.EnumPlatform;
 import pojos.session.Session;
-import services.PropertyService;
-import services.PropertyServiceImpl;
 import start.MainApplication;
 import stories.addplatformprofilestomap.AddPlatformProfilesToMapFacadeResult;
 import stories.createcustommapfromworkshop.CreateCustomMapFromWorkshopFacadeResult;
-import stories.getplatformprofilelistbyidworkshop.GetPlatformProfileListByIdworkshopFacadeResult;
-import stories.getplatformprofilelistbyidworkshop.GetPlatformProfileListByIdworkshopModelContext;
+import stories.getplatformprofilelistwithoutmap.GetPlatformProfileListWithoutMapFacadeResult;
+import stories.getplatformprofilelistwithoutmap.GetPlatformProfileListWithoutMapModelContext;
 import utils.Utils;
 
 import java.lang.reflect.Field;
@@ -47,11 +44,10 @@ public class MapWebInfoController implements Initializable {
     private Long idWorkShop;
     private String mapName;
     private String strUrlMapImage;
-    private final PropertyService propertyService;
     protected String languageCode;
 
     @FXML private WebView mapInfoWebView;
-    @FXML private Label mapNameLabel;
+    @FXML private Label mapIdWorkshop;
     @FXML private Button addMap;
     @FXML private Label alreadyInLauncher;
     @FXML private Button backButton;
@@ -59,7 +55,7 @@ public class MapWebInfoController implements Initializable {
 
     public MapWebInfoController() {
         super();
-        propertyService = new PropertyServiceImpl();
+        facade = new MapWebInfoManagerFacadeImpl(new GetPlatformProfileListWithoutMapModelContext(null));
         idWorkShop = null;
         mapName = null;
         strUrlMapImage = null;
@@ -69,20 +65,20 @@ public class MapWebInfoController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             if (Session.getInstance().getPpm() != null) {
-                mapNameLabel.setText(Session.getInstance().getPpm().getMapDto().getKey());
+                mapIdWorkshop.setText("id WorkShop: " + ((CustomMapModDto) Session.getInstance().getPpm().getMapDto()).getIdWorkShop());
                 mapInfoWebView.getEngine().load(Session.getInstance().getPpm().getUrlInfo());
             } else {
-                mapNameLabel.setText("");
+                mapIdWorkshop.setText("");
                 mapInfoWebView.getEngine().load("https://steamcommunity.com/app/232090/workshop/");
             }
 
-            String backButtonText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.backMapsPage");
+            String backButtonText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.backMapsPage");
             backButton.setText(backButtonText);
-            String addMapText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addNewMap");
+            String addMapText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addNewMap");
             addMap.setText(addMapText);
-            String alreadyInLauncherText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.alreadyInLauncher");
+            String alreadyInLauncherText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.alreadyInLauncher");
             alreadyInLauncher.setText(alreadyInLauncherText);
 
             // Put black color for background of the browser's page
@@ -133,13 +129,13 @@ public class MapWebInfoController implements Initializable {
                                     }
                                 }
                             }
-                            mapNameLabel.setText(mapName);
-                            GetPlatformProfileListByIdworkshopModelContext modelContext = new GetPlatformProfileListByIdworkshopModelContext(
+                            mapIdWorkshop.setText("id WorkShop: " + idWorkShop);
+                            GetPlatformProfileListWithoutMapModelContext modelContext = new GetPlatformProfileListWithoutMapModelContext(
                                     idWorkShop
                             );
                             facade = new MapWebInfoManagerFacadeImpl(modelContext);
-                            GetPlatformProfileListByIdworkshopFacadeResult result = facade.execute();
-                            List<PlatformProfile> platformProfilesWithoutMap = result.getPlatformProfileList();
+                            GetPlatformProfileListWithoutMapFacadeResult result = facade.execute();
+                            List<PlatformProfile> platformProfilesWithoutMap = result.getPlatformProfileListWithoutMap();
                             if (idWorkShop != null && (platformProfilesWithoutMap == null || platformProfilesWithoutMap.isEmpty())) {
                                 addMap.setVisible(false);
                                 alreadyInLauncher.setVisible(true);
@@ -150,7 +146,7 @@ public class MapWebInfoController implements Initializable {
                         }
                     } catch (Exception e) {
                         logger.error("Error in loading process of new page from Steam's WorkShop\nSee stacktrace for more details", e);
-                        mapNameLabel.setText(null);
+                        mapIdWorkshop.setText("");
                         addMap.setVisible(false);
                         alreadyInLauncher.setVisible(false);
                     }
@@ -183,28 +179,27 @@ public class MapWebInfoController implements Initializable {
     private void addMapOnAction() {
         try {
             if (!facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name()) && !facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
+                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
                 Utils.warningDialog(headerText, contentText);
                 return;
             }
 
-            GetPlatformProfileListByIdworkshopModelContext modelContext = new GetPlatformProfileListByIdworkshopModelContext(
+            GetPlatformProfileListWithoutMapModelContext modelContext = new GetPlatformProfileListWithoutMapModelContext(
                     idWorkShop
             );
             facade = new MapWebInfoManagerFacadeImpl(modelContext);
-            GetPlatformProfileListByIdworkshopFacadeResult getPlatformProfileListByIdworkshopFacadeResult = facade.execute();
-            List<PlatformProfile> platformProfileListWithoutMap = getPlatformProfileListByIdworkshopFacadeResult.getPlatformProfileList();
-            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfiles");
+            GetPlatformProfileListWithoutMapFacadeResult getPlatformProfileListWithoutMapFacadeResult = facade.execute();
+            List<PlatformProfile> platformProfileListWithoutMap = getPlatformProfileListWithoutMapFacadeResult.getPlatformProfileListWithoutMap();
 
-            List<ProfileDto> fullProfileList = facade.getAllProfileList();
-            List<String> fullProfileNameList = fullProfileList.stream().map(ProfileDto::getName).collect(Collectors.toList());
+            List<PlatformProfileToDisplay> selectedPlatformProfiles = facade.getSelectedPlatformProfileList(
+                    platformProfileListWithoutMap
+            );
 
-            List<PlatformProfileToDisplay> selectedProfiles = Utils.selectPlatformProfilesDialog(headerText + ":", platformProfileListWithoutMap, fullProfileNameList);
             StringBuffer success = new StringBuffer();
             StringBuffer errors = new StringBuffer();
-            if (selectedProfiles != null && !selectedProfiles.isEmpty()) {
-                List<String> selectedProfileNameList = selectedProfiles.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
+            if (selectedPlatformProfiles != null && !selectedPlatformProfiles.isEmpty()) {
+                List<String> selectedProfileNameList = selectedPlatformProfiles.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
                 CustomMapModDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
 
                 int countPlatformsProfilesForMap = 0;
@@ -214,7 +209,7 @@ public class MapWebInfoController implements Initializable {
 
                 for (String selectedProfileName: selectedProfileNameList) {
                     try {
-                        Optional<String> platformNameOptional = selectedProfiles.stream().
+                        Optional<String> platformNameOptional = selectedPlatformProfiles.stream().
                                 filter(p -> p.getProfileName().equals(selectedProfileName)).
                                 map(PlatformProfileToDisplay::getPlatformName).
                                 findFirst();
@@ -296,13 +291,13 @@ public class MapWebInfoController implements Initializable {
                 }
 
                 if (StringUtils.isNotBlank(success)) {
-                    headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
-                    Utils.infoDialog(headerText, success.toString());
+                    String successHeaderText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                    Utils.infoDialog(successHeaderText, success.toString());
                 }
 
                 if (StringUtils.isNotBlank(errors)) {
-                    headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                    Utils.infoDialog(headerText, errors.toString());
+                    String errorsHeaderText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                    Utils.infoDialog(errorsHeaderText, errors.toString());
                 }
             }
         } catch (Exception e) {

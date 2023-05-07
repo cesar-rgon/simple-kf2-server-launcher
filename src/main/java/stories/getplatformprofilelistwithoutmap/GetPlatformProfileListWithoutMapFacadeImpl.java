@@ -1,6 +1,5 @@
-package stories.getplatformprofilelistbyidworkshop;
+package stories.getplatformprofilelistwithoutmap;
 
-import daos.AbstractDao;
 import entities.*;
 import framework.AbstractTransactionalFacade;
 import jakarta.persistence.EntityManager;
@@ -8,26 +7,29 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Hibernate;
 import pojos.PlatformProfile;
+import pojos.PlatformProfileToDisplay;
 import pojos.kf2factory.Kf2Factory;
 import services.*;
+import utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
-public class GetPlatformProfileListByIdworkshopFacadeImpl
-        extends AbstractTransactionalFacade<GetPlatformProfileListByIdworkshopModelContext, GetPlatformProfileListByIdworkshopFacadeResult>
-        implements GetPlatformProfileListByIdworkshopFacade {
+public class GetPlatformProfileListWithoutMapFacadeImpl
+        extends AbstractTransactionalFacade<GetPlatformProfileListWithoutMapModelContext, GetPlatformProfileListWithoutMapFacadeResult>
+        implements GetPlatformProfileListWithoutMapFacade {
 
-    private static final Logger logger = LogManager.getLogger(GetPlatformProfileListByIdworkshopFacadeImpl.class);
+    private static final Logger logger = LogManager.getLogger(GetPlatformProfileListWithoutMapFacadeImpl.class);
 
-    public GetPlatformProfileListByIdworkshopFacadeImpl(GetPlatformProfileListByIdworkshopModelContext getPlatformProfileListByIdworkshopModelContext) {
-        super(getPlatformProfileListByIdworkshopModelContext, GetPlatformProfileListByIdworkshopFacadeResult.class);
+    public GetPlatformProfileListWithoutMapFacadeImpl(GetPlatformProfileListWithoutMapModelContext getPlatformProfileListWithoutMapModelContext) {
+        super(getPlatformProfileListWithoutMapModelContext, GetPlatformProfileListWithoutMapFacadeResult.class);
     }
 
 
     @Override
-    protected boolean assertPreconditions(GetPlatformProfileListByIdworkshopModelContext facadeModelContext, EntityManager em) throws Exception {
+    protected boolean assertPreconditions(GetPlatformProfileListWithoutMapModelContext facadeModelContext, EntityManager em) throws Exception {
         PlatformService platformService = new PlatformServiceImpl(em);
         ProfileService profileService = new ProfileServiceImpl(em);
 
@@ -39,7 +41,7 @@ public class GetPlatformProfileListByIdworkshopFacadeImpl
     }
 
     @Override
-    protected GetPlatformProfileListByIdworkshopFacadeResult internalExecute(GetPlatformProfileListByIdworkshopModelContext facadeModelContext, EntityManager em) throws Exception {
+    protected GetPlatformProfileListWithoutMapFacadeResult internalExecute(GetPlatformProfileListWithoutMapModelContext facadeModelContext, EntityManager em) throws Exception {
         PlatformService platformService = new PlatformServiceImpl(em);
         ProfileService profileService = new ProfileServiceImpl(em);
         PlatformProfileMapService platformProfileMapService = new PlatformProfileMapServiceImpl(em);
@@ -84,7 +86,7 @@ public class GetPlatformProfileListByIdworkshopFacadeImpl
             }
         }
 
-        return new GetPlatformProfileListByIdworkshopFacadeResult(
+        return new GetPlatformProfileListWithoutMapFacadeResult(
                 platformProfileListWithoutMap
         );
     }

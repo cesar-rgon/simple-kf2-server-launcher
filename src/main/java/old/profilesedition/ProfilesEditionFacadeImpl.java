@@ -44,7 +44,7 @@ public class ProfilesEditionFacadeImpl extends OldAFacade implements ProfilesEdi
         super(null);
         profileDtoFactory = new ProfileDtoFactory(em);
         propertyService = new PropertyServiceImpl();
-        platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory();
+        platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory(em);
         this.profileService = new ProfileServiceImpl(em);
         this.officialMapService = new OfficialMapServiceImpl(em);
         this.platformProfileMapService = new PlatformProfileMapServiceImpl(em);

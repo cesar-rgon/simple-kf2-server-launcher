@@ -105,7 +105,7 @@ public class AddCustomMapsToProfileFacadeImpl
                                 ppmList.add(ppm);
 
                                 String absoluteTargetFolder = ppm.getPlatform().getInstallationFolder() + customMapLocalFolder;
-                                Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapModInDataBase.get().getCode());
+                                Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, Long.toString(mapModInDataBase.get().getIdWorkShop()));
                             } else {
                                 String errorMessage = "Error creating the relation between the map " + mapName + ", the profile " + profileOpt.get().getCode() + " and the platform " + platform.getDescription();
                                 errors.append(errorMessage + "\n");

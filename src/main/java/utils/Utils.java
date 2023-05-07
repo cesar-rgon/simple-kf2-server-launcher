@@ -580,7 +580,7 @@ public class Utils {
         return new ArrayList<ProfileToDisplay>();
     }
 
-    public static List<PlatformProfileToDisplay> selectPlatformProfilesDialog(String headerText, List<PlatformProfile> platformProfileList, List<String> selectedProfileNameList) {
+    public static List<PlatformProfileToDisplay> selectPlatformProfilesDialog(String headerText, List<PlatformProfileToDisplay> platformProfileToDisplayList, List<String> selectedProfileNameList) {
         Dialog<TableView<PlatformProfileToDisplay>> dialog = new Dialog<TableView<PlatformProfileToDisplay>>();
         PropertyService propertyService = new PropertyServiceImpl();
         String selectText = "";
@@ -701,8 +701,6 @@ public class Utils {
         tableView.getColumns().add(difficultyColumn);
         tableView.getColumns().add(lengthColumn);
 
-        PlatformProfileToDisplayFactory platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory();
-        List<PlatformProfileToDisplay> platformProfileToDisplayList = platformProfileToDisplayFactory.newOnes(platformProfileList);
         tableView.setItems(FXCollections.observableArrayList(platformProfileToDisplayList));
         boolean firstProfile = true;
         for (String selectedProfileName: selectedProfileNameList) {
@@ -916,7 +914,7 @@ public class Utils {
         return new ArrayList<MapToDisplay>();
     }
 
-    public static Optional<PlatformProfileToDisplay> selectProfileDialog(String headerText, List<PlatformProfile> platformProfileList, List<String> selectedProfileNameList) {
+    public static Optional<PlatformProfileToDisplay> selectProfileDialog(String headerText, List<PlatformProfileToDisplay> platformProfileToDisplayList, List<String> selectedProfileNameList) {
         Dialog<TableView<PlatformProfileToDisplay>> dialog = new Dialog<TableView<PlatformProfileToDisplay>>();
         PropertyService propertyService = new PropertyServiceImpl();
         String profileNameText = "";
@@ -982,8 +980,6 @@ public class Utils {
         tableView.getColumns().add(difficultyColumn);
         tableView.getColumns().add(lengthColumn);
 
-        PlatformProfileToDisplayFactory platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory();
-        List<PlatformProfileToDisplay> platformProfileToDisplayList = platformProfileToDisplayFactory.newOnes(platformProfileList);
         tableView.setItems(FXCollections.observableArrayList(platformProfileToDisplayList));
         tableView.setEditable(false);
 

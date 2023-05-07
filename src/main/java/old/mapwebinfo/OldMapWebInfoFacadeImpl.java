@@ -140,7 +140,7 @@ public class OldMapWebInfoFacadeImpl extends OldAFacade implements OldMapWebInfo
         File localfile = null;
         for (AbstractPlatform platform: platformList) {
             String absoluteTargetFolder = platform.getInstallationFolder() + customMapLocalFolder;
-            localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
+            localfile = Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, Long.toString(idWorkShop));
         }
 
         if (localfile != null) {
@@ -188,19 +188,20 @@ public class OldMapWebInfoFacadeImpl extends OldAFacade implements OldMapWebInfo
         List<AbstractPlatform> platformList = getPlatformListByNames(platformNameList, success, errors);
 
         AbstractMap map = null;
-        Optional officialMapOptional = officialMapService.findMapByCode(mapName);
-        Optional customMapModOptional = customMapModService.findMapByCode(mapName);
+        Optional<AbstractMap> officialMapOptional = officialMapService.findMapByCode(mapName);
+        Optional<AbstractMap> customMapModOptional = customMapModService.findMapByCode(mapName);
         if (officialMapOptional.isPresent()) {
-            map = (AbstractMap) officialMapOptional.get();
+            map = officialMapOptional.get();
         } else {
             if (customMapModOptional.isPresent()) {
-                map = (AbstractMap) customMapModOptional.get();
+                map = customMapModOptional.get();
             }
         }
 
         List<PlatformProfileMap> platformProfileMapListToAdd = new ArrayList<PlatformProfileMap>();
         for (Profile profile: profileList) {
             for (AbstractPlatform platform: platformList) {
+                assert map != null;
                 platformProfileMapListToAdd.add(new PlatformProfileMap(platform, profile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), officialMapOptional.isPresent()));
             }
         }
@@ -223,7 +224,12 @@ public class OldMapWebInfoFacadeImpl extends OldAFacade implements OldMapWebInfo
 
         for (AbstractPlatform platform: platformList) {
             String absoluteTargetFolder = platform.getInstallationFolder() + customMapLocalFolder;
-            Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
+            if (officialMapOptional.isPresent()) {
+                Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, mapName);
+            } else {
+                assert map != null;
+                Utils.downloadImageFromUrlToFile(strUrlMapImage, absoluteTargetFolder, Long.toString(((CustomMapMod) map).getIdWorkShop()));
+            }
         }
     }
 
