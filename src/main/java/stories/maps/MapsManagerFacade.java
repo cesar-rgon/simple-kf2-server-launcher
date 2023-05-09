@@ -26,12 +26,12 @@ public interface MapsManagerFacade {
     AddCustomMapsToProfileFacadeResult addCustomMapsToProfile(List<String> platformNameList, String profileName, String mapNameList, String languageCode, String actualSelectedProfile) throws Exception;
     Optional<PlatformProfileMapDto> findPlatformProfileMapDtoByName(String platformName, String profileName, String mapName) throws Exception;
     boolean isCorrectInstallationFolder(String platformName) throws Exception;
+    AbstractMapDto deleteMapFromPlatformProfile(String platformName, String mapName, String profileName) throws Exception;
 
     // ------------------------------------------------------------------------
 
     void setConfigPropertyValue(String key, String value) throws Exception;
     public void addPlatformProfileMapList(List<PlatformProfileMap> platformProfileMapListToAdd, StringBuffer success, StringBuffer errors) throws SQLException;
-    AbstractMapDto deleteMapFromPlatformProfile(String platformName, String mapName, String profileName) throws Exception;
     void unselectProfileMap(String profileName) throws Exception;
     List<PlatformProfileToDisplay> selectProfilesToImport(String defaultSelectedProfileName) throws Exception;
     String runServer(String platformName, String profileName) throws Exception;

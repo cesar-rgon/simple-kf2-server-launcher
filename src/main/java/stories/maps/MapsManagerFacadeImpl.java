@@ -17,6 +17,10 @@ import stories.addcustommapstoprofile.AddCustomMapsToProfileFacade;
 import stories.addcustommapstoprofile.AddCustomMapsToProfileFacadeImpl;
 import stories.addcustommapstoprofile.AddCustomMapsToProfileFacadeResult;
 import stories.addcustommapstoprofile.AddCustomMapsToProfileModelContext;
+import stories.deletemapfromplatformprofile.DeleteMapFromPlatformProfileFacade;
+import stories.deletemapfromplatformprofile.DeleteMapFromPlatformProfileFacadeImpl;
+import stories.deletemapfromplatformprofile.DeleteMapFromPlatformProfileFacadeResult;
+import stories.deletemapfromplatformprofile.DeleteMapFromPlatformProfileModelContext;
 import stories.findplatformprofilemapbynames.FindPlatformProfileMapByNameFacade;
 import stories.findplatformprofilemapbynames.FindPlatformProfileMapByNameFacadeImpl;
 import stories.findplatformprofilemapbynames.FindPlatformProfileMapByNameFacadeResult;
@@ -96,7 +100,14 @@ public class MapsManagerFacadeImpl
 
     @Override
     public AbstractMapDto deleteMapFromPlatformProfile(String platformName, String mapName, String profileName) throws Exception {
-        return null;
+        DeleteMapFromPlatformProfileModelContext deleteMapFromPlatformProfileModelContext = new DeleteMapFromPlatformProfileModelContext(
+                mapName,
+                platformName,
+                profileName
+        );
+        DeleteMapFromPlatformProfileFacade deleteMapFromPlatformProfileFacade = new DeleteMapFromPlatformProfileFacadeImpl(deleteMapFromPlatformProfileModelContext);
+        DeleteMapFromPlatformProfileFacadeResult result = deleteMapFromPlatformProfileFacade.execute();
+        return result.getMapDto();
     }
 
     @Override
