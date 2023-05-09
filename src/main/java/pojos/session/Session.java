@@ -25,7 +25,7 @@ public class Session {
     private ProfileDto mapsProfile;
     private EnumSortedMapsCriteria sortedMapsCriteria;
     private EnumMapsTab selectedMapTab;
-    private List<PlatformProfileMap> platformProfileMapList;
+    private List<PlatformProfileMapDto> platformProfileMapList;
     private PlatformDto platform;
 
     /**
@@ -38,7 +38,7 @@ public class Session {
         processList = new ArrayList<Process>();
         sortedMapsCriteria = EnumSortedMapsCriteria.NAME_DESC;
         selectedMapTab = EnumMapsTab.STEAM_OFFICIAL_MAPS_TAB;
-        platformProfileMapList = new ArrayList<PlatformProfileMap>();
+        platformProfileMapList = new ArrayList<PlatformProfileMapDto>();
     }
 
     public static Session getInstance() {
@@ -116,19 +116,11 @@ public class Session {
         this.selectedMapTab = selectedMapTab;
     }
 
-    public List<PlatformProfileMap> getProfileMapList() {
+    public List<PlatformProfileMapDto> getPlatformProfileMapList() {
         return platformProfileMapList;
     }
 
-    public void setProfileMapList(List<PlatformProfileMap> platformProfileMapList) {
-        this.platformProfileMapList = platformProfileMapList;
-    }
-
-    public List<PlatformProfileMap> getPlatformProfileMapList() {
-        return platformProfileMapList;
-    }
-
-    public void setPlatformProfileMapList(List<PlatformProfileMap> platformProfileMapList) {
+    public void setPlatformProfileMapList(List<PlatformProfileMapDto> platformProfileMapList) {
         this.platformProfileMapList = platformProfileMapList;
     }
 

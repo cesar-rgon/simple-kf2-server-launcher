@@ -1,7 +1,6 @@
 package stories.maps;
 
 import dtos.*;
-import entities.PlatformProfileMap;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -12,7 +11,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -49,7 +47,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.SQLException;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -1811,9 +1808,9 @@ public class MapsController implements Initializable {
         }
     }
 
-    private List<PlatformProfileMap> getSteamEditList() throws Exception {
+    private List<PlatformProfileMapDto> getSteamEditList() throws Exception {
 
-        List<PlatformProfileMap> editList = new ArrayList<PlatformProfileMap>();
+        List<PlatformProfileMapDto> editList = new ArrayList<PlatformProfileMapDto>();
         ObservableList<Node> nodeList = FXCollections.concat(steamOfficialMapsFlowPane.getChildren(), steamCustomMapsFlowPane.getChildren());
 
         if (nodeList != null && !nodeList.isEmpty()) {
@@ -1825,7 +1822,7 @@ public class MapsController implements Initializable {
 
                 if (checkbox.isSelected()) {
                     String mapName = mapNameLabel.getText();
-                    Optional<PlatformProfileMap> profileMapOptional = facade.findPlatformProfileMapByNames(
+                    Optional<PlatformProfileMapDto> profileMapOptional = facade.findPlatformProfileMapDtoByName(
                             EnumPlatform.STEAM.name(),
                             profileSelect.getValue().getName(),
                             mapName
@@ -1845,9 +1842,9 @@ public class MapsController implements Initializable {
         return editList;
     }
 
-    private List<PlatformProfileMap> getEpicEditList() throws Exception {
+    private List<PlatformProfileMapDto> getEpicEditList() throws Exception {
 
-        List<PlatformProfileMap> editList = new ArrayList<PlatformProfileMap>();
+        List<PlatformProfileMapDto> editList = new ArrayList<PlatformProfileMapDto>();
         ObservableList<Node> nodeList = FXCollections.concat(epicOfficialMapsFlowPane.getChildren(), epicCustomMapsFlowPane.getChildren());
 
         if (nodeList != null && !nodeList.isEmpty()) {
@@ -1859,7 +1856,7 @@ public class MapsController implements Initializable {
 
                 if (checkbox.isSelected()) {
                     String mapName = mapNameLabel.getText();
-                    Optional<PlatformProfileMap> profileMapOptional = facade.findPlatformProfileMapByNames(
+                    Optional<PlatformProfileMapDto> profileMapOptional = facade.findPlatformProfileMapDtoByName(
                             EnumPlatform.EPIC.name(),
                             profileSelect.getValue().getName(),
                             mapName
@@ -1882,7 +1879,7 @@ public class MapsController implements Initializable {
     @FXML
     private void editMapsOnAction() {
         try {
-            List<PlatformProfileMap> editList = getSteamEditList();
+            List<PlatformProfileMapDto> editList = getSteamEditList();
             editList.addAll(getEpicEditList());
 
             if (editList.isEmpty()) {
@@ -1892,7 +1889,7 @@ public class MapsController implements Initializable {
                 Utils.warningDialog(headerText, contentText);
 
             } else {
-                Session.getInstance().setProfileMapList(editList);
+                Session.getInstance().setPlatformProfileMapList(editList);
                 loadNewContent("/views/mapEdition.fxml");
             }
         } catch (Exception e) {

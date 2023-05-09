@@ -155,11 +155,6 @@ public class MapsManagerFacadeImpl
     }
 
     @Override
-    public Optional<PlatformProfileMap> findPlatformProfileMapByNames(String platformName, String profileName, String mapName) throws SQLException {
-        return Optional.empty();
-    }
-
-    @Override
     public String[] getMapNameAndUrlImage(Long idWorkShop) throws Exception {
         return new String[0];
     }

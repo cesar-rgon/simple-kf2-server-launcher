@@ -38,7 +38,6 @@ public interface MapsManagerFacade {
     PlatformProfileMapToImport importCustomMapModFromServer(PlatformProfileMapToImport ppmToImport, String selectedProfileName) throws Exception;
     PlatformProfileMapToImport importOfficialMapFromServer(PlatformProfileMapToImport ppmToImport, String selectedProfileName) throws Exception;
     Optional<AbstractMap> findMapByName(String mapName) throws Exception;
-    Optional<PlatformProfileMap> findPlatformProfileMapByNames(String platformName, String profileName, String mapName) throws SQLException;
     String[] getMapNameAndUrlImage(Long idWorkShop) throws Exception;
     List<PlatformDto> listAllPlatforms() throws SQLException;
     String getPropertyValue(String propFileRelativePath, String propKey, String profileParam, String platformParam) throws Exception;

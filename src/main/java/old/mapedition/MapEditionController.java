@@ -94,7 +94,7 @@ public class MapEditionController implements Initializable {
             String editMapText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.editMap");
             titleConfigLabel.setText(editMapText);
 
-            Double tooltipDuration = Double.parseDouble(
+            double tooltipDuration = Double.parseDouble(
                     propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
             );
 
@@ -183,15 +183,17 @@ public class MapEditionController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 try {
-                    if (!newValue && !Session.getInstance().getProfileMapList().isEmpty()) {
-                        PlatformProfileMap edittedPlatformProfileMap = Session.getInstance().getProfileMapList().get(profileMapIndex);
+                    if (!newValue && !Session.getInstance().getPlatformProfileMapList().isEmpty()) {
+                        PlatformProfileMapDto edittedPlatformProfileMap = Session.getInstance().getPlatformProfileMapList().get(profileMapIndex);
                         if (StringUtils.isBlank(aliasTextField.getText())) {
                             Utils.warningDialog("The alias can not be empty", "Setting the alias as map name");
-                            aliasTextField.setText(edittedPlatformProfileMap.getMap().getCode());
+                            aliasTextField.setText(edittedPlatformProfileMap.getMapDto().getKey());
                         }
 
+                        // TODO: Fix this
+                        /*
                         if (facade.updateMapSetAlias(edittedPlatformProfileMap, aliasTextField.getText())) {
-                            edittedPlatformProfileMap.setAlias(aliasTextField.getText());
+                            //edittedPlatformProfileMap.setAlias(aliasTextField.getText());
                         } else {
                             logger.warn("The alias value could not be saved!" + aliasTextField.getText());
                             String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
@@ -200,6 +202,7 @@ public class MapEditionController implements Initializable {
                                     "prop.message.aliasNotSaved");
                             Utils.warningDialog(headerText, contentText);
                         }
+                         */
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -212,22 +215,24 @@ public class MapEditionController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
-                    if (!newPropertyValue && !Session.getInstance().getProfileMapList().isEmpty()) {
-                        PlatformProfileMap edittedPlatformProfileMap = Session.getInstance().getProfileMapList().get(profileMapIndex);
+                    if (!newPropertyValue && !Session.getInstance().getPlatformProfileMapList().isEmpty()) {
+                        PlatformProfileMapDto edittedPlatformProfileMap = Session.getInstance().getPlatformProfileMapList().get(profileMapIndex);
 
                         String mapPreviewUrl = StringUtils.EMPTY;
                         if (StringUtils.isNotBlank(mapPreviewUrlTextField.getText())) {
                             if (mapPreviewUrlTextField.getText().startsWith("http") || mapPreviewUrlTextField.getText().startsWith("file:")) {
                                 mapPreviewUrl = mapPreviewUrlTextField.getText();
                             } else if (mapPreviewUrlTextField.getText().startsWith("/KFGame")) {
-                                mapPreviewUrl = "file:" + edittedPlatformProfileMap.getPlatform().getInstallationFolder() + mapPreviewUrlTextField.getText();
+                                mapPreviewUrl = "file:" + edittedPlatformProfileMap.getPlatformDto().getInstallationFolder() + mapPreviewUrlTextField.getText();
                             } else {
                                 mapPreviewUrl = "file:" + mapPreviewUrlTextField.getText();
                             }
                         }
 
+                        // TODO: Fix this
+                        /*
                         if (facade.updateMapSetUrlPhoto(edittedPlatformProfileMap, mapPreviewUrl)) {
-                            edittedPlatformProfileMap.setUrlPhoto(mapPreviewUrl);
+                            //edittedPlatformProfileMap.setUrlPhoto(mapPreviewUrl);
                             mapPreviewUrlTextField.setText(mapPreviewUrl);
                         } else {
                             logger.warn("The map image link value could not be saved!" + mapPreviewUrlTextField.getText());
@@ -237,6 +242,7 @@ public class MapEditionController implements Initializable {
                                     "prop.message.mapImageLinkNotSaved");
                             Utils.warningDialog(headerText, contentText);
                         }
+                        */
 
                         if (StringUtils.isNotEmpty(mapPreviewUrlTextField.getText())) {
                             mapPreviewWebView.getEngine().load(mapPreviewUrlTextField.getText());
@@ -260,9 +266,11 @@ public class MapEditionController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
-                    if (!newPropertyValue && !Session.getInstance().getProfileMapList().isEmpty()) {
-                        PlatformProfileMap edittedPlatformProfileMap = Session.getInstance().getProfileMapList().get(profileMapIndex);
+                    if (!newPropertyValue && !Session.getInstance().getPlatformProfileMapList().isEmpty()) {
+                        PlatformProfileMapDto edittedPlatformProfileMap = Session.getInstance().getPlatformProfileMapList().get(profileMapIndex);
 
+                        // TODO: Fix this
+                        /*
                         if (facade.updateMapSetInfoUrl(edittedPlatformProfileMap, infoUrlTextField.getText())) {
                             edittedPlatformProfileMap.setUrlInfo(infoUrlTextField.getText());
                         } else {
@@ -273,6 +281,7 @@ public class MapEditionController implements Initializable {
                                     "prop.message.mapInfoLinkNotSaved");
                             Utils.warningDialog(headerText, contentText);
                         }
+                        */
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -285,9 +294,10 @@ public class MapEditionController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                 try {
-                    if (!newValue && !Session.getInstance().getProfileMapList().isEmpty()) {
-                        PlatformProfileMap edittedPlatformProfileMap = Session.getInstance().getProfileMapList().get(profileMapIndex);
-
+                    if (!newValue && !Session.getInstance().getPlatformProfileMapList().isEmpty()) {
+                        PlatformProfileMapDto edittedPlatformProfileMap = Session.getInstance().getPlatformProfileMapList().get(profileMapIndex);
+                        // TODO: Fix this
+                        /*
                         if (facade.updateMapSetReleaseDate(edittedPlatformProfileMap, releaseDatePicker.getValue())) {
                             edittedPlatformProfileMap.setReleaseDate(
                                     Date.from(releaseDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant())
@@ -300,6 +310,7 @@ public class MapEditionController implements Initializable {
                                     "prop.message.mapReleaseDateNotSaved");
                             Utils.warningDialog(headerText, contentText);
                         }
+                        */
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -311,7 +322,7 @@ public class MapEditionController implements Initializable {
     }
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, Label textValue) throws Exception {
-        Double tooltipDuration = Double.parseDouble(
+        double tooltipDuration = Double.parseDouble(
                 propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
         );
         Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
@@ -322,7 +333,7 @@ public class MapEditionController implements Initializable {
     }
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, TextField textField) throws Exception {
-        Double tooltipDuration = Double.parseDouble(
+        double tooltipDuration = Double.parseDouble(
                 propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
         );
         Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
@@ -333,7 +344,7 @@ public class MapEditionController implements Initializable {
     }
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, DatePicker calendar) throws Exception {
-        Double tooltipDuration = Double.parseDouble(
+        double tooltipDuration = Double.parseDouble(
                 propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
         );
         Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
@@ -347,11 +358,8 @@ public class MapEditionController implements Initializable {
         try {
             WebEngine webEngine = mapPreviewWebView.getEngine();
 
-            if (!Session.getInstance().getProfileMapList().isEmpty()) {
-                PlatformProfileMapDtoFactory platformProfileMapDtoFactory = new PlatformProfileMapDtoFactory(null);
-                PlatformProfileMapDto platformProfileMapDto = platformProfileMapDtoFactory.newDto(
-                        Session.getInstance().getProfileMapList().get(mapIndex)
-                );
+            if (!Session.getInstance().getPlatformProfileMapList().isEmpty()) {
+                PlatformProfileMapDto platformProfileMapDto = Session.getInstance().getPlatformProfileMapList().get(mapIndex);
 
                 mapNameValue.setText(platformProfileMapDto.getMapDto().getKey());
                 aliasTextField.setText(platformProfileMapDto.getAlias());
@@ -431,14 +439,14 @@ public class MapEditionController implements Initializable {
         if (profileMapIndex > 0) {
             profileMapIndex--;
         } else {
-            profileMapIndex = Session.getInstance().getProfileMapList().size() - 1;
+            profileMapIndex = Session.getInstance().getPlatformProfileMapList().size() - 1;
         }
         loadProfileMapData(profileMapIndex);
     }
 
     @FXML
     private void nextMapButtonOnAction(){
-        if (profileMapIndex < Session.getInstance().getProfileMapList().size() - 1) {
+        if (profileMapIndex < Session.getInstance().getPlatformProfileMapList().size() - 1) {
             profileMapIndex++;
         } else {
             profileMapIndex = 0;
