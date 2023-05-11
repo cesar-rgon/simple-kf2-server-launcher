@@ -21,12 +21,14 @@ public class ImportMapResultToDisplay {
     private StringProperty errorMessage;
     private String officialText;
     private String customText;
+    private Long idWorkshop;
 
     public ImportMapResultToDisplay(
             String profileName,
             String platformName,
             String mapName,
             boolean isOfficial,
+            Long idWorkshop,
             Date importedDate,
             String errorMessage) {
 
@@ -35,6 +37,7 @@ public class ImportMapResultToDisplay {
         this.platformName = new SimpleStringProperty(platformName);
         this.mapName = new SimpleStringProperty(mapName);
         this.isOfficial = new SimpleBooleanProperty(isOfficial);
+        this.idWorkshop = idWorkshop;
         this.errorMessage = new SimpleStringProperty(errorMessage);
         String datePattern;
         try {
@@ -105,6 +108,14 @@ public class ImportMapResultToDisplay {
 
     public void setOfficial(boolean isOfficial) {
         this.isOfficial.set(isOfficial);
+    }
+
+    public Long getIdWorkshop() {
+        return idWorkshop;
+    }
+
+    public void setIdWorkshop(Long idWorkshop) {
+        this.idWorkshop = idWorkshop;
     }
 
     public String getImportedDate() {

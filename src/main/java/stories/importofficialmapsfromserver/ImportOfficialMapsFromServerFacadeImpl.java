@@ -62,6 +62,7 @@ public class ImportOfficialMapsFromServerFacadeImpl
                         importedPpm.getPlatformName(),
                         mapOptional.get().getCode(),
                         true,
+                        null,
                         new Date(),
                         StringUtils.EMPTY
                 ));
@@ -74,6 +75,7 @@ public class ImportOfficialMapsFromServerFacadeImpl
                         ppmToImport.getPlatformName(),
                         ppmToImport.getMapToDisplay().getCommentary(),
                         true,
+                        null,
                         null,
                         errorMessage
                 ));

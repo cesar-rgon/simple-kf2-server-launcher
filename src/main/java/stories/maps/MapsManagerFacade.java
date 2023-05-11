@@ -32,25 +32,9 @@ public interface MapsManagerFacade {
     PrepareImportMapsFromServerFacadeResult prepareImportMapsFromServer(String profileName) throws Exception;
     List<MapToDisplay> getNotPresentOfficialMapList(List<String> officialMapNameList, String platformName, String profileName) throws Exception;
     String findPropertyValue(String propFileRelativePath, String propKey, String profileParam, String platformParam) throws Exception;
-    List<ImportMapResultToDisplay> importOfficialMapsFromServer(List<PlatformProfileMapToImport> ppmToImportList, String profileName) throws Exception ;
-
-    // ------------------------------------------------------------------------
-
-    List<PlatformDto> listAllPlatforms() throws SQLException;
+    List<ImportMapResultToDisplay> importOfficialMapsFromServer(List<PlatformProfileMapToImport> ppmToImportList, String profileName) throws Exception;
+    List<ImportMapResultToDisplay> importCustomMapsModsFromServer(List<PlatformProfileMapToImport> ppmToImportList, String profileName) throws Exception;
     void setConfigPropertyValue(String key, String value) throws Exception;
-    public void addPlatformProfileMapList(List<PlatformProfileMap> platformProfileMapListToAdd, StringBuffer success, StringBuffer errors) throws SQLException;
-    void unselectProfileMap(String profileName) throws Exception;
-    List<PlatformProfileToDisplay> selectProfilesToImport(String defaultSelectedProfileName) throws Exception;
-    String runServer(String platformName, String profileName) throws Exception;
-    PlatformProfileMapToImport importCustomMapModFromServer(PlatformProfileMapToImport ppmToImport, String selectedProfileName) throws Exception;
-    PlatformProfileMapToImport importOfficialMapFromServer(PlatformProfileMapToImport ppmToImport, String selectedProfileName) throws Exception;
-    Optional<AbstractMap> findMapByName(String mapName) throws Exception;
-    String[] getMapNameAndUrlImage(Long idWorkShop) throws Exception;
-
-
-    AbstractMapDto getMapByIdWorkShop(Long idWorkShop) throws SQLException;
-    AbstractMapDto getOfficialMapByName(String mapName) throws Exception ;
-    Kf2Common getKf2Common(String platformName) throws Exception;
-    ProfileDto findProfileDtoByName(String name) throws Exception;
+    void runServer(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) throws Exception;
 
 }

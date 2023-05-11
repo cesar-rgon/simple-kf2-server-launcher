@@ -67,7 +67,11 @@ public class MapWebInfoController implements Initializable {
         try {
             languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             if (Session.getInstance().getPpm() != null) {
-                mapIdWorkshop.setText("id WorkShop: " + ((CustomMapModDto) Session.getInstance().getPpm().getMapDto()).getIdWorkShop());
+                if (Session.getInstance().getPpm().getMapDto().isOfficial()) {
+                    mapIdWorkshop.setText("Map name: " + Session.getInstance().getPpm().getMapDto().getKey());
+                } else {
+                    mapIdWorkshop.setText("id WorkShop: " + ((CustomMapModDto) Session.getInstance().getPpm().getMapDto()).getIdWorkShop());
+                }
                 mapInfoWebView.getEngine().load(Session.getInstance().getPpm().getUrlInfo());
             } else {
                 mapIdWorkshop.setText("");

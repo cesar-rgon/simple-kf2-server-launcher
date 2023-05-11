@@ -11,6 +11,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -385,9 +386,9 @@ public class MapsController implements Initializable {
 
         mapPreview.setPreserveRatio(true);
         mapPreview.setFitWidth(gridpane.getPrefWidth());
-        mapPreview.setFitHeight(gridpane.getPrefWidth()/2);
         gridpane.add(mapPreview, 1, 1);
         GridPane.setMargin(mapPreview, new Insets(3,3,0,3));
+        GridPane.setHalignment(mapPreview, HPos.CENTER);
         CheckBox checkbox = new CheckBox();
         checkbox.setOpacity(0.5);
         checkbox.setOnAction(e -> {
@@ -505,8 +506,11 @@ public class MapsController implements Initializable {
                     @Override
                     public void handle(ActionEvent e) {
                         try {
-                            Session.getInstance().setConsole((StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
-                                    "< " + new Date() + " - Run Server >\n" + facade.runServer(platformProfileMapDto.getPlatformDto().getKey(), profileSelect.getValue().getName()));
+                            facade.runServer(
+                                    platformProfileMapDto.getPlatformDto().getKey(),
+                                    profileSelect.getValue().getName(),
+                                    languageCode
+                            );
                         } catch (Exception ex) {
                             logger.error(ex.getMessage(), ex);
                             Utils.errorDialog(ex.getMessage(), ex);
@@ -1232,18 +1236,17 @@ public class MapsController implements Initializable {
         }
     }
 
-    private void addCustomMapToPlatformTabs(PlatformProfileMapToImport importedPpm, String mapName) throws Exception {
+    private void addCustomMapToPlatformTabs(String platformName, String profileName, String mapName, Long idWorkshop) throws Exception {
 
-        PlatformProfileMapToImport finalImportedPpm = importedPpm;
-        if (EnumPlatform.STEAM.name().equals(importedPpm.getPlatformName()) &&
+        if (EnumPlatform.STEAM.name().equals(platformName) &&
                 !steamPlatformProfileMapDtoList.stream().
-                        filter(ppm -> !ppm.getMapDto().isOfficial() && ((CustomMapModDto) ppm.getMapDto()).getIdWorkShop().equals(finalImportedPpm.getMapToDisplay().getIdWorkShop())).
+                        filter(ppm -> !ppm.getMapDto().isOfficial() && ((CustomMapModDto) ppm.getMapDto()).getIdWorkShop().equals(idWorkshop)).
                         findFirst().
                         isPresent()) {
 
             Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByName(
-                    importedPpm.getPlatformName(),
-                    importedPpm.getProfileName(),
+                    platformName,
+                    profileName,
                     mapName
             );
 
@@ -1252,15 +1255,15 @@ public class MapsController implements Initializable {
             }
         }
 
-        if (EnumPlatform.EPIC.name().equals(importedPpm.getPlatformName()) &&
+        if (EnumPlatform.EPIC.name().equals(platformName) &&
                 !epicPlatformProfileMapDtoList.stream().
-                        filter(ppm -> !ppm.getMapDto().isOfficial() && ((CustomMapModDto) ppm.getMapDto()).getIdWorkShop().equals(finalImportedPpm.getMapToDisplay().getIdWorkShop())).
+                        filter(ppm -> !ppm.getMapDto().isOfficial() && ((CustomMapModDto) ppm.getMapDto()).getIdWorkShop().equals(idWorkshop)).
                         findFirst().
                         isPresent()) {
 
             Optional<PlatformProfileMapDto> profileMapDtoOptional = facade.findPlatformProfileMapDtoByName(
-                    importedPpm.getPlatformName(),
-                    importedPpm.getProfileName(),
+                    platformName,
+                    profileName,
                     mapName
             );
 
@@ -1281,7 +1284,11 @@ public class MapsController implements Initializable {
             for (ImportMapResultToDisplay importMapResultToDisplay: importMapResultToDisplayList) {
                 if (importMapResultToDisplay.getProfileName().equals(profileSelect.getValue().getName())) {
                     try {
-                        addOfficialMapToPlatformTabs(importMapResultToDisplay.getPlatformName(), importMapResultToDisplay.getProfileName(), importMapResultToDisplay.getMapName());
+                        addOfficialMapToPlatformTabs(
+                                importMapResultToDisplay.getPlatformName(),
+                                importMapResultToDisplay.getProfileName(),
+                                importMapResultToDisplay.getMapName()
+                        );
                     } catch (Exception e) {
                         String errorMessage = "Can not show the imported official map with name " + importMapResultToDisplay.getMapName() + " in the platform " + importMapResultToDisplay.getProfileName();
                         logger.error(errorMessage, e);
@@ -1301,58 +1308,33 @@ public class MapsController implements Initializable {
         if (ppmToImportList == null || ppmToImportList.isEmpty()) {
             return new ArrayList<ImportMapResultToDisplay>();
         }
-        PlatformProfileMapToImport importedPpm = null;
 
-        AbstractMapDto mapDto = null;
-        List<ImportMapResultToDisplay> importMapResultToDisplayList = new ArrayList<ImportMapResultToDisplay>();
-        for (PlatformProfileMapToImport ppmToImport: ppmToImportList) {
-            try {
-                importedPpm = facade.importCustomMapModFromServer(
-                        ppmToImport,
-                        profileSelect.getValue().getName()
-                );
+        try {
+            List<ImportMapResultToDisplay> importMapResultToDisplayList = facade.importCustomMapsModsFromServer(ppmToImportList, profileSelect.getValue().getName());
 
-                mapDto = facade.getMapByIdWorkShop(importedPpm.getMapToDisplay().getIdWorkShop());
-                if (mapDto == null) {
-                    String errorMessage = "Can not find the map with idWorkShop: " + importedPpm.getMapToDisplay().getIdWorkShop();
-                    logger.error(errorMessage);
-                    throw new RuntimeException(errorMessage);
-                }
-
-                importMapResultToDisplayList.add(new ImportMapResultToDisplay(
-                        importedPpm.getProfileName(),
-                        importedPpm.getPlatformName(),
-                        mapDto.getKey(),
-                        mapDto.isOfficial(),
-                        new Date(),
-                        StringUtils.EMPTY
-                ));
-
-            } catch (Exception e) {
-                String errorMessage = "Error importing the custom map/mod with idWorkShop: " + ppmToImport.getMapToDisplay().getIdWorkShop() + " for platform " + ppmToImport.getPlatformName() + " and profile " + ppmToImport.getProfileName();
-                logger.error(errorMessage, e);
-                importMapResultToDisplayList.add(new ImportMapResultToDisplay(
-                        ppmToImport.getProfileName(),
-                        ppmToImport.getPlatformName(),
-                        ppmToImport.getMapToDisplay().getCommentary(),
-                        false,
-                        null,
-                        errorMessage
-                ));
-                continue;
-            }
-
-            if (importedPpm.getProfileName().equals(profileSelect.getValue().getName())) {
-                try {
-                    addCustomMapToPlatformTabs(importedPpm, mapDto.getKey());
-                } catch (Exception e) {
-                    String errorMessage = "Can not show the imported custom map / mod with name " + importedPpm.getMapToDisplay().getCommentary() + " in the platform " + importedPpm.getPlatformName();
-                    logger.error(errorMessage, e);
+            for (ImportMapResultToDisplay importMapResultToDisplay: importMapResultToDisplayList) {
+                if (importMapResultToDisplay.getProfileName().equals(profileSelect.getValue().getName())) {
+                    try {
+                        addCustomMapToPlatformTabs(
+                                importMapResultToDisplay.getPlatformName(),
+                                importMapResultToDisplay.getProfileName(),
+                                importMapResultToDisplay.getMapName(),
+                                importMapResultToDisplay.getIdWorkshop()
+                        );
+                    } catch (Exception e) {
+                        String errorMessage = "Can not show the imported official map with name " + importMapResultToDisplay.getMapName() + " in the platform " + importMapResultToDisplay.getProfileName();
+                        logger.error(errorMessage, e);
+                    }
                 }
             }
+
+            return importMapResultToDisplayList;
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
         }
 
-        return importMapResultToDisplayList;
+        return new ArrayList<ImportMapResultToDisplay>();
     }
 
 

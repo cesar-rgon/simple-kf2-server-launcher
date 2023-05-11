@@ -26,6 +26,10 @@ import stories.findplatformprofilemapbynames.FindPlatformProfileMapByNameFacade;
 import stories.findplatformprofilemapbynames.FindPlatformProfileMapByNameFacadeImpl;
 import stories.findplatformprofilemapbynames.FindPlatformProfileMapByNameFacadeResult;
 import stories.findplatformprofilemapbynames.FindPlatformProfileMapByNameModelContext;
+import stories.importcustommapsfromserver.ImportCustomMapsFromServerFacade;
+import stories.importcustommapsfromserver.ImportCustomMapsFromServerFacadeImpl;
+import stories.importcustommapsfromserver.ImportCustomMapsFromServerFacadeResult;
+import stories.importcustommapsfromserver.ImportCustomMapsFromServerModelContext;
 import stories.importofficialmapsfromserver.ImportOfficialMapsFromServerFacade;
 import stories.importofficialmapsfromserver.ImportOfficialMapsFromServerFacadeImpl;
 import stories.importofficialmapsfromserver.ImportOfficialMapsFromServerFacadeResult;
@@ -50,6 +54,9 @@ import stories.prepareimportmapsfromserver.PrepareImportMapsFromServerFacade;
 import stories.prepareimportmapsfromserver.PrepareImportMapsFromServerFacadeImpl;
 import stories.prepareimportmapsfromserver.PrepareImportMapsFromServerFacadeResult;
 import stories.prepareimportmapsfromserver.PrepareImportMapsFromServerModelContext;
+import stories.runservers.RunServersFacade;
+import stories.runservers.RunServersFacadeImpl;
+import stories.runservers.RunServersModelContext;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -98,7 +105,8 @@ public class MapsManagerFacadeImpl
 
     @Override
     public void setConfigPropertyValue(String key, String value) throws Exception {
-
+        PropertyService propertyService = new PropertyServiceImpl();
+        propertyService.setProperty("properties/config.properties", key, value);
     }
 
     @Override
@@ -109,11 +117,6 @@ public class MapsManagerFacadeImpl
         InstallationFolderFacade installationFolderFacade = new InstallationFolderFacadeImpl(installationFolderModelContext);
         InstallationFolderFacadeResult result = installationFolderFacade.execute();
         return result.isCorrectInstallationFolder();
-    }
-
-    @Override
-    public void addPlatformProfileMapList(List<PlatformProfileMap> platformProfileMapListToAdd, StringBuffer success, StringBuffer errors) throws SQLException {
-
     }
 
     @Override
@@ -129,18 +132,14 @@ public class MapsManagerFacadeImpl
     }
 
     @Override
-    public void unselectProfileMap(String profileName) throws Exception {
-
-    }
-
-    @Override
-    public List<PlatformProfileToDisplay> selectProfilesToImport(String defaultSelectedProfileName) throws Exception {
-        return null;
-    }
-
-    @Override
-    public String runServer(String platformName, String profileName) throws Exception {
-        return null;
+    public void runServer(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) throws Exception {
+        RunServersModelContext runServersModelContext = new RunServersModelContext(
+                platformName,
+                actualSelectedProfileName,
+                actualSelectedLanguage
+        );
+        RunServersFacade runServersFacade = new RunServersFacadeImpl(runServersModelContext);
+        runServersFacade.execute();
     }
 
     @Override
@@ -157,21 +156,6 @@ public class MapsManagerFacadeImpl
     }
 
     @Override
-    public PlatformProfileMapToImport importCustomMapModFromServer(PlatformProfileMapToImport ppmToImport, String selectedProfileName) throws Exception {
-        return null;
-    }
-
-    @Override
-    public PlatformProfileMapToImport importOfficialMapFromServer(PlatformProfileMapToImport ppmToImport, String selectedProfileName) throws Exception {
-        return null;
-    }
-
-    @Override
-    public Optional<AbstractMap> findMapByName(String mapName) throws Exception {
-        return Optional.empty();
-    }
-
-    @Override
     public Optional<PlatformProfileMapDto> findPlatformProfileMapDtoByName(String platformName, String profileName, String mapName) throws Exception {
         FindPlatformProfileMapByNameModelContext findPlatformProfileMapByNameModelContext = new FindPlatformProfileMapByNameModelContext(
                 platformName,
@@ -184,26 +168,6 @@ public class MapsManagerFacadeImpl
     }
 
     @Override
-    public String[] getMapNameAndUrlImage(Long idWorkShop) throws Exception {
-        return new String[0];
-    }
-
-    @Override
-    public List<PlatformDto> listAllPlatforms() throws SQLException {
-        return null;
-    }
-
-    @Override
-    public AbstractMapDto getMapByIdWorkShop(Long idWorkShop) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public AbstractMapDto getOfficialMapByName(String mapName) throws Exception {
-        return null;
-    }
-
-    @Override
     public List<MapToDisplay> getNotPresentOfficialMapList(List<String> officialMapNameList, String platformName, String profileName) throws Exception {
         ListNotPresentOfficialMapFacadeModelContext listNotPresentOfficialMapFacadeModelContext = new ListNotPresentOfficialMapFacadeModelContext(
                 officialMapNameList,
@@ -213,16 +177,6 @@ public class MapsManagerFacadeImpl
         ListNotPresentOfficialMapFacade listNotPresentOfficialMapFacade = new ListNotPresentOfficialMapFacadeImpl(listNotPresentOfficialMapFacadeModelContext);
         ListNotPresentOfficialMapFacadeResult result = listNotPresentOfficialMapFacade.execute();
         return result.getNotPresentOfficialMapList();
-    }
-
-    @Override
-    public Kf2Common getKf2Common(String platformName) throws Exception {
-        return null;
-    }
-
-    @Override
-    public ProfileDto findProfileDtoByName(String name) throws Exception {
-        return null;
     }
 
     @Override
@@ -257,6 +211,17 @@ public class MapsManagerFacadeImpl
         );
         ImportOfficialMapsFromServerFacade importOfficialMapsFromServerFacade = new ImportOfficialMapsFromServerFacadeImpl(importOfficialMapsFromServerModelContext);
         ImportOfficialMapsFromServerFacadeResult result = importOfficialMapsFromServerFacade.execute();
+        return result.getImportMapResultToDisplayList();
+    }
+
+    @Override
+    public List<ImportMapResultToDisplay> importCustomMapsModsFromServer(List<PlatformProfileMapToImport> ppmToImportList, String profileName) throws Exception {
+        ImportCustomMapsFromServerModelContext importCustomMapsFromServerModelContext = new ImportCustomMapsFromServerModelContext(
+                ppmToImportList,
+                profileName
+        );
+        ImportCustomMapsFromServerFacade importCustomMapsFromServerFacade = new ImportCustomMapsFromServerFacadeImpl(importCustomMapsFromServerModelContext);
+        ImportCustomMapsFromServerFacadeResult result = importCustomMapsFromServerFacade.execute();
         return result.getImportMapResultToDisplayList();
     }
 
