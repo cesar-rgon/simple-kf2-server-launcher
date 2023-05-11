@@ -8,11 +8,11 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 
-public class MapEditionFacadeImpl extends OldAFacade implements MapEditionFacade {
+public class OldMapEditionFacadeImpl extends OldAFacade implements OldMapEditionFacade {
 
     private final PlatformProfileMapService platformProfileMapService;
 
-    protected MapEditionFacadeImpl() {
+    protected OldMapEditionFacadeImpl() {
         super(null);
         this.platformProfileMapService = new PlatformProfileMapServiceImpl(em);
     }

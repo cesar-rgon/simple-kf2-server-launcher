@@ -1,6 +1,5 @@
 package stories.prepareimportmapsfromserver;
 
-import dtos.PlatformDto;
 import dtos.factories.PlatformDtoFactory;
 import entities.AbstractPlatform;
 import entities.EpicPlatform;
@@ -8,8 +7,6 @@ import entities.Profile;
 import entities.SteamPlatform;
 import framework.AbstractTransactionalFacade;
 import jakarta.persistence.EntityManager;
-import old.mapsedition.OldMapsEditionFacadeImpl;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.MapToDisplay;
@@ -23,7 +20,6 @@ import services.PlatformService;
 import services.PlatformServiceImpl;
 import services.ProfileService;
 import services.ProfileServiceImpl;
-import utils.Utils;
 
 import java.io.File;
 import java.nio.file.Files;

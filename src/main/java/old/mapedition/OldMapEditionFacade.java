@@ -4,7 +4,7 @@ import entities.PlatformProfileMap;
 
 import java.time.LocalDate;
 
-public interface MapEditionFacade {
+public interface OldMapEditionFacade {
     String findConfigPropertyValue(String key) throws Exception;
     boolean updateMapSetUrlPhoto(PlatformProfileMap platformProfileMap, String mapPreviewUrl) throws Exception;
     boolean updateMapSetInfoUrl(PlatformProfileMap platformProfileMap, String mapInfoUrl) throws Exception;

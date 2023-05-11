@@ -1,9 +1,7 @@
-package old.mapedition;
+package stories.mapedition;
 
 import dtos.CustomMapModDto;
 import dtos.PlatformProfileMapDto;
-import dtos.factories.PlatformProfileMapDtoFactory;
-import entities.PlatformProfileMap;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -29,17 +27,14 @@ import utils.Utils;
 
 import java.io.File;
 import java.net.URL;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.ResourceBundle;
 
 public class MapEditionController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(MapEditionController.class);
 
-    private final MapEditionFacade facade;
-    private final PropertyService propertyService;
+    private final MapEditionManagerFacade facade;
     private String languageCode;
     private int profileMapIndex;
 
@@ -81,8 +76,7 @@ public class MapEditionController implements Initializable {
 
     public MapEditionController() {
         super();
-        facade = new MapEditionFacadeImpl();
-        this.propertyService = new PropertyServiceImpl();
+        facade = new MapEditionManagerFacadeImpl();
     }
 
 
@@ -90,69 +84,69 @@ public class MapEditionController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         try {
-            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-            String editMapText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.editMap");
+            languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            String editMapText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.editMap");
             titleConfigLabel.setText(editMapText);
 
             double tooltipDuration = Double.parseDouble(
-                    propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                    facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
             );
 
-            String previousMapText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.previousMap");
+            String previousMapText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.previousMap");
             previousMapButton.setText(previousMapText);
-            Tooltip previousMapButtonTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.previousMap"));
+            Tooltip previousMapButtonTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.previousMap"));
             previousMapButtonTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             previousMapButton.setTooltip(previousMapButtonTooltip);
 
-            String nextMapText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.nextMap");
+            String nextMapText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.nextMap");
             nextMapButton.setText(nextMapText);
-            Tooltip nextMapButtonTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.nextMap"));
+            Tooltip nextMapButtonTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.nextMap"));
             nextMapButtonTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             nextMapButton.setTooltip(nextMapButtonTooltip);
 
-            String backText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.backMapsPage");
+            String backText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.backMapsPage");
             backButton.setText(backText);
-            Tooltip backButtonTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.backMapList"));
+            Tooltip backButtonTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.backMapList"));
             backButtonTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             backButton.setTooltip(backButtonTooltip);
 
-            String mapNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.mapName");
+            String mapNameText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.mapName");
             mapNameLabel.setText(mapNameText);
             loadTooltip(languageCode, "prop.tooltip.mapName", mapNameImg, mapNameLabel, mapNameValue);
 
             loadTooltip(languageCode, "prop.tooltip.alias", aliasImg, aliasLabel, aliasTextField);
 
-            String mapPreviewUrlText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.mapPrevireUrl");
+            String mapPreviewUrlText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.mapPrevireUrl");
             mapPreviewUrlLabel.setText(mapPreviewUrlText);
             loadTooltip(languageCode, "prop.tooltip.mapPreviewUrl", mapPreviewUrlImg, mapPreviewUrlLabel, mapPreviewUrlTextField);
 
-            String officialText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.official") + " ?";
+            String officialText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.official") + " ?";
             officialLabel.setText(officialText);
             loadTooltip(languageCode, "prop.tooltip.isOfficial", officialImg, officialLabel, officialValue);
 
-            String downloadedText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.downloaded");
+            String downloadedText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.downloaded");
             downloadedLabel.setText(downloadedText);
             loadTooltip(languageCode, "prop.tooltip.downloaded", downloadedImg, downloadedLabel, downloadedValue);
 
-            String platformText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.platform");
+            String platformText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.platform");
             platformLabel.setText(platformText);
             loadTooltip(languageCode, "prop.tooltip.platform", platformImg, platformLabel, platformValue);
 
             loadTooltip(languageCode, "prop.tooltip.idWorkShop", idWorkShopImg, idWorkShopLabel, idWorkShopValue);
 
-            String importationDateStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importationDate");
+            String importationDateStr = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importationDate");
             importationDateLabel.setText(importationDateStr);
             loadTooltip(languageCode, "prop.tooltip.importationDate", importationDateImg, importationDateLabel, importationDateValue);
 
-            String releaseDateStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.releaseDate");
+            String releaseDateStr = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.releaseDate");
             releaseDateLabel.setText(releaseDateStr);
             loadTooltip(languageCode, "prop.tooltip.releaseDate", releaseDateImg, releaseDateLabel, releaseDatePicker);
 
-            String infoUrlText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.infoUrl");
+            String infoUrlText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.infoUrl");
             infoUrlLabel.setText(infoUrlText);
             loadTooltip(languageCode, "prop.tooltip.infoUrl", infoUrlImg, infoUrlLabel, infoUrlTextField);
 
-            Tooltip mapThumbnailTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.mapThumbnail"));
+            Tooltip mapThumbnailTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.mapThumbnail"));
             mapThumbnailTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             Tooltip.install(mapPreviewWebView, mapThumbnailTooltip);
 
@@ -189,24 +183,17 @@ public class MapEditionController implements Initializable {
                             Utils.warningDialog("The alias can not be empty", "Setting the alias as map name");
                             aliasTextField.setText(edittedPlatformProfileMap.getMapDto().getKey());
                         }
-
-                        // TODO: Fix this
-                        /*
-                        if (facade.updateMapSetAlias(edittedPlatformProfileMap, aliasTextField.getText())) {
-                            //edittedPlatformProfileMap.setAlias(aliasTextField.getText());
-                        } else {
-                            logger.warn("The alias value could not be saved!" + aliasTextField.getText());
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                                    "prop.message.mapNotSaved");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                                    "prop.message.aliasNotSaved");
-                            Utils.warningDialog(headerText, contentText);
-                        }
-                         */
+                        facade.updateMapSetAlias(
+                                edittedPlatformProfileMap.getPlatformDto().getKey(),
+                                edittedPlatformProfileMap.getProfileDto().getName(),
+                                edittedPlatformProfileMap.getMapDto().getKey(),
+                                aliasTextField.getText()
+                        );
                     }
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                    Utils.errorDialog(e.getMessage(), e);
+                    String message = "The alias value could not be saved!" + aliasTextField.getText();
+                    logger.error(message, e);
+                    Utils.errorDialog(message, e);
                 }
             }
         });
@@ -229,20 +216,13 @@ public class MapEditionController implements Initializable {
                             }
                         }
 
-                        // TODO: Fix this
-                        /*
-                        if (facade.updateMapSetUrlPhoto(edittedPlatformProfileMap, mapPreviewUrl)) {
-                            //edittedPlatformProfileMap.setUrlPhoto(mapPreviewUrl);
-                            mapPreviewUrlTextField.setText(mapPreviewUrl);
-                        } else {
-                            logger.warn("The map image link value could not be saved!" + mapPreviewUrlTextField.getText());
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                                    "prop.message.mapNotSaved");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                                    "prop.message.mapImageLinkNotSaved");
-                            Utils.warningDialog(headerText, contentText);
-                        }
-                        */
+                        facade.updateMapSetUrlPhoto(
+                                edittedPlatformProfileMap.getPlatformDto().getKey(),
+                                edittedPlatformProfileMap.getProfileDto().getName(),
+                                edittedPlatformProfileMap.getMapDto().getKey(),
+                                mapPreviewUrl
+                        );
+                        mapPreviewUrlTextField.setText(mapPreviewUrl);
 
                         if (StringUtils.isNotEmpty(mapPreviewUrlTextField.getText())) {
                             mapPreviewWebView.getEngine().load(mapPreviewUrlTextField.getText());
@@ -256,8 +236,9 @@ public class MapEditionController implements Initializable {
                         }
                     }
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                    Utils.errorDialog(e.getMessage(), e);
+                    String message = "The map image link value could not be saved!" + mapPreviewUrlTextField.getText();
+                    logger.error(message, e);
+                    Utils.errorDialog(message, e);
                 }
             }
         });
@@ -269,23 +250,17 @@ public class MapEditionController implements Initializable {
                     if (!newPropertyValue && !Session.getInstance().getPlatformProfileMapList().isEmpty()) {
                         PlatformProfileMapDto edittedPlatformProfileMap = Session.getInstance().getPlatformProfileMapList().get(profileMapIndex);
 
-                        // TODO: Fix this
-                        /*
-                        if (facade.updateMapSetInfoUrl(edittedPlatformProfileMap, infoUrlTextField.getText())) {
-                            edittedPlatformProfileMap.setUrlInfo(infoUrlTextField.getText());
-                        } else {
-                            logger.warn("The map info link value could not be saved!" + infoUrlTextField.getText());
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                                    "prop.message.mapNotSaved");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                                    "prop.message.mapInfoLinkNotSaved");
-                            Utils.warningDialog(headerText, contentText);
-                        }
-                        */
+                        facade.updateMapSetInfoUrl(
+                                edittedPlatformProfileMap.getPlatformDto().getKey(),
+                                edittedPlatformProfileMap.getProfileDto().getName(),
+                                edittedPlatformProfileMap.getMapDto().getKey(),
+                                infoUrlTextField.getText()
+                        );
                     }
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                    Utils.errorDialog(e.getMessage(), e);
+                    String message = "The map info link value could not be saved!" + infoUrlTextField.getText();
+                    logger.error(message, e);
+                    Utils.errorDialog(message, e);
                 }
             }
         });
@@ -296,25 +271,18 @@ public class MapEditionController implements Initializable {
                 try {
                     if (!newValue && !Session.getInstance().getPlatformProfileMapList().isEmpty()) {
                         PlatformProfileMapDto edittedPlatformProfileMap = Session.getInstance().getPlatformProfileMapList().get(profileMapIndex);
-                        // TODO: Fix this
-                        /*
-                        if (facade.updateMapSetReleaseDate(edittedPlatformProfileMap, releaseDatePicker.getValue())) {
-                            edittedPlatformProfileMap.setReleaseDate(
-                                    Date.from(releaseDatePicker.getValue().atStartOfDay(ZoneId.systemDefault()).toInstant())
-                            );
-                        } else {
-                            logger.warn("The map release date value could not be saved!" + releaseDatePicker.getValue());
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                                    "prop.message.mapNotSaved");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",
-                                    "prop.message.mapReleaseDateNotSaved");
-                            Utils.warningDialog(headerText, contentText);
-                        }
-                        */
+
+                        facade.updateMapSetReleaseDate(
+                                edittedPlatformProfileMap.getPlatformDto().getKey(),
+                                edittedPlatformProfileMap.getProfileDto().getName(),
+                                edittedPlatformProfileMap.getMapDto().getKey(),
+                                releaseDatePicker.getValue()
+                        );
                     }
                 } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                    Utils.errorDialog(e.getMessage(), e);
+                    String message = "The map release date value could not be saved!" + releaseDatePicker.getValue();
+                    logger.error(message, e);
+                    Utils.errorDialog(message, e);
                 }
             }
         });
@@ -323,9 +291,9 @@ public class MapEditionController implements Initializable {
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, Label textValue) throws Exception {
         double tooltipDuration = Double.parseDouble(
-                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
         );
-        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        Tooltip tooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
         tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
@@ -334,9 +302,9 @@ public class MapEditionController implements Initializable {
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, TextField textField) throws Exception {
         double tooltipDuration = Double.parseDouble(
-                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
         );
-        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        Tooltip tooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
         tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
@@ -345,9 +313,9 @@ public class MapEditionController implements Initializable {
 
     private void loadTooltip(String languageCode, String propKey, ImageView img, Label label, DatePicker calendar) throws Exception {
         double tooltipDuration = Double.parseDouble(
-                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
         );
-        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        Tooltip tooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
         tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
         label.setTooltip(tooltip);
@@ -364,15 +332,15 @@ public class MapEditionController implements Initializable {
                 mapNameValue.setText(platformProfileMapDto.getMapDto().getKey());
                 aliasTextField.setText(platformProfileMapDto.getAlias());
 
-                String yesText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.yes");
-                String noText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.no");
+                String yesText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.yes");
+                String noText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.no");
 
                 officialValue.setText(platformProfileMapDto.getMapDto().isOfficial() ? yesText : noText);
                 downloadedValue.setText(platformProfileMapDto.getMapDto().isOfficial() ? yesText : platformProfileMapDto.isDownloaded() ? yesText : noText);
                 platformValue.setText(platformProfileMapDto.getPlatformDto().getValue());
                 idWorkShopValue.setText(platformProfileMapDto.getMapDto().isOfficial() ? StringUtils.EMPTY : String.valueOf(((CustomMapModDto) platformProfileMapDto.getMapDto()).getIdWorkShop()));
-                String unknownStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unknown");
-                String dateHourPattern = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.code.dateHourPattern");
+                String unknownStr = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unknown");
+                String dateHourPattern = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.code.dateHourPattern");
                 importationDateValue.setText(
                         platformProfileMapDto.getImportedDate().format(DateTimeFormatter.ofPattern(dateHourPattern))
                 );
