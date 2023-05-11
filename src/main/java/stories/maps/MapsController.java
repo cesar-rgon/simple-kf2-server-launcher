@@ -39,6 +39,7 @@ import stories.addcustommapstoprofile.AddCustomMapsToProfileFacadeResult;
 import stories.listplatformprofilemap.ListPlatformProfileMapFacadeResult;
 import stories.mapsinitialize.MapsInitializeFacadeResult;
 import stories.mapsinitialize.MapsInitializeModelContext;
+import stories.prepareimportmapsfromserver.PrepareImportMapsFromServerFacadeResult;
 import utils.Utils;
 
 import java.io.File;
@@ -1004,130 +1005,23 @@ public class MapsController implements Initializable {
                 return;
             }
 
-            List<PlatformDto> allPlatforms = facade.listAllPlatforms();
+            PrepareImportMapsFromServerFacadeResult prepareResult = facade.prepareImportMapsFromServer(
+                    profileSelect.getValue().getName()
+            );
 
-            boolean invalidInstallationFolderFound = false;
-            for (PlatformDto platform: allPlatforms) {
-                if (facade.isCorrectInstallationFolder(platform.getKey())) {
-                    if (!Files.exists(Paths.get(platform.getInstallationFolder() + "/KFGame/Cache"))) {
-                        Files.createDirectory(Paths.get(platform.getInstallationFolder() + "/KFGame/Cache"));
-                    }
-                } else {
-                    logger.warn("Invalid " + platform.getValue() + " installation folder was found. Define in Install/Update section:" + platform.getInstallationFolder());
-                    invalidInstallationFolderFound = true;
-                }
+            String languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            String selectPlatformProfilesHeaderText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfiles");
+            List<PlatformProfileToDisplay> selectedPlatformProfileList = Utils.selectPlatformProfilesDialog(
+                    selectPlatformProfilesHeaderText + ":",
+                    prepareResult.getPlatformProfileToDisplayList(),
+                    prepareResult.getFullProfileNameList()
+            );
 
-            }
-            if (invalidInstallationFolderFound) {
-                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");
-                Utils.warningDialog(headerText, contentText);
+            if (selectedPlatformProfileList.isEmpty()) {
                 return;
             }
 
-            List<PlatformProfileToDisplay> selectedPlatformProfileList = facade.selectProfilesToImport(profileSelect.getValue().getName());
-            if (selectedPlatformProfileList == null || selectedPlatformProfileList.isEmpty()) {
-                return;
-            }
-
-            Optional<PlatformDto> steamPlatformDtoOptional = allPlatforms.stream().filter(p -> p.getKey().equals(EnumPlatform.STEAM.name())).findFirst();
-            Optional<PlatformDto> epicPlatformDtoOptional = allPlatforms.stream().filter(p -> p.getKey().equals(EnumPlatform.EPIC.name())).findFirst();
-            if (!steamPlatformDtoOptional.isPresent() || !epicPlatformDtoOptional.isPresent()) {
-                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.PlatformNotFound");
-                Utils.warningDialog(headerText, contentText);
-                return;
-            }
-
-            PlatformDto steamPlatform = steamPlatformDtoOptional.get();
-            PlatformDto epicPlatform = epicPlatformDtoOptional.get();
-            Kf2Common steamKf2Common = facade.getKf2Common(steamPlatform.getKey());
-            Kf2Common epicKf2Common = facade.getKf2Common(epicPlatform.getKey());
-
-            // CUSTOM MAP / MOD LIST FOR STEAM
-            List<MapToDisplay> steamCustomMapModList = Files.walk(Paths.get(steamPlatform.getInstallationFolder() + "/KFGame/Cache"))
-                    .filter(Files::isRegularFile)
-                    .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
-                    .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
-                    .map(path -> {
-                        String filenameWithExtension = path.getFileName().toString();
-                        String[] array = filenameWithExtension.split("\\.");
-                        String mapName = array[0];
-                        Long idWorkShop = steamKf2Common.getIdWorkShopFromPath(path.getParent());
-                        return new MapToDisplay(idWorkShop, mapName);
-                    })
-                    .collect(Collectors.toList());
-
-            File[] steamCacheFolderList = new File(steamPlatform.getInstallationFolder() + "/KFGame/Cache").listFiles();
-            if (steamCacheFolderList != null && steamCacheFolderList.length > 0) {
-                List<Long> idWorkShopCustomMapList = steamCustomMapModList.stream().map(MapToDisplay::getIdWorkShop).collect(Collectors.toList());
-                steamCustomMapModList.addAll(
-                        Arrays.stream(steamCacheFolderList)
-                                .filter(file -> file.isDirectory())
-                                .map(file -> file.toPath())
-                                .filter(path -> !idWorkShopCustomMapList.contains(steamKf2Common.getIdWorkShopFromPath(path)))
-                                .map(path -> {
-                                    Long idWorkShop = Long.parseLong(path.getFileName().toString());
-                                    return new MapToDisplay(idWorkShop, "MOD [" + idWorkShop + "]");
-                                })
-                                .collect(Collectors.toList())
-                );
-            }
-
-            // CUSTOM MAP / MOD LIST FOR EPIC
-            List<MapToDisplay> epicCustomMapModList = Files.walk(Paths.get(epicPlatform.getInstallationFolder() + "/KFGame/Cache"))
-                    .filter(Files::isRegularFile)
-                    .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
-                    .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
-                    .map(path -> {
-                        String filenameWithExtension = path.getFileName().toString();
-                        String[] array = filenameWithExtension.split("\\.");
-                        String mapName = array[0];
-                        Long idWorkShop = epicKf2Common.getIdWorkShopFromPath(path.getParent());
-                        return new MapToDisplay(idWorkShop, mapName);
-                    })
-                    .collect(Collectors.toList());
-
-            File[] epicCacheFolderList = new File(epicPlatform.getInstallationFolder() + "/KFGame/Cache").listFiles();
-            if (epicCacheFolderList != null && epicCacheFolderList.length > 0) {
-                List<Long> idWorkShopCustomMapList = epicCustomMapModList.stream().map(MapToDisplay::getIdWorkShop).collect(Collectors.toList());
-                epicCustomMapModList.addAll(
-                        Arrays.stream(epicCacheFolderList)
-                                .filter(file -> file.isDirectory())
-                                .map(file -> file.toPath())
-                                .filter(path -> !idWorkShopCustomMapList.contains(epicKf2Common.getIdWorkShopFromPath(path)))
-                                .map(path -> {
-                                    Long idWorkShop = Long.parseLong(path.getFileName().toString());
-                                    return new MapToDisplay(idWorkShop, "MOD [" + idWorkShop + "]");
-                                })
-                                .collect(Collectors.toList())
-                );
-            }
-
-            // OFFICIAL MAP LIST FOR STEAM
-            List<String> steamOfficialMapNameList = Files.walk(Paths.get( steamPlatform.getInstallationFolder() + "/KFGame/BrewedPC/Maps"))
-                    .filter(Files::isRegularFile)
-                    .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
-                    .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
-                    .map(path -> {
-                        String filenameWithExtension = path.getFileName().toString();
-                        String[] array = filenameWithExtension.split("\\.");
-                        return array[0];
-                    })
-                    .collect(Collectors.toList());
-
-            // OFFICIAL MAP LIST FOR EPIC
-            List<String> epicOfficialMapNameList = Files.walk(Paths.get(epicPlatform.getInstallationFolder() + "/KFGame/BrewedPC/Maps"))
-                    .filter(Files::isRegularFile)
-                    .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
-                    .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
-                    .map(path -> {
-                        String filenameWithExtension = path.getFileName().toString();
-                        String[] array = filenameWithExtension.split("\\.");
-                        return array[0];
-                    })
-                    .collect(Collectors.toList());
-
+            // ------------------------
 
             List<PlatformProfileMapToImport> officialMapPpmToImportList = new ArrayList<PlatformProfileMapToImport>();
             List<PlatformProfileMapToImport> customMapPpmToImportList = new ArrayList<PlatformProfileMapToImport>();
@@ -1136,24 +1030,16 @@ public class MapsController implements Initializable {
 
                 switch (selectedPlatformProfile.getPlatformName()) {
                     case "Steam":
-                        if (steamPlatformDtoOptional.isPresent()) {
-                            platformList.add(steamPlatformDtoOptional.get());
-                        }
+                        platformList.add(prepareResult.getSteamPlatform());
                         break;
 
                     case "Epic Games":
-                        if (epicPlatformDtoOptional.isPresent()) {
-                            platformList.add(epicPlatformDtoOptional.get());
-                        }
+                        platformList.add(prepareResult.getEpicPlatform());
                         break;
 
                     case "All platforms":
-                        if (steamPlatformDtoOptional.isPresent()) {
-                            platformList.add(steamPlatformDtoOptional.get());
-                        }
-                        if (epicPlatformDtoOptional.isPresent()) {
-                            platformList.add(epicPlatformDtoOptional.get());
-                        }
+                        platformList.add(prepareResult.getSteamPlatform());
+                        platformList.add(prepareResult.getEpicPlatform());
                         break;
                 }
 
@@ -1167,9 +1053,9 @@ public class MapsController implements Initializable {
                         // Not present Official Maps
                         List<MapToDisplay> notPresentOfficialMapList = new ArrayList<MapToDisplay>();
                         if (EnumPlatform.STEAM.name().equals(platform.getKey())) {
-                            notPresentOfficialMapList = facade.getNotPresentOfficialMapList(steamOfficialMapNameList, platform.getKey(), selectedPlatformProfile.getProfileName());
+                            notPresentOfficialMapList = facade.getNotPresentOfficialMapList(prepareResult.getSteamOfficialMapNameList(), platform.getKey(), selectedPlatformProfile.getProfileName());
                         } else {
-                            notPresentOfficialMapList = facade.getNotPresentOfficialMapList(epicOfficialMapNameList, platform.getKey(), selectedPlatformProfile.getProfileName());
+                            notPresentOfficialMapList = facade.getNotPresentOfficialMapList(prepareResult.getEpicOfficialMapNameList(), platform.getKey(), selectedPlatformProfile.getProfileName());
                         }
 
                         for (MapToDisplay map : notPresentOfficialMapList) {
@@ -1185,9 +1071,9 @@ public class MapsController implements Initializable {
                         // Selected Custom Maps
                         List<MapToDisplay> selectedCustomMapModList = new ArrayList<MapToDisplay>();
                         if (EnumPlatform.STEAM.name().equals(platform.getKey())) {
-                            selectedCustomMapModList = Utils.selectMapsDialog(headerText, steamCustomMapModList);
+                            selectedCustomMapModList = Utils.selectMapsDialog(headerText, prepareResult.getSteamCustomMapModList());
                         } else {
-                            selectedCustomMapModList = Utils.selectMapsDialog(headerText, epicCustomMapModList);
+                            selectedCustomMapModList = Utils.selectMapsDialog(headerText, prepareResult.getEpicCustomMapModList());
                         }
 
                         for (MapToDisplay map : selectedCustomMapModList) {
@@ -1307,7 +1193,6 @@ public class MapsController implements Initializable {
             logger.error(message, e);
             Utils.errorDialog(message, e);
         }
-
     }
 
     private void addOfficialMapToPlatformTabs(PlatformProfileMapToImport importedPpm, String mapName) throws Exception {

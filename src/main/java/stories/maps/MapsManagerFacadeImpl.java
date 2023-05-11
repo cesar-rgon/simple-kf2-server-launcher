@@ -37,6 +37,10 @@ import stories.listplatformprofilemap.ListPlatformProfileMapFacade;
 import stories.listplatformprofilemap.ListPlatformProfileMapFacadeImpl;
 import stories.listplatformprofilemap.ListPlatformProfileMapFacadeResult;
 import stories.listplatformprofilemap.ListPlatformProfileMapModelContext;
+import stories.prepareimportmapsfromserver.PrepareImportMapsFromServerFacade;
+import stories.prepareimportmapsfromserver.PrepareImportMapsFromServerFacadeImpl;
+import stories.prepareimportmapsfromserver.PrepareImportMapsFromServerFacadeResult;
+import stories.prepareimportmapsfromserver.PrepareImportMapsFromServerModelContext;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -203,5 +207,14 @@ public class MapsManagerFacadeImpl
     @Override
     public ProfileDto findProfileDtoByName(String name) throws Exception {
         return null;
+    }
+
+    @Override
+    public PrepareImportMapsFromServerFacadeResult prepareImportMapsFromServer(String profileName) throws Exception {
+        PrepareImportMapsFromServerModelContext prepareImportMapsFromServerModelContext = new PrepareImportMapsFromServerModelContext(
+                profileName
+        );
+        PrepareImportMapsFromServerFacade prepareImportMapsFromServerFacade = new PrepareImportMapsFromServerFacadeImpl(prepareImportMapsFromServerModelContext);
+        return prepareImportMapsFromServerFacade.execute();
     }
 }

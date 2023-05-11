@@ -13,6 +13,7 @@ import pojos.kf2factory.Kf2Common;
 import stories.addcustommapstoprofile.AddCustomMapsToProfileFacadeResult;
 import stories.listplatformprofilemap.ListPlatformProfileMapFacadeResult;
 import stories.mapsinitialize.MapsInitializeFacadeResult;
+import stories.prepareimportmapsfromserver.PrepareImportMapsFromServerFacadeResult;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -27,9 +28,11 @@ public interface MapsManagerFacade {
     Optional<PlatformProfileMapDto> findPlatformProfileMapDtoByName(String platformName, String profileName, String mapName) throws Exception;
     boolean isCorrectInstallationFolder(String platformName) throws Exception;
     AbstractMapDto deleteMapFromPlatformProfile(String platformName, String mapName, String profileName) throws Exception;
+    PrepareImportMapsFromServerFacadeResult prepareImportMapsFromServer(String profileName) throws Exception;
 
     // ------------------------------------------------------------------------
 
+    List<PlatformDto> listAllPlatforms() throws SQLException;
     void setConfigPropertyValue(String key, String value) throws Exception;
     public void addPlatformProfileMapList(List<PlatformProfileMap> platformProfileMapListToAdd, StringBuffer success, StringBuffer errors) throws SQLException;
     void unselectProfileMap(String profileName) throws Exception;
@@ -39,7 +42,7 @@ public interface MapsManagerFacade {
     PlatformProfileMapToImport importOfficialMapFromServer(PlatformProfileMapToImport ppmToImport, String selectedProfileName) throws Exception;
     Optional<AbstractMap> findMapByName(String mapName) throws Exception;
     String[] getMapNameAndUrlImage(Long idWorkShop) throws Exception;
-    List<PlatformDto> listAllPlatforms() throws SQLException;
+
     String getPropertyValue(String propFileRelativePath, String propKey, String profileParam, String platformParam) throws Exception;
     AbstractMapDto getMapByIdWorkShop(Long idWorkShop) throws SQLException;
     AbstractMapDto getOfficialMapByName(String mapName) throws Exception ;
