@@ -9,6 +9,7 @@ import entities.SteamPlatform;
 import framework.AbstractTransactionalFacade;
 import jakarta.persistence.EntityManager;
 import old.mapsedition.OldMapsEditionFacadeImpl;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.MapToDisplay;
@@ -73,14 +74,11 @@ public class PrepareImportMapsFromServerFacadeImpl
             throw new RuntimeException("Not all the platforms could be found");
         }
 
-        for (AbstractPlatform platform: allPlatforms) {
-            if (!isCorrectInstallationFolder(platform.getCode(), em)) {
-                String message = "Invalid " + platform.getDescription() + " installation folder was found. Define in Install/Update section:" + platform.getInstallationFolder();
-                throw new RuntimeException(message);
-            }
-            if (!Files.exists(Paths.get(platform.getInstallationFolder() + "/KFGame/Cache"))) {
-                Files.createDirectory(Paths.get(platform.getInstallationFolder() + "/KFGame/Cache"));
-            }
+        AbstractPlatform steamPlatform = steamPlatformOptional.get();
+        AbstractPlatform epicPlatform = epicPlatformOptional.get();
+
+        if (!isCorrectInstallationFolder(steamPlatform.getCode(), em) && !isCorrectInstallationFolder(epicPlatform.getCode(), em)) {
+            throw new RuntimeException("All the platforms have incorrect installation folder. Define at least one of them in Install/Update section");
         }
 
         List<PlatformProfileToDisplay> platformProfileToDisplayList = getPlatformProfileToDisplayList(allPlatforms, allProfiles, facadeModelContext.getProfileName(), em);
@@ -90,95 +88,109 @@ public class PrepareImportMapsFromServerFacadeImpl
             throw new RuntimeException("No platforms and profiles could be found");
         }
 
-        AbstractPlatform steamPlatform = steamPlatformOptional.get();
-        AbstractPlatform epicPlatform = epicPlatformOptional.get();
-
         Kf2Common steamKf2Common = Kf2Factory.getInstance(steamPlatform, em);
         Kf2Common epicKf2Common = Kf2Factory.getInstance(epicPlatform, em);
+        List<MapToDisplay> steamCustomMapModList = new ArrayList<MapToDisplay>();
+        List<String> steamOfficialMapNameList = new ArrayList<String>();
+        List<MapToDisplay> epicCustomMapModList = new ArrayList<MapToDisplay>();
+        List<String> epicOfficialMapNameList = new ArrayList<String>();
 
-        // CUSTOM MAP / MOD LIST FOR STEAM
-        List<MapToDisplay> steamCustomMapModList = Files.walk(Paths.get(steamPlatform.getInstallationFolder() + "/KFGame/Cache"))
-                .filter(Files::isRegularFile)
-                .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
-                .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
-                .map(path -> {
-                    String filenameWithExtension = path.getFileName().toString();
-                    String[] array = filenameWithExtension.split("\\.");
-                    String mapName = array[0];
-                    Long idWorkShop = steamKf2Common.getIdWorkShopFromPath(path.getParent());
-                    return new MapToDisplay(idWorkShop, mapName);
-                })
-                .collect(Collectors.toList());
+        if (isCorrectInstallationFolder(steamPlatform.getCode(), em)) {
+            if (!Files.exists(Paths.get(steamPlatform.getInstallationFolder() + "/KFGame/Cache"))) {
+                Files.createDirectory(Paths.get(steamPlatform.getInstallationFolder() + "/KFGame/Cache"));
+            }
 
-        File[] steamCacheFolderList = new File(steamPlatform.getInstallationFolder() + "/KFGame/Cache").listFiles();
-        if (steamCacheFolderList != null && steamCacheFolderList.length > 0) {
-            List<Long> idWorkShopCustomMapList = steamCustomMapModList.stream().map(MapToDisplay::getIdWorkShop).collect(Collectors.toList());
-            steamCustomMapModList.addAll(
-                    Arrays.stream(steamCacheFolderList)
-                            .filter(file -> file.isDirectory())
-                            .map(file -> file.toPath())
-                            .filter(path -> !idWorkShopCustomMapList.contains(steamKf2Common.getIdWorkShopFromPath(path)))
-                            .map(path -> {
-                                Long idWorkShop = Long.parseLong(path.getFileName().toString());
-                                return new MapToDisplay(idWorkShop, "MOD [" + idWorkShop + "]");
-                            })
-                            .collect(Collectors.toList())
-            );
+            // CUSTOM MAP / MOD LIST FOR STEAM
+            steamCustomMapModList = Files.walk(Paths.get(steamPlatform.getInstallationFolder() + "/KFGame/Cache"))
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
+                    .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
+                    .map(path -> {
+                        String filenameWithExtension = path.getFileName().toString();
+                        String[] array = filenameWithExtension.split("\\.");
+                        String mapName = array[0];
+                        Long idWorkShop = steamKf2Common.getIdWorkShopFromPath(path.getParent());
+                        return new MapToDisplay(idWorkShop, mapName);
+                    })
+                    .collect(Collectors.toList());
+
+            File[] steamCacheFolderList = new File(steamPlatform.getInstallationFolder() + "/KFGame/Cache").listFiles();
+            if (steamCacheFolderList != null && steamCacheFolderList.length > 0) {
+                List<Long> idWorkShopCustomMapList = steamCustomMapModList.stream().map(MapToDisplay::getIdWorkShop).collect(Collectors.toList());
+                steamCustomMapModList.addAll(
+                        Arrays.stream(steamCacheFolderList)
+                                .filter(file -> file.isDirectory())
+                                .map(file -> file.toPath())
+                                .filter(path -> !idWorkShopCustomMapList.contains(steamKf2Common.getIdWorkShopFromPath(path)))
+                                .map(path -> {
+                                    Long idWorkShop = Long.parseLong(path.getFileName().toString());
+                                    return new MapToDisplay(idWorkShop, "MOD [" + idWorkShop + "]");
+                                })
+                                .collect(Collectors.toList())
+                );
+            }
+
+            // OFFICIAL MAP LIST FOR STEAM
+            steamOfficialMapNameList = Files.walk(Paths.get( steamPlatform.getInstallationFolder() + "/KFGame/BrewedPC/Maps"))
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
+                    .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
+                    .map(path -> {
+                        String filenameWithExtension = path.getFileName().toString();
+                        String[] array = filenameWithExtension.split("\\.");
+                        return array[0];
+                    })
+                    .collect(Collectors.toList());
         }
 
-        // CUSTOM MAP / MOD LIST FOR EPIC
-        List<MapToDisplay> epicCustomMapModList = Files.walk(Paths.get(epicPlatform.getInstallationFolder() + "/KFGame/Cache"))
-                .filter(Files::isRegularFile)
-                .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
-                .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
-                .map(path -> {
-                    String filenameWithExtension = path.getFileName().toString();
-                    String[] array = filenameWithExtension.split("\\.");
-                    String mapName = array[0];
-                    Long idWorkShop = epicKf2Common.getIdWorkShopFromPath(path.getParent());
-                    return new MapToDisplay(idWorkShop, mapName);
-                })
-                .collect(Collectors.toList());
+        if (isCorrectInstallationFolder(epicPlatform.getCode(), em)) {
+            if (!Files.exists(Paths.get(steamPlatform.getInstallationFolder() + "/KFGame/Cache"))) {
+                Files.createDirectory(Paths.get(steamPlatform.getInstallationFolder() + "/KFGame/Cache"));
+            }
 
-        File[] epicCacheFolderList = new File(epicPlatform.getInstallationFolder() + "/KFGame/Cache").listFiles();
-        if (epicCacheFolderList != null && epicCacheFolderList.length > 0) {
-            List<Long> idWorkShopCustomMapList = epicCustomMapModList.stream().map(MapToDisplay::getIdWorkShop).collect(Collectors.toList());
-            epicCustomMapModList.addAll(
-                    Arrays.stream(epicCacheFolderList)
-                            .filter(file -> file.isDirectory())
-                            .map(file -> file.toPath())
-                            .filter(path -> !idWorkShopCustomMapList.contains(epicKf2Common.getIdWorkShopFromPath(path)))
-                            .map(path -> {
-                                Long idWorkShop = Long.parseLong(path.getFileName().toString());
-                                return new MapToDisplay(idWorkShop, "MOD [" + idWorkShop + "]");
-                            })
-                            .collect(Collectors.toList())
-            );
+            // CUSTOM MAP / MOD LIST FOR EPIC
+            epicCustomMapModList = Files.walk(Paths.get(epicPlatform.getInstallationFolder() + "/KFGame/Cache"))
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
+                    .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
+                    .map(path -> {
+                        String filenameWithExtension = path.getFileName().toString();
+                        String[] array = filenameWithExtension.split("\\.");
+                        String mapName = array[0];
+                        Long idWorkShop = epicKf2Common.getIdWorkShopFromPath(path.getParent());
+                        return new MapToDisplay(idWorkShop, mapName);
+                    })
+                    .collect(Collectors.toList());
+
+            File[] epicCacheFolderList = new File(epicPlatform.getInstallationFolder() + "/KFGame/Cache").listFiles();
+            if (epicCacheFolderList != null && epicCacheFolderList.length > 0) {
+                List<Long> idWorkShopCustomMapList = epicCustomMapModList.stream().map(MapToDisplay::getIdWorkShop).collect(Collectors.toList());
+                epicCustomMapModList.addAll(
+                        Arrays.stream(epicCacheFolderList)
+                                .filter(file -> file.isDirectory())
+                                .map(file -> file.toPath())
+                                .filter(path -> !idWorkShopCustomMapList.contains(epicKf2Common.getIdWorkShopFromPath(path)))
+                                .map(path -> {
+                                    Long idWorkShop = Long.parseLong(path.getFileName().toString());
+                                    return new MapToDisplay(idWorkShop, "MOD [" + idWorkShop + "]");
+                                })
+                                .collect(Collectors.toList())
+                );
+            }
+
+            // OFFICIAL MAP LIST FOR EPIC
+            epicOfficialMapNameList = Files.walk(Paths.get(epicPlatform.getInstallationFolder() + "/KFGame/BrewedPC/Maps"))
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
+                    .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
+                    .map(path -> {
+                        String filenameWithExtension = path.getFileName().toString();
+                        String[] array = filenameWithExtension.split("\\.");
+                        return array[0];
+                    })
+                    .collect(Collectors.toList());
+
         }
-
-        // OFFICIAL MAP LIST FOR STEAM
-        List<String> steamOfficialMapNameList = Files.walk(Paths.get( steamPlatform.getInstallationFolder() + "/KFGame/BrewedPC/Maps"))
-                .filter(Files::isRegularFile)
-                .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
-                .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
-                .map(path -> {
-                    String filenameWithExtension = path.getFileName().toString();
-                    String[] array = filenameWithExtension.split("\\.");
-                    return array[0];
-                })
-                .collect(Collectors.toList());
-
-        // OFFICIAL MAP LIST FOR EPIC
-        List<String> epicOfficialMapNameList = Files.walk(Paths.get(epicPlatform.getInstallationFolder() + "/KFGame/BrewedPC/Maps"))
-                .filter(Files::isRegularFile)
-                .filter(path -> path.getFileName().toString().toUpperCase().startsWith("KF-"))
-                .filter(path -> path.getFileName().toString().toUpperCase().endsWith(".KFM"))
-                .map(path -> {
-                    String filenameWithExtension = path.getFileName().toString();
-                    String[] array = filenameWithExtension.split("\\.");
-                    return array[0];
-                })
-                .collect(Collectors.toList());
 
         return new PrepareImportMapsFromServerFacadeResult(
                 platformProfileToDisplayList,

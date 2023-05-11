@@ -7,6 +7,7 @@ import dtos.ProfileDto;
 import entities.AbstractMap;
 import entities.PlatformProfileMap;
 import framework.AbstractManagerFacade;
+import pojos.ImportMapResultToDisplay;
 import pojos.MapToDisplay;
 import pojos.PlatformProfileMapToImport;
 import pojos.PlatformProfileToDisplay;
@@ -25,6 +26,10 @@ import stories.findplatformprofilemapbynames.FindPlatformProfileMapByNameFacade;
 import stories.findplatformprofilemapbynames.FindPlatformProfileMapByNameFacadeImpl;
 import stories.findplatformprofilemapbynames.FindPlatformProfileMapByNameFacadeResult;
 import stories.findplatformprofilemapbynames.FindPlatformProfileMapByNameModelContext;
+import stories.importofficialmapsfromserver.ImportOfficialMapsFromServerFacade;
+import stories.importofficialmapsfromserver.ImportOfficialMapsFromServerFacadeImpl;
+import stories.importofficialmapsfromserver.ImportOfficialMapsFromServerFacadeResult;
+import stories.importofficialmapsfromserver.ImportOfficialMapsFromServerModelContext;
 import stories.installationfolder.InstallationFolderFacade;
 import stories.installationfolder.InstallationFolderFacadeImpl;
 import stories.installationfolder.InstallationFolderFacadeResult;
@@ -46,9 +51,14 @@ import stories.prepareimportmapsfromserver.PrepareImportMapsFromServerFacadeImpl
 import stories.prepareimportmapsfromserver.PrepareImportMapsFromServerFacadeResult;
 import stories.prepareimportmapsfromserver.PrepareImportMapsFromServerModelContext;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 
 public class MapsManagerFacadeImpl
         extends AbstractManagerFacade<MapsInitializeModelContext, MapsInitializeFacadeResult>
@@ -184,11 +194,6 @@ public class MapsManagerFacadeImpl
     }
 
     @Override
-    public String getPropertyValue(String propFileRelativePath, String propKey, String profileParam, String platformParam) throws Exception {
-        return null;
-    }
-
-    @Override
     public AbstractMapDto getMapByIdWorkShop(Long idWorkShop) throws SQLException {
         return null;
     }
@@ -228,4 +233,31 @@ public class MapsManagerFacadeImpl
         PrepareImportMapsFromServerFacade prepareImportMapsFromServerFacade = new PrepareImportMapsFromServerFacadeImpl(prepareImportMapsFromServerModelContext);
         return prepareImportMapsFromServerFacade.execute();
     }
+
+    @Override
+    public String findPropertyValue(String propFileRelativePath, String propKey, String profileParam, String platformParam) throws Exception {
+        Properties prop = new Properties();
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream("./" + propFileRelativePath);
+        } catch (FileNotFoundException e) {
+            inputStream = getClass().getClassLoader().getResourceAsStream(propFileRelativePath);
+        }
+        prop.load(inputStream);
+        inputStream.close();
+
+        return MessageFormat.format(prop.getProperty(propKey), profileParam, platformParam);
+    }
+
+    @Override
+    public List<ImportMapResultToDisplay> importOfficialMapsFromServer(List<PlatformProfileMapToImport> ppmToImportList, String profileName) throws Exception {
+        ImportOfficialMapsFromServerModelContext importOfficialMapsFromServerModelContext = new ImportOfficialMapsFromServerModelContext(
+                ppmToImportList,
+                profileName
+        );
+        ImportOfficialMapsFromServerFacade importOfficialMapsFromServerFacade = new ImportOfficialMapsFromServerFacadeImpl(importOfficialMapsFromServerModelContext);
+        ImportOfficialMapsFromServerFacadeResult result = importOfficialMapsFromServerFacade.execute();
+        return result.getImportMapResultToDisplayList();
+    }
+
 }

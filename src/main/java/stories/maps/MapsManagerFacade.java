@@ -6,6 +6,7 @@ import dtos.PlatformProfileMapDto;
 import dtos.ProfileDto;
 import entities.AbstractMap;
 import entities.PlatformProfileMap;
+import pojos.ImportMapResultToDisplay;
 import pojos.MapToDisplay;
 import pojos.PlatformProfileMapToImport;
 import pojos.PlatformProfileToDisplay;
@@ -30,6 +31,8 @@ public interface MapsManagerFacade {
     AbstractMapDto deleteMapFromPlatformProfile(String platformName, String mapName, String profileName) throws Exception;
     PrepareImportMapsFromServerFacadeResult prepareImportMapsFromServer(String profileName) throws Exception;
     List<MapToDisplay> getNotPresentOfficialMapList(List<String> officialMapNameList, String platformName, String profileName) throws Exception;
+    String findPropertyValue(String propFileRelativePath, String propKey, String profileParam, String platformParam) throws Exception;
+    List<ImportMapResultToDisplay> importOfficialMapsFromServer(List<PlatformProfileMapToImport> ppmToImportList, String profileName) throws Exception ;
 
     // ------------------------------------------------------------------------
 
@@ -44,9 +47,10 @@ public interface MapsManagerFacade {
     Optional<AbstractMap> findMapByName(String mapName) throws Exception;
     String[] getMapNameAndUrlImage(Long idWorkShop) throws Exception;
 
-    String getPropertyValue(String propFileRelativePath, String propKey, String profileParam, String platformParam) throws Exception;
+
     AbstractMapDto getMapByIdWorkShop(Long idWorkShop) throws SQLException;
     AbstractMapDto getOfficialMapByName(String mapName) throws Exception ;
     Kf2Common getKf2Common(String platformName) throws Exception;
     ProfileDto findProfileDtoByName(String name) throws Exception;
+
 }
