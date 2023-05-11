@@ -29,6 +29,7 @@ public interface MapsManagerFacade {
     boolean isCorrectInstallationFolder(String platformName) throws Exception;
     AbstractMapDto deleteMapFromPlatformProfile(String platformName, String mapName, String profileName) throws Exception;
     PrepareImportMapsFromServerFacadeResult prepareImportMapsFromServer(String profileName) throws Exception;
+    List<MapToDisplay> getNotPresentOfficialMapList(List<String> officialMapNameList, String platformName, String profileName) throws Exception;
 
     // ------------------------------------------------------------------------
 
@@ -46,7 +47,6 @@ public interface MapsManagerFacade {
     String getPropertyValue(String propFileRelativePath, String propKey, String profileParam, String platformParam) throws Exception;
     AbstractMapDto getMapByIdWorkShop(Long idWorkShop) throws SQLException;
     AbstractMapDto getOfficialMapByName(String mapName) throws Exception ;
-    List<MapToDisplay> getNotPresentOfficialMapList(List<String> officialMapNameList, String platformName, String profileName) throws Exception;
     Kf2Common getKf2Common(String platformName) throws Exception;
     ProfileDto findProfileDtoByName(String name) throws Exception;
 }

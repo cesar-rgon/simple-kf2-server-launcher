@@ -29,6 +29,10 @@ import stories.installationfolder.InstallationFolderFacade;
 import stories.installationfolder.InstallationFolderFacadeImpl;
 import stories.installationfolder.InstallationFolderFacadeResult;
 import stories.installationfolder.InstallationFolderModelContext;
+import stories.listnotpresentofficialmap.ListNotPresentOfficialMapFacade;
+import stories.listnotpresentofficialmap.ListNotPresentOfficialMapFacadeImpl;
+import stories.listnotpresentofficialmap.ListNotPresentOfficialMapFacadeModelContext;
+import stories.listnotpresentofficialmap.ListNotPresentOfficialMapFacadeResult;
 import stories.mapsinitialize.MapsInitializeFacade;
 import stories.mapsinitialize.MapsInitializeFacadeImpl;
 import stories.mapsinitialize.MapsInitializeFacadeResult;
@@ -196,7 +200,14 @@ public class MapsManagerFacadeImpl
 
     @Override
     public List<MapToDisplay> getNotPresentOfficialMapList(List<String> officialMapNameList, String platformName, String profileName) throws Exception {
-        return null;
+        ListNotPresentOfficialMapFacadeModelContext listNotPresentOfficialMapFacadeModelContext = new ListNotPresentOfficialMapFacadeModelContext(
+                officialMapNameList,
+                platformName,
+                profileName
+        );
+        ListNotPresentOfficialMapFacade listNotPresentOfficialMapFacade = new ListNotPresentOfficialMapFacadeImpl(listNotPresentOfficialMapFacadeModelContext);
+        ListNotPresentOfficialMapFacadeResult result = listNotPresentOfficialMapFacade.execute();
+        return result.getNotPresentOfficialMapList();
     }
 
     @Override

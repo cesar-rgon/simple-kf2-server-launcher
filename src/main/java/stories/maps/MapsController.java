@@ -1021,7 +1021,6 @@ public class MapsController implements Initializable {
                 return;
             }
 
-            // ------------------------
 
             List<PlatformProfileMapToImport> officialMapPpmToImportList = new ArrayList<PlatformProfileMapToImport>();
             List<PlatformProfileMapToImport> customMapPpmToImportList = new ArrayList<PlatformProfileMapToImport>();
