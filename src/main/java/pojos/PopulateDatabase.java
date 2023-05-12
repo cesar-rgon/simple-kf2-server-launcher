@@ -2,14 +2,24 @@ package pojos;
 
 import entities.*;
 import jakarta.persistence.EntityManager;
+import org.apache.commons.io.FileUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pojos.enums.EnumLanguage;
 import pojos.enums.EnumPlatform;
+import pojos.listener.TimeListener;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 
+import java.io.File;
+import java.net.URL;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Optional;
 
 public class PopulateDatabase extends AbstractPopulateDatabase {
+
+    private static final Logger logger = LogManager.getLogger(PopulateDatabase.class);
 
     public PopulateDatabase(EntityManager em) {
         super(em);
@@ -78,46 +88,42 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
     @Override
     protected void populateOfficialMaps() throws Exception {
         SimpleDateFormat dateFormatter=new SimpleDateFormat("yyyy-MM-dd");
+        PropertyService propertyService = new PropertyServiceImpl();
 
-        populateOfficialMap("KF-BurningParis", "https://wiki.killingfloor2.com/index.php?title=Burning_Paris","/KFGame/Web/images/maps/KF-BurningParis.jpg", dateFormatter.parse("2015-04-21"));
-        populateOfficialMap("KF-BioticsLab", "https://wiki.killingfloor2.com/index.php?title=Biotics_Lab_(Killing_Floor_2)","/KFGame/Web/images/maps/KF-BioticsLab.jpg", dateFormatter.parse("2015-04-21"));
-        populateOfficialMap("KF-Outpost", "https://wiki.killingfloor2.com/index.php?title=Outpost","/KFGame/Web/images/maps/KF-Outpost.jpg", dateFormatter.parse("2015-04-21"));
-        populateOfficialMap("KF-VolterManor", "https://wiki.killingfloor2.com/index.php?title=Volter_Manor","/KFGame/Web/images/maps/KF-VolterManor.jpg", dateFormatter.parse("2015-05-26"));
-        populateOfficialMap("KF-Catacombs", "https://wiki.killingfloor2.com/index.php?title=Catacombs","/KFGame/Web/images/maps/KF-Catacombs.jpg", dateFormatter.parse("2015-09-01"));
-        populateOfficialMap("KF-EvacuationPoint", "https://wiki.killingfloor2.com/index.php?title=Evacuation_Point","/KFGame/Web/images/maps/KF-EvacuationPoint.jpg", dateFormatter.parse("2015-09-01"));
-        populateOfficialMap("KF-Farmhouse", "https://wiki.killingfloor2.com/index.php?title=Farmhouse","/KFGame/Web/images/maps/KF-Farmhouse.jpg", dateFormatter.parse("2015-12-03"));
-        populateOfficialMap("KF-BlackForest", "https://wiki.killingfloor2.com/index.php?title=Black_Forest","/KFGame/Web/images/maps/KF-BlackForest.jpg", dateFormatter.parse("2015-12-03"));
-        populateOfficialMap("KF-Prison", "https://wiki.killingfloor2.com/index.php?title=Prison","/KFGame/Web/images/maps/KF-Prison.jpg", dateFormatter.parse("2016-04-07"));
-        populateOfficialMap("KF-ContainmentStation", "https://wiki.killingfloor2.com/index.php?title=Containment_Station","/KFGame/Web/images/maps/KF-ContainmentStation.jpg", dateFormatter.parse("2016-06-13"));
-        populateOfficialMap("KF-HostileGrounds", "https://wiki.killingfloor2.com/index.php?title=Hostile_Grounds","/KFGame/Web/images/maps/KF-HostileGrounds.jpg", dateFormatter.parse("2016-06-13"));
-        populateOfficialMap("KF-InfernalRealm", "https://wiki.killingfloor2.com/index.php?title=Infernal_Realm","/KFGame/Web/images/maps/KF-InfernalRealm.jpg", dateFormatter.parse("2016-08-25"));
-        populateOfficialMap("KF-ZedLanding", "https://wiki.killingfloor2.com/index.php?title=ZED_Landing","/KFGame/Web/images/maps/KF-ZedLanding.jpg", dateFormatter.parse("2017-01-19"));
-        populateOfficialMap("KF-Nuked", "https://wiki.killingfloor2.com/index.php?title=Nuked","/KFGame/Web/images/maps/KF-Nuked.jpg", dateFormatter.parse("2017-03-21"));
-        populateOfficialMap("KF-TheDescent", "https://wiki.killingfloor2.com/index.php?title=The_Descent","/KFGame/Web/images/maps/KF-TheDescent.jpg", dateFormatter.parse("2017-03-21"));
-        populateOfficialMap("KF-TragicKingdom", "https://wiki.killingfloor2.com/index.php?title=The_Tragic_Kingdom","/KFGame/Web/images/maps/KF-TragicKingdom.jpg", dateFormatter.parse("2017-06-13"));
-        populateOfficialMap("KF-Nightmare", "https://wiki.killingfloor2.com/index.php?title=Nightmare","/KFGame/Web/images/maps/KF-Nightmare.jpg", dateFormatter.parse("2017-10-17"));
-        populateOfficialMap("KF-KrampusLair", "https://wiki.killingfloor2.com/index.php?title=Krampus_Lair","/KFGame/Web/images/maps/KF-KrampusLair.jpg", dateFormatter.parse("2017-12-12"));
-        populateOfficialMap("KF-DieSector", "https://wiki.killingfloor2.com/index.php?title=DieSector","/KFGame/Web/images/maps/KF-DieSector.jpg", dateFormatter.parse("2017-12-12"));
-        populateOfficialMap("KF-PowerCore_Holdout", "https://wiki.killingfloor2.com/index.php?title=Powercore","/KFGame/Web/images/maps/KF-PowerCore_Holdout.jpg", dateFormatter.parse("2017-12-12"));
-        populateOfficialMap("KF-Airship", "https://wiki.killingfloor2.com/index.php?title=Airship","/KFGame/Web/images/maps/KF-Airship.jpg", dateFormatter.parse("2018-06-12"));
-        populateOfficialMap("KF-Lockdown", "https://wiki.killingfloor2.com/index.php?title=Lockdown","/KFGame/Web/images/maps/KF-Lockdown.jpg", dateFormatter.parse("2018-06-12"));
-        populateOfficialMap("KF-MonsterBall", "https://wiki.killingfloor2.com/index.php?title=Monster_Ball","/KFGame/Web/images/maps/KF-MonsterBall.jpg", dateFormatter.parse("2018-10-02"));
-        populateOfficialMap("KF-SantasWorkshop", "https://wiki.killingfloor2.com/index.php?title=Santa%27s_Workshop","/KFGame/Web/images/maps/KF-SantasWorkshop.jpg", dateFormatter.parse("2018-12-04"));
-        populateOfficialMap("KF-ShoppingSpree", "https://wiki.killingfloor2.com/index.php?title=Shopping_Spree","/KFGame/Web/images/maps/KF-ShoppingSpree.jpg", dateFormatter.parse("2018-12-04"));
-        populateOfficialMap("KF-Spillway", "https://wiki.killingfloor2.com/index.php?title=Spillway","/KFGame/Web/images/maps/KF-Spillway.jpg", dateFormatter.parse("2019-03-26"));
-        populateOfficialMap("KF-SteamFortress", "https://wiki.killingfloor2.com/index.php?title=Steam_Fortress","/KFGame/Web/images/maps/KF-SteamFortress.jpg", dateFormatter.parse("2019-06-18"));
-        populateOfficialMap("KF-AshwoodAsylum", "https://wiki.killingfloor2.com/index.php?title=Ashwood_Asylum","/KFGame/Web/images/maps/KF-AshwoodAsylum.jpg", dateFormatter.parse("2019-10-01"));
-        populateOfficialMap("KF-Sanitarium", "https://wiki.killingfloor2.com/index.php?title=Sanitarium","/KFGame/Web/images/maps/KF-Sanitarium.jpg", dateFormatter.parse("2019-12-10"));
-        populateOfficialMap("KF-Biolapse", "https://wiki.killingfloor2.com/index.php?title=Biolapse","/KFGame/Web/images/maps/KF-Biolapse.jpg", dateFormatter.parse("2020-03-24"));
-        populateOfficialMap("KF-Desolation", "https://wiki.killingfloor2.com/index.php?title=Desolation","/KFGame/Web/images/maps/KF-Desolation.jpg", dateFormatter.parse("2020-06-08"));
-        populateOfficialMap("KF-HellmarkStation", "https://wiki.killingfloor2.com/index.php?title=Hellmark_Station","/KFGame/Web/images/maps/KF-HellmarkStation.jpg", dateFormatter.parse("2020-09-29"));
-        populateOfficialMap("KF-Elysium", "https://wiki.killingfloor2.com/index.php?title=Elysium","/KFGame/Web/images/maps/KF-Elysium.jpg", dateFormatter.parse("2020-12-08"));
-        populateOfficialMap("KF-Dystopia2029", "https://wiki.killingfloor2.com/index.php?title=Dystopia_2029","/KFGame/Web/images/maps/KF-Dystopia2029.jpg", dateFormatter.parse("2021-03-23"));
-        populateOfficialMap("KF-Moonbase", "https://wiki.killingfloor2.com/index.php?title=Moonbase","/KFGame/Web/images/maps/KF-Moonbase.jpg", dateFormatter.parse("2021-06-22"));
-        populateOfficialMap("KF-Netherhold", "https://wiki.killingfloor2.com/index.php?title=Netherhold","/KFGame/Web/images/maps/KF-Netherhold.jpg", dateFormatter.parse("2021-10-05"));
-        populateOfficialMap("KF-CarillonHamlet", "https://wiki.killingfloor2.com/index.php?title=Carillon_Hamlet","/KFGame/Web/images/maps/KF-CarillonHamlet.jpg", dateFormatter.parse("2021-12-09"));
-        populateOfficialMap("KF-Rig", "https://wiki.killingfloor2.com/index.php?title=Rig","/KFGame/Web/images/maps/KF-Rig.jpg", dateFormatter.parse("2022-06-14"));
-        populateOfficialMap("KF-BarmwichTown", "https://wiki.killingfloor2.com/index.php?title=Barmwich_Town","/KFGame/Web/images/maps/KF-BarmwichTown.jpg", dateFormatter.parse("2022-10-13"));
+        boolean downloadOfficialMapsProperties = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.downloadOfficialMapsProperties"));
+        if (downloadOfficialMapsProperties) {
+            try {
+                // Download official map.properties
+                String urlMapsProperties = propertyService.getPropertyValue("properties/config.properties", "prop.config.urlMapProperties");
+                String downloadConnectionTimeOut = propertyService.getPropertyValue("properties/config.properties", "prop.config.downloadConnectionTimeout");
+                String downloadReadTimeOut = propertyService.getPropertyValue("properties/config.properties", "prop.config.downloadReadTimeout");
+                URL urlMapProperties = getClass().getClassLoader().getResource("properties/maps.properties");
+                File mapsPropertiesFile = new File(urlMapProperties.toURI());
+
+                FileUtils.copyURLToFile(
+                        new URL(urlMapsProperties),
+                        mapsPropertiesFile,
+                        Integer.parseInt(downloadConnectionTimeOut),
+                        Integer.parseInt(downloadReadTimeOut)
+                );
+            } catch (Exception e) {
+                logger.error("Error trying to download maps.properties file from Github", e);
+            }
+        }
+
+        Integer totalMaps = Integer.parseInt(propertyService.getPropertyValue("properties/maps.properties", "prop.maps.total_maps"));
+        for (int i = 1; i <= totalMaps; i++) {
+            try {
+                populateOfficialMap(
+                        propertyService.getPropertyValue("properties/maps.properties", "prop.maps." + i + ".title"),
+                        propertyService.getPropertyValue("properties/maps.properties", "prop.maps." + i + ".url"),
+                        propertyService.getPropertyValue("properties/maps.properties", "prop.maps." + i + ".image_path"),
+                        dateFormatter.parse(propertyService.getPropertyValue("properties/maps.properties", "prop.maps." + i + ".release_date"))
+                );
+            } catch (Exception e) {
+                logger.error("Error preparing the map number " + i + " in database. It could not be imported.", e);
+            }
+        }
     }
 
     @Override
