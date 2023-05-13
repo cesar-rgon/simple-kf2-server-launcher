@@ -59,7 +59,7 @@
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <ComboBox fx:id="profileSelect" onAction="#profileOnAction" prefWidth="315.0" GridPane.columnIndex="2" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+        <ComboBox fx:id="profileSelect" onAction="#profileOnAction" onMouseReleased="#profileOnMouseReleased" prefWidth="315.0" GridPane.columnIndex="2" GridPane.rowIndex="2" GridPane.valignment="CENTER">
          <GridPane.margin>
             <Insets />
          </GridPane.margin></ComboBox>
@@ -135,7 +135,7 @@
                                 <Insets right="10.0" />
                             </GridPane.margin>
                         </Label>
-                        <ComboBox fx:id="languageSelect" onAction="#languageOnAction" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                        <ComboBox fx:id="languageSelect" onAction="#languageOnAction" onMouseReleased="#languageOnMouseReleased" prefWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
                         <ComboBox fx:id="platformProfileMapSelect" onAction="#mapOnAction" prefHeight="235.0" prefWidth="472.0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowSpan="2" GridPane.valignment="TOP">
                            <GridPane.margin>
                               <Insets left="10.0" top="5.0" />

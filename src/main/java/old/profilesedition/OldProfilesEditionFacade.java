@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-public interface ProfilesEditionFacade {
+public interface OldProfilesEditionFacade {
     ObservableList<ProfileDto> listAllProfiles() throws SQLException;
     ProfileDto createNewProfile(String profileName) throws Exception;
     boolean deleteSelectedProfile(String profileName) throws Exception;

@@ -23,9 +23,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 
-public class ProfilesEditionFacadeImpl extends OldAFacade implements ProfilesEditionFacade {
+public class OldProfilesEditionFacadeImpl extends OldAFacade implements OldProfilesEditionFacade {
 
-    private static final Logger logger = LogManager.getLogger(ProfilesEditionFacadeImpl.class);
+    private static final Logger logger = LogManager.getLogger(OldProfilesEditionFacadeImpl.class);
     private final ProfileDtoFactory profileDtoFactory;
     private final PropertyService propertyService;
     private final PlatformProfileToDisplayFactory platformProfileToDisplayFactory;
@@ -40,7 +40,7 @@ public class ProfilesEditionFacadeImpl extends OldAFacade implements ProfilesEdi
     private final MaxPlayersServiceImpl maxPlayersService;
     private final ProfileToDisplayFactory profileToDisplayFactory;
 
-    public ProfilesEditionFacadeImpl() {
+    public OldProfilesEditionFacadeImpl() {
         super(null);
         profileDtoFactory = new ProfileDtoFactory(em);
         propertyService = new PropertyServiceImpl();

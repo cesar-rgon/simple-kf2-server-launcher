@@ -1,4 +1,4 @@
-package old.profilesedition;
+package stories.profilesedition;
 
 import dtos.ProfileDto;
 import entities.Profile;
@@ -10,6 +10,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
+import old.profilesedition.OldProfilesEditionFacade;
+import old.profilesedition.OldProfilesEditionFacadeImpl;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -19,6 +21,7 @@ import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
+import stories.listallprofiles.ListAllProfilesFacadeResult;
 import utils.Utils;
 
 import java.io.File;
@@ -28,8 +31,7 @@ import java.util.*;
 public class ProfilesEditionController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(ProfilesEditionController.class);
-    private final ProfilesEditionFacade facade;
-    private final PropertyService propertyService;
+    private final ProfilesEditionManagerFacade facade;
     protected String languageCode;
 
     @FXML private TableView<ProfileDto> profilesTable;
@@ -45,61 +47,62 @@ public class ProfilesEditionController implements Initializable {
     @FXML private ProgressIndicator progressIndicator;
 
     public ProfilesEditionController() {
-        facade = new ProfilesEditionFacadeImpl();
-        propertyService = new PropertyServiceImpl();
+        facade = new ProfilesEditionManagerFacadeImpl();
     }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             profileNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             profileNameColumn.setCellValueFactory(cellData -> cellData.getValue().getNameProperty());
-            profilesTable.setItems(facade.listAllProfiles());
 
-            String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileTitle");
+            ListAllProfilesFacadeResult result = facade.execute();
+            profilesTable.setItems(result.getAllProfileList());
+
+            String titleConfigLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileTitle");
             titleConfigLabel.setText(titleConfigLabelText);
 
-            String messageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
+            String messageLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
             messageLabel.setText(messageLabelText);
 
             Double tooltipDuration = Double.parseDouble(
-                    propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                    facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
             );
 
-            String addProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
+            String addProfileText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
             addProfile.setText(addProfileText);
-            Tooltip addProfileTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addProfile"));
+            Tooltip addProfileTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addProfile"));
             addProfileTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             addProfile.setTooltip(addProfileTooltip);
 
-            String cloneProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.cloneItem");
+            String cloneProfileText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.cloneItem");
             cloneProfile.setText(cloneProfileText);
-            Tooltip cloneProfileTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.cloneProfile"));
+            Tooltip cloneProfileTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.cloneProfile"));
             cloneProfileTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             cloneProfile.setTooltip(cloneProfileTooltip);
 
-            String removeProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
+            String removeProfileText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
             removeProfile.setText(removeProfileText);
-            Tooltip removeProfileTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeProfile"));
+            Tooltip removeProfileTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeProfile"));
             removeProfileTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             removeProfile.setTooltip(removeProfileTooltip);
 
-            String importProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importProfile");
+            String importProfileText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importProfile");
             importProfile.setText(importProfileText);
-            Tooltip importProfileTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.importProfiles"));
+            Tooltip importProfileTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.importProfiles"));
             importProfileTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             importProfile.setTooltip(importProfileTooltip);
 
-            String exportProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.exportProfile");
+            String exportProfileText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.exportProfile");
             exportProfile.setText(exportProfileText);
-            Tooltip exportProfileTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.exportProfiles"));
+            Tooltip exportProfileTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.exportProfiles"));
             exportProfileTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             exportProfile.setTooltip(exportProfileTooltip);
 
-            String profileNameColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileName");
+            String profileNameColumnText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileName");
             profileNameLabel.setText(profileNameColumnText);
-            Tooltip profileNameLabelTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.profileName"));
+            Tooltip profileNameLabelTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.profileName"));
             profileNameLabelTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             profileNameLabel.setTooltip(profileNameLabelTooltip);
 
@@ -112,8 +115,8 @@ public class ProfilesEditionController implements Initializable {
     @FXML
     private void addProfileOnAction() {
         try {
-            String addProfileText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addProfile");
-            String enterProfileName = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.enterProfileName");
+            String addProfileText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addProfile");
+            String enterProfileName = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.enterProfileName");
             Optional<String> profileNameOpt = Utils.OneTextInputDialog(addProfileText, enterProfileName + ":");
             if (profileNameOpt.isPresent() && StringUtils.isNotBlank(profileNameOpt.get())){
                 progressIndicator.setVisible(true);
@@ -132,7 +135,7 @@ public class ProfilesEditionController implements Initializable {
                         profilesTable.getItems().add(newProfile);
                         if (profilesTable.getItems().size() == 1) {
                             Session.getInstance().setActualProfileName(profilesTable.getItems().get(0).getName());
-                            propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", profilesTable.getItems().get(0).getName());
+                            facade.setConfigPropertyValue("prop.config.lastSelectedProfile", profilesTable.getItems().get(0).getName());
                         }
                     } catch (Exception e) {
                         logger.error(e.getMessage(), e);
@@ -161,8 +164,8 @@ public class ProfilesEditionController implements Initializable {
             int selectedIndex = profilesTable.getSelectionModel().getSelectedIndex();
             if (selectedIndex >= 0) {
                 ProfileDto selectedProfile = profilesTable.getSelectionModel().getSelectedItem();
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.cloneProfile");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.newProfileName");
+                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.cloneProfile");
+                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.newProfileName");
                 Optional<String> newProfileNameOpt = Utils.OneTextInputDialog(headerText + ": " + selectedProfile.getName(), contentText);
                 if (newProfileNameOpt.isPresent() && StringUtils.isNotBlank(newProfileNameOpt.get())) {
                     progressIndicator.setVisible(true);
@@ -182,8 +185,8 @@ public class ProfilesEditionController implements Initializable {
                                 profilesTable.getItems().add(clonedProfile);
                             } else {
                                 logger.warn("The profile can not be cloned in database. Selected profile: " + selectedProfile.getName() + ". New profile name: " + clonedProfile.getName());
-                                String notOperationDoneText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                                String profileNotColnedText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profileNotCloned");
+                                String notOperationDoneText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                                String profileNotColnedText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profileNotCloned");
                                 Utils.warningDialog(notOperationDoneText, profileNotColnedText);
                             }
                         } catch (Exception e) {
@@ -201,8 +204,8 @@ public class ProfilesEditionController implements Initializable {
                 }
             } else {
                 logger.warn("No selected profile to clone");
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profileToCloneNotSelected");
+                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profileToCloneNotSelected");
                 Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
@@ -219,38 +222,30 @@ public class ProfilesEditionController implements Initializable {
             if (selectedIndex >= 0) {
                 ProfileDto selectedProfile = profilesTable.getSelectionModel().getSelectedItem();
 
-                String question = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteProfileQuestion");
+                String question = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteProfileQuestion");
                 Optional<ButtonType> result = Utils.questionDialog(question, selectedProfile.getName());
                 if (result.isPresent() && result.get().equals(ButtonType.OK)) {
                     progressIndicator.setVisible(true);
 
-                    Task<Boolean> task = new Task<Boolean>() {
+                    Task<Void> task = new Task<Void>() {
                         @Override
-                        protected Boolean call() throws Exception {
-                            return facade.deleteSelectedProfile(selectedProfile.getName());
+                        protected Void call() throws Exception {
+                            facade.deleteSelectedProfile(selectedProfile.getName());
+                            return null;
                         }
                     };
 
                     task.setOnSucceeded(wse -> {
                         try {
-                            Boolean profileDeleted = task.getValue();
-                            if (profileDeleted != null && profileDeleted) {
-
-                                if (StringUtils.isNotBlank(Session.getInstance().getActualProfileName()) && selectedProfile.getName().equalsIgnoreCase(Session.getInstance().getActualProfileName())) {
-                                    Session.getInstance().setActualProfileName(StringUtils.EMPTY);
-                                    propertyService.removeProperty("properties/config.properties", "prop.config.lastSelectedProfile");
-                                }
-                                if (Session.getInstance().getMapsProfile() != null && selectedProfile.getName().equalsIgnoreCase(Session.getInstance().getMapsProfile().getName())) {
-                                    Session.getInstance().setMapsProfile(null);
-                                }
-
-                                profilesTable.getItems().remove(selectedIndex);
-                            } else {
-                                logger.warn("The profile can not be deleted from database: " + selectedProfile.getName());
-                                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profileNotDeleted");
-                                Utils.warningDialog(headerText, contentText);
+                            if (StringUtils.isNotBlank(Session.getInstance().getActualProfileName()) && selectedProfile.getName().equalsIgnoreCase(Session.getInstance().getActualProfileName())) {
+                                Session.getInstance().setActualProfileName(StringUtils.EMPTY);
+                                facade.removeConfigProperty("prop.config.lastSelectedProfile");
                             }
+                            if (Session.getInstance().getMapsProfile() != null && selectedProfile.getName().equalsIgnoreCase(Session.getInstance().getMapsProfile().getName())) {
+                                Session.getInstance().setMapsProfile(null);
+                            }
+                            profilesTable.getItems().remove(selectedIndex);
+
                         } catch (Exception e) {
                             logger.error(e.getMessage(), e);
                         }
@@ -258,18 +253,26 @@ public class ProfilesEditionController implements Initializable {
                     });
 
                     task.setOnFailed(wse -> {
+                        String message = "The profile can not be deleted from database: " + selectedProfile.getName();
+                        logger.error(message);
                         progressIndicator.setVisible(false);
+                        try {
+                            String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                            String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profileNotDeleted");
+                            Utils.warningDialog(headerText, contentText);
+                        } catch (Exception e) {
+                            logger.error(e.getMessage(), e);
+                        }
                     });
 
                     Thread thread = new Thread(task);
                     thread.start();
-
                 }
 
             } else {
                 logger.warn("No selected profile to delete");
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profileNotSelected");
+                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profileNotSelected");
                 Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
@@ -292,7 +295,7 @@ public class ProfilesEditionController implements Initializable {
                 ProfileDto actualProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfileName());
                 if (actualProfile != null && oldProfileName.equalsIgnoreCase(Session.getInstance().getActualProfileName())) {
                     Session.getInstance().setActualProfileName(updatedProfileDto.getName());
-                    propertyService.setProperty("properties/config.properties", "prop.config.lastSelectedProfile", newProfileName);
+                    facade.setConfigPropertyValue("prop.config.lastSelectedProfile", newProfileName);
                 }
                 if (Session.getInstance().getMapsProfile() != null && oldProfileName.equalsIgnoreCase(Session.getInstance().getMapsProfile().getName())) {
                     Session.getInstance().setMapsProfile(updatedProfileDto);
@@ -315,8 +318,8 @@ public class ProfilesEditionController implements Initializable {
             } else {
                 profilesTable.refresh();
                 logger.warn("The profile can not be renamed in database: [old profile name = " + oldProfileName + ", new profile name = " + newProfileName + "]");
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profileNotRenamed");
+                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profileNotRenamed");
                 Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
@@ -331,11 +334,11 @@ public class ProfilesEditionController implements Initializable {
     private void importProfileOnAction() {
         try {
             FileChooser fileChooser = new FileChooser();
-            String message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.importProfiles");
+            String message = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.importProfiles");
             fileChooser.setTitle(message + " ...");
             File selectedFile = fileChooser.showOpenDialog(MainApplication.getPrimaryStage());
             if (selectedFile != null) {
-                message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfilesToImport");
+                message = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfilesToImport");
                 StringBuffer errorMessage = new StringBuffer();
 
                 Optional<ButtonType> result = facade.questionToImportEntitiesFromFile();
@@ -382,14 +385,14 @@ public class ProfilesEditionController implements Initializable {
                         }
 
                         if (StringUtils.isBlank(errorMessage)) {
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesImported");
+                            String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                            String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesImported");
                             Utils.infoDialog(headerText, contentText + ":\n" + selectedFile.getAbsolutePath());
                         }
 
                         if (StringUtils.isNotBlank(errorMessage)) {
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesNotImported");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.seeLauncherLog");
+                            String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesNotImported");
+                            String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.seeLauncherLog");
                             Utils.warningDialog(headerText + ":", errorMessage.toString() + "\n" + contentText);
                         }
                     } catch (Exception e) {
@@ -413,12 +416,12 @@ public class ProfilesEditionController implements Initializable {
     @FXML
     private void exportProfileOnAction() {
         try {
-            String message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfilesToExport");
+            String message = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfilesToExport");
             List<ProfileToDisplay> selectedProfiles = facade.selectProfilesToBeExported(message);
 
             if (selectedProfiles != null && !selectedProfiles.isEmpty()) {
                 FileChooser fileChooser = new FileChooser();
-                message = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.exportProfiles");
+                message = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.exportProfiles");
                 fileChooser.setTitle(message + " ...");
                 File selectedFile = fileChooser.showSaveDialog(MainApplication.getPrimaryStage());
                 if (selectedFile != null) {
@@ -435,8 +438,8 @@ public class ProfilesEditionController implements Initializable {
                     task.setOnSucceeded(wse -> {
                         try {
                             progressIndicator.setVisible(false);
-                            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
-                            String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesExported");
+                            String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                            String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesExported");
                             Utils.infoDialog(headerText, contentText + ":\n" + selectedFile.getAbsolutePath());
                         } catch (Exception e) {
                             logger.error(e.getMessage(), e);

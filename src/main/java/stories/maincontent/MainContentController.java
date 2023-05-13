@@ -3,8 +3,8 @@ package stories.maincontent;
 import dtos.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -29,8 +29,6 @@ import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
 import stories.loadactualprofile.LoadActualProfileFacadeResult;
 import utils.Utils;
 
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -44,6 +42,7 @@ public class MainContentController implements Initializable {
 
     private MainContentManagerFacade facade;
     private ProfileDto actualProfile;
+    private boolean userInteractLanguageSelect;
 
     @FXML private ComboBox<ProfileDto> profileSelect;
     @FXML private ComboBox<SelectDto> languageSelect;
@@ -208,10 +207,12 @@ public class MainContentController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
 
         progressIndicator.setVisible(true);
+        userInteractLanguageSelect = true;
 
         Task<ListValuesMainContentFacadeResult> task = new Task<ListValuesMainContentFacadeResult>() {
             @Override
             protected ListValuesMainContentFacadeResult call() throws Exception {
+
                 ListValuesMainContentFacadeResult result = facade.execute();
 
                 actualProfile = profileSelect.getValue() != null ?
@@ -232,10 +233,9 @@ public class MainContentController implements Initializable {
             try {
                 platformSelect.setItems(task.getValue().getPlatformDtoList());
                 languageSelect.setItems(task.getValue().getLanguageDtoList());
-                ObservableList<ProfileDto> profileOptions = task.getValue().getProfileDtoList();
-                profileSelect.setItems(profileOptions);
-
-                languageSelect.setValue(actualProfile.getLanguage());
+                if (actualProfile != null) {
+                    languageSelect.setValue(actualProfile.getLanguage());
+                }
 
                 if (profileSelect.getValue() == null) {
                     File file = new File(System.getProperty("user.dir") + "/external-images/no-server-photo.png");
@@ -895,21 +895,6 @@ public class MainContentController implements Initializable {
         platformProfileMapSelect.setItems(result.getFilteredMapDtoList());
     }
 
-    private void loadSelects() throws Exception {
-        ListValuesMainContentFacadeResult listValuesMainContentFacadeResult = facade.execute();
-
-        gameTypeSelect.getItems().clear();
-        difficultySelect.getItems().clear();
-        lengthSelect.getItems().clear();
-        maxPlayersSelect.getItems().clear();
-
-        gameTypeSelect.setItems(listValuesMainContentFacadeResult.getGameTypeDtoList());
-        difficultySelect.setItems(listValuesMainContentFacadeResult.getDifficultyDtoList());
-        lengthSelect.setItems(listValuesMainContentFacadeResult.getLengthDtoList());
-        maxPlayersSelect.setItems(listValuesMainContentFacadeResult.getPlayerDtoList());
-    }
-
-
     private void loadLanguageTexts(String languageCode) throws Exception {
 
         String platformText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.platform");
@@ -1134,6 +1119,17 @@ public class MainContentController implements Initializable {
                 profileSelect.getValue().getName()
         );
 
+        if (!userInteractLanguageSelect) {
+            languageSelect.getSelectionModel().select(
+                    languageSelect.getItems().stream()
+                            .map(SelectDto::getKey)
+                            .collect(Collectors.toList())
+                            .indexOf(
+                                    result.getProfileDto().getLanguage().getKey()
+                            )
+            );
+        }
+
         gameTypeSelect.getSelectionModel().select(
             gameTypeSelect.getItems().stream().map(GameTypeDto::getKey).collect(Collectors.toList()).indexOf(result.getProfileDto().getGametype().getKey())
         );
@@ -1218,6 +1214,11 @@ public class MainContentController implements Initializable {
         }
     }
 
+    @FXML
+    private void profileOnMouseReleased(MouseEvent mouseEvent) {
+        userInteractLanguageSelect = false;
+    }
+
 
     @FXML
     private void profileOnAction() {
@@ -1231,10 +1232,15 @@ public class MainContentController implements Initializable {
     }
 
     @FXML
+    private void languageOnMouseReleased(MouseEvent mouseEvent) {
+        userInteractLanguageSelect = true;
+    }
+
+    @FXML
     private void gameTypeOnAction() {
         try {
-            difficultySelect.setDisable(gameTypeSelect.getValue() != null ? !gameTypeSelect.getValue().isDifficultyEnabled(): false);
-            lengthSelect.setDisable(gameTypeSelect.getValue() != null ? !gameTypeSelect.getValue().isLengthEnabled(): false);
+            difficultySelect.setDisable(gameTypeSelect.getValue() != null ? !gameTypeSelect.getValue().isDifficultyEnabled() : false);
+            lengthSelect.setDisable(gameTypeSelect.getValue() != null ? !gameTypeSelect.getValue().isLengthEnabled() : false);
             if (profileSelect.getValue() != null && gameTypeSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
                 String gameTypeCode = gameTypeSelect.getValue().getKey();
@@ -1312,20 +1318,43 @@ public class MainContentController implements Initializable {
     }
 
     @FXML
-    private void languageOnAction() {
+    private void languageOnAction(ActionEvent event) {
         try {
             loadLanguageTexts(languageSelect.getValue() != null ? languageSelect.getValue().getKey() : "en");
             if (profileSelect.getValue() != null) {
                 String profileName = profileSelect.getValue().getName();
                 String languageCode = languageSelect.getValue().getKey();
                 facade.updateProfileSetLanguage(profileName, languageCode);
-                actualProfile = facade.findProfileDtoByName(
-                                    profileSelect.getValue().getName()
-                                );
             }
-            loadSelects();
-            profileSelect.setValue(actualProfile);
 
+            ListValuesMainContentFacadeResult listValuesMainContentFacadeResult = facade.execute();
+
+            gameTypeSelect.getItems().clear();
+            difficultySelect.getItems().clear();
+            lengthSelect.getItems().clear();
+            maxPlayersSelect.getItems().clear();
+
+            gameTypeSelect.setItems(listValuesMainContentFacadeResult.getGameTypeDtoList());
+            difficultySelect.setItems(listValuesMainContentFacadeResult.getDifficultyDtoList());
+            lengthSelect.setItems(listValuesMainContentFacadeResult.getLengthDtoList());
+            maxPlayersSelect.setItems(listValuesMainContentFacadeResult.getPlayerDtoList());
+
+            if (userInteractLanguageSelect) {
+                ProfileDto oldProfile = profileSelect.getValue();
+                profileSelect.getItems().clear();
+                profileSelect.setItems(listValuesMainContentFacadeResult.getProfileDtoList());
+
+                profileSelect.getSelectionModel().select(
+                        oldProfile != null ?
+                            profileSelect.getItems().stream()
+                                .map(ProfileDto::getName)
+                                .collect(Collectors.toList())
+                                .indexOf(
+                                        oldProfile.getName()
+                                ):
+                        0
+                );
+            }
         } catch (Exception e) {
             String headerText = "The language value could not be saved!";
             logger.error(headerText, e);
