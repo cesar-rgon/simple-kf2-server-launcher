@@ -23,15 +23,11 @@ public interface ProfilesEditionManagerFacade {
     ProfileDto createNewProfile(String profileName) throws Exception;
     ProfileDto cloneSelectedProfile(String profileName, String newProfileName) throws Exception;
     void deleteSelectedProfile(String profileName) throws Exception;
+    ProfileDto updateChangedProfile(String oldProfileName, String newProfileName) throws Exception;
 
     // ------------
 
-
-
-
-    ProfileDto updateChangedProfile(String oldProfileName, String newProfileName) throws Exception;
     String findConfigPropertyValue(String key) throws Exception;
-
     void exportProfilesToFile(List<ProfileToDisplay> profilesToExportDto, File file) throws Exception;
     List<ProfileToDisplay> selectProfilesToBeExported(String message) throws SQLException;
     Optional<ButtonType> questionToImportEntitiesFromFile() throws Exception;

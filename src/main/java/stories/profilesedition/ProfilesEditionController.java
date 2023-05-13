@@ -237,15 +237,15 @@ public class ProfilesEditionController implements Initializable {
 
                     task.setOnSucceeded(wse -> {
                         try {
-                            if (StringUtils.isNotBlank(Session.getInstance().getActualProfileName()) && selectedProfile.getName().equalsIgnoreCase(Session.getInstance().getActualProfileName())) {
-                                Session.getInstance().setActualProfileName(StringUtils.EMPTY);
-                                facade.removeConfigProperty("prop.config.lastSelectedProfile");
-                            }
-                            if (Session.getInstance().getMapsProfile() != null && selectedProfile.getName().equalsIgnoreCase(Session.getInstance().getMapsProfile().getName())) {
-                                Session.getInstance().setMapsProfile(null);
-                            }
                             profilesTable.getItems().remove(selectedIndex);
 
+                            if (StringUtils.isNotBlank(Session.getInstance().getActualProfileName()) && selectedProfile.getName().equalsIgnoreCase(Session.getInstance().getActualProfileName())) {
+                                Session.getInstance().setActualProfileName(!profilesTable.getItems().isEmpty() ? profilesTable.getItems().get(0).getName(): StringUtils.EMPTY);
+                                facade.setConfigPropertyValue("prop.config.lastSelectedProfile", Session.getInstance().getActualProfileName());
+                            }
+                            if (Session.getInstance().getMapsProfile() != null && selectedProfile.getName().equalsIgnoreCase(Session.getInstance().getMapsProfile().getName())) {
+                                Session.getInstance().setMapsProfile(!profilesTable.getItems().isEmpty() ? profilesTable.getItems().get(0): null);
+                            }
                         } catch (Exception e) {
                             logger.error(e.getMessage(), e);
                         }
@@ -292,16 +292,17 @@ public class ProfilesEditionController implements Initializable {
             String epicInstallationFolder = facade.findConfigPropertyValue("prop.config.epicInstallationFolder");
             ProfileDto updatedProfileDto = facade.updateChangedProfile(oldProfileName, newProfileName);
             if (updatedProfileDto != null) {
-                ProfileDto actualProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfileName());
-                if (actualProfile != null && oldProfileName.equalsIgnoreCase(Session.getInstance().getActualProfileName())) {
+                profilesTable.getItems().remove(edittedRowIndex);
+                profilesTable.getItems().add(updatedProfileDto);
+
+                if (StringUtils.isNotBlank(Session.getInstance().getActualProfileName()) && oldProfileName.equalsIgnoreCase(Session.getInstance().getActualProfileName())) {
                     Session.getInstance().setActualProfileName(updatedProfileDto.getName());
                     facade.setConfigPropertyValue("prop.config.lastSelectedProfile", newProfileName);
                 }
                 if (Session.getInstance().getMapsProfile() != null && oldProfileName.equalsIgnoreCase(Session.getInstance().getMapsProfile().getName())) {
                     Session.getInstance().setMapsProfile(updatedProfileDto);
                 }
-                profilesTable.getItems().remove(edittedRowIndex);
-                profilesTable.getItems().add(updatedProfileDto);
+
                 String steamConfigFolder = steamInstallationFolder + "/KFGame/Config/";
                 File oldSteamProfileConfigFolder = new File(steamConfigFolder + oldProfileName);
                 File newSteamProfileConfigFolder = new File(steamConfigFolder + newProfileName);

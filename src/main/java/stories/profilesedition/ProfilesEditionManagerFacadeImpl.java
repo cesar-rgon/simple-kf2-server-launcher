@@ -24,6 +24,10 @@ import stories.deleteselectedprofile.DeleteSelectedProfileModelContext;
 import stories.listallprofiles.ListAllProfilesFacade;
 import stories.listallprofiles.ListAllProfilesFacadeImpl;
 import stories.listallprofiles.ListAllProfilesFacadeResult;
+import stories.updateprofilename.UpdateProfileNameFacade;
+import stories.updateprofilename.UpdateProfileNameFacadeImpl;
+import stories.updateprofilename.UpdateProfileNameFacadeResult;
+import stories.updateprofilename.UpdateProfileNameModelContext;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -90,7 +94,13 @@ public class ProfilesEditionManagerFacadeImpl
 
     @Override
     public ProfileDto updateChangedProfile(String oldProfileName, String newProfileName) throws Exception {
-        return null;
+        UpdateProfileNameModelContext updateProfileNameModelContext = new UpdateProfileNameModelContext(
+                oldProfileName,
+                newProfileName
+        );
+        UpdateProfileNameFacade updateProfileNameFacade = new UpdateProfileNameFacadeImpl(updateProfileNameModelContext);
+        UpdateProfileNameFacadeResult result = updateProfileNameFacade.execute();
+        return result.getUpdatedProfile();
     }
 
     @Override
