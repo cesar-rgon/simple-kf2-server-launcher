@@ -4,7 +4,7 @@ import dtos.GameTypeDto;
 import dtos.ProfileDto;
 import javafx.collections.ObservableList;
 
-public interface GameTypesEditionFacade {
+public interface OldGameTypesEditionFacade {
     ObservableList<GameTypeDto> listAllItems() throws Exception;
     GameTypeDto createItem(String code, String description, String languageCode) throws Exception;
     boolean deleteItem(String code) throws Exception;

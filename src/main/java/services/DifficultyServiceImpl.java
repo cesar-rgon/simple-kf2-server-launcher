@@ -2,19 +2,22 @@ package services;
 
 import daos.DescriptionDao;
 import daos.DifficultyDao;
+import entities.AbstractEntity;
+import entities.AbstractExtendedEntity;
 import entities.Difficulty;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
 import java.util.Optional;
 
-public class DifficultyServiceImpl implements AbstractService<Difficulty> {
+public class DifficultyServiceImpl extends AbstractService<Difficulty> {
 
-    private final EntityManager em;
+    public DifficultyServiceImpl() {
+        super();
+    }
 
     public DifficultyServiceImpl(EntityManager em) {
-        super();
-        this.em = em;
+        super(em);
     }
 
 
@@ -46,5 +49,6 @@ public class DifficultyServiceImpl implements AbstractService<Difficulty> {
         new DescriptionDao(em).remove(difficulty.getDescription());
         return removed;
     }
+
 
 }

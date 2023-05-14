@@ -8,7 +8,7 @@ import entities.Description;
 import javafx.collections.ObservableList;
 import org.apache.commons.lang3.StringUtils;
 import pojos.enums.EnumLanguage;
-import services.AbstractService;
+import services.IService;
 
 import java.util.List;
 import java.util.Optional;
@@ -17,17 +17,17 @@ public abstract class OldAEditionFacade<E extends AbstractExtendedEntity, D exte
 
     private final Class<E> entityClass;
     protected final AbstractDtoFactory dtoFactory;
-    protected final AbstractService<E> abstractService;
+    protected final IService<E> iService;
 
-    protected OldAEditionFacade(Class<E> entityClass, AbstractDtoFactory dtoFactory, AbstractService<E> abstractService) {
+    protected OldAEditionFacade(Class<E> entityClass, AbstractDtoFactory dtoFactory, IService<E> iService) {
         super(null);
         this.entityClass = entityClass;
         this.dtoFactory = dtoFactory;
-        this.abstractService = abstractService;
+        this.iService = iService;
     }
 
     public ObservableList<D> listAllItems() throws Exception {
-        List<E> itemList = abstractService.listAll();
+        List<E> itemList = iService.listAll();
         return dtoFactory.newDtos(itemList);
     }
 
@@ -43,19 +43,19 @@ public abstract class OldAEditionFacade<E extends AbstractExtendedEntity, D exte
         }
         new DescriptionDao(em).insert(description);
 
-        E item = entityClass.newInstance();
+        E item = entityClass.getDeclaredConstructor().newInstance();
         item.setCode(code);
         item.setDescription(description);
         return (D) dtoFactory.newDto(
-            abstractService.createItem(item)
+            iService.createItem(item)
         );
     }
 
 
     public boolean deleteItem(String code) throws Exception {
-        Optional<E> itemOptional = abstractService.findByCode(code);
+        Optional<E> itemOptional = iService.findByCode(code);
         if (itemOptional.isPresent()) {
-            boolean removed = abstractService.deleteItem(itemOptional.get());
+            boolean removed = iService.deleteItem(itemOptional.get());
             new DescriptionDao(em).remove((Description) itemOptional.get().getDescription());
             return removed;
         }
@@ -67,10 +67,10 @@ public abstract class OldAEditionFacade<E extends AbstractExtendedEntity, D exte
         if (StringUtils.isBlank(newCode) || newCode.equalsIgnoreCase(oldCode)) {
             return null;
         }
-        Optional<E> itemOptional = abstractService.findByCode(oldCode);
+        Optional<E> itemOptional = iService.findByCode(oldCode);
         if (itemOptional.isPresent()) {
             itemOptional.get().setCode(newCode);
-            if (abstractService.updateItem(itemOptional.get())) {
+            if (iService.updateItem(itemOptional.get())) {
                 return (D) dtoFactory.newDto(itemOptional.get());
             }
         }
@@ -81,7 +81,7 @@ public abstract class OldAEditionFacade<E extends AbstractExtendedEntity, D exte
         if (StringUtils.isBlank(newDescriptionValue) || newDescriptionValue.equals(oldDescriptionValue)) {
             return null;
         }
-        Optional<E> itemOptional = abstractService.findByCode(code);
+        Optional<E> itemOptional = iService.findByCode(code);
         if (itemOptional.isPresent()) {
 
             EnumLanguage language = EnumLanguage.valueOf(languageCode);
@@ -94,7 +94,7 @@ public abstract class OldAEditionFacade<E extends AbstractExtendedEntity, D exte
             new DescriptionDao(em).insert(newDescription);
 
             itemOptional.get().setDescription(newDescription);
-            abstractService.updateItem(itemOptional.get());
+            iService.updateItem(itemOptional.get());
 
             Optional<Description> oldDescriptionOptional = new DescriptionDao(em).findByValue(oldDescriptionValue, language);
             if (oldDescriptionOptional.isPresent()) {

@@ -13,11 +13,11 @@ import old.OldAEditionFacade;
 
 import java.util.Optional;
 
-public class GameTypesEditionFacadeImplOld extends OldAEditionFacade<GameType, GameTypeDto> implements GameTypesEditionFacade {
+public class OldGameTypesEditionFacadeImpl extends OldAEditionFacade<GameType, GameTypeDto> implements OldGameTypesEditionFacade {
 
     private final ProfileService profileService;
     private final GameTypeServiceImpl gameTypeService;
-    public GameTypesEditionFacadeImplOld() {
+    public OldGameTypesEditionFacadeImpl() {
         super(
                 GameType.class,
                 new GameTypeDtoFactory(),

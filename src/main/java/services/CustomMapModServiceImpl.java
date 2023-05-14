@@ -15,14 +15,12 @@ import java.util.stream.Collectors;
 
 public class CustomMapModServiceImpl extends AbstractMapService {
 
-    private final EntityManager em;
     private final PlatformProfileMapService platformProfileMapService;
     private final PlatformService platformService;
     private final PropertyService propertyService;
 
     public CustomMapModServiceImpl(EntityManager em) {
         super(em);
-        this.em = em;
         this.platformProfileMapService = new PlatformProfileMapServiceImpl(em);
         this.platformService = new PlatformServiceImpl(em);
         this.propertyService = new PropertyServiceImpl();

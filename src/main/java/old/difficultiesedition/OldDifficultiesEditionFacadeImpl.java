@@ -1,36 +1,37 @@
-package old.lengthedition;
+package stories.console.difficultiesedition;
 
 import dtos.ProfileDto;
 import dtos.SelectDto;
-import dtos.factories.LengthDtoFactory;
+import dtos.factories.DifficultyDtoFactory;
 import dtos.factories.ProfileDtoFactory;
-import entities.Length;
+import entities.Difficulty;
 import entities.Profile;
-import services.LengthServiceImpl;
+import services.DifficultyServiceImpl;
 import services.ProfileService;
 import services.ProfileServiceImpl;
 import old.OldAEditionFacade;
 
 import java.util.Optional;
 
-public class LengthEditionFacadeImplOld extends OldAEditionFacade<Length, SelectDto> implements LengthEditionFacade {
+public class OldDifficultiesEditionFacadeImpl extends OldAEditionFacade<Difficulty, SelectDto> implements stories.console.difficultiesedition.OldDifficultiesEditionFacade {
 
     private final ProfileService profileService;
 
-    public LengthEditionFacadeImplOld() {
+    public OldDifficultiesEditionFacadeImpl() {
         super(
-                Length.class,
-                new LengthDtoFactory(),
-                new LengthServiceImpl(null)
+                Difficulty.class,
+                new DifficultyDtoFactory(),
+                new DifficultyServiceImpl(null)
         );
         this.profileService = new ProfileServiceImpl(em);
     }
 
+
     @Override
-    public ProfileDto unselectLengthInProfile(String profileName) throws Exception {
+    public ProfileDto unselectDifficultyInProfile(String profileName) throws Exception {
         Optional<Profile> profileOpt = profileService.findProfileByCode(profileName);
         if (profileOpt.isPresent()) {
-            profileOpt.get().setLength(null);
+            profileOpt.get().setDifficulty(null);
             profileService.updateItem(profileOpt.get());
             ProfileDtoFactory profileDtoFactory = new ProfileDtoFactory(em);
             return profileDtoFactory.newDto(profileOpt.get());

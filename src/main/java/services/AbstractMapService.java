@@ -1,27 +1,21 @@
 package services;
 
-import daos.OfficialMapDao;
-import daos.PlatformProfileMapDao;
 import entities.*;
 import jakarta.persistence.EntityManager;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.ImportMapResultToDisplay;
 
 import java.sql.SQLException;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-public abstract class AbstractMapService implements AbstractService<AbstractMap> {
+public abstract class AbstractMapService extends AbstractService<AbstractMap> {
 
     private static final Logger logger = LogManager.getLogger(AbstractMapService.class);
     private final PlatformProfileMapService platformProfileMapService;
 
     protected AbstractMapService(EntityManager em) {
-        super();
+        super(em);
         this.platformProfileMapService = new PlatformProfileMapServiceImpl(em);
     }
 

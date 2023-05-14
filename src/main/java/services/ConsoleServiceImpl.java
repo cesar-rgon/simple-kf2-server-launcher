@@ -16,8 +16,8 @@ import java.util.Optional;
 
 public class ConsoleServiceImpl implements ConsoleService {
 
-    private static final Logger logger = LogManager.getLogger(ConsoleServiceImpl.class);
     private final EntityManager em;
+    private static final Logger logger = LogManager.getLogger(ConsoleServiceImpl.class);
     private final ProfileService profileService;
     private final PlatformService platformService;
 

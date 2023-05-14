@@ -7,12 +7,10 @@ import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
-public class LanguageServiceImpl implements AbstractService<Language> {
-
-    private final EntityManager em;
+public class LanguageServiceImpl extends AbstractService<Language> {
 
     public LanguageServiceImpl(EntityManager em) {
-        this.em = em;
+        super(em);
     }
 
     @Override

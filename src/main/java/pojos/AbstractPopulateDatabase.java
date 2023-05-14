@@ -1,6 +1,5 @@
 package pojos;
 
-import daos.*;
 import entities.*;
 import jakarta.persistence.EntityManager;
 import pojos.enums.EnumPlatform;
@@ -8,7 +7,6 @@ import services.*;
 
 import java.sql.SQLException;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractPopulateDatabase {

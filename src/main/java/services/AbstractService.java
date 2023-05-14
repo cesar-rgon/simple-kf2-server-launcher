@@ -3,15 +3,24 @@ package services;
 import entities.AbstractEntity;
 import jakarta.persistence.EntityManager;
 
-import java.util.List;
-import java.util.Optional;
+public abstract class AbstractService<T extends AbstractEntity> implements IService<T> {
 
-public interface AbstractService<T extends AbstractEntity> {
+    protected EntityManager em;
 
-    List<T> listAll() throws Exception;
-    Optional<T> findByCode(String code) throws Exception;
-    T createItem(T entity) throws Exception;
-    boolean updateItem(T entity) throws Exception;
-    boolean deleteItem(T entity) throws Exception;
+    public AbstractService() {
+        super();
+    }
 
+    public AbstractService(EntityManager em) {
+        super();
+        this.em = em;
+    }
+
+    public EntityManager getEm() {
+        return em;
+    }
+
+    public void setEm(EntityManager em) {
+        this.em = em;
+    }
 }

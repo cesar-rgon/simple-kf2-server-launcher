@@ -1,4 +1,4 @@
-package old.maxplayersedition;
+package stories.maxplayersedition;
 
 import dtos.ProfileDto;
 import dtos.SelectDto;
@@ -7,12 +7,15 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.Duration;
+import old.maxplayersedition.OldMaxPlayersEditionFacade;
+import old.maxplayersedition.OldMaxPlayersEditionFacadeImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
+import stories.listallitems.ListAllItemsFacadeResult;
 import utils.Utils;
 
 import java.net.URL;
@@ -22,7 +25,7 @@ import java.util.ResourceBundle;
 public class MaxPlayersEditionController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(MaxPlayersEditionController.class);
-    private final MaxPlayersEditionFacade facade;
+    private final MaxPlayersEditionManagerFacade facade;
     private final PropertyService propertyService;
     protected String languageCode;
 
@@ -38,7 +41,7 @@ public class MaxPlayersEditionController implements Initializable {
 
     public MaxPlayersEditionController() {
         super();
-        facade = new MaxPlayersEditionFacadeImplOld();
+        facade = new MaxPlayersEditionManagerFacadeImpl();
         propertyService = new PropertyServiceImpl();
     }
 
@@ -51,7 +54,8 @@ public class MaxPlayersEditionController implements Initializable {
             maxPlayersCodeColumn.setCellValueFactory(cellData -> cellData.getValue().getKeyProperty());
             maxPlayersDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             maxPlayersDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().getValueProperty());
-            maxPlayersTable.setItems(facade.listAllItems());
+            ListAllItemsFacadeResult<SelectDto> result = facade.execute();
+            maxPlayersTable.setItems(result.getAllItemList());
 
             String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.maxPlayersTitle");
             titleConfigLabel.setText(titleConfigLabelText);
@@ -179,14 +183,8 @@ public class MaxPlayersEditionController implements Initializable {
                         facade.unselectMaxPlayersInProfile(actualProfile.getName());
                     }
 
-                    if (facade.deleteItem(selectedMaxPlayers.getKey())) {
-                        maxPlayersTable.getItems().remove(selectedIndex);
-                    } else {
-                        logger.warn("The max. players can not be deleted from database: " + selectedMaxPlayers.getKey());
-                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.maxPlayersNotDeleted");
-                        Utils.warningDialog(headerText, contentText);
-                    }
+                    facade.deleteItem(selectedMaxPlayers.getKey());
+                    maxPlayersTable.getItems().remove(selectedIndex);
                 }
             } else {
                 logger.warn("No selected max. players to delete");

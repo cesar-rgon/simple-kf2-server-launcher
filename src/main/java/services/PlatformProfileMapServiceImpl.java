@@ -11,13 +11,10 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
-public class PlatformProfileMapServiceImpl implements PlatformProfileMapService {
-
-    private final EntityManager em;
+public class PlatformProfileMapServiceImpl extends AbstractService<PlatformProfileMap> implements PlatformProfileMapService {
 
     public PlatformProfileMapServiceImpl(EntityManager em) {
-        super();
-        this.em = em;
+        super(em);
     }
 
     @Override

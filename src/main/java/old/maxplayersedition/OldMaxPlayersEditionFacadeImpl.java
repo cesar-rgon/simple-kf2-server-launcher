@@ -11,12 +11,12 @@ import old.OldAEditionFacade;
 
 import java.util.Optional;
 
-public class MaxPlayersEditionFacadeImplOld extends OldAEditionFacade<MaxPlayers, SelectDto> implements MaxPlayersEditionFacade {
+public class OldMaxPlayersEditionFacadeImpl extends OldAEditionFacade<MaxPlayers, SelectDto> implements OldMaxPlayersEditionFacade {
 
     private final ProfileService profileService;
     private final PlatformProfileMapService platformProfileMapService;
 
-    public MaxPlayersEditionFacadeImplOld() {
+    public OldMaxPlayersEditionFacadeImpl() {
         super(
                 MaxPlayers.class,
                 new MaxPlayersDtoFactory(),

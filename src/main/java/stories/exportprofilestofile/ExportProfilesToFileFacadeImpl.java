@@ -4,7 +4,6 @@ import entities.Profile;
 import framework.AbstractTransactionalFacade;
 import framework.EmptyFacadeResult;
 import jakarta.persistence.EntityManager;
-import old.profilesedition.OldProfilesEditionFacadeImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import services.ProfileService;

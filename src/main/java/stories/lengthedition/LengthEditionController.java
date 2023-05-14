@@ -1,4 +1,4 @@
-package old.lengthedition;
+package stories.lengthedition;
 
 import dtos.ProfileDto;
 import dtos.SelectDto;
@@ -7,12 +7,15 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.Duration;
+import old.lengthedition.OldLengthEditionFacade;
+import old.lengthedition.OldLengthEditionFacadeImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
+import stories.listallitems.ListAllItemsFacadeResult;
 import utils.Utils;
 
 import java.net.URL;
@@ -22,7 +25,7 @@ import java.util.ResourceBundle;
 public class LengthEditionController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(LengthEditionController.class);
-    private final LengthEditionFacade facade;
+    private final LengthEditionManagerFacade facade;
     private final PropertyService propertyService;
     protected String languageCode;
 
@@ -38,7 +41,7 @@ public class LengthEditionController implements Initializable {
 
     public LengthEditionController(){
         super();
-        facade = new LengthEditionFacadeImplOld();
+        facade = new LengthEditionManagerFacadeImpl();
         propertyService = new PropertyServiceImpl();
     }
 
@@ -51,7 +54,8 @@ public class LengthEditionController implements Initializable {
             lengthCodeColumn.setCellValueFactory(cellData -> cellData.getValue().getKeyProperty());
             lengthDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             lengthDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().getValueProperty());
-            lengthTable.setItems(facade.listAllItems());
+            ListAllItemsFacadeResult<SelectDto> result = facade.execute();
+            lengthTable.setItems(result.getAllItemList());
 
             String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthTitle");
             titleConfigLabel.setText(titleConfigLabelText);
@@ -177,14 +181,8 @@ public class LengthEditionController implements Initializable {
                         facade.unselectLengthInProfile(actualProfile.getName());
                     }
 
-                    if (facade.deleteItem(selectedLength.getKey())) {
-                        lengthTable.getItems().remove(selectedIndex);
-                    } else {
-                        logger.warn("The length can not be deleted from database: " + selectedLength.getKey() + " - " + selectedLength.getValue());
-                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.lengthNotDeleted");
-                        Utils.warningDialog(headerText, contentText);
-                    }
+                    facade.deleteItem(selectedLength.getKey());
+                    lengthTable.getItems().remove(selectedIndex);
                 }
             } else {
                 logger.warn("No selected length to delete");

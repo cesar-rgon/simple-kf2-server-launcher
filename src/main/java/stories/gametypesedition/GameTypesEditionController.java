@@ -1,4 +1,4 @@
-package old.gametypesedition;
+package stories.gametypesedition;
 
 import dtos.GameTypeDto;
 import dtos.ProfileDto;
@@ -14,12 +14,15 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.Duration;
+import old.gametypesedition.OldGameTypesEditionFacade;
+import old.gametypesedition.OldGameTypesEditionFacadeImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
+import stories.listallitems.ListAllItemsFacadeResult;
 import utils.Utils;
 
 import java.net.URL;
@@ -29,7 +32,7 @@ import java.util.ResourceBundle;
 public class GameTypesEditionController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(GameTypesEditionController.class);
-    private final GameTypesEditionFacade facade;
+    private final GameTypesEditionManagerFacade facade;
     private final PropertyService propertyService;
     protected String languageCode;
 
@@ -48,7 +51,7 @@ public class GameTypesEditionController implements Initializable {
     @FXML private Label lengthsEnabledLabel;
 
     public GameTypesEditionController() {
-        facade = new GameTypesEditionFacadeImplOld();
+        facade = new GameTypesEditionManagerFacadeImpl();
         propertyService = new PropertyServiceImpl();
     }
 
@@ -168,7 +171,8 @@ public class GameTypesEditionController implements Initializable {
             });
             lengthsEnabledColumn.setCellValueFactory(cellData -> cellData.getValue().isLengthEnabledProperty());
 
-            gameTypesTable.setItems((ObservableList) facade.listAllItems());
+            ListAllItemsFacadeResult<GameTypeDto> result = facade.execute();
+            gameTypesTable.setItems(result.getAllItemList());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -260,14 +264,8 @@ public class GameTypesEditionController implements Initializable {
                         facade.unselectGametypeInProfile(actualProfile.getName());
                     }
 
-                    if (facade.deleteItem(selectedGameType.getKey())) {
-                        gameTypesTable.getItems().remove(selectedIndex);
-                    } else {
-                        logger.warn("The game type can not be deleted from database: " + selectedGameType.getKey() + " - " + selectedGameType.getValue());
-                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.gameTypeNotDeleted");
-                        Utils.warningDialog(headerText, contentText);
-                    }
+                    facade.deleteItem(selectedGameType.getKey());
+                    gameTypesTable.getItems().remove(selectedIndex);
                 }
             } else {
                 logger.warn("No selected game type to delete");

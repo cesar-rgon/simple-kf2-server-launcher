@@ -1,8 +1,5 @@
 package pojos.kf2factory;
 
-import daos.CustomMapModDao;
-import daos.OfficialMapDao;
-import daos.PlatformProfileMapDao;
 import entities.AbstractMap;
 import entities.CustomMapMod;
 import entities.PlatformProfileMap;

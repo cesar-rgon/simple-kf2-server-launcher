@@ -8,13 +8,13 @@ import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
-public class LengthServiceImpl implements AbstractService<Length> {
+public class LengthServiceImpl extends AbstractService<Length> {
 
-    private final EntityManager em;
-
-    public LengthServiceImpl(EntityManager em) {
+    public LengthServiceImpl() {
         super();
-        this.em = em;
+    }
+    public LengthServiceImpl(EntityManager em) {
+        super(em);
     }
 
     @Override

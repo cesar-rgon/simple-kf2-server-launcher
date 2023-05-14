@@ -1,6 +1,5 @@
 package stories.importprofilesfromfile;
 
-import dtos.ProfileDto;
 import dtos.factories.ProfileDtoFactory;
 import entities.AbstractPlatform;
 import entities.EpicPlatform;
@@ -8,7 +7,6 @@ import entities.Profile;
 import entities.SteamPlatform;
 import framework.AbstractTransactionalFacade;
 import jakarta.persistence.EntityManager;
-import old.profilesedition.OldProfilesEditionFacadeImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.kf2factory.Kf2Common;

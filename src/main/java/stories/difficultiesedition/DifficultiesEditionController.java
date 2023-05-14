@@ -1,4 +1,4 @@
-package stories.console.difficultiesedition;
+package stories.difficultiesedition;
 
 import dtos.ProfileDto;
 import dtos.SelectDto;
@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
+import stories.listallitems.ListAllItemsFacadeResult;
 import utils.Utils;
 
 import java.net.URL;
@@ -22,7 +23,7 @@ import java.util.ResourceBundle;
 public class DifficultiesEditionController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(DifficultiesEditionController.class);
-    private final DifficultiesEditionFacade facade;
+    private final DifficultiesEditionManagerFacade facade;
     private final PropertyService propertyService;
     protected String languageCode;
 
@@ -37,7 +38,7 @@ public class DifficultiesEditionController implements Initializable {
     @FXML private Label difficultyDescriptionLabel;
 
     public DifficultiesEditionController() {
-        facade = new DifficultiesEditionFacadeImplOld();
+        facade = new DifficultiesEditionManagerFacadeImpl();
         propertyService = new PropertyServiceImpl();
     }
 
@@ -50,7 +51,9 @@ public class DifficultiesEditionController implements Initializable {
             difficultyCodeColumn.setCellValueFactory(cellData -> cellData.getValue().getKeyProperty());
             difficultyDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             difficultyDescriptionColumn.setCellValueFactory(cellData -> cellData.getValue().getValueProperty());
-            difficultiesTable.setItems(facade.listAllItems());
+
+            ListAllItemsFacadeResult<SelectDto> result = facade.execute();
+            difficultiesTable.setItems(result.getAllItemList());
 
             String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultyTitle");
             titleConfigLabel.setText(titleConfigLabelText);
@@ -175,14 +178,8 @@ public class DifficultiesEditionController implements Initializable {
                         facade.unselectDifficultyInProfile(actualProfile.getName());
                     }
 
-                    if (facade.deleteItem(selectedDifficulty.getKey())) {
-                        difficultiesTable.getItems().remove(selectedIndex);
-                    } else {
-                        logger.warn("The difficulty can not be deleted from database: " + selectedDifficulty.getKey() + " - " + selectedDifficulty.getValue());
-                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.difficultyNotDeleted");
-                        Utils.warningDialog(headerText, contentText);
-                    }
+                    facade.deleteItem(selectedDifficulty.getKey());
+                    difficultiesTable.getItems().remove(selectedIndex);
                 }
             } else {
                 logger.warn("No selected difficulty to delete");

@@ -8,13 +8,13 @@ import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
-public class MaxPlayersServiceImpl implements AbstractService<MaxPlayers> {
+public class MaxPlayersServiceImpl extends AbstractService<MaxPlayers> {
 
-    private final EntityManager em;
-
-    public MaxPlayersServiceImpl(EntityManager em) {
+    public MaxPlayersServiceImpl() {
         super();
-        this.em = em;
+    }
+    public MaxPlayersServiceImpl(EntityManager em) {
+        super(em);
     }
 
 

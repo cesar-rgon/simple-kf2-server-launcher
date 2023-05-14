@@ -8,13 +8,14 @@ import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 
-public class GameTypeServiceImpl implements AbstractService<GameType> {
+public class GameTypeServiceImpl extends AbstractService<GameType> {
 
-    private final EntityManager em;
+    public GameTypeServiceImpl() {
+        super();
+    }
 
     public GameTypeServiceImpl(EntityManager em) {
-        super();
-        this.em = em;
+        super(em);
     }
 
 

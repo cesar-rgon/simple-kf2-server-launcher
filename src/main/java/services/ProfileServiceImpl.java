@@ -10,7 +10,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Hibernate;
 import pojos.MapToDisplay;
-import pojos.ProfileToDisplay;
 import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Factory;
 import utils.Utils;
@@ -25,10 +24,9 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class ProfileServiceImpl implements ProfileService {
+public class ProfileServiceImpl extends AbstractService<Profile> implements ProfileService {
 
     private static final Logger logger = LogManager.getLogger(ProfileServiceImpl.class);
-    private final EntityManager em;
     private final PropertyService propertyService;
     private final AbstractMapService officialMapService;
     private final AbstractMapService customMapModService;
@@ -42,8 +40,7 @@ public class ProfileServiceImpl implements ProfileService {
     private final PlatformService platformService;
 
     public ProfileServiceImpl(EntityManager em) {
-        super();
-        this.em = em;
+        super(em);
         this.propertyService = new PropertyServiceImpl();
         this.officialMapService = new OfficialMapServiceImpl(em);
         this.customMapModService = new CustomMapModServiceImpl(em);

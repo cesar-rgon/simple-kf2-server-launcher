@@ -13,11 +13,8 @@ import java.util.Optional;
 
 public class OfficialMapServiceImpl extends AbstractMapService {
 
-    private final EntityManager em;
-
     public OfficialMapServiceImpl(EntityManager em) {
         super(em);
-        this.em = em;
     }
 
     @Override

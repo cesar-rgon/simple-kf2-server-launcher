@@ -1,9 +1,7 @@
 package services;
 
 import entities.Language;
-import entities.AbstractPlatform;
 import entities.Profile;
-import jakarta.persistence.EntityManager;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -11,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
-public interface ProfileService extends AbstractService<Profile> {
+public interface ProfileService extends IService<Profile> {
 
     Optional<Profile> findProfileByCode(String profileName) throws Exception;
     List<Profile> listAllProfiles() throws SQLException;

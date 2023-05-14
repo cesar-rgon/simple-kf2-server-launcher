@@ -1,7 +1,5 @@
 package dtos.factories;
 
-import daos.OfficialMapDao;
-import daos.PlatformProfileMapDao;
 import dtos.AbstractMapDto;
 import dtos.CustomMapModDto;
 import dtos.ImportedDateByProfileDto;
