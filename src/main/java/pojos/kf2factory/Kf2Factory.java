@@ -14,10 +14,6 @@ public class Kf2Factory {
 
     private static final Logger logger = LogManager.getLogger(Kf2Factory.class);
 
-    public static Kf2Common getInstance(AbstractPlatform platform) {
-        return getInstance(platform, null);
-    }
-
     public static Kf2Common getInstance(AbstractPlatform platform, EntityManager em) {
         if (platform == null || StringUtils.isBlank(platform.getCode())) {
             logger.error("The platform can not be empty");

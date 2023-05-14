@@ -46,7 +46,7 @@ public class ConsoleServiceImpl implements ConsoleService {
                     throw new RuntimeException(errorMessage);
                 }
 
-                Kf2Common kf2Common = Kf2Factory.getInstance(platformOptional.get());
+                Kf2Common kf2Common = Kf2Factory.getInstance(platformOptional.get(), em);
                 kf2Common.runServerByConsole(profileOptional.get());
 
             } catch (Exception e) {

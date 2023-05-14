@@ -2,6 +2,7 @@ package stories.profilesedition;
 
 import dtos.ProfileDto;
 import entities.Profile;
+import jakarta.persistence.EntityManager;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ButtonType;
 import pojos.ProfileToDisplay;
@@ -24,17 +25,11 @@ public interface ProfilesEditionManagerFacade {
     ProfileDto cloneSelectedProfile(String profileName, String newProfileName) throws Exception;
     void deleteSelectedProfile(String profileName) throws Exception;
     ProfileDto updateChangedProfile(String oldProfileName, String newProfileName) throws Exception;
-
-    // ------------
-
-    String findConfigPropertyValue(String key) throws Exception;
+    List<ProfileToDisplay> selectProfilesToBeExported(String message) throws Exception;
     void exportProfilesToFile(List<ProfileToDisplay> profilesToExportDto, File file) throws Exception;
-    List<ProfileToDisplay> selectProfilesToBeExported(String message) throws SQLException;
-    Optional<ButtonType> questionToImportEntitiesFromFile() throws Exception;
     Properties importEntitiesFromFile(File file) throws Exception;
-    List<Profile> questionToImportProfilesFromFile(Properties properties, String message) throws Exception;
+    List<ProfileToDisplay> questionToImportProfilesFromFile(Properties properties) throws Exception;
+    Profile getProfileFromFile(int profileIndex, Properties properties) throws Exception;
     ObservableList<ProfileDto> importProfilesFromFile(List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) throws Exception;
-    void createConfigFolder(String profileName) throws SQLException;
-    ProfileDto findProfileDtoByName(String name) throws Exception;
-
+    String findConfigPropertyValue(String key) throws Exception;
 }

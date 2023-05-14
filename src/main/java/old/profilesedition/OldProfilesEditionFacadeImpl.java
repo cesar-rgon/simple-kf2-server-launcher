@@ -128,13 +128,13 @@ public class OldProfilesEditionFacadeImpl extends OldAFacade implements OldProfi
         List<AbstractPlatform> validPlatformList = new ArrayList<AbstractPlatform>();
         Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();
         if (steamPlatformOptional.isPresent()) {
-            if (Kf2Factory.getInstance(steamPlatformOptional.get()).isValidInstallationFolder()) {
+            if (Kf2Factory.getInstance(steamPlatformOptional.get(), null).isValidInstallationFolder()) {
                 validPlatformList.add(steamPlatformOptional.get());
             }
         }
         Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
         if (epicPlatformOptional.isPresent()) {
-            if (Kf2Factory.getInstance(epicPlatformOptional.get()).isValidInstallationFolder()) {
+            if (Kf2Factory.getInstance(epicPlatformOptional.get(), null).isValidInstallationFolder()) {
                 validPlatformList.add(epicPlatformOptional.get());
             }
         }
@@ -151,7 +151,7 @@ public class OldProfilesEditionFacadeImpl extends OldAFacade implements OldProfi
         }
 
         for (AbstractPlatform platform: validPlatformList) {
-            Kf2Common kf2Common = Kf2Factory.getInstance(platform);
+            Kf2Common kf2Common = Kf2Factory.getInstance(platform, null);
             kf2Common.createConfigFolder(platform.getInstallationFolder(), newProfile.getName());
         }
 
@@ -167,13 +167,13 @@ public class OldProfilesEditionFacadeImpl extends OldAFacade implements OldProfi
                 List<AbstractPlatform> validPlatformList = new ArrayList<AbstractPlatform>();
                 Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();
                 if (steamPlatformOptional.isPresent()) {
-                    if (Kf2Factory.getInstance(steamPlatformOptional.get()).isValidInstallationFolder()) {
+                    if (Kf2Factory.getInstance(steamPlatformOptional.get(), null).isValidInstallationFolder()) {
                         validPlatformList.add(steamPlatformOptional.get());
                     }
                 }
                 Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
                 if (epicPlatformOptional.isPresent()) {
-                    if (Kf2Factory.getInstance(epicPlatformOptional.get()).isValidInstallationFolder()) {
+                    if (Kf2Factory.getInstance(epicPlatformOptional.get(), null).isValidInstallationFolder()) {
                         validPlatformList.add(epicPlatformOptional.get());
                     }
                 }
@@ -219,19 +219,19 @@ public class OldProfilesEditionFacadeImpl extends OldAFacade implements OldProfi
             List<AbstractPlatform> validPlatformList = new ArrayList<AbstractPlatform>();
             Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();
             if (steamPlatformOptional.isPresent()) {
-                if (Kf2Factory.getInstance(steamPlatformOptional.get()).isValidInstallationFolder()) {
+                if (Kf2Factory.getInstance(steamPlatformOptional.get(), null).isValidInstallationFolder()) {
                     validPlatformList.add(steamPlatformOptional.get());
                 }
             }
             Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
             if (epicPlatformOptional.isPresent()) {
-                if (Kf2Factory.getInstance(epicPlatformOptional.get()).isValidInstallationFolder()) {
+                if (Kf2Factory.getInstance(epicPlatformOptional.get(), null).isValidInstallationFolder()) {
                     validPlatformList.add(epicPlatformOptional.get());
                 }
             }
 
             for (AbstractPlatform platform: validPlatformList) {
-                Kf2Common kf2Common = Kf2Factory.getInstance(platform);
+                Kf2Common kf2Common = Kf2Factory.getInstance(platform, null);
                 kf2Common.createConfigFolder(platform.getInstallationFolder(), newProfile.getName());
             }
 
@@ -290,7 +290,7 @@ public class OldProfilesEditionFacadeImpl extends OldAFacade implements OldProfi
 
     @Override
     public List<Profile> questionToImportProfilesFromFile(Properties properties, String message) throws Exception {
-        return profileService.selectProfilesToBeImported(properties, message);
+        return null;
     }
 
     @Override
@@ -313,19 +313,19 @@ public class OldProfilesEditionFacadeImpl extends OldAFacade implements OldProfi
         List<AbstractPlatform> validPlatformList = new ArrayList<AbstractPlatform>();
         Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();
         if (steamPlatformOptional.isPresent()) {
-            if (Kf2Factory.getInstance(steamPlatformOptional.get()).isValidInstallationFolder()) {
+            if (Kf2Factory.getInstance(steamPlatformOptional.get(), null).isValidInstallationFolder()) {
                 validPlatformList.add(steamPlatformOptional.get());
             }
         }
         Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
         if (epicPlatformOptional.isPresent()) {
-            if (Kf2Factory.getInstance(epicPlatformOptional.get()).isValidInstallationFolder()) {
+            if (Kf2Factory.getInstance(epicPlatformOptional.get(), null).isValidInstallationFolder()) {
                 validPlatformList.add(epicPlatformOptional.get());
             }
         }
 
         for (AbstractPlatform platform: validPlatformList) {
-            Kf2Common kf2Common = Kf2Factory.getInstance(platform);
+            Kf2Common kf2Common = Kf2Factory.getInstance(platform, null);
             kf2Common.createConfigFolder(platform.getInstallationFolder(), profileName);
         }
     }

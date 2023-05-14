@@ -153,12 +153,12 @@ public class Profile extends AbstractExtendedEntity {
     }
 
     public Profile(String name, Language language, GameType gametype, AbstractMap map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,
-                   String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
-                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, Boolean takeover,
-                   Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting, Double mapVotingTime,
-                   Boolean kickVoting, Double kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators, Boolean voip,
-                   Boolean chatLogging, String chatLoggingFile, Boolean chatLoggingFileTimestamp, Double timeBetweenKicks, Double maxIdleTime, Boolean deadPlayersCanTalk,
-                   Integer readyUpDelay, Integer gameStartDelay, Integer maxSpectators, Boolean mapObjetives, Boolean pickupItems, Double friendlyFirePercentage) {
+                   String serverName, String serverPassword, boolean webPage, String webPassword, int webPort, int gamePort, int queryPort,
+                   String yourClan, String yourWebLink, String urlImageServer, String welcomeMessage, String customParameters, boolean takeover,
+                   boolean teamCollision, boolean adminCanPause, boolean announceAdminLogin, boolean mapVoting, double mapVotingTime,
+                   boolean kickVoting, double kickPercentage, boolean publicTextChat, boolean spectatorsOnlyChatToOtherSpectators, boolean voip,
+                   boolean chatLogging, String chatLoggingFile, boolean chatLoggingFileTimestamp, double timeBetweenKicks, double maxIdleTime, boolean deadPlayersCanTalk,
+                   int readyUpDelay, int gameStartDelay, int maxSpectators, boolean mapObjetives, boolean pickupItems, double friendlyFirePercentage) {
 
         super();
         this.name = name;
@@ -170,39 +170,39 @@ public class Profile extends AbstractExtendedEntity {
         this.maxPlayers = maxPlayers;
         this.serverName = serverName;
         this.serverPassword = serverPassword;
-        this.webPage = webPage;
+        this.webPage = (Boolean) webPage;
         this.webPassword = webPassword;
-        this.webPort = webPort;
-        this.gamePort = gamePort;
-        this.queryPort = queryPort;
+        this.webPort = (Integer) webPort;
+        this.gamePort = (Integer) gamePort;
+        this.queryPort = (Integer) queryPort;
         this.yourClan = yourClan;
         this.yourWebLink = yourWebLink;
         this.urlImageServer = urlImageServer;
         this.welcomeMessage = welcomeMessage;
         this.customParameters = customParameters;
-        this.takeover = takeover;
-        this.teamCollision = teamCollision;
-        this.adminCanPause = adminCanPause;
-        this.announceAdminLogin = announceAdminLogin;
-        this.mapVoting = mapVoting;
-        this.mapVotingTime = mapVotingTime;
-        this.kickVoting = kickVoting;
-        this.kickPercentage = kickPercentage;
-        this.publicTextChat = publicTextChat;
-        this.spectatorsOnlyChatToOtherSpectators = spectatorsOnlyChatToOtherSpectators;
-        this.voip = voip;
-        this.chatLogging = chatLogging;
+        this.takeover = (Boolean) takeover;
+        this.teamCollision = (Boolean) teamCollision;
+        this.adminCanPause = (Boolean) adminCanPause;
+        this.announceAdminLogin = (Boolean) announceAdminLogin;
+        this.mapVoting = (Boolean) mapVoting;
+        this.mapVotingTime = (Double) mapVotingTime;
+        this.kickVoting = (Boolean) kickVoting;
+        this.kickPercentage = (Double) kickPercentage;
+        this.publicTextChat = (Boolean) publicTextChat;
+        this.spectatorsOnlyChatToOtherSpectators = (Boolean) spectatorsOnlyChatToOtherSpectators;
+        this.voip = (Boolean) voip;
+        this.chatLogging = (Boolean) chatLogging;
         this.chatLoggingFile = chatLoggingFile;
-        this.chatLoggingFileTimestamp = chatLoggingFileTimestamp;
-        this.timeBetweenKicks = timeBetweenKicks;
-        this.maxIdleTime = maxIdleTime;
-        this.deadPlayersCanTalk = deadPlayersCanTalk;
-        this.readyUpDelay = readyUpDelay;
-        this.gameStartDelay = gameStartDelay;
-        this.maxSpectators = maxSpectators;
-        this.mapObjetives = mapObjetives;
-        this.pickupItems = pickupItems;
-        this.friendlyFirePercentage = friendlyFirePercentage;
+        this.chatLoggingFileTimestamp = (Boolean) chatLoggingFileTimestamp;
+        this.timeBetweenKicks = (Double) timeBetweenKicks;
+        this.maxIdleTime = (Double) maxIdleTime;
+        this.deadPlayersCanTalk = (Boolean) deadPlayersCanTalk;
+        this.readyUpDelay = (Integer) readyUpDelay;
+        this.gameStartDelay = (Integer) gameStartDelay;
+        this.maxSpectators = (Integer) maxSpectators;
+        this.mapObjetives = (Boolean) mapObjetives;
+        this.pickupItems = (Boolean) pickupItems;
+        this.friendlyFirePercentage = (Double) friendlyFirePercentage;
     }
 
     @Override

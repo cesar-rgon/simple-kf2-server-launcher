@@ -3,10 +3,10 @@ package stories.profilesedition;
 import dtos.ProfileDto;
 import entities.Profile;
 import framework.AbstractManagerFacade;
-import framework.EmptyFacadeResult;
 import framework.EmptyModelContext;
 import javafx.collections.ObservableList;
-import javafx.scene.control.ButtonType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pojos.ProfileToDisplay;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -21,9 +21,27 @@ import stories.createnewprofile.CreateNewProfileModelContext;
 import stories.deleteselectedprofile.DeleteSelectedProfileFacade;
 import stories.deleteselectedprofile.DeleteSelectedProfileFacadeImpl;
 import stories.deleteselectedprofile.DeleteSelectedProfileModelContext;
+import stories.exportprofilestofile.ExportProfilesToFileFacade;
+import stories.exportprofilestofile.ExportProfilesToFileFacadeImpl;
+import stories.exportprofilestofile.ExportProfilesToFileModelContext;
+import stories.getprofilefromfile.GetProfileFromFileFacade;
+import stories.getprofilefromfile.GetProfileFromFileFacadeImpl;
+import stories.getprofilefromfile.GetProfileFromFileFacadeResult;
+import stories.getprofilefromfile.GetProfileFromFileModelContext;
+import stories.importentitiesfromfile.ImportEntitiesFromFileFacade;
+import stories.importentitiesfromfile.ImportEntitiesFromFileFacadeImpl;
+import stories.importentitiesfromfile.ImportEntitiesFromFileFacadeResult;
+import stories.importentitiesfromfile.ImportEntitiesFromFileModelContext;
+import stories.importprofilesfromfile.ImportProfilesFromFileFacade;
+import stories.importprofilesfromfile.ImportProfilesFromFileFacadeImpl;
+import stories.importprofilesfromfile.ImportProfilesFromFileFacadeResult;
+import stories.importprofilesfromfile.ImportProfilesFromFileModelContext;
 import stories.listallprofiles.ListAllProfilesFacade;
 import stories.listallprofiles.ListAllProfilesFacadeImpl;
 import stories.listallprofiles.ListAllProfilesFacadeResult;
+import stories.selectprofilestobeexported.SelectProfilesToBeExportedFacade;
+import stories.selectprofilestobeexported.SelectProfilesToBeExportedFacadeImpl;
+import stories.selectprofilestobeexported.SelectProfilesToBeExportedFacadeResult;
 import stories.updateprofilename.UpdateProfileNameFacade;
 import stories.updateprofilename.UpdateProfileNameFacadeImpl;
 import stories.updateprofilename.UpdateProfileNameFacadeResult;
@@ -31,13 +49,15 @@ import stories.updateprofilename.UpdateProfileNameModelContext;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 
 public class ProfilesEditionManagerFacadeImpl
         extends AbstractManagerFacade<EmptyModelContext, ListAllProfilesFacadeResult>
         implements ProfilesEditionManagerFacade {
+
+    private static final Logger logger = LogManager.getLogger(ProfilesEditionManagerFacadeImpl.class);
 
     public ProfilesEditionManagerFacadeImpl() {
         super(new EmptyModelContext(), ListAllProfilesFacadeResult.class);
@@ -104,11 +124,6 @@ public class ProfilesEditionManagerFacadeImpl
     }
 
     @Override
-    public String findConfigPropertyValue(String key) throws Exception {
-        return null;
-    }
-
-    @Override
     public ProfileDto cloneSelectedProfile(String profileName, String newProfileName) throws Exception {
         CloneSelectedProfileModelContext cloneSelectedProfileModelContext = new CloneSelectedProfileModelContext(
                 profileName,
@@ -121,41 +136,89 @@ public class ProfilesEditionManagerFacadeImpl
 
     @Override
     public void exportProfilesToFile(List<ProfileToDisplay> profilesToExportDto, File file) throws Exception {
-
+        ExportProfilesToFileModelContext exportProfilesToFileModelContext = new ExportProfilesToFileModelContext(
+                profilesToExportDto,
+                file
+        );
+        ExportProfilesToFileFacade exportProfilesToFileFacade = new ExportProfilesToFileFacadeImpl(exportProfilesToFileModelContext);
+        exportProfilesToFileFacade.execute();
     }
 
     @Override
-    public List<ProfileToDisplay> selectProfilesToBeExported(String message) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public Optional<ButtonType> questionToImportEntitiesFromFile() throws Exception {
-        return Optional.empty();
+    public List<ProfileToDisplay> selectProfilesToBeExported(String message) throws Exception {
+        SelectProfilesToBeExportedFacade selectProfilesToBeExportedFacade = new SelectProfilesToBeExportedFacadeImpl();
+        SelectProfilesToBeExportedFacadeResult result = selectProfilesToBeExportedFacade.execute();
+        return result.getProfileToDisplayList();
     }
 
     @Override
     public Properties importEntitiesFromFile(File file) throws Exception {
-        return null;
+        ImportEntitiesFromFileModelContext importEntitiesFromFileModelContext = new ImportEntitiesFromFileModelContext(
+                file
+        );
+        ImportEntitiesFromFileFacade importEntitiesFromFileFacade = new ImportEntitiesFromFileFacadeImpl(importEntitiesFromFileModelContext);
+        ImportEntitiesFromFileFacadeResult result = importEntitiesFromFileFacade.execute();
+        return result.getProperties();
     }
 
     @Override
-    public List<Profile> questionToImportProfilesFromFile(Properties properties, String message) throws Exception {
-        return null;
+    public List<ProfileToDisplay> questionToImportProfilesFromFile(Properties properties) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+
+        int numberOfProfiles = Integer.parseInt(properties.getProperty("exported.profiles.number"));
+        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+        List<ProfileToDisplay> profileToDisplayList = new ArrayList<ProfileToDisplay>();
+
+        for (int profileIndex = 1; profileIndex <= numberOfProfiles; profileIndex++) {
+            String profileName = properties.getProperty("exported.profile" + profileIndex + ".name");
+            try {
+                String gameTypeCode = properties.getProperty("exported.profile" + profileIndex + ".gameType");
+                String gameTypeDescription = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.gametype." + gameTypeCode);
+                String difficultyCode = properties.getProperty("exported.profile" + profileIndex + ".difficulty");
+                String difficultyDescription = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.difficulty." + difficultyCode);
+                String lengthCode = properties.getProperty("exported.profile" + profileIndex + ".length");
+                String lengthDescription = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.length." + lengthCode);
+                String mapName = properties.getProperty("exported.profile" + profileIndex + ".map");
+
+                ProfileToDisplay profileToDisplay = new ProfileToDisplay(profileIndex, profileName, gameTypeDescription, mapName, difficultyDescription, lengthDescription);
+                profileToDisplay.setSelected(true);
+                profileToDisplayList.add(profileToDisplay);
+
+            } catch (Exception e) {
+                logger.error("Error reading the profile " + profileName + " from exported file", e);
+            }
+        }
+
+        return profileToDisplayList;
+    }
+
+    @Override
+    public Profile getProfileFromFile(int profileIndex, Properties properties) throws Exception {
+        GetProfileFromFileModelContext getProfileFromFileModelContext = new GetProfileFromFileModelContext(
+                profileIndex,
+                properties
+        );
+        GetProfileFromFileFacade getProfileFromFileFacade = new GetProfileFromFileFacadeImpl(getProfileFromFileModelContext);
+        GetProfileFromFileFacadeResult result = getProfileFromFileFacade.execute();
+        return result.getProfileFromFile();
     }
 
     @Override
     public ObservableList<ProfileDto> importProfilesFromFile(List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) throws Exception {
-        return null;
+        ImportProfilesFromFileModelContext importProfilesFromFileModelContext = new ImportProfilesFromFileModelContext(
+                selectedProfileList,
+                properties,
+                errorMessage
+        );
+        ImportProfilesFromFileFacade importProfilesFromFileFacade = new ImportProfilesFromFileFacadeImpl(importProfilesFromFileModelContext);
+        ImportProfilesFromFileFacadeResult result = importProfilesFromFileFacade.execute();
+        return result.getImportedProfilesFromFile();
     }
 
     @Override
-    public void createConfigFolder(String profileName) throws SQLException {
-
+    public String findConfigPropertyValue(String key) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+        return propertyService.getPropertyValue("properties/config.properties", key);
     }
 
-    @Override
-    public ProfileDto findProfileDtoByName(String name) throws Exception {
-        return null;
-    }
 }

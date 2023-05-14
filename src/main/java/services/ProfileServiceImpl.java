@@ -525,126 +525,6 @@ public class ProfileServiceImpl implements ProfileService {
         }
     }
 
-    @Override
-    public List<Profile> selectProfilesToBeImported(Properties properties, String message) throws Exception {
-        int numberOfProfiles = Integer.parseInt(properties.getProperty("exported.profiles.number"));
-        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-        List<ProfileToDisplay> profileToDisplayList = new ArrayList<ProfileToDisplay>();
-
-        for (int profileIndex = 1; profileIndex <= numberOfProfiles; profileIndex++) {
-            String profileName = properties.getProperty("exported.profile" + profileIndex + ".name");
-            try {
-                String gameTypeCode = properties.getProperty("exported.profile" + profileIndex + ".gameType");
-                String gameTypeDescription = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.gametype." + gameTypeCode);
-                String difficultyCode = properties.getProperty("exported.profile" + profileIndex + ".difficulty");
-                String difficultyDescription = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.difficulty." + difficultyCode);
-                String lengthCode = properties.getProperty("exported.profile" + profileIndex + ".length");
-                String lengthDescription = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.length." + lengthCode);
-                String mapName = properties.getProperty("exported.profile" + profileIndex + ".map");
-
-                ProfileToDisplay profileToDisplay = new ProfileToDisplay(profileIndex, profileName, gameTypeDescription, mapName, difficultyDescription, lengthDescription);
-                profileToDisplay.setSelected(true);
-                profileToDisplayList.add(profileToDisplay);
-
-            } catch (Exception e) {
-                logger.error("Error reading the profile " + profileName + " from exported file", e);
-            }
-        }
-
-        return Utils.selectProfilesDialog(message + ":", profileToDisplayList)
-                .stream()
-                .map(ptd -> getProfileFromFile(ptd.getProfileFileIndex(), properties))
-                .collect(Collectors.toList());
-
-    }
-
-
-    private Profile getProfileFromFile(int profileIndex, Properties properties) {
-        String profileName = properties.getProperty("exported.profile" + profileIndex + ".name");
-        try {
-            Optional<Language> languageOpt = languageService.findByCode(properties.getProperty("exported.profile" + profileIndex + ".language"));
-            Optional<GameType> gameTypeOpt = gameTypeService.findByCode(properties.getProperty("exported.profile" + profileIndex + ".gameType"));
-            Optional<Difficulty> difficultyOpt = difficultyService.findByCode(properties.getProperty("exported.profile" + profileIndex + ".difficulty"));
-            Optional<Length> lengthOpt = lengthService.findByCode(properties.getProperty("exported.profile" + profileIndex + ".length"));
-            Optional<MaxPlayers> maxPlayersOpt = maxPlayersService.findByCode(properties.getProperty("exported.profile" + profileIndex + ".maxPlayers"));
-            String webPortStr = properties.getProperty("exported.profile" + profileIndex + ".webPort");
-            String gamePortStr = properties.getProperty("exported.profile" + profileIndex + ".gamePort");
-            String queryPortStr = properties.getProperty("exported.profile" + profileIndex + ".queryPort");
-            String mapVotingTimeStr = properties.getProperty("exported.profile" + profileIndex + ".mapVotingTime");
-            String kickPercentageStr = properties.getProperty("exported.profile" + profileIndex + ".kickPercentage");
-            String timeBetweenKicksStr = properties.getProperty("exported.profile" + profileIndex + ".timeBetweenKicks");
-            String maxIdleTimeStr = properties.getProperty("exported.profile" + profileIndex + ".maxIdleTime");
-            String readyUpDelayStr = properties.getProperty("exported.profile" + profileIndex + ".readyUpDelay");
-            String gameStartDelayStr = properties.getProperty("exported.profile" + profileIndex + ".gameStartDelay");
-            String maxSpectatorsStr = properties.getProperty("exported.profile" + profileIndex + ".maxSpectators");
-            String friendlyFirePercentageStr = properties.getProperty("exported.profile" + profileIndex + ".friendlyFirePercentage");
-            String webPageStr = properties.getProperty("exported.profile" + profileIndex + ".webPage");
-            String takeoverStr = properties.getProperty("exported.profile" + profileIndex + ".takeover");
-            String teamCollisionStr = properties.getProperty("exported.profile" + profileIndex + ".teamCollision");
-            String adminPauseStr = properties.getProperty("exported.profile" + profileIndex + ".adminPause");
-            String adminLoginStr = properties.getProperty("exported.profile" + profileIndex + ".adminLogin");
-            String mapVotingStr = properties.getProperty("exported.profile" + profileIndex + ".mapVoting");
-            String kickVotingStr = properties.getProperty("exported.profile" + profileIndex + ".kickVoting");
-            String publicTextChatStr = properties.getProperty("exported.profile" + profileIndex + ".publicTextChat");
-            String spectatorsChatStr = properties.getProperty("exported.profile" + profileIndex + ".spectatorsChat");
-            String voipStr = properties.getProperty("exported.profile" + profileIndex + ".voip");
-            String chatLoggingStr = properties.getProperty("exported.profile" + profileIndex + ".chatLogging");
-            String chatLoggingFileTimestampStr = properties.getProperty("exported.profile" + profileIndex + ".chatLoggingFileTimestamp");
-            String deadPlayersCanTalkStr = properties.getProperty("exported.profile" + profileIndex + ".deadPlayersCanTalk");
-            String mapObjetivesStr = properties.getProperty("exported.profile" + profileIndex + ".mapObjetives");
-            String pickupItemsStr = properties.getProperty("exported.profile" + profileIndex + ".pickupItems");
-            String platformName = properties.getProperty("exported.profile" + profileIndex + ".platform");
-
-            return new Profile(
-                    profileName,
-                    languageOpt.isPresent() ? languageOpt.get() : null,
-                    gameTypeOpt.isPresent() ? gameTypeOpt.get() : null,
-                    null,
-                    difficultyOpt.isPresent() ? difficultyOpt.get() : null,
-                    lengthOpt.isPresent() ? lengthOpt.get() : null,
-                    maxPlayersOpt.isPresent() ? maxPlayersOpt.get() : null,
-                    properties.getProperty("exported.profile" + profileIndex + ".serverName"),
-                    properties.getProperty("exported.profile" + profileIndex + ".serverPassword"),
-                    StringUtils.isNotBlank(webPageStr) ? Boolean.parseBoolean(webPageStr): true,
-                    properties.getProperty("exported.profile" + profileIndex + ".webPassword"),
-                    StringUtils.isNotBlank(webPortStr) ? Integer.parseInt(webPortStr): 8080,
-                    StringUtils.isNotBlank(gamePortStr) ? Integer.parseInt(gamePortStr): 7777,
-                    StringUtils.isNotBlank(queryPortStr) ? Integer.parseInt(queryPortStr): 27015,
-                    properties.getProperty("exported.profile" + profileIndex + ".yourClan"),
-                    properties.getProperty("exported.profile" + profileIndex + ".yourWebLink"),
-                    properties.getProperty("exported.profile" + profileIndex + ".urlImageServer"),
-                    properties.getProperty("exported.profile" + profileIndex + ".welcomeMessage"),
-                    properties.getProperty("exported.profile" + profileIndex + ".customParameters"),
-                    StringUtils.isNotBlank(takeoverStr) ? Boolean.parseBoolean(takeoverStr): false,
-                    StringUtils.isNotBlank(teamCollisionStr) ? Boolean.parseBoolean(teamCollisionStr): true,
-                    StringUtils.isNotBlank(adminPauseStr) ? Boolean.parseBoolean(adminPauseStr): false,
-                    StringUtils.isNotBlank(adminLoginStr) ? Boolean.parseBoolean(adminLoginStr): true,
-                    StringUtils.isNotBlank(mapVotingStr) ? Boolean.parseBoolean(mapVotingStr): true,
-                    StringUtils.isNotBlank(mapVotingTimeStr) ? Double.parseDouble(mapVotingTimeStr): 60,
-                    StringUtils.isNotBlank(kickVotingStr) ? Boolean.parseBoolean(kickVotingStr): true,
-                    StringUtils.isNotBlank(kickPercentageStr) ? Double.parseDouble(kickPercentageStr): 0.66,
-                    StringUtils.isNotBlank(publicTextChatStr) ? Boolean.parseBoolean(publicTextChatStr): true,
-                    StringUtils.isNotBlank(spectatorsChatStr) ? Boolean.parseBoolean(spectatorsChatStr): false,
-                    StringUtils.isNotBlank(voipStr) ? Boolean.parseBoolean(voipStr): true,
-                    StringUtils.isNotBlank(chatLoggingStr) ? Boolean.parseBoolean(chatLoggingStr): false,
-                    properties.getProperty("exported.profile" + profileIndex + ".chatLoggingFile"),
-                    StringUtils.isNotBlank(chatLoggingFileTimestampStr) ? Boolean.parseBoolean(chatLoggingFileTimestampStr): true,
-                    StringUtils.isNotBlank(timeBetweenKicksStr) ? Double.parseDouble(timeBetweenKicksStr): 10,
-                    StringUtils.isNotBlank(maxIdleTimeStr) ? Double.parseDouble(maxIdleTimeStr): 0,
-                    StringUtils.isNotBlank(deadPlayersCanTalkStr) ? Boolean.parseBoolean(deadPlayersCanTalkStr): true,
-                    StringUtils.isNotBlank(readyUpDelayStr) ? Integer.parseInt(readyUpDelayStr): 90,
-                    StringUtils.isNotBlank(gameStartDelayStr) ? Integer.parseInt(gameStartDelayStr): 4,
-                    StringUtils.isNotBlank(maxSpectatorsStr) ? Integer.parseInt(maxSpectatorsStr): 2,
-                    StringUtils.isNotBlank(mapObjetivesStr) ? Boolean.parseBoolean(mapObjetivesStr): true,
-                    StringUtils.isNotBlank(pickupItemsStr) ? Boolean.parseBoolean(pickupItemsStr): true,
-                    StringUtils.isNotBlank(friendlyFirePercentageStr) ? Double.parseDouble(friendlyFirePercentageStr): 0
-            );
-        } catch (Exception e) {
-            logger.error("Error getting the profile " + profileName + " from file", e);
-            return null;
-        }
-    }
-
     private List<Profile> saveProfilesToDatabase(List<Profile> selectedProfileList, Properties properties) {
         List<Profile> savedProfileList = new ArrayList<Profile>();
 
@@ -714,12 +594,12 @@ public class ProfileServiceImpl implements ProfileService {
             // Retrocompatibility
             String strIdWorkShop = properties.getProperty("exported.profile" + profileIndex + ".map" + mapIndex + ".idWorkShop");
             if (StringUtils.isNotBlank(strIdWorkShop)) {
-                return Long.parseLong(strIdWorkShop);
+                return (Long) Long.parseLong(strIdWorkShop);
             }
         }
         // New imported structure
         String strIdWorkShop = properties.getProperty("exported.profile" + profileIndex + ".platform" + enumPlatform.name() + ".map" + mapIndex + ".idWorkShop");
-        return StringUtils.isNotBlank(strIdWorkShop) ? Long.parseLong(strIdWorkShop): 0L;
+        return (Long) (StringUtils.isNotBlank(strIdWorkShop) ? Long.parseLong(strIdWorkShop): 0L);
     }
 
     private List<AbstractMap> importPlatformProfileMapsFromFile(int profileIndex, Profile profile, Properties properties) throws Exception {
@@ -737,13 +617,13 @@ public class ProfileServiceImpl implements ProfileService {
             try {
                 boolean isOfficial = isOfficialMap(profileIndex, EnumPlatform.STEAM, mapIndex, properties);
                 if (isOfficial) {
-                    steamOfficialMapsIndex.put(mapName, mapIndex);
+                    steamOfficialMapsIndex.put(mapName, Integer.valueOf(mapIndex));
                 } else {
                     Long idWorkShop = getIdWorkShop(profileIndex, EnumPlatform.STEAM, mapIndex, properties);
                     MapToDisplay mapToDisplay = new MapToDisplay(idWorkShop, mapName);
                     mapToDisplay.setPlatformDescription(EnumPlatform.STEAM.getDescripcion());
                     customMapListToDisplay.add(mapToDisplay);
-                    steamCustomMapsIndex.put(idWorkShop, mapIndex);
+                    steamCustomMapsIndex.put(idWorkShop, Integer.valueOf(mapIndex));
                 }
             } catch (Exception e) {
                 logger.error("Error importing the map " + mapName + " of profile index " + profileIndex + " in platform " + EnumPlatform.STEAM.getDescripcion() + " from file", e);
@@ -756,13 +636,13 @@ public class ProfileServiceImpl implements ProfileService {
             try {
                 boolean isOfficial = isOfficialMap(profileIndex, EnumPlatform.EPIC, mapIndex, properties);
                 if (isOfficial) {
-                    epicOfficialMapsIndex.put(mapName, mapIndex);
+                    epicOfficialMapsIndex.put(mapName, Integer.valueOf(mapIndex));
                 } else {
                     Long idWorkShop = getIdWorkShop(profileIndex, EnumPlatform.EPIC, mapIndex, properties);
                     MapToDisplay mapToDisplay = new MapToDisplay(idWorkShop, mapName);
                     mapToDisplay.setPlatformDescription(EnumPlatform.EPIC.getDescripcion());
                     customMapListToDisplay.add(mapToDisplay);
-                    epicCustomMapsIndex.put(idWorkShop, mapIndex);
+                    epicCustomMapsIndex.put(idWorkShop, Integer.valueOf(mapIndex));
                 }
             } catch (Exception e) {
                 logger.error("Error importing the map " + mapName + " of profile index " + profileIndex + " in platform " + EnumPlatform.EPIC.getDescripcion() + " from file", e);
@@ -882,15 +762,15 @@ public class ProfileServiceImpl implements ProfileService {
     }
 
     private void importPlatformProfileMap(EnumPlatform enumPlatform, Profile profile, AbstractMap map, boolean downloaded, int profileIndex, int mapIndex, Properties properties) throws Exception {
-        String alias = getAlias(profileIndex, mapIndex, enumPlatform, map.getCode(), properties);
-        Date releaseDateCopy = getReleaseDateCopy(profileIndex, mapIndex, enumPlatform, properties);
+        String alias = getAlias(profileIndex, Integer.valueOf(mapIndex), enumPlatform, map.getCode(), properties);
+        Date releaseDateCopy = getReleaseDateCopy(profileIndex, Integer.valueOf(mapIndex), enumPlatform, properties);
         Date releaseDate = releaseDateCopy != null ? releaseDateCopy: map.getReleaseDate() != null ? map.getReleaseDate(): null;
-        String urlInfo = getUrlInfoCopy(profileIndex, mapIndex, enumPlatform, map.getUrlInfo(), properties);
-        String urlPhoto = getUrlPhotoCopy(profileIndex, mapIndex, enumPlatform, map.getUrlPhoto(), properties);
+        String urlInfo = getUrlInfoCopy(profileIndex, Integer.valueOf(mapIndex), enumPlatform, map.getUrlInfo(), properties);
+        String urlPhoto = getUrlPhotoCopy(profileIndex, Integer.valueOf(mapIndex), enumPlatform, map.getUrlPhoto(), properties);
 
         Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(enumPlatform.name());
         if (platformOptional.isPresent()) {
-            if (Kf2Factory.getInstance(platformOptional.get()).isValidInstallationFolder()) {
+            if (Kf2Factory.getInstance(platformOptional.get(), em).isValidInstallationFolder()) {
                 PlatformProfileMap platformProfileMap = new PlatformProfileMap(platformOptional.get(), profile, map, releaseDate, urlInfo, urlPhoto, downloaded);
                 platformProfileMap.setAlias(alias);
                 platformProfileMapService.createItem(platformProfileMap);
@@ -984,13 +864,13 @@ public class ProfileServiceImpl implements ProfileService {
         List<AbstractPlatform> validPlatformList = new ArrayList<AbstractPlatform>();
         Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();
         if (steamPlatformOptional.isPresent()) {
-            if (Kf2Factory.getInstance(steamPlatformOptional.get()).isValidInstallationFolder()) {
+            if (Kf2Factory.getInstance(steamPlatformOptional.get(), em).isValidInstallationFolder()) {
                 validPlatformList.add(steamPlatformOptional.get());
             }
         }
         Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
         if (epicPlatformOptional.isPresent()) {
-            if (Kf2Factory.getInstance(epicPlatformOptional.get()).isValidInstallationFolder()) {
+            if (Kf2Factory.getInstance(epicPlatformOptional.get(), em).isValidInstallationFolder()) {
                 validPlatformList.add(epicPlatformOptional.get());
             }
         }

@@ -22,11 +22,13 @@ import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
 import stories.listallprofiles.ListAllProfilesFacadeResult;
+import stories.selectprofilestobeexported.SelectProfilesToBeExportedFacadeResult;
 import utils.Utils;
 
 import java.io.File;
 import java.net.URL;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ProfilesEditionController implements Initializable {
 
@@ -66,7 +68,7 @@ public class ProfilesEditionController implements Initializable {
             String messageLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
             messageLabel.setText(messageLabelText);
 
-            Double tooltipDuration = Double.parseDouble(
+            double tooltipDuration = Double.parseDouble(
                     facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
             );
 
@@ -342,7 +344,22 @@ public class ProfilesEditionController implements Initializable {
                 message = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfilesToImport");
                 StringBuffer errorMessage = new StringBuffer();
 
-                Optional<ButtonType> result = facade.questionToImportEntitiesFromFile();
+                String languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+                String questionHeaderText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties",
+                        "prop.message.proceed");
+                String questionContentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties",
+                        "prop.message.importItems");
+
+                String gameTypesText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties",
+                        "prop.menu.configuration.gameTypes");
+                String difficultiesText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties",
+                        "prop.menu.configuration.difficulties");
+                String lengthText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties",
+                        "prop.menu.configuration.length");
+                String maxPlayersText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties",
+                        "prop.menu.configuration.maxPlayers");
+
+                Optional<ButtonType> result = Utils.questionDialog(questionHeaderText, questionContentText + ":\n\n" + gameTypesText + "\n" + difficultiesText + "\n" + lengthText + "\n" + maxPlayersText);
                 if (!result.isPresent() || result.get().equals(ButtonType.CANCEL)) {
                     return;
                 }
@@ -362,13 +379,26 @@ public class ProfilesEditionController implements Initializable {
                     Properties properties = entitiesTask.getValue();
                     List<Profile> selectedProfileList = new ArrayList<Profile>();
                     try {
-                        selectedProfileList = facade.questionToImportProfilesFromFile(properties, finalMessage);
+                        List<ProfileToDisplay> profileToDisplayList = facade.questionToImportProfilesFromFile(properties);
+                        selectedProfileList = Utils.selectProfilesDialog(finalMessage + ":", profileToDisplayList)
+                                .stream()
+                                .map(ptd -> {
+                                    try {
+                                        return facade.getProfileFromFile(ptd.getProfileFileIndex(), properties);
+                                    } catch (Exception e) {
+                                        logger.error("Error getting the profile " + ptd.getProfileName() + " from file", e);
+                                    }
+                                    return null;
+                                })
+                                .collect(Collectors.toList());
+
                         if (selectedProfileList == null || selectedProfileList.isEmpty()) {
                             return;
                         }
                         ObservableList<ProfileDto> importedProfiles = facade.importProfilesFromFile(
                                 selectedProfileList,
-                                properties, errorMessage
+                                properties,
+                                errorMessage
                         );
 
                         if (importedProfiles == null || importedProfiles.isEmpty()) {
@@ -379,10 +409,16 @@ public class ProfilesEditionController implements Initializable {
                         for (ProfileDto importedProfile: importedProfiles) {
                             try {
                                 profilesTable.getItems().add(importedProfile);
-                                facade.createConfigFolder(importedProfile.getName());
                             } catch (Exception e) {
                                 logger.error(e.getMessage(), e);
                             }
+                        }
+
+                        if (StringUtils.isBlank(Session.getInstance().getActualProfileName()) && !profilesTable.getItems().isEmpty()) {
+                            Session.getInstance().setActualProfileName(profilesTable.getItems().get(0).getName());
+                        }
+                        if (Session.getInstance().getMapsProfile() == null && !profilesTable.getItems().isEmpty()) {
+                            Session.getInstance().setMapsProfile(profilesTable.getItems().get(0));
                         }
 
                         if (StringUtils.isBlank(errorMessage)) {
@@ -418,7 +454,8 @@ public class ProfilesEditionController implements Initializable {
     private void exportProfileOnAction() {
         try {
             String message = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfilesToExport");
-            List<ProfileToDisplay> selectedProfiles = facade.selectProfilesToBeExported(message);
+            List<ProfileToDisplay> allProfilesToDisplay = facade.selectProfilesToBeExported(message);
+            List<ProfileToDisplay> selectedProfiles = Utils.selectProfilesDialog(message + ":", allProfilesToDisplay);
 
             if (selectedProfiles != null && !selectedProfiles.isEmpty()) {
                 FileChooser fileChooser = new FileChooser();
