@@ -12,6 +12,7 @@ public interface GameTypesEditionManagerFacade {
     void deleteItem(String code) throws Exception;
     GameTypeDto updateItemCode(String oldCode, String newCode) throws Exception;
     GameTypeDto updateItemDescription(String code, String oldDescription, String newDescription, String languageCode) throws Exception;
+    String findPropertyValue(String propertyFilePath, String key) throws Exception;
 
     // ----
 

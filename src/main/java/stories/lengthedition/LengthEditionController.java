@@ -26,7 +26,6 @@ public class LengthEditionController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(LengthEditionController.class);
     private final LengthEditionManagerFacade facade;
-    private final PropertyService propertyService;
     protected String languageCode;
 
     @FXML private TableView<SelectDto> lengthTable;
@@ -42,14 +41,13 @@ public class LengthEditionController implements Initializable {
     public LengthEditionController(){
         super();
         facade = new LengthEditionManagerFacadeImpl();
-        propertyService = new PropertyServiceImpl();
     }
 
     @FXML
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             lengthCodeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             lengthCodeColumn.setCellValueFactory(cellData -> cellData.getValue().getKeyProperty());
             lengthDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -57,37 +55,37 @@ public class LengthEditionController implements Initializable {
             ListAllItemsFacadeResult<SelectDto> result = facade.execute();
             lengthTable.setItems(result.getAllItemList());
 
-            String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthTitle");
+            String titleConfigLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthTitle");
             titleConfigLabel.setText(titleConfigLabelText);
 
-            String messageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
+            String messageLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
             messageLabel.setText(messageLabelText);
 
             Double tooltipDuration = Double.parseDouble(
-                    propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                    facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
             );
 
-            String addLengthText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
+            String addLengthText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
             addLength.setText(addLengthText);
-            Tooltip addLengthTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addLength"));
+            Tooltip addLengthTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addLength"));
             addLengthTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             addLength.setTooltip(addLengthTooltip);
 
-            String removeLengthText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
+            String removeLengthText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
             removeLength.setText(removeLengthText);
-            Tooltip removeLengthTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeLength"));
+            Tooltip removeLengthTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeLength"));
             removeLengthTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             removeLength.setTooltip(removeLengthTooltip);
 
-            String lengthCodeColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthCode");
+            String lengthCodeColumnText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthCode");
             lengthCodeLabel.setText(lengthCodeColumnText);
-            Tooltip lengthCodeLabelTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.lengthCode"));
+            Tooltip lengthCodeLabelTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.lengthCode"));
             lengthCodeLabelTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             lengthCodeLabel.setTooltip(lengthCodeLabelTooltip);
 
-            String lengthDescriptionColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthDescription");
+            String lengthDescriptionColumnText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthDescription");
             lengthDescriptionLabel.setText(lengthDescriptionColumnText);
-            Tooltip lengthDescriptionLabelTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.lengthDescription"));
+            Tooltip lengthDescriptionLabelTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.lengthDescription"));
             lengthDescriptionLabelTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             lengthDescriptionLabel.setTooltip(lengthDescriptionLabelTooltip);
 
@@ -110,8 +108,8 @@ public class LengthEditionController implements Initializable {
             } else {
                 lengthTable.refresh();
                 logger.warn("The length can not be renamed in database: [old length code = " + oldLengthCode + ", new length code = " + newLengthCode + "]");
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.lengthNotRenamed");
+                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.lengthNotRenamed");
                 Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
@@ -136,8 +134,8 @@ public class LengthEditionController implements Initializable {
             } else {
                 lengthTable.refresh();
                 logger.warn("The length can not be renamed in database: [old length description = " + oldLengthDescription + ", new length description = " + newLengthDescription + "]");
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.lengthNotRenamed");
+                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.lengthNotRenamed");
                 Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
@@ -171,7 +169,7 @@ public class LengthEditionController implements Initializable {
             if (selectedIndex >= 0) {
                 SelectDto selectedLength = lengthTable.getSelectionModel().getSelectedItem();
 
-                String question = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteLengthQuestion");
+                String question = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteLengthQuestion");
                 Optional<ButtonType> result = Utils.questionDialog(question, selectedLength.getKey());
                 if (result.isPresent() && result.get().equals(ButtonType.OK)) {
 
@@ -186,8 +184,8 @@ public class LengthEditionController implements Initializable {
                 }
             } else {
                 logger.warn("No selected length to delete");
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.lengthNotSelected");
+                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.lengthNotSelected");
                 Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {

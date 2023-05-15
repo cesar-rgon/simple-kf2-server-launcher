@@ -1,12 +1,13 @@
 package stories.difficultiesedition;
 
-import dtos.ProfileDto;
 import dtos.SelectDto;
 import dtos.factories.DifficultyDtoFactory;
 import entities.Difficulty;
 import framework.AbstractManagerFacade;
 import framework.EmptyModelContext;
 import services.DifficultyServiceImpl;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import stories.createitem.CreateItemFacade;
 import stories.createitem.CreateItemFacadeImpl;
 import stories.createitem.CreateItemFacadeResult;
@@ -17,6 +18,9 @@ import stories.deleteitem.DeleteItemModelContext;
 import stories.listallitems.ListAllItemsFacade;
 import stories.listallitems.ListAllItemsFacadeImpl;
 import stories.listallitems.ListAllItemsFacadeResult;
+import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacade;
+import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacadeImpl;
+import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileModelContext;
 import stories.updateitemcode.UpdateItemCodeFacade;
 import stories.updateitemcode.UpdateItemCodeFacadeImpl;
 import stories.updateitemcode.UpdateItemCodeFacadeResult;
@@ -66,7 +70,14 @@ public class DifficultiesEditionManagerFacadeImpl
     }
 
     @Override
-    public void deleteItem(String code) throws Exception {
+    public void deleteItem(String actualProfileName, String code) throws Exception {
+        UnselectDifficultyInProfileModelContext unselectDifficultyInProfileModelContext = new UnselectDifficultyInProfileModelContext(
+                actualProfileName,
+                code
+        );
+        UnselectDifficultyInProfileFacade unselectDifficultyInProfileFacade = new UnselectDifficultyInProfileFacadeImpl(unselectDifficultyInProfileModelContext);
+        unselectDifficultyInProfileFacade.execute();
+
         DeleteItemModelContext deleteItemModelContext = new DeleteItemModelContext(
                 code
         );
@@ -112,12 +123,8 @@ public class DifficultiesEditionManagerFacadeImpl
     }
 
     @Override
-    public ProfileDto unselectDifficultyInProfile(String profileName) throws Exception {
-        return null;
-    }
-
-    @Override
-    public ProfileDto findProfileDtoByName(String profileName) throws Exception {
-        return null;
+    public String findPropertyValue(String propertyFilePath, String key) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+        return propertyService.getPropertyValue(propertyFilePath, key);
     }
 }

@@ -10,6 +10,8 @@ import framework.AbstractManagerFacade;
 import framework.EmptyModelContext;
 import services.DifficultyServiceImpl;
 import services.MaxPlayersServiceImpl;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import stories.createitem.CreateItemFacade;
 import stories.createitem.CreateItemFacadeImpl;
 import stories.createitem.CreateItemFacadeResult;
@@ -123,5 +125,11 @@ public class MaxPlayersEditionManagerFacadeImpl
     @Override
     public ProfileDto findProfileDtoByName(String name) throws Exception {
         return null;
+    }
+
+    @Override
+    public String findPropertyValue(String propertyFilePath, String key) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+        return propertyService.getPropertyValue(propertyFilePath, key);
     }
 }

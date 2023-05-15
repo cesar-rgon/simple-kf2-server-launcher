@@ -24,7 +24,6 @@ public class DifficultiesEditionController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(DifficultiesEditionController.class);
     private final DifficultiesEditionManagerFacade facade;
-    private final PropertyService propertyService;
     protected String languageCode;
 
     @FXML private TableView<SelectDto> difficultiesTable;
@@ -39,14 +38,13 @@ public class DifficultiesEditionController implements Initializable {
 
     public DifficultiesEditionController() {
         facade = new DifficultiesEditionManagerFacadeImpl();
-        propertyService = new PropertyServiceImpl();
     }
 
     @FXML
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             difficultyCodeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             difficultyCodeColumn.setCellValueFactory(cellData -> cellData.getValue().getKeyProperty());
             difficultyDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -55,37 +53,37 @@ public class DifficultiesEditionController implements Initializable {
             ListAllItemsFacadeResult<SelectDto> result = facade.execute();
             difficultiesTable.setItems(result.getAllItemList());
 
-            String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultyTitle");
+            String titleConfigLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultyTitle");
             titleConfigLabel.setText(titleConfigLabelText);
 
-            String messageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
+            String messageLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
             messageLabel.setText(messageLabelText);
 
             Double tooltipDuration = Double.parseDouble(
-                    propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                    facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
             );
 
-            String addDifficultyText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
+            String addDifficultyText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
             addDifficulty.setText(addDifficultyText);
-            Tooltip addDifficultyTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addDifficulty"));
+            Tooltip addDifficultyTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addDifficulty"));
             addDifficultyTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             addDifficulty.setTooltip(addDifficultyTooltip);
 
-            String removeDifficultyText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
+            String removeDifficultyText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
             removeDifficulty.setText(removeDifficultyText);
-            Tooltip removeDifficultyTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeDifficulty"));
+            Tooltip removeDifficultyTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeDifficulty"));
             removeDifficultyTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             removeDifficulty.setTooltip(removeDifficultyTooltip);
 
-            String difficultyCodeColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultyCode");
+            String difficultyCodeColumnText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultyCode");
             difficultyCodeLabel.setText(difficultyCodeColumnText);
-            Tooltip difficultyCodeLabelTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.difficultyCode"));
+            Tooltip difficultyCodeLabelTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.difficultyCode"));
             difficultyCodeLabelTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             difficultyCodeLabel.setTooltip(difficultyCodeLabelTooltip);
 
-            String difficultyDescriptionColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultyDescription");
+            String difficultyDescriptionColumnText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultyDescription");
             difficultyDescriptionLabel.setText(difficultyDescriptionColumnText);
-            Tooltip difficultyDescriptionLabelTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.difficultyDescription"));
+            Tooltip difficultyDescriptionLabelTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.difficultyDescription"));
             difficultyDescriptionLabelTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             difficultyDescriptionLabel.setTooltip(difficultyDescriptionLabelTooltip);
         } catch (Exception e) {
@@ -107,8 +105,8 @@ public class DifficultiesEditionController implements Initializable {
             } else {
                 difficultiesTable.refresh();
                 logger.warn("The difficulty can not be renamed in database: [old difficulty code = " + oldDifficultyCode + ", new difficulty code = " + newDifficultyCode + "]");
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.difficultyNotRenamed");
+                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.difficultyNotRenamed");
                 Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
@@ -133,8 +131,8 @@ public class DifficultiesEditionController implements Initializable {
             } else {
                 difficultiesTable.refresh();
                 logger.warn("The difficulty can not be renamed in database: [old difficulty description = " + oldDifficultyDescription + ", new difficulty description = " + newDifficultyDescription + "]");
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.difficultyNotRenamed");
+                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.difficultyNotRenamed");
                 Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
@@ -168,23 +166,16 @@ public class DifficultiesEditionController implements Initializable {
             if (selectedIndex >= 0) {
                 SelectDto selectedDifficulty = difficultiesTable.getSelectionModel().getSelectedItem();
 
-                String question = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteDifficultyQuestion");
+                String question = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteDifficultyQuestion");
                 Optional<ButtonType> result = Utils.questionDialog(question, selectedDifficulty.getKey());
                 if (result.isPresent() && result.get().equals(ButtonType.OK)) {
-
-                    ProfileDto actualProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfileName());
-                    if (actualProfile != null && actualProfile.getDifficulty() != null &&
-                            selectedDifficulty.getKey().equals(actualProfile.getDifficulty().getKey())) {
-                        facade.unselectDifficultyInProfile(actualProfile.getName());
-                    }
-
-                    facade.deleteItem(selectedDifficulty.getKey());
+                    facade.deleteItem(Session.getInstance().getActualProfileName(), selectedDifficulty.getKey());
                     difficultiesTable.getItems().remove(selectedIndex);
                 }
             } else {
                 logger.warn("No selected difficulty to delete");
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.difficultyNotSelected");
+                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.difficultyNotSelected");
                 Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {

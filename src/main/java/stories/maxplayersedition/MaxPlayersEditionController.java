@@ -26,7 +26,6 @@ public class MaxPlayersEditionController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(MaxPlayersEditionController.class);
     private final MaxPlayersEditionManagerFacade facade;
-    private final PropertyService propertyService;
     protected String languageCode;
 
     @FXML private TableView<SelectDto> maxPlayersTable;
@@ -42,14 +41,13 @@ public class MaxPlayersEditionController implements Initializable {
     public MaxPlayersEditionController() {
         super();
         facade = new MaxPlayersEditionManagerFacadeImpl();
-        propertyService = new PropertyServiceImpl();
     }
 
     @FXML
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             maxPlayersCodeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             maxPlayersCodeColumn.setCellValueFactory(cellData -> cellData.getValue().getKeyProperty());
             maxPlayersDescriptionColumn.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -57,37 +55,37 @@ public class MaxPlayersEditionController implements Initializable {
             ListAllItemsFacadeResult<SelectDto> result = facade.execute();
             maxPlayersTable.setItems(result.getAllItemList());
 
-            String titleConfigLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.maxPlayersTitle");
+            String titleConfigLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.maxPlayersTitle");
             titleConfigLabel.setText(titleConfigLabelText);
 
-            String messageLabelText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
+            String messageLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemMessage");
             messageLabel.setText(messageLabelText);
 
             Double tooltipDuration = Double.parseDouble(
-                    propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+                    facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
             );
 
-            String addMaxPlayersText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
+            String addMaxPlayersText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.addItem");
             addMaxPlayers.setText(addMaxPlayersText);
-            Tooltip addMaxPlayersTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addMaxPlayers"));
+            Tooltip addMaxPlayersTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.addMaxPlayers"));
             addMaxPlayersTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             addMaxPlayers.setTooltip(addMaxPlayersTooltip);
 
-            String removeMaxPlayersText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
+            String removeMaxPlayersText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.removeItem");
             removeMaxPlayers.setText(removeMaxPlayersText);
-            Tooltip removeMaxPlayersTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeMaxPlayers"));
+            Tooltip removeMaxPlayersTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeMaxPlayers"));
             removeMaxPlayersTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             removeMaxPlayers.setTooltip(removeMaxPlayersTooltip);
 
-            String maxPlayersCodeColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.maxPlayersCode");
+            String maxPlayersCodeColumnText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.maxPlayersCode");
             maxPlayersCodeLabel.setText(maxPlayersCodeColumnText);
-            Tooltip maxPlayersCodeLabelTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.maxPlayersCode"));
+            Tooltip maxPlayersCodeLabelTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.maxPlayersCode"));
             maxPlayersCodeLabelTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             maxPlayersCodeLabel.setTooltip(maxPlayersCodeLabelTooltip);
 
-            String maxPlayersDescriptionColumnText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.maxPlayersDescription");
+            String maxPlayersDescriptionColumnText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.maxPlayersDescription");
             maxPlayersDescriptionLabel.setText(maxPlayersDescriptionColumnText);
-            Tooltip maxPlayersDescriptionLabelTooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.maxPlayersDescription"));
+            Tooltip maxPlayersDescriptionLabelTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.maxPlayersDescription"));
             maxPlayersDescriptionLabelTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             maxPlayersDescriptionLabel.setTooltip(maxPlayersDescriptionLabelTooltip);
 
@@ -111,8 +109,8 @@ public class MaxPlayersEditionController implements Initializable {
             } else {
                 maxPlayersTable.refresh();
                 logger.warn("The max. players can not be renamed in database: [old max. players code = " + oldMaxPlayersCode + ", new max. players code = " + newMaxPlayersCode + "]");
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.maxPlayersNotRenamed");
+                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.maxPlayersNotRenamed");
                 Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
@@ -137,8 +135,8 @@ public class MaxPlayersEditionController implements Initializable {
             } else {
                 maxPlayersTable.refresh();
                 logger.warn("The max. players can not be renamed in database: [old max. players description = " + oldMaxPlayersDescription + ", new max. players description = " + newMaxPlayersDescription + "]");
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.maxPlayersNotRenamed");
+                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.maxPlayersNotRenamed");
                 Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
@@ -172,7 +170,7 @@ public class MaxPlayersEditionController implements Initializable {
             if (selectedIndex >= 0) {
                 SelectDto selectedMaxPlayers = maxPlayersTable.getSelectionModel().getSelectedItem();
 
-                String question = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteMaxPlayersQuestion");
+                String question = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteMaxPlayersQuestion");
                 Optional<ButtonType> result = Utils.questionDialog(question, selectedMaxPlayers.getKey());
                 if (result.isPresent() && result.get().equals(ButtonType.OK)) {
 
@@ -188,8 +186,8 @@ public class MaxPlayersEditionController implements Initializable {
                 }
             } else {
                 logger.warn("No selected max. players to delete");
-                String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.maxPlayersNotSelected");
+                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.maxPlayersNotSelected");
                 Utils.warningDialog(headerText, contentText);
             }
         } catch (Exception e) {
