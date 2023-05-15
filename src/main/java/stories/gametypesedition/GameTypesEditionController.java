@@ -1,27 +1,21 @@
 package stories.gametypesedition;
 
 import dtos.GameTypeDto;
-import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.Duration;
-import old.gametypesedition.OldGameTypesEditionFacade;
-import old.gametypesedition.OldGameTypesEditionFacadeImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.session.Session;
-import services.PropertyService;
-import services.PropertyServiceImpl;
 import stories.listallitems.ListAllItemsFacadeResult;
 import utils.Utils;
 
@@ -117,14 +111,7 @@ public class GameTypesEditionController implements Initializable {
                         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                             try {
                                 String code = gameTypesTable.getItems().get(index).getKey();
-                                GameTypeDto updatedGameTypeDto = facade.updateChangedDifficultiesEnabled(code, newValue);
-                                if (updatedGameTypeDto == null) {
-                                    gameTypesTable.refresh();
-                                    logger.warn("The game type can not be changed in database: " + code + ". Difficulties enabled value is restored.");
-                                    String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                                    String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.difficultiesEnabledNotUpdated");
-                                    Utils.warningDialog(headerText, contentText);
-                                }
+                                facade.updateChangedDifficultiesEnabled(code, newValue);
                             } catch (Exception e) {
                                 gameTypesTable.refresh();
                                 String message = "The game type can not be updated!";
@@ -147,14 +134,7 @@ public class GameTypesEditionController implements Initializable {
                         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
                             try {
                                 String code = gameTypesTable.getItems().get(index).getKey();
-                                GameTypeDto updatedGameTypeDto = facade.updateChangedLengthsEnabled(code, newValue);
-                                if (updatedGameTypeDto == null) {
-                                    gameTypesTable.refresh();
-                                    logger.warn("The game type can not be changed in database: " + code + ". Lengths enabled value is restored");
-                                    String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                                    String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.lengthsEnabledNotUpdated");
-                                    Utils.warningDialog(headerText, contentText);
-                                }
+                                facade.updateChangedLengthsEnabled(code, newValue);
                             } catch (Exception e) {
                                 gameTypesTable.refresh();
                                 String message = "The game type can not be updated!";

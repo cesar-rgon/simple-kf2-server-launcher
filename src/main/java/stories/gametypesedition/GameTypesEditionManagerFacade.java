@@ -13,10 +13,7 @@ public interface GameTypesEditionManagerFacade {
     GameTypeDto updateItemCode(String oldCode, String newCode) throws Exception;
     GameTypeDto updateItemDescription(String code, String oldDescription, String newDescription, String languageCode) throws Exception;
     String findPropertyValue(String propertyFilePath, String key) throws Exception;
+    void updateChangedDifficultiesEnabled(String code, Boolean newDifficultiesEnabled) throws Exception;
+    void updateChangedLengthsEnabled(String code, Boolean newLengthsEnabled) throws Exception;
 
-    // ----
-
-
-    GameTypeDto updateChangedDifficultiesEnabled(String code, Boolean newDifficultiesEnabled) throws Exception;
-    GameTypeDto updateChangedLengthsEnabled(String code, Boolean newLengthsEnabled) throws Exception;
 }

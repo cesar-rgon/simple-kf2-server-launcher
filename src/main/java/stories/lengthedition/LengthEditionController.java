@@ -1,20 +1,15 @@
 package stories.lengthedition;
 
-import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.Duration;
-import old.lengthedition.OldLengthEditionFacade;
-import old.lengthedition.OldLengthEditionFacadeImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.session.Session;
-import services.PropertyService;
-import services.PropertyServiceImpl;
 import stories.listallitems.ListAllItemsFacadeResult;
 import utils.Utils;
 

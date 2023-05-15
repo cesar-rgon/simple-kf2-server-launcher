@@ -31,6 +31,12 @@ import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileModelConte
 import stories.unselectgametypeinprofile.UnselectGametypeInProfileFacade;
 import stories.unselectgametypeinprofile.UnselectGametypeInProfileFacadeImpl;
 import stories.unselectgametypeinprofile.UnselectGametypeInProfileModelContext;
+import stories.updatechangeddifficultiesenabled.UpdateChangedDifficultiesEnabledFacade;
+import stories.updatechangeddifficultiesenabled.UpdateChangedDifficultiesEnabledFacadeImpl;
+import stories.updatechangeddifficultiesenabled.UpdateChangedDifficultiesEnabledModelContext;
+import stories.updatechangedlengthsenabled.UpdateChangedLengthsEnabledFacade;
+import stories.updatechangedlengthsenabled.UpdateChangedLengthsEnabledFacadeImpl;
+import stories.updatechangedlengthsenabled.UpdateChangedLengthsEnabledModelContext;
 import stories.updateitemcode.UpdateItemCodeFacade;
 import stories.updateitemcode.UpdateItemCodeFacadeImpl;
 import stories.updateitemcode.UpdateItemCodeFacadeResult;
@@ -133,13 +139,23 @@ public class GameTypesEditionManagerFacadeImpl
     }
 
     @Override
-    public GameTypeDto updateChangedDifficultiesEnabled(String code, Boolean newDifficultiesEnabled) throws Exception {
-        return null;
+    public void updateChangedDifficultiesEnabled(String code, Boolean newDifficultiesEnabled) throws Exception {
+        UpdateChangedDifficultiesEnabledModelContext updateChangedDifficultiesEnabledModelContext = new UpdateChangedDifficultiesEnabledModelContext(
+                code,
+                newDifficultiesEnabled
+        );
+        UpdateChangedDifficultiesEnabledFacade updateChangedDifficultiesEnabledFacade = new UpdateChangedDifficultiesEnabledFacadeImpl(updateChangedDifficultiesEnabledModelContext);
+        updateChangedDifficultiesEnabledFacade.execute();
     }
 
     @Override
-    public GameTypeDto updateChangedLengthsEnabled(String code, Boolean newLengthsEnabled) throws Exception {
-        return null;
+    public void updateChangedLengthsEnabled(String code, Boolean newLengthsEnabled) throws Exception {
+        UpdateChangedLengthsEnabledModelContext updateChangedLengthsEnabledModelContext = new UpdateChangedLengthsEnabledModelContext(
+                code,
+                newLengthsEnabled
+        );
+        UpdateChangedLengthsEnabledFacade updateChangedLengthsEnabledFacade = new UpdateChangedLengthsEnabledFacadeImpl(updateChangedLengthsEnabledModelContext);
+        updateChangedLengthsEnabledFacade.execute();
     }
 
     @Override
