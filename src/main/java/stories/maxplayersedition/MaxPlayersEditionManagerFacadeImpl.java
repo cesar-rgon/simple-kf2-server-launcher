@@ -22,6 +22,12 @@ import stories.deleteitem.DeleteItemModelContext;
 import stories.listallitems.ListAllItemsFacade;
 import stories.listallitems.ListAllItemsFacadeImpl;
 import stories.listallitems.ListAllItemsFacadeResult;
+import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacade;
+import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacadeImpl;
+import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileModelContext;
+import stories.unselectmaxplayersinprofile.UnselectMaxPlayersInProfileFacade;
+import stories.unselectmaxplayersinprofile.UnselectMaxPlayersInProfileFacadeImpl;
+import stories.unselectmaxplayersinprofile.UnselectMaxPlayersInProfileModelContext;
 import stories.updateitemcode.UpdateItemCodeFacade;
 import stories.updateitemcode.UpdateItemCodeFacadeImpl;
 import stories.updateitemcode.UpdateItemCodeFacadeResult;
@@ -72,7 +78,14 @@ public class MaxPlayersEditionManagerFacadeImpl
     }
 
     @Override
-    public void deleteItem(String code) throws Exception {
+    public void deleteItem(String actualProfileName, String code) throws Exception {
+        UnselectMaxPlayersInProfileModelContext unselectMaxPlayersInProfileModelContext = new UnselectMaxPlayersInProfileModelContext(
+                actualProfileName,
+                code
+        );
+        UnselectMaxPlayersInProfileFacade unselectMaxPlayersInProfileFacade = new UnselectMaxPlayersInProfileFacadeImpl(unselectMaxPlayersInProfileModelContext);
+        unselectMaxPlayersInProfileFacade.execute();
+
         DeleteItemModelContext deleteItemModelContext = new DeleteItemModelContext(
                 code
         );
@@ -115,16 +128,6 @@ public class MaxPlayersEditionManagerFacadeImpl
         );
         UpdateItemDescriptionFacadeResult<SelectDto> result = updateItemDescriptionFacade.execute();
         return result.getUpdatedItem();
-    }
-
-    @Override
-    public ProfileDto unselectMaxPlayersInProfile(String profileName) throws Exception {
-        return null;
-    }
-
-    @Override
-    public ProfileDto findProfileDtoByName(String name) throws Exception {
-        return null;
     }
 
     @Override

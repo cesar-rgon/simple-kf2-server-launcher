@@ -24,6 +24,12 @@ import stories.deleteitem.DeleteItemModelContext;
 import stories.listallitems.ListAllItemsFacade;
 import stories.listallitems.ListAllItemsFacadeImpl;
 import stories.listallitems.ListAllItemsFacadeResult;
+import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacade;
+import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacadeImpl;
+import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileModelContext;
+import stories.unselectlengthinprofile.UnselectLengthInProfileFacade;
+import stories.unselectlengthinprofile.UnselectLengthInProfileFacadeImpl;
+import stories.unselectlengthinprofile.UnselectLengthInProfileModelContext;
 import stories.updateitemcode.UpdateItemCodeFacade;
 import stories.updateitemcode.UpdateItemCodeFacadeImpl;
 import stories.updateitemcode.UpdateItemCodeFacadeResult;
@@ -74,7 +80,14 @@ public class LengthEditionManagerFacadeImpl
     }
 
     @Override
-    public void deleteItem(String code) throws Exception {
+    public void deleteItem(String actualProfileName, String code) throws Exception {
+        UnselectLengthInProfileModelContext unselectLengthInProfileModelContext = new UnselectLengthInProfileModelContext(
+                actualProfileName,
+                code
+        );
+        UnselectLengthInProfileFacade unselectLengthInProfileFacade = new UnselectLengthInProfileFacadeImpl(unselectLengthInProfileModelContext);
+        unselectLengthInProfileFacade.execute();
+
         DeleteItemModelContext deleteItemModelContext = new DeleteItemModelContext(
                 code
         );
@@ -117,16 +130,6 @@ public class LengthEditionManagerFacadeImpl
         );
         UpdateItemDescriptionFacadeResult<SelectDto> result = updateItemDescriptionFacade.execute();
         return result.getUpdatedItem();
-    }
-
-    @Override
-    public ProfileDto unselectLengthInProfile(String profileName) throws Exception {
-        return null;
-    }
-
-    @Override
-    public ProfileDto findProfileDtoByName(String profileName) throws Exception {
-        return null;
     }
 
     @Override

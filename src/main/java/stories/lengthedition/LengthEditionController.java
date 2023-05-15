@@ -172,14 +172,7 @@ public class LengthEditionController implements Initializable {
                 String question = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteLengthQuestion");
                 Optional<ButtonType> result = Utils.questionDialog(question, selectedLength.getKey());
                 if (result.isPresent() && result.get().equals(ButtonType.OK)) {
-
-                    ProfileDto actualProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfileName());
-                    if (actualProfile != null && actualProfile.getLength() != null &&
-                            selectedLength.getKey().equals(actualProfile.getLength().getKey())) {
-                        facade.unselectLengthInProfile(actualProfile.getName());
-                    }
-
-                    facade.deleteItem(selectedLength.getKey());
+                    facade.deleteItem(Session.getInstance().getActualProfileName(), selectedLength.getKey());
                     lengthTable.getItems().remove(selectedIndex);
                 }
             } else {

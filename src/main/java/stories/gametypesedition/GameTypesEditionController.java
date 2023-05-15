@@ -254,15 +254,7 @@ public class GameTypesEditionController implements Initializable {
                 String question = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteGameTypeQuestion");
                 Optional<ButtonType> result = Utils.questionDialog(question, selectedGameType.getKey());
                 if (result.isPresent() && result.get().equals(ButtonType.OK)) {
-
-                    ProfileDto actualProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfileName());
-                    if (actualProfile != null &&
-                            actualProfile.getGametype() != null &&
-                            selectedGameType.getKey().equals(actualProfile.getGametype().getKey())) {
-                        facade.unselectGametypeInProfile(actualProfile.getName());
-                    }
-
-                    facade.deleteItem(selectedGameType.getKey());
+                    facade.deleteItem(Session.getInstance().getActualProfileName(), selectedGameType.getKey());
                     gameTypesTable.getItems().remove(selectedIndex);
                 }
             } else {

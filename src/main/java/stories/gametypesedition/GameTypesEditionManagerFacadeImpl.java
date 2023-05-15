@@ -25,6 +25,12 @@ import stories.deleteitem.DeleteItemModelContext;
 import stories.listallitems.ListAllItemsFacade;
 import stories.listallitems.ListAllItemsFacadeImpl;
 import stories.listallitems.ListAllItemsFacadeResult;
+import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacade;
+import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacadeImpl;
+import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileModelContext;
+import stories.unselectgametypeinprofile.UnselectGametypeInProfileFacade;
+import stories.unselectgametypeinprofile.UnselectGametypeInProfileFacadeImpl;
+import stories.unselectgametypeinprofile.UnselectGametypeInProfileModelContext;
 import stories.updateitemcode.UpdateItemCodeFacade;
 import stories.updateitemcode.UpdateItemCodeFacadeImpl;
 import stories.updateitemcode.UpdateItemCodeFacadeResult;
@@ -74,7 +80,14 @@ public class GameTypesEditionManagerFacadeImpl
     }
 
     @Override
-    public void deleteItem(String code) throws Exception {
+    public void deleteItem(String actualProfileName, String code) throws Exception {
+        UnselectGametypeInProfileModelContext unselectGametypeInProfileModelContext = new UnselectGametypeInProfileModelContext(
+                actualProfileName,
+                code
+        );
+        UnselectGametypeInProfileFacade unselectGametypeInProfileFacade = new UnselectGametypeInProfileFacadeImpl(unselectGametypeInProfileModelContext);
+        unselectGametypeInProfileFacade.execute();
+
         DeleteItemModelContext deleteItemModelContext = new DeleteItemModelContext(
                 code
         );
@@ -126,16 +139,6 @@ public class GameTypesEditionManagerFacadeImpl
 
     @Override
     public GameTypeDto updateChangedLengthsEnabled(String code, Boolean newLengthsEnabled) throws Exception {
-        return null;
-    }
-
-    @Override
-    public ProfileDto unselectGametypeInProfile(String profileName) throws Exception {
-        return null;
-    }
-
-    @Override
-    public ProfileDto findProfileDtoByName(String profileName) throws Exception {
         return null;
     }
 

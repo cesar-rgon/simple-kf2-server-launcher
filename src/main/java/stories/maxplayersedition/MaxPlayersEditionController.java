@@ -173,15 +173,7 @@ public class MaxPlayersEditionController implements Initializable {
                 String question = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.deleteMaxPlayersQuestion");
                 Optional<ButtonType> result = Utils.questionDialog(question, selectedMaxPlayers.getKey());
                 if (result.isPresent() && result.get().equals(ButtonType.OK)) {
-
-                    ProfileDto actualProfile = facade.findProfileDtoByName(Session.getInstance().getActualProfileName());
-                    if (actualProfile != null && actualProfile.getMaxPlayers() != null &&
-                            selectedMaxPlayers.getKey().equals(actualProfile.getMaxPlayers().getKey())) {
-
-                        facade.unselectMaxPlayersInProfile(actualProfile.getName());
-                    }
-
-                    facade.deleteItem(selectedMaxPlayers.getKey());
+                    facade.deleteItem(Session.getInstance().getActualProfileName(), selectedMaxPlayers.getKey());
                     maxPlayersTable.getItems().remove(selectedIndex);
                 }
             } else {
