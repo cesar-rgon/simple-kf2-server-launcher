@@ -26,6 +26,7 @@ import start.MainApplication;
 import utils.Utils;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
@@ -150,6 +151,12 @@ public class MapEditionController implements Initializable {
             mapThumbnailTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             Tooltip.install(mapPreviewWebView, mapThumbnailTooltip);
 
+            // Put black color for background of the browser's page
+            Field f = mapPreviewWebView.getEngine().getClass().getDeclaredField("page");
+            f.setAccessible(true);
+            com.sun.webkit.WebPage page = (com.sun.webkit.WebPage) f.get(mapPreviewWebView.getEngine());
+            page.setBackgroundColor((new java.awt.Color(0.0f, 0.0f, 0.0f, 1f)).getRGB());
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -165,7 +172,8 @@ public class MapEditionController implements Initializable {
                     NodeList imgList = doc.getElementsByTagName("img");
                     if (imgList != null && imgList.getLength() > 0) {
                         Element img = (Element) imgList.item(0);
-                        img.setAttribute("width", "512");
+                        img.setAttribute("preserveRatio", "true");
+                        //img.setAttribute("width", "512");
                         img.setAttribute("height", "256");
                     }
 

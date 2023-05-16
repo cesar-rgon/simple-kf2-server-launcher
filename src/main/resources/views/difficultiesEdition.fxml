@@ -6,18 +6,18 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<fx:root fx:id="difficultiesEdition" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.difficultiesedition.DifficultiesEditionController">
+<fx:root fx:id="difficultiesEdition" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.difficultiesedition.DifficultiesEditionController">
    <children>
-      <ImageView fitHeight="660.0" pickOnBounds="true" preserveRatio="true" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowSpan="4" GridPane.valignment="CENTER">
+      <ImageView fitHeight="660.0" pickOnBounds="true" preserveRatio="true" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowSpan="4" GridPane.valignment="CENTER">
          <image>
             <Image url="@../images/radiation700.png" />
          </image>
       </ImageView>
-      <Label fx:id="titleConfigLabel" alignment="TOP_LEFT" text="Difficulties list" textAlignment="CENTER" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+      <Label fx:id="titleConfigLabel" alignment="TOP_LEFT" text="Difficulties list" textAlignment="CENTER" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <font>
             <Font size="20.0" />
          </font></Label>
-      <TableView fx:id="difficultiesTable" editable="true" maxHeight="450.0" maxWidth="900.0" opacity="0.8" prefHeight="450.0" prefWidth="900.0" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
+      <TableView fx:id="difficultiesTable" editable="true" maxHeight="450.0" maxWidth="900.0" opacity="0.8" prefHeight="450.0" prefWidth="900.0" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="BOTTOM">
          <columns>
             <TableColumn fx:id="difficultyCodeColumn" maxWidth="450.0" onEditCommit="#difficultyCodeColumnOnEditCommit" prefWidth="450.0" resizable="false">
                <graphic>
@@ -29,19 +29,24 @@
                </graphic></TableColumn>
          </columns>
       </TableView>
-      <Button fx:id="addDifficulty" mnemonicParsing="false" onAction="#addDifficultyOnAction" prefWidth="200.0" text="Add a new one" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+      <Button fx:id="addDifficulty" mnemonicParsing="false" onAction="#addDifficultyOnAction" prefWidth="200.0" text="Add a new one" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
          <GridPane.margin>
-            <Insets right="50.0" />
+            <Insets />
          </GridPane.margin></Button>
-      <Button fx:id="removeDifficulty" mnemonicParsing="false" onAction="#removeDifficultyOnAction" prefWidth="200.0" text="Remove selected one" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+      <Button fx:id="removeDifficulty" mnemonicParsing="false" onAction="#removeDifficultyOnAction" prefWidth="200.0" text="Remove selected one" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
          <GridPane.margin>
-            <Insets left="50.0" />
+            <Insets />
+         </GridPane.margin></Button>
+      <Button fx:id="loadDefaults" mnemonicParsing="false" onAction="#loadDefaultsOnAction" prefWidth="200.0" text="Load default values" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
+         <GridPane.margin>
+            <Insets />
          </GridPane.margin></Button>
       <Label fx:id="messageLabel" text="One click on an item to select it, double click to edit it" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
    </children>
    <columnConstraints>
-      <ColumnConstraints prefWidth="502.0" />
-      <ColumnConstraints minWidth="10.0" prefWidth="502.0" />
+      <ColumnConstraints prefWidth="335.0" />
+      <ColumnConstraints minWidth="10.0" prefWidth="335.0" />
+      <ColumnConstraints minWidth="10.0" prefWidth="335.0" />
    </columnConstraints>
    <rowConstraints>
       <RowConstraints minHeight="80.0" prefHeight="80.0" />

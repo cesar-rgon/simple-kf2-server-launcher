@@ -249,4 +249,9 @@ public class GameTypesEditionController implements Initializable {
             Utils.errorDialog(message, e);
         }
     }
+
+    @FXML
+    private void loadDefaultsOnAction() {
+
+    }
 }

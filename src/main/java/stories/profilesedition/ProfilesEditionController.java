@@ -491,4 +491,9 @@ public class ProfilesEditionController implements Initializable {
             Utils.errorDialog(e.getMessage(), e);
         }
     }
+
+    @FXML
+    private void loadDefaultsOnAction() {
+
+    }
 }

@@ -10,6 +10,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -18,6 +19,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.web.WebView;
+import javafx.stage.Screen;
 import javafx.util.Callback;
 import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
@@ -208,6 +210,7 @@ public class MainContentController implements Initializable {
 
         progressIndicator.setVisible(true);
         userInteractLanguageSelect = true;
+        platformProfileMapSelect.setVisibleRowCount((int) Math.round(Screen.getPrimary().getBounds().getHeight() / 110) - 1);
 
         Task<ListValuesMainContentFacadeResult> task = new Task<ListValuesMainContentFacadeResult>() {
             @Override
@@ -329,7 +332,7 @@ public class MainContentController implements Initializable {
 
                     private GridPane createMapGridPane(PlatformProfileMapDto platformProfileMapDto) {
                         Label aliasLabel = new Label(platformProfileMapDto.getAlias());
-                        aliasLabel.setStyle("-fx-padding: 5;");
+                        aliasLabel.setStyle("-fx-padding: 10;");
                         Label mapType;
                         String languageCode = languageSelect.getValue().getKey();
                         String officialText;
@@ -343,10 +346,10 @@ public class MainContentController implements Initializable {
                         }
                         if (platformProfileMapDto.getMapDto().isOfficial()) {
                             mapType = new Label(officialText);
-                            mapType.setStyle("-fx-text-fill: plum; -fx-padding: 5;");
+                            mapType.setStyle("-fx-text-fill: plum; -fx-padding: 10;");
                         } else {
                             mapType = new Label(customText);
-                            mapType.setStyle("-fx-text-fill: gold; -fx-padding: 5;");
+                            mapType.setStyle("-fx-text-fill: gold; -fx-padding: 10;");
                         }
 
                         ImageView mapPreview = new ImageView();
@@ -381,7 +384,7 @@ public class MainContentController implements Initializable {
                         gridpane.add(aliasLabel, 2, 2);
                         gridpane.add(mapType, 2, 3);
                         GridPane.setRowSpan(mapPreview, 3);
-                        gridpane.setPadding(new Insets(5,0,5,0));
+                        gridpane.setPadding(new Insets(5,0,5,10));
                         return gridpane;
                     }
 
