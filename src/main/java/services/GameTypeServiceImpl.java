@@ -2,8 +2,11 @@ package services;
 
 import daos.DescriptionDao;
 import daos.GameTypeDao;
+import daos.ProfileDao;
 import entities.GameType;
+import entities.Profile;
 import jakarta.persistence.EntityManager;
+import pojos.session.Session;
 
 import java.util.List;
 import java.util.Optional;

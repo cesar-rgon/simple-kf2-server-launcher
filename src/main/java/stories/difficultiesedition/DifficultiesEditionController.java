@@ -2,6 +2,8 @@ package stories.difficultiesedition;
 
 import dtos.ProfileDto;
 import dtos.SelectDto;
+import entities.Difficulty;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -17,6 +19,7 @@ import stories.listallitems.ListAllItemsFacadeResult;
 import utils.Utils;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -35,6 +38,7 @@ public class DifficultiesEditionController implements Initializable {
     @FXML private Button removeDifficulty;
     @FXML private Label difficultyCodeLabel;
     @FXML private Label difficultyDescriptionLabel;
+    @FXML private ProgressIndicator progressIndicator;
 
     public DifficultiesEditionController() {
         facade = new DifficultiesEditionManagerFacadeImpl();
@@ -187,6 +191,48 @@ public class DifficultiesEditionController implements Initializable {
 
     @FXML
     private void loadDefaultsOnAction() {
+        try {
+            String question = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.loadDefaulValues");
+            String content = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.loadDefaulValuesExplanation");
+            Optional<ButtonType> result = Utils.questionDialog(question, content);
 
+            if (result.isPresent() && result.get().equals(ButtonType.OK)) {
+                progressIndicator.setVisible(true);
+
+                Task<List<SelectDto>> task = new Task<List<SelectDto>>() {
+                    @Override
+                    protected List<SelectDto> call() throws Exception {
+                        return facade.loadDefaultValues();
+                    }
+                };
+
+                task.setOnSucceeded(wse -> {
+                    List<SelectDto> defaultDifficultyList = task.getValue();
+                    difficultiesTable.getItems().clear();
+                    for (SelectDto difficulty: defaultDifficultyList) {
+                        difficultiesTable.getItems().add(difficulty);
+                    }
+                    progressIndicator.setVisible(false);
+                });
+
+                task.setOnFailed(wse -> {
+                    String message = "The default values could not be loaded for the difficulties";
+                    logger.error(message);
+                    progressIndicator.setVisible(false);
+                    try {
+                        String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                        String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.itemsNotLoaded");
+                        Utils.warningDialog(headerText, contentText);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                });
+
+                Thread thread = new Thread(task);
+                thread.start();
+            }
+        } catch (Exception e) {
+            logger.error("Error loading default values for all the difficulties", e);
+        }
     }
 }

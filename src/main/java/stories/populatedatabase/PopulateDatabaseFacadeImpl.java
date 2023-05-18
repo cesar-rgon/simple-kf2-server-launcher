@@ -1,5 +1,9 @@
 package stories.populatedatabase;
 
+import entities.Difficulty;
+import entities.GameType;
+import entities.Length;
+import entities.MaxPlayers;
 import framework.AbstractTransactionalFacade;
 import framework.EmptyFacadeResult;
 import framework.EmptyModelContext;
@@ -11,6 +15,7 @@ import services.PropertyService;
 import services.PropertyServiceImpl;
 
 import java.io.File;
+import java.util.List;
 
 public class PopulateDatabaseFacadeImpl
         extends AbstractTransactionalFacade<EmptyModelContext, EmptyFacadeResult>
@@ -40,4 +45,41 @@ public class PopulateDatabaseFacadeImpl
 
         return new EmptyFacadeResult();
     }
+
+    @Override
+    public List<Difficulty> loadDefaultDifficulties() throws Exception {
+        EntityManager em = beginTransaction();
+        PopulateDatabase populateDatabase = new PopulateDatabase(em);
+        List<Difficulty> result = populateDatabase.populateDifficulties();
+        commitTransaction(em);
+        return result;
+    }
+
+    @Override
+    public List<GameType> loadDefaultGametypes() throws Exception {
+        EntityManager em = beginTransaction();
+        PopulateDatabase populateDatabase = new PopulateDatabase(em);
+        List<GameType> result = populateDatabase.populateGameTypes();
+        commitTransaction(em);
+        return result;
+    }
+
+    @Override
+    public List<Length> loadDefaultLengths() throws Exception {
+        EntityManager em = beginTransaction();
+        PopulateDatabase populateDatabase = new PopulateDatabase(em);
+        List<Length> result = populateDatabase.populateLengths();
+        commitTransaction(em);
+        return result;
+    }
+
+    @Override
+    public List<MaxPlayers> loadDefaultMaxPlayers() throws Exception {
+        EntityManager em = beginTransaction();
+        PopulateDatabase populateDatabase = new PopulateDatabase(em);
+        List<MaxPlayers> result = populateDatabase.polulateMaximunPlayersList();
+        commitTransaction(em);
+        return result;
+    }
+
 }

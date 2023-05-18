@@ -7,6 +7,7 @@ import services.*;
 
 import java.sql.SQLException;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 public abstract class AbstractPopulateDatabase {
@@ -36,10 +37,10 @@ public abstract class AbstractPopulateDatabase {
 
     public abstract void start() throws Exception;
     protected abstract void populateLanguages() throws Exception;
-    protected abstract void populateDifficulties() throws Exception;
-    protected abstract void populateGameTypes() throws Exception;
-    protected abstract void populateLengths() throws Exception;
-    protected abstract void polulateMaximunPlayersList() throws Exception;
+    protected abstract List<Difficulty> populateDifficulties() throws Exception;
+    protected abstract List<GameType> populateGameTypes() throws Exception;
+    protected abstract List<Length> populateLengths() throws Exception;
+    protected abstract List<MaxPlayers> polulateMaximunPlayersList() throws Exception;
     protected abstract void populateOfficialMaps() throws Exception;
     protected abstract void populateProfiles() throws Exception;
     protected abstract void populatePlatforms() throws SQLException;
@@ -49,34 +50,34 @@ public abstract class AbstractPopulateDatabase {
         languageService.createItem(language);
     }
 
-    protected void populateDifficulty(String code, String englishDescription, String spanishDescription, String frenchDescription) throws Exception {
+    protected Difficulty populateDifficulty(String code, String englishDescription, String spanishDescription, String frenchDescription) throws Exception {
         Description description = new Description(englishDescription, spanishDescription, frenchDescription);
         Difficulty difficulty = new Difficulty(code);
         difficulty.setDescription(description);
-        difficultyService.createItem(difficulty);
+        return difficultyService.createItem(difficulty);
     }
 
-    protected void populateGameType(String code, boolean difficultyEnabled, boolean lengthEnabled, String englishDescription, String spanishDescription, String frenchDescription) throws Exception {
+    protected GameType populateGameType(String code, boolean difficultyEnabled, boolean lengthEnabled, String englishDescription, String spanishDescription, String frenchDescription) throws Exception {
         Description description = new Description(englishDescription, spanishDescription, frenchDescription);
         GameType gameType = new GameType(code);
         gameType.setDifficultyEnabled(difficultyEnabled);;
         gameType.setLengthEnabled(lengthEnabled);
         gameType.setDescription(description);
-        gameTypeService.createItem(gameType);
+        return gameTypeService.createItem(gameType);
     }
 
-    protected void populateLength(String code, String englishDescription, String spanishDescription, String frenchDescription) throws Exception {
+    protected Length populateLength(String code, String englishDescription, String spanishDescription, String frenchDescription) throws Exception {
         Description description = new Description(englishDescription, spanishDescription, frenchDescription);
         Length length = new Length(code);
         length.setDescription(description);
-        lengthService.createItem(length);
+        return lengthService.createItem(length);
     }
 
-    protected void polulateMaximunPlayers(String code, String englishDescription, String spanishDescription, String frenchDescription) throws Exception {
+    protected MaxPlayers polulateMaximunPlayers(String code, String englishDescription, String spanishDescription, String frenchDescription) throws Exception {
         Description description = new Description(englishDescription, spanishDescription, frenchDescription);
         MaxPlayers maxPlayers = new MaxPlayers(code);
         maxPlayers.setDescription(description);
-        maxPlayersService.createItem(maxPlayers);
+        return maxPlayersService.createItem(maxPlayers);
     }
 
     protected void populateProfile(String name, Language language, GameType gametype, AbstractMap map, Difficulty difficulty, Length length, MaxPlayers maxPlayers,

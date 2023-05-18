@@ -1,6 +1,8 @@
 package stories.lengthedition;
 
+import dtos.ProfileDto;
 import dtos.SelectDto;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -14,6 +16,7 @@ import stories.listallitems.ListAllItemsFacadeResult;
 import utils.Utils;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -32,6 +35,7 @@ public class LengthEditionController implements Initializable {
     @FXML private Button removeLength;
     @FXML private Label lengthCodeLabel;
     @FXML private Label lengthDescriptionLabel;
+    @FXML private ProgressIndicator progressIndicator;
 
     public LengthEditionController(){
         super();
@@ -185,6 +189,48 @@ public class LengthEditionController implements Initializable {
 
     @FXML
     private void loadDefaultsOnAction() {
+        try {
+            String question = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.loadDefaulValues");
+            String content = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.loadDefaulValuesExplanation");
+            Optional<ButtonType> result = Utils.questionDialog(question, content);
 
+            if (result.isPresent() && result.get().equals(ButtonType.OK)) {
+                progressIndicator.setVisible(true);
+
+                Task<List<SelectDto>> task = new Task<List<SelectDto>>() {
+                    @Override
+                    protected List<SelectDto> call() throws Exception {
+                        return facade.loadDefaultValues();
+                    }
+                };
+
+                task.setOnSucceeded(wse -> {
+                    List<SelectDto> defaultLengthList = task.getValue();
+                    lengthTable.getItems().clear();
+                    for (SelectDto Length: defaultLengthList) {
+                        lengthTable.getItems().add(Length);
+                    }
+                    progressIndicator.setVisible(false);
+                });
+
+                task.setOnFailed(wse -> {
+                    String message = "The default values could not be loaded for the lengths";
+                    logger.error(message);
+                    progressIndicator.setVisible(false);
+                    try {
+                        String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                        String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.itemsNotLoaded");
+                        Utils.warningDialog(headerText, contentText);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                });
+
+                Thread thread = new Thread(task);
+                thread.start();
+            }
+        } catch (Exception e) {
+            logger.error("Error loading default values for all the lengths", e);
+        }
     }
 }

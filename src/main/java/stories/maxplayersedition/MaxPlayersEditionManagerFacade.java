@@ -5,6 +5,8 @@ import dtos.SelectDto;
 import javafx.collections.ObservableList;
 import stories.listallitems.ListAllItemsFacadeResult;
 
+import java.util.List;
+
 public interface MaxPlayersEditionManagerFacade {
 
     ListAllItemsFacadeResult<SelectDto> execute() throws Exception;
@@ -13,5 +15,5 @@ public interface MaxPlayersEditionManagerFacade {
     SelectDto updateItemCode(String oldCode, String newCode) throws Exception;
     SelectDto updateItemDescription(String code, String oldDescription, String newDescription, String languageCode) throws Exception;
     String findPropertyValue(String propertyFilePath, String key) throws Exception;
-
+    List<SelectDto> loadDefaultValues() throws Exception;
 }

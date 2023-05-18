@@ -494,6 +494,53 @@ public class ProfilesEditionController implements Initializable {
 
     @FXML
     private void loadDefaultsOnAction() {
+        try {
+            String question = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.loadDefaulValues");
+            String content = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.loadDefaulValuesExplanation");
+            Optional<ButtonType> result = Utils.questionDialog(question, content);
 
+            if (result.isPresent() && result.get().equals(ButtonType.OK)) {
+                progressIndicator.setVisible(true);
+
+                Task<ProfileDto> task = new Task<ProfileDto>() {
+                    @Override
+                    protected ProfileDto call() throws Exception {
+                        return facade.loadDefaultValues();
+                    }
+                };
+
+                task.setOnSucceeded(wse -> {
+                    try {
+                        ProfileDto defaultProfile = task.getValue();
+                        profilesTable.getItems().clear();
+                        profilesTable.getItems().add(defaultProfile);
+                        facade.setConfigPropertyValue("prop.config.lastSelectedProfile", defaultProfile.getName());
+                        Session.getInstance().setActualProfileName(defaultProfile.getName());
+                        Session.getInstance().setMapsProfile(defaultProfile);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                    progressIndicator.setVisible(false);
+                });
+
+                task.setOnFailed(wse -> {
+                    String message = "The default values could not be loaded for the profiles";
+                    logger.error(message);
+                    progressIndicator.setVisible(false);
+                    try {
+                        String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                        String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.itemsNotLoaded");
+                        Utils.warningDialog(headerText, contentText);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                });
+
+                Thread thread = new Thread(task);
+                thread.start();
+            }
+        } catch (Exception e) {
+            logger.error("Error loading default values for all the profiles", e);
+        }
     }
 }

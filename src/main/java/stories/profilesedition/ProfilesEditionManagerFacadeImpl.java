@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.ProfileToDisplay;
+import services.ProfileServiceImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import stories.cloneselectedprofile.CloneSelectedProfileFacade;
@@ -18,6 +19,8 @@ import stories.createnewprofile.CreateNewProfileFacade;
 import stories.createnewprofile.CreateNewProfileFacadeImpl;
 import stories.createnewprofile.CreateNewProfileFacadeResult;
 import stories.createnewprofile.CreateNewProfileModelContext;
+import stories.deleteallitems.DeleteAllItemsFacade;
+import stories.deleteallitems.DeleteAllItemsFacadeImpl;
 import stories.deleteselectedprofile.DeleteSelectedProfileFacade;
 import stories.deleteselectedprofile.DeleteSelectedProfileFacadeImpl;
 import stories.deleteselectedprofile.DeleteSelectedProfileModelContext;
@@ -221,4 +224,10 @@ public class ProfilesEditionManagerFacadeImpl
         return propertyService.getPropertyValue("properties/config.properties", key);
     }
 
+    @Override
+    public ProfileDto loadDefaultValues() throws Exception {
+        DeleteAllItemsFacade deleteAllItemsFacade = new DeleteAllItemsFacadeImpl<>(ProfileServiceImpl.class);
+        deleteAllItemsFacade.execute();
+        return createNewProfile("Default");
+    }
 }

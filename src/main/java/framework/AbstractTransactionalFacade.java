@@ -32,7 +32,7 @@ public abstract class AbstractTransactionalFacade<M extends ModelContext, R exte
 
     protected abstract R internalExecute(M facadeModelContext, EntityManager em) throws Exception;
 
-    private EntityManager beginTransaction() throws Exception {
+    protected EntityManager beginTransaction() throws Exception {
         if (emf == null) {
             PropertyService propertyService = new PropertyServiceImpl();
             boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
@@ -49,7 +49,7 @@ public abstract class AbstractTransactionalFacade<M extends ModelContext, R exte
         return em;
     }
 
-    private void commitTransaction(EntityManager em) throws Exception {
+    protected void commitTransaction(EntityManager em) throws Exception {
         em.getTransaction().commit();
         if (em.getTransaction() != null && em.getTransaction().isActive()) {
             em.getTransaction().rollback();
@@ -57,7 +57,7 @@ public abstract class AbstractTransactionalFacade<M extends ModelContext, R exte
         em.close();
     }
 
-    private void rollbackTransaction(EntityManager em) throws Exception {
+    protected void rollbackTransaction(EntityManager em) throws Exception {
         em.getTransaction().rollback();
         em.close();
     }

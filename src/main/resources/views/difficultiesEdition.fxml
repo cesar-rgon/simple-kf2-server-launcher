@@ -42,11 +42,14 @@
             <Insets />
          </GridPane.margin></Button>
       <Label fx:id="messageLabel" text="One click on an item to select it, double click to edit it" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP" />
+      <ProgressIndicator fx:id="progressIndicator" maxHeight="150.0" maxWidth="150.0" visible="false" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.rowSpan="2" />
    </children>
    <columnConstraints>
       <ColumnConstraints prefWidth="335.0" />
       <ColumnConstraints minWidth="10.0" prefWidth="335.0" />
       <ColumnConstraints minWidth="10.0" prefWidth="335.0" />
+      <ColumnConstraints />
+      <ColumnConstraints />
    </columnConstraints>
    <rowConstraints>
       <RowConstraints minHeight="80.0" prefHeight="80.0" />

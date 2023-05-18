@@ -4,6 +4,8 @@ import dtos.ProfileDto;
 import dtos.SelectDto;
 import stories.listallitems.ListAllItemsFacadeResult;
 
+import java.util.List;
+
 public interface DifficultiesEditionManagerFacade {
 
     ListAllItemsFacadeResult<SelectDto> execute() throws Exception;
@@ -12,5 +14,5 @@ public interface DifficultiesEditionManagerFacade {
     SelectDto updateItemCode(String oldCode, String newCode) throws Exception;
     SelectDto updateItemDescription(String code, String oldDescription, String newDescription, String languageCode) throws Exception;
     String findPropertyValue(String propertyFilePath, String key) throws Exception;
-
+    List<SelectDto> loadDefaultValues() throws Exception;
 }

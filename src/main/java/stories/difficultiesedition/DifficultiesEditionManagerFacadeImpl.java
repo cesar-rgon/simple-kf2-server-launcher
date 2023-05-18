@@ -6,18 +6,23 @@ import entities.Difficulty;
 import framework.AbstractManagerFacade;
 import framework.EmptyModelContext;
 import services.DifficultyServiceImpl;
+import services.ProfileServiceImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import stories.createitem.CreateItemFacade;
 import stories.createitem.CreateItemFacadeImpl;
 import stories.createitem.CreateItemFacadeResult;
 import stories.createitem.CreateItemModelContext;
+import stories.deleteallitems.DeleteAllItemsFacade;
+import stories.deleteallitems.DeleteAllItemsFacadeImpl;
 import stories.deleteitem.DeleteItemFacade;
 import stories.deleteitem.DeleteItemFacadeImpl;
 import stories.deleteitem.DeleteItemModelContext;
 import stories.listallitems.ListAllItemsFacade;
 import stories.listallitems.ListAllItemsFacadeImpl;
 import stories.listallitems.ListAllItemsFacadeResult;
+import stories.populatedatabase.PopulateDatabaseFacade;
+import stories.populatedatabase.PopulateDatabaseFacadeImpl;
 import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacade;
 import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacadeImpl;
 import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileModelContext;
@@ -29,6 +34,8 @@ import stories.updateitemdescription.UpdateItemDescriptionFacade;
 import stories.updateitemdescription.UpdateItemDescriptionFacadeImpl;
 import stories.updateitemdescription.UpdateItemDescriptionFacadeResult;
 import stories.updateitemdescription.UpdateItemDescriptionModelContext;
+
+import java.util.List;
 
 public class DifficultiesEditionManagerFacadeImpl
         extends AbstractManagerFacade<EmptyModelContext, ListAllItemsFacadeResult>
@@ -126,5 +133,16 @@ public class DifficultiesEditionManagerFacadeImpl
     public String findPropertyValue(String propertyFilePath, String key) throws Exception {
         PropertyService propertyService = new PropertyServiceImpl();
         return propertyService.getPropertyValue(propertyFilePath, key);
+    }
+
+    @Override
+    public List<SelectDto> loadDefaultValues() throws Exception {
+        DifficultyDtoFactory difficultyDtoFactory = new DifficultyDtoFactory();
+
+        DeleteAllItemsFacade deleteAllItemsFacade = new DeleteAllItemsFacadeImpl<>(DifficultyServiceImpl.class);
+        deleteAllItemsFacade.execute();
+        PopulateDatabaseFacade populateDatabaseFacade = new PopulateDatabaseFacadeImpl();
+        List<Difficulty> defaultDifficultyList = populateDatabaseFacade.loadDefaultDifficulties();
+        return difficultyDtoFactory.newDtos(defaultDifficultyList);
     }
 }

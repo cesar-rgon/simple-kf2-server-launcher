@@ -32,4 +32,5 @@ public interface ProfilesEditionManagerFacade {
     Profile getProfileFromFile(int profileIndex, Properties properties) throws Exception;
     ObservableList<ProfileDto> importProfilesFromFile(List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) throws Exception;
     String findConfigPropertyValue(String key) throws Exception;
+    ProfileDto loadDefaultValues() throws Exception;
 }

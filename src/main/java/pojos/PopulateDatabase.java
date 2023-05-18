@@ -15,6 +15,8 @@ import java.io.File;
 import java.net.URL;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class PopulateDatabase extends AbstractPopulateDatabase {
@@ -46,43 +48,51 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
     }
 
     @Override
-    protected void populateDifficulties() throws Exception {
-        populateDifficulty("0","Normal", "Normal", "Normal" );
-        populateDifficulty("1","Hard", "Difícil", "Difficile" );
-        populateDifficulty("2","Suicidal", "Suicida", "Suicidaire" );
-        populateDifficulty("3","Hell on Earth", "Infernal", "Enfer sur terre" );
+    public List<Difficulty> populateDifficulties() throws Exception {
+        List<Difficulty> defaultDifficultyList = new ArrayList<Difficulty>();
+        defaultDifficultyList.add(populateDifficulty("0","Normal", "Normal", "Normal" ));
+        defaultDifficultyList.add(populateDifficulty("1","Hard", "Difícil", "Difficile" ));
+        defaultDifficultyList.add(populateDifficulty("2","Suicidal", "Suicida", "Suicidaire" ));
+        defaultDifficultyList.add(populateDifficulty("3","Hell on Earth", "Infernal", "Enfer sur terre" ));
+        return defaultDifficultyList;
     }
 
     @Override
-    protected void populateGameTypes() throws Exception {
-        populateGameType("KFGameContent.KFGameInfo_Survival", true, true, "Survival", "Supervivencia", "Survie");
-        populateGameType("KFGameContent.KFGameInfo_VersusSurvival", false, false, "Versus", "Versus", "Versus");
-        populateGameType("KFGameContent.KFGameInfo_WeeklySurvival", false, false, "Weekly", "Semanal", "Hebdomadaire");
-        populateGameType("KFGameContent.KFGameInfo_Endless", true, false, "Endless", "Sin fin", "Infini");
-        populateGameType("KFGameContent.KFGameInfo_Objective", true, false, "Objetive", "Objetivo", "Objetif");
+    public List<GameType> populateGameTypes() throws Exception {
+        List<GameType> deafultGameTypeList = new ArrayList<GameType>();
+        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_Survival", true, true, "Survival", "Supervivencia", "Survie"));
+        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_VersusSurvival", false, false, "Versus", "Versus", "Versus"));
+        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_WeeklySurvival", false, false, "Weekly", "Semanal", "Hebdomadaire"));
+        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_Endless", true, false, "Endless", "Sin fin", "Infini"));
+        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_Objective", true, false, "Objetive", "Objetivo", "Objetif"));
+        return deafultGameTypeList;
     }
 
     @Override
-    protected void populateLengths() throws Exception {
-        populateLength("0","4 waves", "4 oleadas", "4 vagues");
-        populateLength("1","7 waves", "7 oleadas", "7 vagues");
-        populateLength("2","10 waves", "10 oleadas", "10 vagues");
+    public List<Length> populateLengths() throws Exception {
+        List<Length> deafultLengthTypeList = new ArrayList<Length>();
+        deafultLengthTypeList.add(populateLength("0","4 waves", "4 oleadas", "4 vagues"));
+        deafultLengthTypeList.add(populateLength("1","7 waves", "7 oleadas", "7 vagues"));
+        deafultLengthTypeList.add(populateLength("2","10 waves", "10 oleadas", "10 vagues"));
+        return deafultLengthTypeList;
     }
 
     @Override
-    protected void polulateMaximunPlayersList() throws Exception {
-        polulateMaximunPlayers("12", "Twelve", "Doce", "Douze");
-        polulateMaximunPlayers("11", "Eleven", "Once", "Onze");
-        polulateMaximunPlayers("10", "Ten", "Diez", "Dix");
-        polulateMaximunPlayers("9", "Nine", "Nueve", "Neuf");
-        polulateMaximunPlayers("8", "Eight", "Ocho", "Huit");
-        polulateMaximunPlayers("7", "Seven", "Siete", "Sept");
-        polulateMaximunPlayers("6", "Six", "Seis", "Six");
-        polulateMaximunPlayers("5", "Five", "Cinco", "Cinq");
-        polulateMaximunPlayers("4", "Four", "Cuatro", "Quatre");
-        polulateMaximunPlayers("3", "Three", "Tres", "Trois");
-        polulateMaximunPlayers("2", "Two", "Dos", "Deux");
-        polulateMaximunPlayers("1", "One", "Uno", "Un");
+    public List<MaxPlayers> polulateMaximunPlayersList() throws Exception {
+        List<MaxPlayers> deafultMaxPlayersTypeList = new ArrayList<MaxPlayers>();
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("12", "Twelve", "Doce", "Douze"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("11", "Eleven", "Once", "Onze"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("10", "Ten", "Diez", "Dix"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("9", "Nine", "Nueve", "Neuf"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("8", "Eight", "Ocho", "Huit"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("7", "Seven", "Siete", "Sept"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("6", "Six", "Seis", "Six"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("5", "Five", "Cinco", "Cinq"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("4", "Four", "Cuatro", "Quatre"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("3", "Three", "Tres", "Trois"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("2", "Two", "Dos", "Deux"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("1", "One", "Uno", "Un"));
+        return deafultMaxPlayersTypeList;
     }
 
     @Override

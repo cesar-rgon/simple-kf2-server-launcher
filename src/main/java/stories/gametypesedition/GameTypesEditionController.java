@@ -6,6 +6,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -20,6 +21,7 @@ import stories.listallitems.ListAllItemsFacadeResult;
 import utils.Utils;
 
 import java.net.URL;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -42,6 +44,7 @@ public class GameTypesEditionController implements Initializable {
     @FXML private Label gameTypeDescriptionLabel;
     @FXML private Label difficultiesEnabledLabel;
     @FXML private Label lengthsEnabledLabel;
+    @FXML private ProgressIndicator progressIndicator;
 
     public GameTypesEditionController() {
         facade = new GameTypesEditionManagerFacadeImpl();
@@ -252,6 +255,48 @@ public class GameTypesEditionController implements Initializable {
 
     @FXML
     private void loadDefaultsOnAction() {
+        try {
+            String question = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.loadDefaulValues");
+            String content = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.loadDefaulValuesExplanation");
+            Optional<ButtonType> result = Utils.questionDialog(question, content);
 
+            if (result.isPresent() && result.get().equals(ButtonType.OK)) {
+                progressIndicator.setVisible(true);
+
+                Task<List<GameTypeDto>> task = new Task<List<GameTypeDto>>() {
+                    @Override
+                    protected List<GameTypeDto> call() throws Exception {
+                        return facade.loadDefaultValues();
+                    }
+                };
+
+                task.setOnSucceeded(wse -> {
+                    List<GameTypeDto> defaultGametypeList = task.getValue();
+                    gameTypesTable.getItems().clear();
+                    for (GameTypeDto Gametype: defaultGametypeList) {
+                        gameTypesTable.getItems().add(Gametype);
+                    }
+                    progressIndicator.setVisible(false);
+                });
+
+                task.setOnFailed(wse -> {
+                    String message = "The default values could not be loaded for the game types";
+                    logger.error(message);
+                    progressIndicator.setVisible(false);
+                    try {
+                        String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                        String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.itemsNotLoaded");
+                        Utils.warningDialog(headerText, contentText);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                });
+
+                Thread thread = new Thread(task);
+                thread.start();
+            }
+        } catch (Exception e) {
+            logger.error("Error loading default values for all the game types", e);
+        }
     }
 }

@@ -19,12 +19,16 @@ import stories.createitem.CreateItemFacade;
 import stories.createitem.CreateItemFacadeImpl;
 import stories.createitem.CreateItemFacadeResult;
 import stories.createitem.CreateItemModelContext;
+import stories.deleteallitems.DeleteAllItemsFacade;
+import stories.deleteallitems.DeleteAllItemsFacadeImpl;
 import stories.deleteitem.DeleteItemFacade;
 import stories.deleteitem.DeleteItemFacadeImpl;
 import stories.deleteitem.DeleteItemModelContext;
 import stories.listallitems.ListAllItemsFacade;
 import stories.listallitems.ListAllItemsFacadeImpl;
 import stories.listallitems.ListAllItemsFacadeResult;
+import stories.populatedatabase.PopulateDatabaseFacade;
+import stories.populatedatabase.PopulateDatabaseFacadeImpl;
 import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacade;
 import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacadeImpl;
 import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileModelContext;
@@ -45,6 +49,8 @@ import stories.updateitemdescription.UpdateItemDescriptionFacade;
 import stories.updateitemdescription.UpdateItemDescriptionFacadeImpl;
 import stories.updateitemdescription.UpdateItemDescriptionFacadeResult;
 import stories.updateitemdescription.UpdateItemDescriptionModelContext;
+
+import java.util.List;
 
 public class GameTypesEditionManagerFacadeImpl
         extends AbstractManagerFacade<EmptyModelContext, ListAllItemsFacadeResult>
@@ -162,5 +168,16 @@ public class GameTypesEditionManagerFacadeImpl
     public String findPropertyValue(String propertyFilePath, String key) throws Exception {
         PropertyService propertyService = new PropertyServiceImpl();
         return propertyService.getPropertyValue(propertyFilePath, key);
+    }
+
+    @Override
+    public List<GameTypeDto> loadDefaultValues() throws Exception {
+        GameTypeDtoFactory gameTypeDtoFactory = new GameTypeDtoFactory();
+
+        DeleteAllItemsFacade deleteAllItemsFacade = new DeleteAllItemsFacadeImpl<>(GameTypeServiceImpl.class);
+        deleteAllItemsFacade.execute();
+        PopulateDatabaseFacade populateDatabaseFacade = new PopulateDatabaseFacadeImpl();
+        List<GameType> defaultGametypeList = populateDatabaseFacade.loadDefaultGametypes();
+        return gameTypeDtoFactory.newDtos(defaultGametypeList);
     }
 }

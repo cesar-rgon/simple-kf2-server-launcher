@@ -27,31 +27,13 @@ import java.util.stream.Collectors;
 public class ProfileServiceImpl extends AbstractService<Profile> implements ProfileService {
 
     private static final Logger logger = LogManager.getLogger(ProfileServiceImpl.class);
-    private final PropertyService propertyService;
-    private final AbstractMapService officialMapService;
-    private final AbstractMapService customMapModService;
-    private final PlatformProfileMapService platformProfileMapService;
-    private final CustomMapModServiceImpl customMapService;
-    private final DifficultyServiceImpl difficultyService;
-    private final GameTypeServiceImpl gameTypeService;
-    private final LanguageServiceImpl languageService;
-    private final LengthServiceImpl lengthService;
-    private final MaxPlayersServiceImpl maxPlayersService;
-    private final PlatformService platformService;
+
+    public ProfileServiceImpl() {
+        super();
+    }
 
     public ProfileServiceImpl(EntityManager em) {
         super(em);
-        this.propertyService = new PropertyServiceImpl();
-        this.officialMapService = new OfficialMapServiceImpl(em);
-        this.customMapModService = new CustomMapModServiceImpl(em);
-        this.platformProfileMapService = new PlatformProfileMapServiceImpl(em);
-        this.customMapService = new CustomMapModServiceImpl(em);
-        this.difficultyService = new DifficultyServiceImpl(em);
-        this.gameTypeService = new GameTypeServiceImpl(em);
-        this.languageService = new LanguageServiceImpl(em);
-        this.lengthService = new LengthServiceImpl(em);
-        this.maxPlayersService = new MaxPlayersServiceImpl(em);
-        this.platformService = new PlatformServiceImpl(em);
     }
 
     @Override
@@ -93,11 +75,13 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
 
     @Override
     public boolean deleteItem(Profile profile) throws Exception {
-        return new ProfileDao(em).remove(profile);
+        return deleteProfile(profile);
     }
 
     @Override
     public boolean deleteProfile(Profile profile) throws Exception {
+        PlatformProfileMapService platformProfileMapService = new PlatformProfileMapServiceImpl(em);
+        CustomMapModServiceImpl customMapService = new CustomMapModServiceImpl(em);
 
         List<PlatformProfileMap> platformProfileMapList = platformProfileMapService.listPlatformProfileMaps(profile);
         platformProfileMapList.stream().forEach(ppm -> {
@@ -128,11 +112,13 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
         });
 
         Profile updatedProfile = new ProfileDao(em).get(profile.getId());
-        return deleteItem(updatedProfile);
+        return new ProfileDao(em).remove(updatedProfile);
     }
 
     @Override
     public Profile cloneProfile(Profile profileToBeCloned, String newProfileName) throws Exception {
+        PlatformProfileMapService platformProfileMapService = new PlatformProfileMapServiceImpl(em);
+
         Profile newProfile = new Profile(
                 newProfileName,
                 profileToBeCloned.getLanguage(),
@@ -222,6 +208,11 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
 
     @Override
     public void exportProfilesToFile(List<Profile> profilesToExport, File file) throws Exception {
+        PlatformProfileMapService platformProfileMapService = new PlatformProfileMapServiceImpl(em);
+        OfficialMapServiceImpl officialMapService = new OfficialMapServiceImpl(em);
+        LanguageServiceImpl languageService = new LanguageServiceImpl(em);
+        PropertyService propertyService = new PropertyServiceImpl();
+
         Properties properties = new Properties();
         properties.setProperty("exported.profiles.number", String.valueOf(profilesToExport.size()));
         int profileIndex = 1;
@@ -305,6 +296,9 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
     }
 
     private void exportGameTypesToFile(Properties properties, List<Language> languageList) throws Exception {
+        GameTypeServiceImpl gameTypeService = new GameTypeServiceImpl();
+        PropertyService propertyService = new PropertyServiceImpl();
+
         List<GameType> gameTypeList = gameTypeService.listAll();
         properties.setProperty("exported.gameTypes.number", String.valueOf(gameTypeList.size()));
         int gameTypeIndex = 1;
@@ -324,6 +318,9 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
     }
 
     private void exportDifficultiesToFile(Properties properties, List<Language> languageList) throws Exception {
+        DifficultyServiceImpl difficultyService = new DifficultyServiceImpl();
+        PropertyService propertyService = new PropertyServiceImpl();
+
         List<Difficulty> difficultyList = difficultyService.listAll();
         properties.setProperty("exported.difficulties.number", String.valueOf(difficultyList.size()));
         int difficultyIndex = 1;
@@ -341,6 +338,9 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
     }
 
     private void exportLengthsToFile(Properties properties, List<Language> languageList) throws Exception {
+        LengthServiceImpl lengthService = new LengthServiceImpl();
+        PropertyService propertyService = new PropertyServiceImpl();
+
         List<Length> lengthList = lengthService.listAll();
         properties.setProperty("exported.lengths.number", String.valueOf(lengthList.size()));
         int lengthIndex = 1;
@@ -358,6 +358,9 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
     }
 
     private void exportMaxPlayersToFile(Properties properties, List<Language> languageList) throws Exception {
+        MaxPlayersServiceImpl maxPlayersService = new MaxPlayersServiceImpl();
+        PropertyService propertyService = new PropertyServiceImpl();
+
         List<MaxPlayers> maxPlayersList = maxPlayersService.listAll();
         properties.setProperty("exported.maxPlayers.number", String.valueOf(maxPlayersList.size()));
         int maxPlayersIndex = 1;
@@ -398,6 +401,9 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
 
     @Override
     public void importGameTypesFromFile(Properties properties, List<Language> languageList) throws Exception {
+        GameTypeServiceImpl gameTypeService = new GameTypeServiceImpl();
+        PropertyService propertyService = new PropertyServiceImpl();
+
         List<GameType> gameTypeListInDataBase = gameTypeService.listAll();
         String strSize = properties.getProperty("exported.gameTypes.number");
         int size = StringUtils.isNotBlank(strSize) ? Integer.valueOf(strSize): 0;
@@ -431,6 +437,9 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
 
     @Override
     public void importDifficultiesFromFile(Properties properties, List<Language> languageList) throws Exception {
+        DifficultyServiceImpl difficultyService = new DifficultyServiceImpl();
+        PropertyService propertyService = new PropertyServiceImpl();
+
         List<Difficulty> difficultyListInDataBase = difficultyService.listAll();
         String strSize = properties.getProperty("exported.difficulties.number");
         int size = StringUtils.isNotBlank(strSize) ? Integer.valueOf(strSize): 0;
@@ -462,6 +471,9 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
 
     @Override
     public void importLengthsFromFile(Properties properties, List<Language> languageList) throws Exception {
+        LengthServiceImpl lengthService = new LengthServiceImpl();
+        PropertyService propertyService = new PropertyServiceImpl();
+
         List<Length> lengthListInDataBase = lengthService.listAll();
         String strSize = properties.getProperty("exported.lengths.number");
         int size = StringUtils.isNotBlank(strSize) ? Integer.valueOf(strSize): 0;
@@ -493,6 +505,9 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
 
     @Override
     public void importMaxPlayersFromFile(Properties properties, List<Language> languageList) throws Exception {
+        MaxPlayersServiceImpl maxPlayersService = new MaxPlayersServiceImpl();
+        PropertyService propertyService = new PropertyServiceImpl();
+
         List<MaxPlayers> maxPlayersListInDataBase = maxPlayersService.listAll();
         String strSize = properties.getProperty("exported.maxPlayers.number");
         int size = StringUtils.isNotBlank(strSize) ? Integer.valueOf(strSize): 0;
@@ -600,6 +615,10 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
     }
 
     private List<AbstractMap> importPlatformProfileMapsFromFile(int profileIndex, Profile profile, Properties properties) throws Exception {
+        OfficialMapServiceImpl officialMapService = new OfficialMapServiceImpl(em);
+        CustomMapModServiceImpl customMapService = new CustomMapModServiceImpl(em);
+        PropertyService propertyService = new PropertyServiceImpl();
+
         List<AbstractMap> mapList = new ArrayList<AbstractMap>();
         List<MapToDisplay> customMapListToDisplay = new ArrayList<MapToDisplay>();
 
@@ -759,6 +778,9 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
     }
 
     private void importPlatformProfileMap(EnumPlatform enumPlatform, Profile profile, AbstractMap map, boolean downloaded, int profileIndex, int mapIndex, Properties properties) throws Exception {
+        PlatformService platformService = new PlatformServiceImpl(em);
+        PlatformProfileMapService platformProfileMapService = new PlatformProfileMapServiceImpl(em);
+
         String alias = getAlias(profileIndex, Integer.valueOf(mapIndex), enumPlatform, map.getCode(), properties);
         Date releaseDateCopy = getReleaseDateCopy(profileIndex, Integer.valueOf(mapIndex), enumPlatform, properties);
         Date releaseDate = releaseDateCopy != null ? releaseDateCopy: map.getReleaseDate() != null ? map.getReleaseDate(): null;
@@ -815,6 +837,9 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
     }
 
     private AbstractMap getImportedMap(EnumPlatform enumPlatform, Optional<AbstractMap> mapInDataBaseOpt, Profile profile, Properties properties, int profileIndex, Integer mapIndex, String mapName, Long idWorkShop, boolean official) throws Exception {
+        OfficialMapServiceImpl officialMapService = new OfficialMapServiceImpl(em);
+        CustomMapModServiceImpl customMapService = new CustomMapModServiceImpl(em);
+
         if (mapInDataBaseOpt.isPresent()) {
             if (officialMapService.findByCode(mapInDataBaseOpt.get().getCode()).isPresent()) {
                 if (officialMapService.updateItem(mapInDataBaseOpt.get())) {
@@ -845,6 +870,9 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
     }
 
     private boolean createNewCustomMapFromWorkshop(CustomMapMod map) throws Exception {
+        PlatformService platformService = new PlatformServiceImpl(em);
+        CustomMapModServiceImpl customMapModService = new CustomMapModServiceImpl(em);
+
         URL urlWorkShop = new URL(map.getUrlInfo());
         BufferedReader reader = new BufferedReader(new InputStreamReader(urlWorkShop.openStream()));
         String strUrlMapImage = null;

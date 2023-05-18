@@ -5,6 +5,8 @@ import dtos.ProfileDto;
 import javafx.collections.ObservableList;
 import stories.listallitems.ListAllItemsFacadeResult;
 
+import java.util.List;
+
 public interface GameTypesEditionManagerFacade {
 
     ListAllItemsFacadeResult<GameTypeDto> execute() throws Exception;
@@ -15,5 +17,5 @@ public interface GameTypesEditionManagerFacade {
     String findPropertyValue(String propertyFilePath, String key) throws Exception;
     void updateChangedDifficultiesEnabled(String code, Boolean newDifficultiesEnabled) throws Exception;
     void updateChangedLengthsEnabled(String code, Boolean newLengthsEnabled) throws Exception;
-
+    List<GameTypeDto> loadDefaultValues() throws Exception;
 }
