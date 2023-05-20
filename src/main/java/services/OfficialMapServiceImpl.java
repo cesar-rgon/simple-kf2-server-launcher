@@ -38,6 +38,16 @@ public class OfficialMapServiceImpl extends AbstractMapService {
     }
 
     @Override
+    public boolean deleteItem(AbstractMap entity, List<Profile> profileList) throws Exception {
+        return false;
+    }
+
+    @Override
+    public boolean deleteAllItems(List<AbstractMap> entityList, List<Profile> profileList) throws Exception {
+        return false;
+    }
+
+    @Override
     public boolean updateItem(AbstractMap map) throws SQLException {
         return new OfficialMapDao(em).update((OfficialMap) map);
     }

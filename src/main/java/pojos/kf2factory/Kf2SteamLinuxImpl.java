@@ -27,9 +27,16 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
 
     @Override
     public boolean isValidInstallationFolder() {
-        return StringUtils.isNotBlank(this.platform.getInstallationFolder()) && !this.platform.getInstallationFolder().contains(" ") && (Files.exists(Paths.get(this.platform.getInstallationFolder() + "/Binaries/Win64/KFGameSteamServer.bin.x86_64")));
+        return isValidInstallationFolder(true);
     }
 
+    public boolean isValidInstallationFolder(boolean checkIfInstalled) {
+        if (checkIfInstalled) {
+            return StringUtils.isNotBlank(this.platform.getInstallationFolder()) && !this.platform.getInstallationFolder().contains(" ") && (Files.exists(Paths.get(this.platform.getInstallationFolder() + "/Binaries/Win64/KFGameSteamServer.bin.x86_64")));
+        } else {
+            return StringUtils.isNotBlank(this.platform.getInstallationFolder()) && !this.platform.getInstallationFolder().contains(" ");
+        }
+    }
 
     @Override
     protected boolean prepareSteamCmd() {

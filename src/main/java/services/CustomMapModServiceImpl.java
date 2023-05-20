@@ -51,6 +51,16 @@ public class CustomMapModServiceImpl extends AbstractMapService {
     }
 
     @Override
+    public boolean deleteItem(AbstractMap map, List<Profile> profileList) throws Exception {
+        return false;
+    }
+
+    @Override
+    public boolean deleteAllItems(List<AbstractMap> entityList, List<Profile> profileList) throws Exception {
+        return false;
+    }
+
+    @Override
     public boolean updateItem(AbstractMap map) throws SQLException {
         return new CustomMapModDao(em).update((CustomMapMod) map);
     }

@@ -5,11 +5,15 @@ import dtos.SelectDto;
 import dtos.factories.AbstractDtoFactory;
 import entities.AbstractExtendedEntity;
 import entities.Description;
+import entities.Profile;
 import framework.AbstractTransactionalFacade;
 import framework.EmptyFacadeResult;
 import jakarta.persistence.EntityManager;
 import services.AbstractService;
+import services.ProfileService;
+import services.ProfileServiceImpl;
 
+import java.util.List;
 import java.util.Optional;
 
 public class DeleteItemFacadeImpl<E extends AbstractExtendedEntity,
@@ -38,12 +42,14 @@ public class DeleteItemFacadeImpl<E extends AbstractExtendedEntity,
 
     @Override
     protected EmptyFacadeResult internalExecute(DeleteItemModelContext facadeModelContext, EntityManager em) throws Exception {
+        ProfileService profileService = new ProfileServiceImpl(em);
         S service = serviceClass.getDeclaredConstructor().newInstance();
         service.setEm(em);
 
+        List<Profile> allProfileList = profileService.listAllProfiles();
         Optional<E> itemOptional = service.findByCode(facadeModelContext.getCode());
         if (itemOptional.isPresent()) {
-            service.deleteItem(itemOptional.get());
+            service.deleteItem(itemOptional.get(), allProfileList);
         }
 
         return new EmptyFacadeResult();

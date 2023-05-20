@@ -2,6 +2,7 @@ package services;
 
 import daos.LanguageDao;
 import entities.Language;
+import entities.Profile;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
@@ -36,5 +37,15 @@ public class LanguageServiceImpl extends AbstractService<Language> {
     @Override
     public boolean deleteItem(Language language) throws Exception {
         return new LanguageDao(em).remove(language);
+    }
+
+    @Override
+    public boolean deleteItem(Language entity, List<Profile> profileList) throws Exception {
+        return false;
+    }
+
+    @Override
+    public boolean deleteAllItems(List<Language> entityList, List<Profile> profileList) throws Exception {
+        return false;
     }
 }

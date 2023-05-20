@@ -1,17 +1,10 @@
 package stories.gametypesedition;
 
 import dtos.GameTypeDto;
-import dtos.ProfileDto;
-import dtos.SelectDto;
-import dtos.factories.DifficultyDtoFactory;
 import dtos.factories.GameTypeDtoFactory;
-import entities.Difficulty;
 import entities.GameType;
 import framework.AbstractManagerFacade;
-import framework.EmptyFacadeResult;
 import framework.EmptyModelContext;
-import javafx.collections.ObservableList;
-import services.DifficultyServiceImpl;
 import services.GameTypeServiceImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -29,12 +22,6 @@ import stories.listallitems.ListAllItemsFacadeImpl;
 import stories.listallitems.ListAllItemsFacadeResult;
 import stories.populatedatabase.PopulateDatabaseFacade;
 import stories.populatedatabase.PopulateDatabaseFacadeImpl;
-import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacade;
-import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacadeImpl;
-import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileModelContext;
-import stories.unselectgametypeinprofile.UnselectGametypeInProfileFacade;
-import stories.unselectgametypeinprofile.UnselectGametypeInProfileFacadeImpl;
-import stories.unselectgametypeinprofile.UnselectGametypeInProfileModelContext;
 import stories.updatechangeddifficultiesenabled.UpdateChangedDifficultiesEnabledFacade;
 import stories.updatechangeddifficultiesenabled.UpdateChangedDifficultiesEnabledFacadeImpl;
 import stories.updatechangeddifficultiesenabled.UpdateChangedDifficultiesEnabledModelContext;
@@ -93,13 +80,6 @@ public class GameTypesEditionManagerFacadeImpl
 
     @Override
     public void deleteItem(String actualProfileName, String code) throws Exception {
-        UnselectGametypeInProfileModelContext unselectGametypeInProfileModelContext = new UnselectGametypeInProfileModelContext(
-                actualProfileName,
-                code
-        );
-        UnselectGametypeInProfileFacade unselectGametypeInProfileFacade = new UnselectGametypeInProfileFacadeImpl(unselectGametypeInProfileModelContext);
-        unselectGametypeInProfileFacade.execute();
-
         DeleteItemModelContext deleteItemModelContext = new DeleteItemModelContext(
                 code
         );

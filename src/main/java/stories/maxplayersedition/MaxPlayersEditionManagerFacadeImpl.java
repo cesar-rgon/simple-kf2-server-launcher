@@ -1,14 +1,10 @@
 package stories.maxplayersedition;
 
-import dtos.ProfileDto;
 import dtos.SelectDto;
-import dtos.factories.DifficultyDtoFactory;
 import dtos.factories.MaxPlayersDtoFactory;
-import entities.Difficulty;
 import entities.MaxPlayers;
 import framework.AbstractManagerFacade;
 import framework.EmptyModelContext;
-import services.DifficultyServiceImpl;
 import services.MaxPlayersServiceImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -26,12 +22,6 @@ import stories.listallitems.ListAllItemsFacadeImpl;
 import stories.listallitems.ListAllItemsFacadeResult;
 import stories.populatedatabase.PopulateDatabaseFacade;
 import stories.populatedatabase.PopulateDatabaseFacadeImpl;
-import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacade;
-import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacadeImpl;
-import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileModelContext;
-import stories.unselectmaxplayersinprofile.UnselectMaxPlayersInProfileFacade;
-import stories.unselectmaxplayersinprofile.UnselectMaxPlayersInProfileFacadeImpl;
-import stories.unselectmaxplayersinprofile.UnselectMaxPlayersInProfileModelContext;
 import stories.updateitemcode.UpdateItemCodeFacade;
 import stories.updateitemcode.UpdateItemCodeFacadeImpl;
 import stories.updateitemcode.UpdateItemCodeFacadeResult;
@@ -85,13 +75,6 @@ public class MaxPlayersEditionManagerFacadeImpl
 
     @Override
     public void deleteItem(String actualProfileName, String code) throws Exception {
-        UnselectMaxPlayersInProfileModelContext unselectMaxPlayersInProfileModelContext = new UnselectMaxPlayersInProfileModelContext(
-                actualProfileName,
-                code
-        );
-        UnselectMaxPlayersInProfileFacade unselectMaxPlayersInProfileFacade = new UnselectMaxPlayersInProfileFacadeImpl(unselectMaxPlayersInProfileModelContext);
-        unselectMaxPlayersInProfileFacade.execute();
-
         DeleteItemModelContext deleteItemModelContext = new DeleteItemModelContext(
                 code
         );

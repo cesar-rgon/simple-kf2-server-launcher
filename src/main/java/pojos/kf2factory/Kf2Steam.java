@@ -39,7 +39,7 @@ public abstract class Kf2Steam extends Kf2AbstractCommon {
     protected abstract void applyPatchToDownloadMaps() throws Exception;
 
     public void installOrUpdateServer(boolean validateFiles, boolean isBeta, String betaBrunch) {
-        if (!prerequisitesAreValid()) {
+        if (!prerequisitesAreValid(false)) {
             try {
                 String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
                 String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installationFolderNotValid");

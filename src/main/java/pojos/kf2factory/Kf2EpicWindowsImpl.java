@@ -34,6 +34,14 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
     }
 
     @Override
+    public boolean isValidInstallationFolder(boolean checkIfInstalled) {
+        if (checkIfInstalled) {
+            isValidInstallationFolder();
+        }
+        return false;
+    }
+
+    @Override
     protected boolean prepareSteamCmd() {
         try {
             String tempFolder = System.getProperty("java.io.tmpdir");

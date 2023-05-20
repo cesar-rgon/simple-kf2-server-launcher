@@ -22,6 +22,7 @@ public abstract class Kf2AbstractCommon extends Kf2Utils implements Kf2Common {
     }
 
     public abstract boolean isValidInstallationFolder();
+    public abstract boolean isValidInstallationFolder(boolean checkIfInstalled);
     protected abstract String runKf2Server(Profile profile);
     protected abstract void executeFileBeforeRunServer(File fileToBeExecuted) throws Exception;
     public abstract Long getIdWorkShopFromPath(Path path);
@@ -29,7 +30,11 @@ public abstract class Kf2AbstractCommon extends Kf2Utils implements Kf2Common {
     protected abstract boolean prepareSteamCmd();
 
     protected boolean prerequisitesAreValid() {
-        return isValidInstallationFolder() && prepareSteamCmd();
+        return prerequisitesAreValid(true);
+    }
+
+    protected boolean prerequisitesAreValid(boolean checkIfInstalled) {
+        return isValidInstallationFolder(checkIfInstalled) && prepareSteamCmd();
     }
 
     public String runServer(Profile profile) {

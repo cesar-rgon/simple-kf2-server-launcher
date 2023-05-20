@@ -5,6 +5,7 @@ import daos.DifficultyDao;
 import entities.AbstractEntity;
 import entities.AbstractExtendedEntity;
 import entities.Difficulty;
+import entities.Profile;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
@@ -34,6 +35,11 @@ public class DifficultyServiceImpl extends AbstractService<Difficulty> {
     }
 
     @Override
+    public boolean deleteItem(Difficulty entity) throws Exception {
+        return false;
+    }
+
+    @Override
     public List<Difficulty> listAll() throws Exception {
         return new DifficultyDao(em).listAll();
     }
@@ -44,11 +50,34 @@ public class DifficultyServiceImpl extends AbstractService<Difficulty> {
     }
 
     @Override
-    public boolean deleteItem(Difficulty difficulty) throws Exception {
+    public boolean deleteItem(Difficulty difficulty, List<Profile> allProfileList) throws Exception {
+        ProfileService profileService = new ProfileServiceImpl(em);
+
+        if (!allProfileList.isEmpty()) {
+            for (Profile profile: allProfileList) {
+                if (profile.getDifficulty() != null && difficulty.getCode().equals(profile.getDifficulty().getCode())) {
+                    profile.setDifficulty(null);
+                    profileService.updateItem(profile);
+                }
+            }
+        }
         boolean removed = new DifficultyDao(em).remove(difficulty);
         new DescriptionDao(em).remove(difficulty.getDescription());
         return removed;
     }
 
+    @Override
+    public boolean deleteAllItems(List<Difficulty> allItemList, List<Profile> allProfileList) throws Exception {
+        ProfileService profileService = new ProfileServiceImpl(em);
 
+        for (Profile profile: allProfileList) {
+            profile.setDifficulty(null);
+            profileService.updateItem(profile);
+        }
+        for (Difficulty difficulty: allItemList) {
+            new DifficultyDao(em).remove(difficulty);
+            new DescriptionDao(em).remove(difficulty.getDescription());
+        }
+        return true;
+    }
 }

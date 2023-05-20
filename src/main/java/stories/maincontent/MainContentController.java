@@ -1133,20 +1133,33 @@ public class MainContentController implements Initializable {
             );
         }
 
-        gameTypeSelect.getSelectionModel().select(
-            gameTypeSelect.getItems().stream().map(GameTypeDto::getKey).collect(Collectors.toList()).indexOf(result.getProfileDto().getGametype().getKey())
-        );
+        if (result.getProfileDto().getGametype() != null) {
+            gameTypeSelect.getSelectionModel().select(
+                    gameTypeSelect.getItems().stream().map(GameTypeDto::getKey).collect(Collectors.toList()).indexOf(result.getProfileDto().getGametype().getKey())
+            );
+        }
+
         difficultySelect.setDisable(gameTypeSelect.getValue() != null ? !gameTypeSelect.getValue().isDifficultyEnabled(): false);
-        difficultySelect.getSelectionModel().select(
-                difficultySelect.getItems().stream().map(SelectDto::getKey).collect(Collectors.toList()).indexOf(result.getProfileDto().getDifficulty().getKey())
-        );
+
+        if (result.getProfileDto().getDifficulty() != null) {
+            difficultySelect.getSelectionModel().select(
+                    difficultySelect.getItems().stream().map(SelectDto::getKey).collect(Collectors.toList()).indexOf(result.getProfileDto().getDifficulty().getKey())
+            );
+        }
+
         lengthSelect.setDisable(gameTypeSelect.getValue() != null ? !gameTypeSelect.getValue().isLengthEnabled(): false);
-        lengthSelect.getSelectionModel().select(
-                lengthSelect.getItems().stream().map(SelectDto::getKey).collect(Collectors.toList()).indexOf(result.getProfileDto().getLength().getKey())
-        );
-        maxPlayersSelect.getSelectionModel().select(
-                maxPlayersSelect.getItems().stream().map(SelectDto::getKey).collect(Collectors.toList()).indexOf(result.getProfileDto().getMaxPlayers().getKey())
-        );
+
+        if (result.getProfileDto().getLength() != null) {
+            lengthSelect.getSelectionModel().select(
+                    lengthSelect.getItems().stream().map(SelectDto::getKey).collect(Collectors.toList()).indexOf(result.getProfileDto().getLength().getKey())
+            );
+        }
+
+        if (result.getProfileDto().getMaxPlayers() != null) {
+            maxPlayersSelect.getSelectionModel().select(
+                    maxPlayersSelect.getItems().stream().map(SelectDto::getKey).collect(Collectors.toList()).indexOf(result.getProfileDto().getMaxPlayers().getKey())
+            );
+        }
 
         if (result.getProfileDto().getMap() != null && result.getSelectedProfileMapOptional().isPresent()) {
             platformProfileMapSelect.getSelectionModel().select(result.getFilteredMapDtoList().indexOf(result.getSelectedProfileMapOptional().get()));

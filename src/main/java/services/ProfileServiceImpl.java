@@ -73,10 +73,6 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
     public void updateItemDescription(Profile entity) throws Exception {
     }
 
-    @Override
-    public boolean deleteItem(Profile profile) throws Exception {
-        return deleteProfile(profile);
-    }
 
     @Override
     public boolean deleteProfile(Profile profile) throws Exception {
@@ -932,5 +928,23 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
             throw new RuntimeException(message);
         }
         return profileList;
+    }
+
+    @Override
+    public boolean deleteAllItems(List<Profile> allItemList, List<Profile> allProfileList) throws Exception {
+        for (Profile profile: allItemList) {
+            deleteProfile(profile);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean deleteItem(Profile profile) throws Exception {
+        return deleteProfile(profile);
+    }
+
+    @Override
+    public boolean deleteItem(Profile profile, List<Profile> profileList) throws Exception {
+        return deleteProfile(profile);
     }
 }

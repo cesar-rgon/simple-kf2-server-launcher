@@ -1,18 +1,10 @@
 package stories.lengthedition;
 
-import dtos.GameTypeDto;
-import dtos.ProfileDto;
 import dtos.SelectDto;
-import dtos.factories.DifficultyDtoFactory;
-import dtos.factories.GameTypeDtoFactory;
 import dtos.factories.LengthDtoFactory;
-import entities.Difficulty;
-import entities.GameType;
 import entities.Length;
 import framework.AbstractManagerFacade;
-import framework.EmptyFacadeResult;
 import framework.EmptyModelContext;
-import javafx.collections.ObservableList;
 import services.*;
 import stories.createitem.CreateItemFacade;
 import stories.createitem.CreateItemFacadeImpl;
@@ -28,12 +20,6 @@ import stories.listallitems.ListAllItemsFacadeImpl;
 import stories.listallitems.ListAllItemsFacadeResult;
 import stories.populatedatabase.PopulateDatabaseFacade;
 import stories.populatedatabase.PopulateDatabaseFacadeImpl;
-import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacade;
-import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacadeImpl;
-import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileModelContext;
-import stories.unselectlengthinprofile.UnselectLengthInProfileFacade;
-import stories.unselectlengthinprofile.UnselectLengthInProfileFacadeImpl;
-import stories.unselectlengthinprofile.UnselectLengthInProfileModelContext;
 import stories.updateitemcode.UpdateItemCodeFacade;
 import stories.updateitemcode.UpdateItemCodeFacadeImpl;
 import stories.updateitemcode.UpdateItemCodeFacadeResult;
@@ -87,13 +73,6 @@ public class LengthEditionManagerFacadeImpl
 
     @Override
     public void deleteItem(String actualProfileName, String code) throws Exception {
-        UnselectLengthInProfileModelContext unselectLengthInProfileModelContext = new UnselectLengthInProfileModelContext(
-                actualProfileName,
-                code
-        );
-        UnselectLengthInProfileFacade unselectLengthInProfileFacade = new UnselectLengthInProfileFacadeImpl(unselectLengthInProfileModelContext);
-        unselectLengthInProfileFacade.execute();
-
         DeleteItemModelContext deleteItemModelContext = new DeleteItemModelContext(
                 code
         );

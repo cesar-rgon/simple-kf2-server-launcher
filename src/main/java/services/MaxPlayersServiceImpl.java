@@ -2,7 +2,10 @@ package services;
 
 import daos.DescriptionDao;
 import daos.MaxPlayersDao;
+import entities.Difficulty;
+import entities.Length;
 import entities.MaxPlayers;
+import entities.Profile;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
@@ -31,6 +34,11 @@ public class MaxPlayersServiceImpl extends AbstractService<MaxPlayers> {
     }
 
     @Override
+    public boolean deleteItem(MaxPlayers entity) throws Exception {
+        return false;
+    }
+
+    @Override
     public List<MaxPlayers> listAll() throws Exception {
         return new MaxPlayersDao(em).listAll();
     }
@@ -41,9 +49,34 @@ public class MaxPlayersServiceImpl extends AbstractService<MaxPlayers> {
     }
 
     @Override
-    public boolean deleteItem(MaxPlayers maxPlayers) throws Exception {
-       boolean removed = new MaxPlayersDao(em).remove(maxPlayers);
+    public boolean deleteItem(MaxPlayers maxPlayers, List<Profile> allProfileList) throws Exception {
+        ProfileService profileService = new ProfileServiceImpl(em);
+
+        if (!allProfileList.isEmpty()) {
+            for (Profile profile: allProfileList) {
+                if (profile.getMaxPlayers() != null && maxPlayers.getCode().equals(profile.getMaxPlayers().getCode())) {
+                    profile.setMaxPlayers(null);
+                    profileService.updateItem(profile);
+                }
+            }
+        }
+        boolean removed = new MaxPlayersDao(em).remove(maxPlayers);
         new DescriptionDao(em).remove(maxPlayers.getDescription());
         return removed;
+    }
+
+    @Override
+    public boolean deleteAllItems(List<MaxPlayers> allItemList, List<Profile> allProfileList) throws Exception {
+        ProfileService profileService = new ProfileServiceImpl(em);
+
+        for (Profile profile: allProfileList) {
+            profile.setMaxPlayers(null);
+            profileService.updateItem(profile);
+        }
+        for (MaxPlayers maxPlayers: allItemList) {
+            new MaxPlayersDao(em).remove(maxPlayers);
+            new DescriptionDao(em).remove(maxPlayers.getDescription());
+        }
+        return true;
     }
 }

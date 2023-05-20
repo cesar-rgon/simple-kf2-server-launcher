@@ -43,6 +43,16 @@ public class PlatformProfileMapServiceImpl extends AbstractService<PlatformProfi
     }
 
     @Override
+    public boolean deleteItem(PlatformProfileMap entity, List<Profile> profileList) throws Exception {
+        return false;
+    }
+
+    @Override
+    public boolean deleteAllItems(List<PlatformProfileMap> entityList, List<Profile> profileList) throws Exception {
+        return false;
+    }
+
+    @Override
     public Optional<PlatformProfileMap> findPlatformProfileMapByNames(String platformName, String profileName, String mapName) throws SQLException {
         return new PlatformProfileMapDao(em).findByPlatformNameProfileNameMapName(platformName, profileName, mapName);
     }

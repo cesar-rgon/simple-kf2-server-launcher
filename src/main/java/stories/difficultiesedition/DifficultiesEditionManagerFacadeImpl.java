@@ -6,7 +6,6 @@ import entities.Difficulty;
 import framework.AbstractManagerFacade;
 import framework.EmptyModelContext;
 import services.DifficultyServiceImpl;
-import services.ProfileServiceImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import stories.createitem.CreateItemFacade;
@@ -23,9 +22,6 @@ import stories.listallitems.ListAllItemsFacadeImpl;
 import stories.listallitems.ListAllItemsFacadeResult;
 import stories.populatedatabase.PopulateDatabaseFacade;
 import stories.populatedatabase.PopulateDatabaseFacadeImpl;
-import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacade;
-import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileFacadeImpl;
-import stories.unselectdifficultyinprofile.UnselectDifficultyInProfileModelContext;
 import stories.updateitemcode.UpdateItemCodeFacade;
 import stories.updateitemcode.UpdateItemCodeFacadeImpl;
 import stories.updateitemcode.UpdateItemCodeFacadeResult;
@@ -78,13 +74,6 @@ public class DifficultiesEditionManagerFacadeImpl
 
     @Override
     public void deleteItem(String actualProfileName, String code) throws Exception {
-        UnselectDifficultyInProfileModelContext unselectDifficultyInProfileModelContext = new UnselectDifficultyInProfileModelContext(
-                actualProfileName,
-                code
-        );
-        UnselectDifficultyInProfileFacade unselectDifficultyInProfileFacade = new UnselectDifficultyInProfileFacadeImpl(unselectDifficultyInProfileModelContext);
-        unselectDifficultyInProfileFacade.execute();
-
         DeleteItemModelContext deleteItemModelContext = new DeleteItemModelContext(
                 code
         );

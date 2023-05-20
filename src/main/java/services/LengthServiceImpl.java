@@ -2,7 +2,10 @@ package services;
 
 import daos.DescriptionDao;
 import daos.LengthDao;
+import entities.Difficulty;
+import entities.GameType;
 import entities.Length;
+import entities.Profile;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
@@ -30,6 +33,11 @@ public class LengthServiceImpl extends AbstractService<Length> {
     }
 
     @Override
+    public boolean deleteItem(Length entity) throws Exception {
+        return false;
+    }
+
+    @Override
     public List<Length> listAll() throws Exception {
         return new LengthDao(em).listAll();
     }
@@ -41,9 +49,33 @@ public class LengthServiceImpl extends AbstractService<Length> {
 
 
     @Override
-    public boolean deleteItem(Length length) throws Exception {
+    public boolean deleteItem(Length length, List<Profile> allProfileList) throws Exception {
+        ProfileService profileService = new ProfileServiceImpl(em);
+
+        if (!allProfileList.isEmpty()) {
+            for (Profile profile: allProfileList) {
+                if (profile.getLength() != null && length.getCode().equals(profile.getLength().getCode())) {
+                    profile.setLength(null);
+                    profileService.updateItem(profile);
+                }
+            }
+        }
         boolean removed = new LengthDao(em).remove(length);
         new DescriptionDao(em).remove(length.getDescription());
         return removed;
+    }
+    @Override
+    public boolean deleteAllItems(List<Length> allItemList, List<Profile> allProfileList) throws Exception {
+        ProfileService profileService = new ProfileServiceImpl(em);
+
+        for (Profile profile: allProfileList) {
+            profile.setLength(null);
+            profileService.updateItem(profile);
+        }
+        for (Length length: allItemList) {
+            new LengthDao(em).remove(length);
+            new DescriptionDao(em).remove(length.getDescription());
+        }
+        return true;
     }
 }
