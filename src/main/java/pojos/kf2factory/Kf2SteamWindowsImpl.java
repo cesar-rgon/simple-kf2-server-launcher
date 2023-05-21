@@ -1,5 +1,6 @@
 package pojos.kf2factory;
 
+import com.github.tuupertunut.powershelllibjava.PowerShell;
 import entities.Profile;
 import jakarta.persistence.EntityManager;
 import net.lingala.zip4j.ZipFile;
@@ -9,14 +10,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.WindowsRegistry;
 import pojos.session.Session;
+import services.ProfileService;
+import services.ProfileServiceImpl;
 import utils.Utils;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
@@ -102,12 +107,46 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
         File kfEngineIni = new File(this.platform.getInstallationFolder() + "\\KFGame\\Config\\PCServer-KFEngine.ini");
         File kfGameIni = new File(this.platform.getInstallationFolder() + "\\KFGame\\Config\\PCServer-KFGame.ini");
         if (!kfEngineIni.exists() || !kfGameIni.exists()) {
-            Process runServerFirstTimeProcess = Runtime.getRuntime().exec("cmd /C start /wait " + this.platform.getInstallationFolder() + "\\Binaries\\Win64\\KFServer.exe KF-BioticsLab",null, new File(this.platform.getInstallationFolder()));
-            while (runServerFirstTimeProcess.isAlive() && (!kfEngineIni.exists() || !kfGameIni.exists())) {
-                runServerFirstTimeProcess.waitFor(1, TimeUnit.SECONDS);
-            }
-            if (runServerFirstTimeProcess.isAlive()) {
-                Utils.infoDialog("The config files have been created", "You can close the server's console right now.");
+            PowerShell psSession = PowerShell.open();
+            psSession.executeCommands("start \"" + this.platform.getInstallationFolder() + "\\Binaries\\Win64\\KFServer.exe\" KF-BioticsLab");
+            Utils.infoDialog("Wait some seconds until the server has been started at all", "This process is necessary to generate all needed config files.");
+        }
+
+        // Copy config files to all profiles that need them
+        if (kfEngineIni.exists() && kfGameIni.exists()) {
+            ProfileService profileService = new ProfileServiceImpl(em);
+            List<Profile> allProfileList = profileService.listAllProfiles();
+            for (Profile profile: allProfileList) {
+                File kfProfileEngineIni = new File(this.platform.getInstallationFolder() + "\\KFGame\\Config\\" + profile.getName() + "\\PCServer-KFEngine.ini");
+                File kfProfileGameIni = new File(this.platform.getInstallationFolder() + "\\KFGame\\Config\\" + profile.getName() + "\\PCServer-KFGame.ini");
+                if (!kfProfileEngineIni.exists()) {
+                    FileUtils.copyFile(kfEngineIni, kfProfileEngineIni);
+                }
+                if (!kfProfileGameIni.exists()) {
+                    FileUtils.copyFile(kfGameIni, kfProfileGameIni);
+                }
+
+                File configFolder = new File(this.platform.getInstallationFolder() + "\\KFGame\\Config");
+                File profileFolder = new File(configFolder.getAbsolutePath() + "\\" + profile.getName());
+                File[] sourceFiles = configFolder.listFiles(new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        if(name.endsWith(".ini")) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                });
+                for (File sourceFile: sourceFiles) {
+                    File targetFile = new File(profileFolder + "\\" + sourceFile.getName() + ".ini");
+                    if (!targetFile.exists()) {
+                        FileUtils.copyFileToDirectory(sourceFile, profileFolder);
+                        if ("DefaultWebAdmin.ini".equalsIgnoreCase(sourceFile.getName())) {
+                            FileUtils.copyFile(sourceFile, new File(configFolder.getAbsolutePath() + "\\" + profile.getName() + "/KFWebAdmin.ini"));
+                        }
+                    }
+                }
             }
         }
     }

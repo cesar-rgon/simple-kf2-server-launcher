@@ -1,5 +1,6 @@
 package pojos.kf2factory;
 
+import com.github.tuupertunut.powershelllibjava.PowerShell;
 import entities.Profile;
 import jakarta.persistence.EntityManager;
 import javafx.concurrent.Task;
@@ -9,6 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.session.Session;
+import services.ProfileService;
+import services.ProfileServiceImpl;
 import utils.Utils;
 
 import java.io.File;
@@ -19,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Kf2EpicWindowsImpl extends Kf2Epic {
 
@@ -152,9 +157,56 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
 
     @Override
     protected void installUpdateKf2Server() throws Exception {
+
+        // If it's the first time, run the server to create needed config files
+        File kfEngineIni = new File(this.platform.getInstallationFolder() + "\\KFGame\\Config\\PCServer-KFEngine.ini");
+        File kfGameIni = new File(this.platform.getInstallationFolder() + "\\KFGame\\Config\\PCServer-KFGame.ini");
+        if (!kfEngineIni.exists() || !kfGameIni.exists()) {
+            PowerShell psSession = PowerShell.open();
+            psSession.executeCommands("start \"" + this.platform.getInstallationFolder() + "\\Binaries\\Win64\\KFServer.exe\" KF-BioticsLab");
+            Utils.infoDialog("Wait some seconds until the server has been started at all", "This process is necessary to generate all needed config files.");
+        }
+
+        // Copy config files to all profiles that need them
+        if (kfEngineIni.exists() && kfGameIni.exists()) {
+            ProfileService profileService = new ProfileServiceImpl(em);
+            List<Profile> allProfileList = profileService.listAllProfiles();
+            for (Profile profile: allProfileList) {
+                File kfProfileEngineIni = new File(this.platform.getInstallationFolder() + "\\KFGame\\Config\\" + profile.getName() + "\\PCServer-KFEngine.ini");
+                File kfProfileGameIni = new File(this.platform.getInstallationFolder() + "\\KFGame\\Config\\" + profile.getName() + "\\PCServer-KFGame.ini");
+                if (!kfProfileEngineIni.exists()) {
+                    FileUtils.copyFile(kfEngineIni, kfProfileEngineIni);
+                }
+                if (!kfProfileGameIni.exists()) {
+                    FileUtils.copyFile(kfGameIni, kfProfileGameIni);
+                }
+
+                File configFolder = new File(this.platform.getInstallationFolder() + "\\KFGame\\Config");
+                File profileFolder = new File(configFolder.getAbsolutePath() + "\\" + profile.getName());
+                File[] sourceFiles = configFolder.listFiles(new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        if(name.endsWith(".ini")) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                });
+                for (File sourceFile: sourceFiles) {
+                    File targetFile = new File(profileFolder + "\\" + sourceFile.getName() + ".ini");
+                    if (!targetFile.exists()) {
+                        FileUtils.copyFileToDirectory(sourceFile, profileFolder);
+                        if ("DefaultWebAdmin.ini".equalsIgnoreCase(sourceFile.getName())) {
+                            FileUtils.copyFile(sourceFile, new File(configFolder.getAbsolutePath() + "\\" + profile.getName() + "/KFWebAdmin.ini"));
+                        }
+                    }
+                }
+            }
+        }
+
         String tempFolderString = System.getProperty("java.io.tmpdir") + "Kf2_Webadmin_temp_folder";
         File tempFolder = new File(tempFolderString);
-
         Task<Void> deleteFolderTask = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
@@ -209,6 +261,7 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
                     });
                     Thread moveFolderThread = new Thread(moveFolderTask);
                     moveFolderThread.start();
+
                 } catch (Exception e) {
                     String message = "Error installing KF2 server";
                     logger.error(message, e);

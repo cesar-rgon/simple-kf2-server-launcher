@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.session.Session;
+import services.ProfileService;
+import services.ProfileServiceImpl;
 import utils.Utils;
 
 import java.io.File;
@@ -15,6 +17,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class Kf2SteamLinuxImpl extends Kf2Steam {
@@ -112,6 +115,45 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
             }
             if (processTwo.isAlive()) {
                 processTwo.destroy();
+            }
+        }
+
+        // Copy config files to all profiles that need them
+        if (kfEngineIni.exists() && kfGameIni.exists()) {
+            ProfileService profileService = new ProfileServiceImpl(em);
+            List<Profile> allProfileList = profileService.listAllProfiles();
+            for (Profile profile: allProfileList) {
+                File kfProfileEngineIni = new File(this.platform.getInstallationFolder() + "/KFGame/Config/" + profile.getName() + "/LinuxServer-KFEngine.ini");
+                File kfProfileGameIni = new File(this.platform.getInstallationFolder() + "/KFGame/Config/" + profile.getName() + "/LinuxServer-KFGame.ini");
+
+                if (!kfProfileEngineIni.exists()) {
+                    FileUtils.copyFile(kfEngineIni, kfProfileEngineIni);
+                }
+                if (!kfProfileGameIni.exists()) {
+                    FileUtils.copyFile(kfGameIni, kfProfileGameIni);
+                }
+
+                File configFolder = new File(this.platform.getInstallationFolder() + "/KFGame/Config");
+                File profileFolder = new File(configFolder.getAbsolutePath() + "/" + profile.getName());
+                File[] sourceFiles = configFolder.listFiles(new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        if(name.endsWith(".ini")) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                });
+                for (File sourceFile: sourceFiles) {
+                    File targetFile = new File(profileFolder + "\\" + sourceFile.getName() + ".ini");
+                    if (!targetFile.exists()) {
+                        FileUtils.copyFileToDirectory(sourceFile, profileFolder);
+                        if ("DefaultWebAdmin.ini".equalsIgnoreCase(sourceFile.getName())) {
+                            FileUtils.copyFile(sourceFile, new File(configFolder.getAbsolutePath() + "\\" + profile.getName() + "/KFWebAdmin.ini"));
+                        }
+                    }
+                }
             }
         }
     }

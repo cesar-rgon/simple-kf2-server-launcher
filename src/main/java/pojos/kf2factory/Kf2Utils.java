@@ -29,6 +29,8 @@ public class Kf2Utils {
     private static final Logger logger = LogManager.getLogger(Kf2Utils.class);
 
     protected final PropertyService propertyService;
+    protected final EntityManager em;
+
     protected String languageCode;
     protected boolean byConsole;
     private final AbstractMapService customMapService;
@@ -37,6 +39,7 @@ public class Kf2Utils {
 
     protected Kf2Utils(EntityManager em) {
         super();
+        this.em = em;
         propertyService = new PropertyServiceImpl();
         customMapService = new CustomMapModServiceImpl(em);
         officialMapService = new OfficialMapServiceImpl(em);
