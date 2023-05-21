@@ -45,7 +45,9 @@ import services.PropertyServiceImpl;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -1533,4 +1535,20 @@ public class Utils {
         textArea.setTooltip(tooltip);
     }
 
+    public static void convertPngToJpg(File sourcePngFile, File targetJpgFile) throws Exception {
+        BufferedImage originalImage = ImageIO.read(sourcePngFile);
+        BufferedImage newBufferedImage = new BufferedImage(
+                originalImage.getWidth(),
+                originalImage.getHeight(),
+                BufferedImage.TYPE_INT_RGB);
+
+        newBufferedImage.createGraphics()
+                .drawImage(originalImage,
+                        0,
+                        0,
+                        Color.BLACK,
+                        null);
+
+        ImageIO.write(newBufferedImage, "jpg", targetJpgFile);
+    }
 }

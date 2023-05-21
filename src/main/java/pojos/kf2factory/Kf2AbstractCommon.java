@@ -3,12 +3,14 @@ package pojos.kf2factory;
 import entities.AbstractPlatform;
 import entities.Profile;
 import jakarta.persistence.EntityManager;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import utils.Utils;
 
 import java.io.*;
+import java.net.URL;
 import java.nio.file.Path;
 
 public abstract class Kf2AbstractCommon extends Kf2Utils implements Kf2Common {
@@ -92,6 +94,42 @@ public abstract class Kf2AbstractCommon extends Kf2Utils implements Kf2Common {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    protected void downloadMapImages() throws Exception {
+        String tempFolder = System.getProperty("java.io.tmpdir");
+        String downloadConnectionTimeOut = propertyService.getPropertyValue("properties/config.properties", "prop.config.downloadConnectionTimeout");
+        String downloadReadTimeOut = propertyService.getPropertyValue("properties/config.properties", "prop.config.downloadReadTimeout");
+
+        Integer totalMaps = Integer.parseInt(propertyService.getPropertyValue("properties/maps.properties", "prop.maps.total_maps"));
+        for (int i = 1; i <= totalMaps; i++) {
+            String mapTitle = propertyService.getPropertyValue("properties/maps.properties", "prop.maps." + i + ".title");
+            File mapImageInServer = new File(this.platform.getInstallationFolder() + "/KFGame/Web/images/maps/" + mapTitle + ".jpg");
+
+            if (!mapImageInServer.exists()) {
+                String sourceImageUrl = propertyService.getPropertyValue("properties/maps.properties", "prop.maps." + i + ".source_image_path");
+
+                if (sourceImageUrl.endsWith(".png")) {
+                    File tempPngFile = new File(tempFolder + "/" + mapTitle + ".png");
+                    FileUtils.copyURLToFile(
+                            new URL(sourceImageUrl),
+                            tempPngFile,
+                            Integer.parseInt(downloadConnectionTimeOut),
+                            Integer.parseInt(downloadReadTimeOut)
+                    );
+                    Utils.convertPngToJpg(tempPngFile, mapImageInServer);
+                    tempPngFile.delete();
+
+                } else { // jpg
+                    FileUtils.copyURLToFile(
+                            new URL(sourceImageUrl),
+                            mapImageInServer,
+                            Integer.parseInt(downloadConnectionTimeOut),
+                            Integer.parseInt(downloadReadTimeOut)
+                    );
+                }
+            }
         }
     }
 }

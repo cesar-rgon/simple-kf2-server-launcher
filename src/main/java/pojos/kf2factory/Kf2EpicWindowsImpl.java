@@ -36,7 +36,7 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
     @Override
     public boolean isValidInstallationFolder(boolean checkIfInstalled) {
         if (checkIfInstalled) {
-            isValidInstallationFolder();
+            return isValidInstallationFolder();
         }
         return false;
     }
@@ -250,7 +250,7 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
         File[] sourceDllFiles = srcFolder.listFiles(new FilenameFilter() {
             @Override
             public boolean accept(File dir, String name) {
-                if(name.endsWith(".dll")) {
+                if (name.endsWith(".dll")) {
                     return true;
                 } else {
                     return false;

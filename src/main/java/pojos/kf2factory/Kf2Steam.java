@@ -54,6 +54,7 @@ public abstract class Kf2Steam extends Kf2AbstractCommon {
         try {
             installUpdateKf2Server(validateFiles, isBeta, betaBrunch);
             applyPatchToDownloadMaps();
+            downloadMapImages();
         } catch (Exception e) {
             String message = "Error installing KF2 server";
             logger.error(message, e);

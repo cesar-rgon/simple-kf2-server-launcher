@@ -32,7 +32,6 @@ public abstract class Kf2Epic extends Kf2AbstractCommon {
 
     protected abstract void installUpdateKf2Server() throws Exception;
     protected abstract void applyPatchToDownloadMaps() throws Exception;
-
     public void installOrUpdateServer() {
         if (!prerequisitesAreValid()) {
             try {
@@ -49,6 +48,7 @@ public abstract class Kf2Epic extends Kf2AbstractCommon {
         try {
             installUpdateKf2Server();
             applyPatchToDownloadMaps();
+            downloadMapImages();
         } catch (Exception e) {
             String message = "Error installing KF2 server";
             logger.error(message, e);

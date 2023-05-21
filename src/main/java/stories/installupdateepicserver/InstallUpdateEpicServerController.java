@@ -131,9 +131,6 @@ public class InstallUpdateEpicServerController implements Initializable {
         Task<Void> task = new Task<Void>() {
             @Override
             protected Void call() throws Exception {
-                if (StringUtils.isNotBlank(installationFolder.getText())) {
-                    installationFolder.setText(installationFolder.getText().replaceAll(" ", "_"));
-                }
                 facade.updatePlatformInstallationFolder(installationFolder.getText());
                 return null;
             }
