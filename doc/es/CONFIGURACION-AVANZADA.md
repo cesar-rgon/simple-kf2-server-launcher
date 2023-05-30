@@ -13,6 +13,7 @@ En esta sección puedes gestionar perfiles desde el lanzador. Cada perfil es usa
 * _Eliminar perfil seleccionado_: Permite eliminar el perfil seleccionado.
 * _Import profiles_: Permite importar perfiles desde fichero al lanzador.
 * _Exportar perfiles_: Permite exportar perfiles desde el lanzador a un fichero.
+* _Valores por defecto_: Permite borrar todos los perfiles y cargar los perfiles por defecto.
 
 **NOTA**: No se permite duplicación de nombre de perfil en ninguna de las operaciones.
 
@@ -22,6 +23,7 @@ En esta sección puedes añadir, editar o eliminar tipos de juegos del lanzador.
 2. _Descripción_: Texto libre para identificar el tipo de juego.
 3. _Dificultades activas_: Indica si el combo de dificultades está activo o no.
 4. _Longitudes activas_: Indica si el combo de longitudes está activo o no.
+5. _Valores por defecto_: Permite borrar todos los tipos de juego y cargar los tipos de juego por defecto.
 
 ![Launcher screenshot](../images/screenshot07.png)
 
@@ -33,6 +35,7 @@ En esta sección puedes añadir, editar o eliminar tipos de juegos del lanzador.
 En esta sección puedes añadir, editar o eliminar dificultades del lanzador. Cada dificultad está compuesta por dos campos:
 1. _Código_: Código para identificar el tipo de dificultad. No es un texto libre, debe ser exactamente como es descrito en la documentación del servidor de Killing Floor 2. 
 2. _Descripción_: Texto libre para identificar el tipo de dificultad. 
+3. _Valores por defecto_: Permite borrar todas las dificultades y cargar las dificultades por defecto.
 
 ![Launcher screenshot](../images/screenshot08.png)
 
@@ -44,6 +47,7 @@ En esta sección puedes añadir, editar o eliminar dificultades del lanzador. Ca
 En esta sección puedes añadir, editar o eliminar longitudes del lanzador. Cada longitud está compuesta por dos campos:
 1. _Código_: Código para identificar el tipo de longitud. No es un texto libre, debe ser exactamente como es descrito en la documentación del servidor de Killing Floor 2. 
 2. _Descripción_: Texto libre para identificar el tipo de longitud. 
+3. _Valores por defecto_: Permite borrar todas las longitudes y cargar las longitudes por defecto.
 
 ![Launcher screenshot](../images/screenshot09.png)
 
@@ -55,6 +59,7 @@ En esta sección puedes añadir, editar o eliminar longitudes del lanzador. Cada
 En esta sección puedes añadir, editar o eliminar el máx.jugadores del lanzador. Cada número máx. jugadores está compuesto por dos campos:
 1. _Código_: Código para identificar el máx.jugadores. No es un texto libre, debe ser exactamente como es descrito en la documentación del servidor de Killing Floor 2. 
 2. _Descripción_: Texto libre para identificar el máx.jugadores.
+3. _Valores por defecto_: Permite borrar todos los máx.jugadores y cargar los máx.jugadores por defecto.
 
 ![Launcher screenshot](../images/screenshot10.png)
 

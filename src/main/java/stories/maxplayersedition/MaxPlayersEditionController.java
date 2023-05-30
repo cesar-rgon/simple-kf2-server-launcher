@@ -33,6 +33,7 @@ public class MaxPlayersEditionController implements Initializable {
     @FXML private Label messageLabel;
     @FXML private Button addMaxPlayers;
     @FXML private Button removeMaxPlayers;
+    @FXML private Button loadDefaults;
     @FXML private Label maxPlayersCodeLabel;
     @FXML private Label maxPlayersDescriptionLabel;
     @FXML private ProgressIndicator progressIndicator;
@@ -75,6 +76,12 @@ public class MaxPlayersEditionController implements Initializable {
             Tooltip removeMaxPlayersTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeMaxPlayers"));
             removeMaxPlayersTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             removeMaxPlayers.setTooltip(removeMaxPlayersTooltip);
+
+            String loadDefaultsText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.loadDefaults");
+            loadDefaults.setText(loadDefaultsText);
+            Tooltip loadDefaultsTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.loadDefaults"));
+            loadDefaultsTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            loadDefaults.setTooltip(loadDefaultsTooltip);
 
             String maxPlayersCodeColumnText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.maxPlayersCode");
             maxPlayersCodeLabel.setText(maxPlayersCodeColumnText);

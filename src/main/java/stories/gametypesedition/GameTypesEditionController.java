@@ -40,6 +40,7 @@ public class GameTypesEditionController implements Initializable {
     @FXML private Label messageLabel;
     @FXML private Button addGameType;
     @FXML private Button removeGameType;
+    @FXML private Button loadDefaults;
     @FXML private Label gameTypeCodeLabel;
     @FXML private Label gameTypeDescriptionLabel;
     @FXML private Label difficultiesEnabledLabel;
@@ -81,6 +82,12 @@ public class GameTypesEditionController implements Initializable {
             Tooltip removeGameTypeTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeGameType"));
             removeGameTypeTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             removeGameType.setTooltip(removeGameTypeTooltip);
+
+            String loadDefaultsText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.loadDefaults");
+            loadDefaults.setText(loadDefaultsText);
+            Tooltip loadDefaultsTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.loadDefaults"));
+            loadDefaultsTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            loadDefaults.setTooltip(loadDefaultsTooltip);
 
             String gameTypeCodeColumnText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.gameTypeCode");
             gameTypeCodeLabel.setText(gameTypeCodeColumnText);

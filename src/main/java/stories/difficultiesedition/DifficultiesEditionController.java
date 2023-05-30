@@ -36,6 +36,7 @@ public class DifficultiesEditionController implements Initializable {
     @FXML private Label messageLabel;
     @FXML private Button addDifficulty;
     @FXML private Button removeDifficulty;
+    @FXML private Button loadDefaults;
     @FXML private Label difficultyCodeLabel;
     @FXML private Label difficultyDescriptionLabel;
     @FXML private ProgressIndicator progressIndicator;
@@ -78,6 +79,12 @@ public class DifficultiesEditionController implements Initializable {
             Tooltip removeDifficultyTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeDifficulty"));
             removeDifficultyTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             removeDifficulty.setTooltip(removeDifficultyTooltip);
+
+            String loadDefaultsText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.loadDefaults");
+            loadDefaults.setText(loadDefaultsText);
+            Tooltip loadDefaultsTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.loadDefaults"));
+            loadDefaultsTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            loadDefaults.setTooltip(loadDefaultsTooltip);
 
             String difficultyCodeColumnText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultyCode");
             difficultyCodeLabel.setText(difficultyCodeColumnText);

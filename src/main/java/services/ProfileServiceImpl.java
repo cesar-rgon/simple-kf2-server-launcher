@@ -292,8 +292,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
     }
 
     private void exportGameTypesToFile(Properties properties, List<Language> languageList) throws Exception {
-        GameTypeServiceImpl gameTypeService = new GameTypeServiceImpl();
-        PropertyService propertyService = new PropertyServiceImpl();
+        GameTypeServiceImpl gameTypeService = new GameTypeServiceImpl(em);
 
         List<GameType> gameTypeList = gameTypeService.listAll();
         properties.setProperty("exported.gameTypes.number", String.valueOf(gameTypeList.size()));
@@ -304,18 +303,16 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
             properties.setProperty("exported.gameType" + gameTypeIndex + ".difficultyEnabled", String.valueOf(gameType.isDifficultyEnabled()));
             properties.setProperty("exported.gameType" + gameTypeIndex + ".lengthEnabled", String.valueOf(gameType.isLengthEnabled()));
             for (Language language: languageList) {
-                String description = propertyService.getPropertyValue("properties/languages/" + language.getCode() + ".properties",
-                        "prop.gametype." + gameType.getCode());
-
-                properties.setProperty("exported.gameType" + gameTypeIndex + ".description." + language.getCode(), StringUtils.isNotBlank(description)? description: "");
+                properties.setProperty("exported.gameType" + gameTypeIndex + ".description." + language.getCode(),
+                        gameType.getDescription() != null && StringUtils.isNotBlank(gameType.getDescription().getValue(language.getCode())) ? gameType.getDescription().getValue(language.getCode()): StringUtils.EMPTY
+                );
             }
             gameTypeIndex++;
         }
     }
 
     private void exportDifficultiesToFile(Properties properties, List<Language> languageList) throws Exception {
-        DifficultyServiceImpl difficultyService = new DifficultyServiceImpl();
-        PropertyService propertyService = new PropertyServiceImpl();
+        DifficultyServiceImpl difficultyService = new DifficultyServiceImpl(em);
 
         List<Difficulty> difficultyList = difficultyService.listAll();
         properties.setProperty("exported.difficulties.number", String.valueOf(difficultyList.size()));
@@ -324,18 +321,16 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
         for (Difficulty difficulty: difficultyList) {
             properties.setProperty("exported.difficulty" + difficultyIndex + ".code", difficulty.getCode());
             for (Language language: languageList) {
-                String description = propertyService.getPropertyValue("properties/languages/" + language.getCode() + ".properties",
-                        "prop.difficulty." + difficulty.getCode());
-
-                properties.setProperty("exported.difficulty" + difficultyIndex + ".description." + language.getCode(), StringUtils.isNotBlank(description)? description: "");
+                properties.setProperty("exported.difficulty" + difficultyIndex + ".description." + language.getCode(),
+                        difficulty.getDescription() != null && StringUtils.isNotBlank(difficulty.getDescription().getValue(language.getCode())) ? difficulty.getDescription().getValue(language.getCode()): StringUtils.EMPTY
+                );
             }
             difficultyIndex++;
         }
     }
 
     private void exportLengthsToFile(Properties properties, List<Language> languageList) throws Exception {
-        LengthServiceImpl lengthService = new LengthServiceImpl();
-        PropertyService propertyService = new PropertyServiceImpl();
+        LengthServiceImpl lengthService = new LengthServiceImpl(em);
 
         List<Length> lengthList = lengthService.listAll();
         properties.setProperty("exported.lengths.number", String.valueOf(lengthList.size()));
@@ -344,18 +339,16 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
         for (Length length: lengthList) {
             properties.setProperty("exported.length" + lengthIndex + ".code", length.getCode());
             for (Language language: languageList) {
-                String description = propertyService.getPropertyValue("properties/languages/" + language.getCode() + ".properties",
-                        "prop.length." + length.getCode());
-
-                properties.setProperty("exported.length" + lengthIndex + ".description." + language.getCode(), StringUtils.isNotBlank(description)? description: "");
+                properties.setProperty("exported.length" + lengthIndex + ".description." + language.getCode(),
+                        length.getDescription() != null && StringUtils.isNotBlank(length.getDescription().getValue(language.getCode())) ? length.getDescription().getValue(language.getCode()): StringUtils.EMPTY
+                );
             }
             lengthIndex++;
         }
     }
 
     private void exportMaxPlayersToFile(Properties properties, List<Language> languageList) throws Exception {
-        MaxPlayersServiceImpl maxPlayersService = new MaxPlayersServiceImpl();
-        PropertyService propertyService = new PropertyServiceImpl();
+        MaxPlayersServiceImpl maxPlayersService = new MaxPlayersServiceImpl(em);
 
         List<MaxPlayers> maxPlayersList = maxPlayersService.listAll();
         properties.setProperty("exported.maxPlayers.number", String.valueOf(maxPlayersList.size()));
@@ -364,17 +357,12 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
         for (MaxPlayers maxPlayers: maxPlayersList) {
             properties.setProperty("exported.maxPlayers" + maxPlayersIndex + ".code", maxPlayers.getCode());
             for (Language language: languageList) {
-                String description = propertyService.getPropertyValue("properties/languages/" + language.getCode() + ".properties",
-                        "prop.maxplayers." + maxPlayers.getCode());
-
-                properties.setProperty("exported.maxPlayers" + maxPlayersIndex + ".description." + language.getCode(), StringUtils.isNotBlank(description)? description: "");
+                properties.setProperty("exported.maxPlayers" + maxPlayersIndex + ".description." + language.getCode(),
+                        maxPlayers.getDescription() != null && StringUtils.isNotBlank(maxPlayers.getDescription().getValue(language.getCode())) ? maxPlayers.getDescription().getValue(language.getCode()): StringUtils.EMPTY
+                );
             }
             maxPlayersIndex++;
         }
-    }
-
-    public void importEntitiesFromFile() {
-
     }
 
     @Override
@@ -397,8 +385,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
 
     @Override
     public void importGameTypesFromFile(Properties properties, List<Language> languageList) throws Exception {
-        GameTypeServiceImpl gameTypeService = new GameTypeServiceImpl();
-        PropertyService propertyService = new PropertyServiceImpl();
+        GameTypeServiceImpl gameTypeService = new GameTypeServiceImpl(em);
 
         List<GameType> gameTypeListInDataBase = gameTypeService.listAll();
         String strSize = properties.getProperty("exported.gameTypes.number");
@@ -414,15 +401,16 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                     continue;
                 }
 
+                Description newDescription = new Description();
                 for (Language language: languageList) {
-                    String description = properties.getProperty("exported.gameType" + index + ".description." + language.getCode());
-                    propertyService.setProperty("properties/languages/" + language.getCode() + ".properties",
-                            "prop.gametype." + code, description);
+                    String descriptionValue = properties.getProperty("exported.gameType" + index + ".description." + language.getCode());
+                    newDescription.setValue(descriptionValue, language.getCode());
                 }
 
                 GameType newGameType = new GameType(code);
                 newGameType.setDifficultyEnabled(Boolean.parseBoolean(properties.getProperty("exported.gameType" + index + ".difficultyEnabled")));
                 newGameType.setLengthEnabled(Boolean.parseBoolean(properties.getProperty("exported.gameType" + index + ".lengthEnabled")));
+                newGameType.setDescription(newDescription);
                 gameTypeService.createItem(newGameType);
 
             } catch (Exception e) {
@@ -433,8 +421,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
 
     @Override
     public void importDifficultiesFromFile(Properties properties, List<Language> languageList) throws Exception {
-        DifficultyServiceImpl difficultyService = new DifficultyServiceImpl();
-        PropertyService propertyService = new PropertyServiceImpl();
+        DifficultyServiceImpl difficultyService = new DifficultyServiceImpl(em);
 
         List<Difficulty> difficultyListInDataBase = difficultyService.listAll();
         String strSize = properties.getProperty("exported.difficulties.number");
@@ -450,13 +437,14 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                     continue;
                 }
 
+                Description newDescription = new Description();
                 for (Language language: languageList) {
-                    String description = properties.getProperty("exported.difficulty" + index + ".description." + language.getCode());
-                    propertyService.setProperty("properties/languages/" + language.getCode() + ".properties",
-                            "prop.difficulty." + code, description);
+                    String descriptionValue = properties.getProperty("exported.difficulty" + index + ".description." + language.getCode());
+                    newDescription.setValue(descriptionValue, language.getCode());
                 }
 
                 Difficulty newDifficulty = new Difficulty(code);
+                newDifficulty.setDescription(newDescription);
                 difficultyService.createItem(newDifficulty);
 
             } catch (Exception e) {
@@ -467,8 +455,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
 
     @Override
     public void importLengthsFromFile(Properties properties, List<Language> languageList) throws Exception {
-        LengthServiceImpl lengthService = new LengthServiceImpl();
-        PropertyService propertyService = new PropertyServiceImpl();
+        LengthServiceImpl lengthService = new LengthServiceImpl(em);
 
         List<Length> lengthListInDataBase = lengthService.listAll();
         String strSize = properties.getProperty("exported.lengths.number");
@@ -484,13 +471,14 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                     continue;
                 }
 
+                Description newDescription = new Description();
                 for (Language language: languageList) {
-                    String description = properties.getProperty("exported.length" + index + ".description." + language.getCode());
-                    propertyService.setProperty("properties/languages/" + language.getCode() + ".properties",
-                            "prop.length." + code, description);
+                    String descriptionValue = properties.getProperty("exported.length" + index + ".description." + language.getCode());
+                    newDescription.setValue(descriptionValue, language.getCode());
                 }
 
                 Length newLength = new Length(code);
+                newLength.setDescription(newDescription);
                 lengthService.createItem(newLength);
 
             } catch (Exception e) {
@@ -501,7 +489,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
 
     @Override
     public void importMaxPlayersFromFile(Properties properties, List<Language> languageList) throws Exception {
-        MaxPlayersServiceImpl maxPlayersService = new MaxPlayersServiceImpl();
+        MaxPlayersServiceImpl maxPlayersService = new MaxPlayersServiceImpl(em);
         PropertyService propertyService = new PropertyServiceImpl();
 
         List<MaxPlayers> maxPlayersListInDataBase = maxPlayersService.listAll();
@@ -518,13 +506,14 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                     continue;
                 }
 
+                Description newDescription = new Description();
                 for (Language language: languageList) {
-                    String description = properties.getProperty("exported.maxPlayers" + index + ".description." + language.getCode());
-                    propertyService.setProperty("properties/languages/" + language.getCode() + ".properties",
-                            "prop.maxplayers." + code, description);
+                    String descriptionValue = properties.getProperty("exported.maxPlayers" + index + ".description." + language.getCode());
+                    newDescription.setValue(descriptionValue, language.getCode());
                 }
 
                 MaxPlayers newMaxPlayers = new MaxPlayers(code);
+                newMaxPlayers.setDescription(newDescription);
                 maxPlayersService.createItem(newMaxPlayers);
 
             } catch (Exception e) {

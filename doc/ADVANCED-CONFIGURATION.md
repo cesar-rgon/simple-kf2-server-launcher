@@ -13,6 +13,7 @@ In this section you can manage profiles from the launcher. Each profile is used 
 * _Remove selected profile_: It allows to remove the selected profile.
 * _Import profiles_: It allows to import profiles from a file to the launcher.
 * _Export profiles_: It allows to export profiles from the launcher to a file.
+* _Load default values_: It allows to delete all profiles and load default profile.
 
 **NOTE**: No profile name duplication accepted in any operation.
 
@@ -22,6 +23,7 @@ In this section you can add, edit or remove game types from the launcher. Each g
 2. _Description_: Free text to identify the game type mode.
 3. _Difficulties enabled_: If difficulties combo is active or not.
 4. _Lengths enabled_: If lengths combo is active or not.
+5. _Load default values_: It allows to delete all gametypes and load default gametypes.
 
 ![Launcher screenshot](images/screenshot07.png)
 
@@ -33,6 +35,7 @@ In this section you can add, edit or remove game types from the launcher. Each g
 In this section you can add, edit or remove difficulties from the launcher. Each difficulty is composed by two fields:
 1. _Code_: Code to identify the difficulty mode. It's not a free text, it has to be exactly like described in the Killing Floor 2 server documentation.
 2. _Description_: Free text to identify the difficulty mode.
+3. _Load default values_: It allows to delete all difficulties and load default difficulties.
 
 ![Launcher screenshot](images/screenshot08.png)
 
@@ -44,6 +47,7 @@ In this section you can add, edit or remove difficulties from the launcher. Each
 In this section you can add, edit or remove length modes from the launcher. Each length is composed by two fields:
 1. _Code_: Code to identify the length mode. It's not a free text, it has to be exactly like described in the Killing Floor 2 server documentation.
 2. _Description_: Free text to identify the length mode.
+3. _Load default values_: It allows to delete all lengths and load default lengths.
 
 ![Launcher screenshot](images/screenshot09.png)
 
@@ -55,6 +59,7 @@ In this section you can add, edit or remove length modes from the launcher. Each
 In this section you can add, edit or remove the max.players from the launcher. Each max.players is composed by two fields:
 1. _Code_: Code to identify the max.players. It's not a free text, it has to be exactly like described in the Killing Floor 2 server documentation.
 2. _Description_: Free text to identify the max.players.
+3. _Load default values_: It allows to delete all maxplayers and load default maxplayers.
 
 ![Launcher screenshot](images/screenshot10.png)
 

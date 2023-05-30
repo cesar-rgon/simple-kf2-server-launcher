@@ -1,6 +1,7 @@
 package entities;
 
 import jakarta.persistence.*;
+import org.apache.commons.lang3.StringUtils;
 
 @Entity
 @Table(name = "DESCRIPTIONS")
@@ -12,13 +13,13 @@ public class Description extends AbstractEntity {
     @Column(name="ID", updatable=false, nullable=false)
     private Integer id;
 
-    @Column(name="ENGLISH_VALUE", length=255, unique=true, nullable=true)
+    @Column(name="ENGLISH_VALUE", length=255, unique=false, nullable=true)
     private String englishValue;
 
-    @Column(name="SPANISH_VALUE", length=255, unique=true, nullable=true)
+    @Column(name="SPANISH_VALUE", length=255, unique=false, nullable=true)
     private String spanishValue;
 
-    @Column(name="FRENCH_VALUE", length=255, unique=true, nullable=true)
+    @Column(name="FRENCH_VALUE", length=255, unique=false, nullable=true)
     private String frenchValue;
 
     public Description() {
@@ -64,5 +65,23 @@ public class Description extends AbstractEntity {
 
     public void setFrenchValue(String frenchValue) {
         this.frenchValue = frenchValue;
+    }
+
+    public String getValue(String languageCode) {
+        switch (languageCode) {
+            case "en": return englishValue;
+            case "es": return spanishValue;
+            case "fr": return frenchValue;
+            default: return StringUtils.EMPTY;
+        }
+    }
+
+    public void setValue(String value, String languageCode) {
+        switch (languageCode) {
+            case "en": englishValue = value;
+            case "es": spanishValue = value;
+            case "fr": frenchValue = value;
+            default: ;
+        }
     }
 }

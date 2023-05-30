@@ -896,6 +896,14 @@ public class MainContentController implements Initializable {
         );
         platformProfileMapSelect.getItems().clear();
         platformProfileMapSelect.setItems(result.getFilteredMapDtoList());
+
+        if (result.getSelectedProfileMapOptional().isPresent()) {
+            platformProfileMapSelect.setValue(result.getSelectedProfileMapOptional().get());
+        } else if (!platformProfileMapSelect.getItems().isEmpty()) {
+            platformProfileMapSelect.setValue(platformProfileMapSelect.getItems().get(0));
+        } else {
+            platformProfileMapSelect.setValue(null);
+        }
     }
 
     private void loadLanguageTexts(String languageCode) throws Exception {

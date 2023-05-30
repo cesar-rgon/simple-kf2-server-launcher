@@ -40,6 +40,7 @@ public class ProfilesEditionController implements Initializable {
     @FXML private Button removeProfile;
     @FXML private Button importProfile;
     @FXML private Button exportProfile;
+    @FXML private Button loadDefaults;
     @FXML private Label profileNameLabel;
     @FXML private ProgressIndicator progressIndicator;
 
@@ -96,6 +97,12 @@ public class ProfilesEditionController implements Initializable {
             Tooltip exportProfileTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.exportProfiles"));
             exportProfileTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             exportProfile.setTooltip(exportProfileTooltip);
+
+            String loadDefaultsText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.loadDefaults");
+            loadDefaults.setText(loadDefaultsText);
+            Tooltip loadDefaultsTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.loadDefaults"));
+            loadDefaultsTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            loadDefaults.setTooltip(loadDefaultsTooltip);
 
             String profileNameColumnText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileName");
             profileNameLabel.setText(profileNameColumnText);

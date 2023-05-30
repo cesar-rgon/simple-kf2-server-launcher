@@ -7,19 +7,24 @@ import entities.Profile;
 import entities.SteamPlatform;
 import framework.AbstractTransactionalFacade;
 import jakarta.persistence.EntityManager;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
-import services.PlatformService;
-import services.PlatformServiceImpl;
-import services.ProfileService;
-import services.ProfileServiceImpl;
+import services.*;
+import utils.Utils;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.sql.SQLException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 public class ImportProfilesFromFileFacadeImpl
         extends AbstractTransactionalFacade<ImportProfilesFromFileModelContext, ImportProfilesFromFileFacadeResult>
@@ -33,6 +38,30 @@ public class ImportProfilesFromFileFacadeImpl
 
     @Override
     protected boolean assertPreconditions(ImportProfilesFromFileModelContext facadeModelContext, EntityManager em) throws Exception {
+        ProfileService profileService = new ProfileServiceImpl(em);
+        PropertyService propertyService = new PropertyServiceImpl();
+
+        List<Profile> profileInDatabaseList = profileService.listAllProfiles();
+        List<String> profileNameInDatabaseList = profileInDatabaseList.stream().map(Profile::getName).collect(Collectors.toList());
+        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+
+        StringBuffer duplicatedProfileNameList = new StringBuffer();
+        for (Profile selectedProfile: facadeModelContext.getSelectedProfileList()) {
+            if (profileNameInDatabaseList.contains(selectedProfile.getName())) {
+                if (StringUtils.isBlank(duplicatedProfileNameList)) {
+                    duplicatedProfileNameList.append(selectedProfile.getName());
+                } else {
+                    duplicatedProfileNameList.append(", ");
+                    duplicatedProfileNameList.append(selectedProfile.getName());
+                }
+            }
+        }
+
+        if (StringUtils.isNotBlank(duplicatedProfileNameList)) {
+            Utils.warningDialog(headerText, findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.importProfileDuplicated", duplicatedProfileNameList.toString()));
+            return false;
+        }
         return true;
     }
 
@@ -81,5 +110,19 @@ public class ImportProfilesFromFileFacadeImpl
             Kf2Common kf2Common = Kf2Factory.getInstance(platform, em);
             kf2Common.createConfigFolder(platform.getInstallationFolder(), profileName);
         }
+    }
+
+    private String findPropertyValue(String propFileRelativePath, String propKey, String profileParam) throws Exception {
+        Properties prop = new Properties();
+        InputStream inputStream = null;
+        try {
+            inputStream = new FileInputStream("./" + propFileRelativePath);
+        } catch (FileNotFoundException e) {
+            inputStream = getClass().getClassLoader().getResourceAsStream(propFileRelativePath);
+        }
+        prop.load(inputStream);
+        inputStream.close();
+
+        return MessageFormat.format(prop.getProperty(propKey), profileParam);
     }
 }

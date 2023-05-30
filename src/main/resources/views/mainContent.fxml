@@ -221,7 +221,7 @@
                         </Label>
                         <PasswordField fx:id="serverPassword" maxWidth="350.0" GridPane.columnIndex="1" GridPane.rowIndex="8" GridPane.valignment="CENTER" />
 
-                        <ImageView fx:id="webPageImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="7" GridPane.valignment="CENTER">
+                        <ImageView fx:id="webPageImg" fitHeight="30.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="7" GridPane.valignment="CENTER">
                             <image>
                                 <Image url="@../images/label-inverted.png" />
                             </image>
@@ -237,7 +237,7 @@
                               <Insets right="26.0" />
                            </GridPane.margin></PasswordField>
 
-                        <ImageView fx:id="takeoverImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="8" GridPane.valignment="CENTER">
+                        <ImageView fx:id="takeoverImg" fitHeight="30.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="8" GridPane.valignment="CENTER">
                             <image>
                                 <Image url="@../images/label-inverted.png" />
                             </image>
@@ -263,7 +263,7 @@
                            </GridPane.margin>
                         </StackPane>
 
-                        <ImageView fx:id="clanImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                        <ImageView fx:id="clanImg" fitHeight="30.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                             <image>
                                 <Image url="@../images/label-inverted.png" />
                             </image>
@@ -275,7 +275,7 @@
                         </Label>
                         <TextField fx:id="yourClan" opacity="0.75" GridPane.columnIndex="3" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
 
-                        <ImageView fx:id="webLinkImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                        <ImageView fx:id="webLinkImg" fitHeight="30.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                             <image>
                                 <Image url="@../images/label-inverted.png" />
                             </image>
@@ -287,7 +287,7 @@
                         </Label>
                         <TextField fx:id="yourWebLink" opacity="0.75" GridPane.columnIndex="3" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
 
-                        <ImageView fx:id="welcomeImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.rowIndex="4" GridPane.rowSpan="3" GridPane.valignment="CENTER">
+                        <ImageView fx:id="welcomeImg" fitHeight="30.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.rowSpan="3" GridPane.valignment="CENTER">
                             <image>
                                 <Image url="@../images/label-inverted.png" />
                             </image>

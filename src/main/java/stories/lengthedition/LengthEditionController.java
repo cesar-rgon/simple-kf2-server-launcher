@@ -33,6 +33,7 @@ public class LengthEditionController implements Initializable {
     @FXML private Label messageLabel;
     @FXML private Button addLength;
     @FXML private Button removeLength;
+    @FXML private Button loadDefaults;
     @FXML private Label lengthCodeLabel;
     @FXML private Label lengthDescriptionLabel;
     @FXML private ProgressIndicator progressIndicator;
@@ -75,6 +76,12 @@ public class LengthEditionController implements Initializable {
             Tooltip removeLengthTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.removeLength"));
             removeLengthTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             removeLength.setTooltip(removeLengthTooltip);
+
+            String loadDefaultsText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.loadDefaults");
+            loadDefaults.setText(loadDefaultsText);
+            Tooltip loadDefaultsTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.loadDefaults"));
+            loadDefaultsTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            loadDefaults.setTooltip(loadDefaultsTooltip);
 
             String lengthCodeColumnText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthCode");
             lengthCodeLabel.setText(lengthCodeColumnText);
