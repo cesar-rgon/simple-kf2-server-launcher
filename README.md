@@ -14,6 +14,7 @@ Languages: English, Spanish, French
 Translation to english and spanish: César Rodríguez González
 Translation to french by: -foG.Nox
 ```
+**Discord server: https://discord.gg/WdwRU522Fb**
 
 *Example of configuration*
 

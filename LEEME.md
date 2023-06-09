@@ -14,6 +14,7 @@ Idiomas: Inglés, Español, Francés
 Traducción a inglés y español: César Rodríguez González
 Traducción a francés por: -foG.Nox
 ```
+**Servidor Discord: https://discord.gg/WdwRU522Fb**
 
 *Ejemplo de configuración*
 

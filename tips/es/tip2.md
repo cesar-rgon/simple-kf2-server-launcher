@@ -24,7 +24,11 @@ Después de que se haya completado la operación, podrás ver que el nuevo mapa 
 
 ---
 
-Puedes contactar con migo a través de Github:
+Puedes unirte al servidor de Discord:
+
+https://discord.gg/WdwRU522Fb
+
+o puedes contactar conmigo a través de Github:
 
 [https://github.com/cesar-rgon/simple-kf2-server-launcher/issues](https://github.com/cesar-rgon/simple-kf2-server-launcher/issues)
 

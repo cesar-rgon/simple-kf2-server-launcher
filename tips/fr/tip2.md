@@ -26,7 +26,11 @@ Une fois l'opération terminée, vous pouvez voir maintenant que la nouvelle car
 
 Si vous avez des suggestions, des propositions d'améliorations ou souhaitez signaler un bug
 
-vous pouvez me contacter via Github :
+vous pouvez rejoindre le serveur Discord:
+
+https://discord.gg/WdwRU522Fb
+
+ou contactez-moi via Github:
 
 [https://github.com/cesar-rgon/simple-kf2-server-launcher/issues](https://github.com/cesar-rgon/simple-kf2-server-launcher/issues)
 

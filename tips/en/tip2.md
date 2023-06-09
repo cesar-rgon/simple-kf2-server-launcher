@@ -24,12 +24,17 @@ After the operation is complete, you can see now that the new map is in the laun
 
 ---
 
-You can contact me through Github:
+You can join to the Discord server:
+
+https://discord.gg/WdwRU522Fb
+
+or contact me through Github:
 
 [https://github.com/cesar-rgon/simple-kf2-server-launcher/issues](https://github.com/cesar-rgon/simple-kf2-server-launcher/issues)
 
-or, directly, my email:
+or through my email:
 
 [cesar.rgon@gmail.com](mailto:cesar.rgon@gmail.com)
+
 
 Let's make it a better application!
