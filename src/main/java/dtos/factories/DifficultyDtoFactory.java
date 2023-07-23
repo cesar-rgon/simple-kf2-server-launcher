@@ -25,6 +25,7 @@ public class DifficultyDtoFactory extends AbstractDtoFactory<Difficulty, SelectD
                 case en: description = difficulty.getDescription().getEnglishValue(); break;
                 case es: description = difficulty.getDescription().getSpanishValue(); break;
                 case fr: description = difficulty.getDescription().getFrenchValue(); break;
+                case ru: description = difficulty.getDescription().getRussianValue(); break;
             }
             return new SelectDto(difficulty.getCode(), description);
         } catch (Exception e) {

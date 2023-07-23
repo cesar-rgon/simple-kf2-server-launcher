@@ -50,15 +50,15 @@ public abstract class AbstractPopulateDatabase {
         languageService.createItem(language);
     }
 
-    protected Difficulty populateDifficulty(String code, String englishDescription, String spanishDescription, String frenchDescription) throws Exception {
-        Description description = new Description(englishDescription, spanishDescription, frenchDescription);
+    protected Difficulty populateDifficulty(String code, String englishDescription, String spanishDescription, String frenchDescription, String russianDescription) throws Exception {
+        Description description = new Description(englishDescription, spanishDescription, frenchDescription, russianDescription);
         Difficulty difficulty = new Difficulty(code);
         difficulty.setDescription(description);
         return difficultyService.createItem(difficulty);
     }
 
-    protected GameType populateGameType(String code, boolean difficultyEnabled, boolean lengthEnabled, String englishDescription, String spanishDescription, String frenchDescription) throws Exception {
-        Description description = new Description(englishDescription, spanishDescription, frenchDescription);
+    protected GameType populateGameType(String code, boolean difficultyEnabled, boolean lengthEnabled, String englishDescription, String spanishDescription, String frenchDescription, String russianDescription) throws Exception {
+        Description description = new Description(englishDescription, spanishDescription, frenchDescription, russianDescription);
         GameType gameType = new GameType(code);
         gameType.setDifficultyEnabled(difficultyEnabled);;
         gameType.setLengthEnabled(lengthEnabled);
@@ -66,15 +66,15 @@ public abstract class AbstractPopulateDatabase {
         return gameTypeService.createItem(gameType);
     }
 
-    protected Length populateLength(String code, String englishDescription, String spanishDescription, String frenchDescription) throws Exception {
-        Description description = new Description(englishDescription, spanishDescription, frenchDescription);
+    protected Length populateLength(String code, String englishDescription, String spanishDescription, String frenchDescription, String russianDescription) throws Exception {
+        Description description = new Description(englishDescription, spanishDescription, frenchDescription, russianDescription);
         Length length = new Length(code);
         length.setDescription(description);
         return lengthService.createItem(length);
     }
 
-    protected MaxPlayers polulateMaximunPlayers(String code, String englishDescription, String spanishDescription, String frenchDescription) throws Exception {
-        Description description = new Description(englishDescription, spanishDescription, frenchDescription);
+    protected MaxPlayers polulateMaximunPlayers(String code, String englishDescription, String spanishDescription, String frenchDescription, String russianDescription) throws Exception {
+        Description description = new Description(englishDescription, spanishDescription, frenchDescription, russianDescription);
         MaxPlayers maxPlayers = new MaxPlayers(code);
         maxPlayers.setDescription(description);
         return maxPlayersService.createItem(maxPlayers);

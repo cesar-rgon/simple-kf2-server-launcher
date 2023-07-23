@@ -105,6 +105,19 @@ public class MapWebInfoController implements Initializable {
                 progressIndicator.setVisible(false);
                 if (Session.getInstance().getPpm() == null || !Session.getInstance().getPpm().getMapDto().isOfficial()) {
                     try {
+                        String steamWorkshopStr = "Steam Workshop";
+                        NodeList htmlList = doc.getElementsByTagName("html");
+                        if (htmlList != null && htmlList.getLength() > 0) {
+                            Node html = htmlList.item(0);
+                            if (html.hasAttributes()) {
+                                NamedNodeMap htmlAttrList = html.getAttributes();
+                                if ("ru".equalsIgnoreCase(htmlAttrList.getNamedItem("lang").getTextContent())) {
+                                    steamWorkshopStr = "Мастерская Steam";
+                                }
+
+                            }
+                        }
+
                         NodeList titleList = doc.getElementsByTagName("title");
                         String urlWorkShop = doc.getDocumentURI();
                         if (StringUtils.isNotBlank(urlWorkShop)) {
@@ -118,8 +131,8 @@ public class MapWebInfoController implements Initializable {
                             }
                             if (titleList != null && titleList.getLength() > 0) {
                                 Node title = titleList.item(0);
-                                if (title.getTextContent().toUpperCase().startsWith("STEAM WORKSHOP")) {
-                                    mapName = title.getTextContent().replace("Steam Workshop::", "");
+                                if (title.getTextContent().startsWith(steamWorkshopStr)) {
+                                    mapName = title.getTextContent().replace(steamWorkshopStr + "::", "");
                                     NodeList linkList = doc.getElementsByTagName("link");
                                     for (int i=0; i < linkList.getLength(); i++) {
                                         Node link = linkList.item(i);
@@ -144,7 +157,7 @@ public class MapWebInfoController implements Initializable {
                                 addMap.setVisible(false);
                                 alreadyInLauncher.setVisible(true);
                             } else {
-                                addMap.setVisible(StringUtils.isNotBlank(urlWorkShop) && StringUtils.isNotBlank(mapName) && platformProfilesWithoutMap != null && !platformProfilesWithoutMap.isEmpty());
+                                addMap.setVisible(StringUtils.isNotBlank(urlWorkShop) && idWorkShop != null && platformProfilesWithoutMap != null && !platformProfilesWithoutMap.isEmpty());
                                 alreadyInLauncher.setVisible(false);
                             }
                         }

@@ -3,7 +3,8 @@ package pojos.enums;
 public enum EnumLanguage {
     en ("English"),
     es ("Español"),
-    fr ("Français");
+    fr ("Français"),
+    ru ("Русский");
 
     private String descripcion;
 

@@ -25,6 +25,7 @@ public class GameTypeDtoFactory extends AbstractDtoFactory<GameType, GameTypeDto
                 case en: description = gameType.getDescription().getEnglishValue(); break;
                 case es: description = gameType.getDescription().getSpanishValue(); break;
                 case fr: description = gameType.getDescription().getFrenchValue(); break;
+                case ru: description = gameType.getDescription().getRussianValue(); break;
             }
             return new GameTypeDto(
                     gameType.getCode(),

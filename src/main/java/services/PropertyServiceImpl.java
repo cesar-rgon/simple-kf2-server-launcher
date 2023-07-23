@@ -23,7 +23,8 @@ public class PropertyServiceImpl implements PropertyService {
         } catch (FileNotFoundException e) {
             inputStream = getClass().getClassLoader().getResourceAsStream(propFileRelativePath);
         }
-        prop.load(inputStream);
+        Reader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+        prop.load(reader);
         inputStream.close();
         return prop.getProperty(propKey);
     }
@@ -41,7 +42,8 @@ public class PropertyServiceImpl implements PropertyService {
         } catch (FileNotFoundException e) {
             inputStream = getClass().getClassLoader().getResourceAsStream(propFileRelativePath);
         }
-        prop.load(inputStream);
+        Reader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+        prop.load(reader);
         prop.setProperty(propKey, propValue);
 
         File propFile = new File("./" + propFileRelativePath);

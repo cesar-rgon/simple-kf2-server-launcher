@@ -228,6 +228,7 @@ public class TemplateController implements Initializable {
             String developedText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.about.developed");
             String translatedToSpanishBy = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.about.translatedSpanish");
             String translatedToFrenchBy = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.about.translatedFrench");
+            String translatedToRussianBy = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.about.translatedRussian");
             String applicationVersion = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion");
 
             String headerText = versionText + ": " + applicationVersion;
@@ -249,7 +250,14 @@ public class TemplateController implements Initializable {
             noxImageView.setPreserveRatio(true);
             noxImageView.setFitWidth(128);
 
+            InputStream medarelInputStream = getClass().getClassLoader().getResourceAsStream("images/medarel-photo.png");
+            Image medarelImage = new Image(medarelInputStream);
+            ImageView medarelImageView = new ImageView(medarelImage);
+            medarelImageView.setPreserveRatio(true);
+            medarelImageView.setFitWidth(128);
+
             Label frenchTranslationLabel = new Label(translatedToFrenchBy + " -foG.Nox");
+            Label russianTranslationLabel = new Label(translatedToRussianBy + " Medarel Moore");
 
             GridPane gridPane = new GridPane();
             gridPane.add(cesarRgonImageView, 1, 1);
@@ -259,6 +267,9 @@ public class TemplateController implements Initializable {
 
             gridPane.add(noxImageView, 1, 3);
             gridPane.add(frenchTranslationLabel, 2, 3);
+
+            gridPane.add(medarelImageView, 1, 4);
+            gridPane.add(russianTranslationLabel, 2, 4);
 
             gridPane.setPrefWidth(400);
             gridPane.setHgap(10);

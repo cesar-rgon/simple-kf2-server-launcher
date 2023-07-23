@@ -25,6 +25,7 @@ public class LengthDtoFactory extends AbstractDtoFactory<Length, SelectDto> {
                 case en: description = length.getDescription().getEnglishValue(); break;
                 case es: description = length.getDescription().getSpanishValue(); break;
                 case fr: description = length.getDescription().getFrenchValue(); break;
+                case ru: description = length.getDescription().getRussianValue(); break;
             }
             return new SelectDto(length.getCode(), description);
         } catch (Exception e) {

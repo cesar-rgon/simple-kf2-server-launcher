@@ -22,15 +22,19 @@ public class Description extends AbstractEntity {
     @Column(name="FRENCH_VALUE", length=255, unique=false, nullable=true)
     private String frenchValue;
 
+    @Column(name="RUSSIAN_VALUE", length=255, unique=false, nullable=true)
+    private String russianValue;
+
     public Description() {
         super();
     }
 
-    public Description(String englishValue, String spanishValue, String frenchValue) {
+    public Description(String englishValue, String spanishValue, String frenchValue, String russianValue) {
         super();
         this.englishValue = englishValue;
         this.spanishValue = spanishValue;
         this.frenchValue = frenchValue;
+        this.russianValue = russianValue;
     }
 
     @Override
@@ -67,11 +71,20 @@ public class Description extends AbstractEntity {
         this.frenchValue = frenchValue;
     }
 
+    public String getRussianValue() {
+        return russianValue;
+    }
+
+    public void setRussianValue(String russianValue) {
+        this.russianValue = russianValue;
+    }
+
     public String getValue(String languageCode) {
         switch (languageCode) {
             case "en": return englishValue;
             case "es": return spanishValue;
             case "fr": return frenchValue;
+            case "ru": return russianValue;
             default: return StringUtils.EMPTY;
         }
     }
@@ -81,6 +94,7 @@ public class Description extends AbstractEntity {
             case "en": englishValue = value;
             case "es": spanishValue = value;
             case "fr": frenchValue = value;
+            case "ru": russianValue = value;
             default: ;
         }
     }
