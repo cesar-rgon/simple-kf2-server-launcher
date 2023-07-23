@@ -6,13 +6,14 @@ _[Click here to open documentation in spanish | Pulse aquí para abrir documenta
 Application to easily customize and launch a Killing Floor 2 server through a visual interface instead of edditing batch files or server's config files. It has been developed with Java, so the interface is compatible on Windows and Linux OS.
 
 ```
-Version: 2.1.3 final
+Version: 2.1.4 alpha
 Supported OS: Microsoft Windows and Linux (Ubuntu/Debian)
 Supported platforms: Steam and Epic Games
 Developed by: César Rodríguez González
-Languages: English, Spanish, French
+Languages: English, Spanish, French, Russian
 Translation to english and spanish: César Rodríguez González
 Translation to french by: -foG.Nox
+Translation to russian by: Medarel Moore
 ```
 **Discord server: https://discord.gg/WdwRU522Fb**
 
