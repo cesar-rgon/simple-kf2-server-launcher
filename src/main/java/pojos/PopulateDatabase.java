@@ -45,7 +45,7 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
         populateLanguage(EnumLanguage.en.name(), EnumLanguage.en.getDescripcion());
         populateLanguage(EnumLanguage.es.name(), EnumLanguage.es.getDescripcion());
         populateLanguage(EnumLanguage.fr.name(), EnumLanguage.fr.getDescripcion());
-        populateLanguage(EnumLanguage.ru.name(), EnumLanguage.ru.getDescripcion());
+        //populateLanguage(EnumLanguage.ru.name(), EnumLanguage.ru.getDescripcion());
     }
 
     @Override

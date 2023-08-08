@@ -1,8 +1,13 @@
 package stories.maincontent;
 
 import dtos.*;
+import io.undertow.Handlers;
+import io.undertow.Undertow;
+import io.undertow.server.handlers.PathHandler;
+import io.undertow.util.Headers;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -22,19 +27,24 @@ import javafx.scene.web.WebView;
 import javafx.stage.Screen;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.enums.EnumPlatform;
 import pojos.session.Session;
+import start.MainApplication;
 import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
 import stories.loadactualprofile.LoadActualProfileFacadeResult;
 import utils.Utils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.util.Objects;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -1379,6 +1389,11 @@ public class MainContentController implements Initializable {
                         0
                 );
             }
+
+            if (MainApplication.getEmbeddedWebServer() == null) {
+                runEmbeddedWebServer(listValuesMainContentFacadeResult.getProfileDtoList());
+                imageWebView.getEngine().load(urlImageServer.getText());
+            }
         } catch (Exception e) {
             String headerText = "The language value could not be saved!";
             logger.error(headerText, e);
@@ -1648,5 +1663,32 @@ public class MainContentController implements Initializable {
             joinServer.setVisible(false);
             joinServerImage.setVisible(false);
         }
+    }
+
+    private void runEmbeddedWebServer(ObservableList<ProfileDto> profileDtoList) {
+        PathHandler pathHandler = Handlers.path();
+        for (ProfileDto profileDto: profileDtoList) {
+            try {
+                byte[] imageBytes = IOUtils.toByteArray(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("undertow/" + profileDto.getName().toLowerCase() + ".png")));
+                pathHandler
+                    .addExactPath("/" + profileDto.getName().toLowerCase(), exchange -> {
+                        exchange.getResponseHeaders()
+                                .put(Headers.CONTENT_TYPE, "image/png");
+                        exchange.getResponseSender()
+                                .send(ByteBuffer.wrap(imageBytes));
+                    });
+
+            } catch (Exception e) {
+                logger.error("The banner of the profile " + profileDto.getName() + " could not be loaded in embedded web server.", e);
+            }
+        }
+
+        MainApplication.setEmbeddedWebServer(
+                Undertow.builder()
+                        .addHttpListener(8081, "localhost")
+                        .setHandler(pathHandler)
+                        .build()
+        );
+        MainApplication.getEmbeddedWebServer().start();
     }
 }

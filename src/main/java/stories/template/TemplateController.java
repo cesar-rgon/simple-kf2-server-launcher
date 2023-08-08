@@ -250,11 +250,13 @@ public class TemplateController implements Initializable {
             noxImageView.setPreserveRatio(true);
             noxImageView.setFitWidth(128);
 
+            /*
             InputStream medarelInputStream = getClass().getClassLoader().getResourceAsStream("images/medarel-photo.png");
             Image medarelImage = new Image(medarelInputStream);
             ImageView medarelImageView = new ImageView(medarelImage);
             medarelImageView.setPreserveRatio(true);
             medarelImageView.setFitWidth(128);
+            */
 
             Label frenchTranslationLabel = new Label(translatedToFrenchBy + " -foG.Nox");
             Label russianTranslationLabel = new Label(translatedToRussianBy + " Medarel Moore");
@@ -268,8 +270,10 @@ public class TemplateController implements Initializable {
             gridPane.add(noxImageView, 1, 3);
             gridPane.add(frenchTranslationLabel, 2, 3);
 
+            /*
             gridPane.add(medarelImageView, 1, 4);
             gridPane.add(russianTranslationLabel, 2, 4);
+            */
 
             gridPane.setPrefWidth(400);
             gridPane.setHgap(10);

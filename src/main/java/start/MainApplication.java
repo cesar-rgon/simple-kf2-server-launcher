@@ -1,6 +1,8 @@
 package start;
 
-import jakarta.persistence.EntityManager;
+import io.undertow.Handlers;
+import io.undertow.Undertow;
+import io.undertow.util.Headers;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -9,23 +11,17 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.PopulateDatabase;
 import pojos.listener.TimeListener;
-import services.ConsoleService;
-import services.ConsoleServiceImpl;
-import services.PropertyService;
-import services.PropertyServiceImpl;
+import services.*;
 import stories.populatedatabase.PopulateDatabaseFacade;
 import stories.populatedatabase.PopulateDatabaseFacadeImpl;
 import utils.Utils;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.Properties;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.nio.ByteBuffer;
+import java.util.*;
 
 public class MainApplication extends Application {
 
@@ -34,6 +30,7 @@ public class MainApplication extends Application {
     private static Stage primaryStage;
     private static FXMLLoader template;
     private static Timer timer;
+    private static Undertow embeddedWebServer;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
@@ -131,6 +128,7 @@ public class MainApplication extends Application {
     public void stop() throws Exception {
         timer.cancel();
         timer.purge();
+        embeddedWebServer.stop();
         PropertyService propertyService = new PropertyServiceImpl();
         propertyService.setProperty("properties/config.properties", "prop.config.applicationResolution", primaryStage.getWidth() + "x" + primaryStage.getHeight());
     }
@@ -143,4 +141,11 @@ public class MainApplication extends Application {
         return primaryStage;
     }
 
+    public static Undertow getEmbeddedWebServer() {
+        return embeddedWebServer;
+    }
+
+    public static void setEmbeddedWebServer(Undertow embeddedWebServer) {
+        MainApplication.embeddedWebServer = embeddedWebServer;
+    }
 }
