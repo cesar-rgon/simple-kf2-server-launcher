@@ -4,14 +4,20 @@ import dtos.factories.ProfileDtoFactory;
 import entities.*;
 import framework.AbstractTransactionalFacade;
 import jakarta.persistence.EntityManager;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import services.*;
+import start.MainApplication;
 
+import java.io.File;
+import java.net.URL;
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,12 +56,27 @@ public class CreateNewProfileFacadeImpl
         String defaultGamePort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultGamePort");
         String defaultQueryPort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultQueryPort");
         Optional<MaxPlayers> defaultMaxPlayers = maxPlayersService.findByCode("6");
+        String webServerIp = propertyService.getPropertyValue("properties/config.properties", "prop.config.webServerIp");
+        String webServerPort = propertyService.getPropertyValue("properties/config.properties", "prop.config.webServerPort");
 
         List<AbstractMap> officialMaps = officialMapService.listAllMaps();
         OfficialMap firstOfficialMap = null;
         if (officialMaps != null && !officialMaps.isEmpty()) {
             firstOfficialMap = (OfficialMap) officialMaps.get(0);
         }
+
+        URL imagesUrl = getClass().getClassLoader().getResource("images/");
+        assert imagesUrl != null;
+        URL undertowUrl = getClass().getClassLoader().getResource("undertow/");
+        assert undertowUrl != null;
+        Date date = new Date();
+        Timestamp timestamp = new Timestamp(date.getTime());
+        String timestampStr = StringUtils.replace(timestamp.toString(), " ", "_");
+        timestampStr = StringUtils.replace(timestampStr, ":", "_");
+        timestampStr = StringUtils.replace(timestampStr, ".", "_");
+        File sourceFile = new File(imagesUrl.getPath() + "/default-banner.png");
+        File targetFile = new File(undertowUrl.getPath() + "/" + facadeModelContext.getProfileName().toLowerCase() + "_" + timestampStr + ".png");
+        FileUtils.copyFile(sourceFile, targetFile);
 
         Profile newProfile = new Profile(
                 facadeModelContext.getProfileName(),
@@ -74,7 +95,7 @@ public class CreateNewProfileFacadeImpl
                 Integer.parseInt(defaultQueryPort),
                 null,
                 null,
-                "http://art.tripwirecdn.com/TestItemIcons/MOTDServer.png",
+                "http://" + webServerIp + ":" + webServerPort + "/" + facadeModelContext.getProfileName(),
                 null,
                 null,
                 false,
@@ -131,6 +152,11 @@ public class CreateNewProfileFacadeImpl
         for (AbstractPlatform platform: validPlatformList) {
             Kf2Common kf2Common = Kf2Factory.getInstance(platform, em);
             kf2Common.createConfigFolder(platform.getInstallationFolder(), newProfile.getName());
+        }
+
+        if (MainApplication.getEmbeddedWebServer() != null) {
+            MainApplication.getEmbeddedWebServer().stop();
+            MainApplication.setEmbeddedWebServer(null);
         }
 
         return new CreateNewProfileFacadeResult(

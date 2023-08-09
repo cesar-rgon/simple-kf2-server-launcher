@@ -50,6 +50,7 @@ import java.lang.reflect.Field;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.Timestamp;
 import java.util.*;
@@ -1189,6 +1190,7 @@ public class MainContentController implements Initializable {
                 } else {
                     imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/no-server-photo.png").getPath());
                 }
+                labelWebView.setText(StringUtils.EMPTY);
             }
             serverPassword.setText(Utils.decryptAES(result.getProfileDto().getServerPassword()));
             webPassword.setText(Utils.decryptAES(result.getProfileDto().getWebPassword()));
@@ -1369,7 +1371,9 @@ public class MainContentController implements Initializable {
 
             if (MainApplication.getEmbeddedWebServer() == null && profileSelect.getValue() != null && StringUtils.isNotEmpty(profileSelect.getValue().getUrlImageServer())) {
                 runEmbeddedWebServer(listValuesMainContentFacadeResult.getProfileDtoList());
-                imageWebView.getEngine().load("http://localhost:8081/" + profileSelect.getValue().getName().toLowerCase());
+                String webServerIp = facade.findPropertyValue("properties/config.properties", "prop.config.webServerIp");
+                String webServerPort = facade.findPropertyValue("properties/config.properties", "prop.config.webServerPort");
+                imageWebView.getEngine().load("http://" + webServerIp + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase());
             }
             if (profileSelect.getValue() == null || StringUtils.isEmpty(profileSelect.getValue().getUrlImageServer())) {
                 File file = new File(System.getProperty("user.dir") + "/external-images/no-server-photo.png");
@@ -1669,13 +1673,21 @@ public class MainContentController implements Initializable {
             }
         }
 
-        MainApplication.setEmbeddedWebServer(
-                Undertow.builder()
-                        .addHttpListener(8081, "localhost")
-                        .setHandler(pathHandler)
-                        .build()
-        );
-        MainApplication.getEmbeddedWebServer().start();
+        try {
+            String webServerIp = facade.findPropertyValue("properties/config.properties", "prop.config.webServerIp");
+            int webServerPort = Integer.parseInt(facade.findPropertyValue("properties/config.properties", "prop.config.webServerPort"));
+
+            MainApplication.setEmbeddedWebServer(
+                    Undertow.builder()
+                            .addHttpListener(webServerPort, webServerIp)
+                            .setHandler(pathHandler)
+                            .build()
+            );
+            MainApplication.getEmbeddedWebServer().start();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
     }
 
     private String lastTimeStamp(String profileName) throws Exception {
@@ -1717,7 +1729,9 @@ public class MainContentController implements Initializable {
 
                 runEmbeddedWebServer(profileSelect.getItems());
 
-                String urlImageServer = "http://localhost:8081/" + profileSelect.getValue().getName().toLowerCase();
+                String webServerIp = facade.findPropertyValue("properties/config.properties", "prop.config.webServerIp");
+                String webServerPort = facade.findPropertyValue("properties/config.properties", "prop.config.webServerPort");
+                String urlImageServer = "http://" + webServerIp + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase();
                 labelWebView.setText(urlImageServer);
                 imageWebView.getEngine().load(urlImageServer);
 
@@ -1754,6 +1768,22 @@ public class MainContentController implements Initializable {
             labelWebView.setText(StringUtils.EMPTY);
             String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName() : StringUtils.EMPTY;
             facade.updateProfileSetUrlImageServer(profileName, StringUtils.EMPTY);
+
+            File undertowFolder = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("undertow")).toURI());
+            Files.walk(Paths.get(undertowFolder.getAbsolutePath()))
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().startsWith(profileName.toLowerCase()))
+                    .filter(path -> path.getFileName().toString().toLowerCase().endsWith(".png"))
+                    .forEach(path -> {
+                        try {
+                            FileUtils.delete(new File(path.toUri()));
+                        } catch (IOException e) {
+                            logger.error(e.getMessage(), e);
+                        }
+                    });
+
+            runEmbeddedWebServer(profileSelect.getItems());
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
