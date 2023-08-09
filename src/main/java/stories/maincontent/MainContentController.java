@@ -1180,9 +1180,9 @@ public class MainContentController implements Initializable {
         webPage.setSelected(result.getProfileDto().getWebPage() != null ? result.getProfileDto().getWebPage(): false);
         takeover.setSelected(result.getProfileDto().getTakeover() != null ? result.getProfileDto().getTakeover(): false);
         try {
-            if (StringUtils.isNotEmpty(profileSelect.getValue().getUrlImageServer())) {
-                imageWebView.getEngine().load(profileSelect.getValue().getUrlImageServer());
-                labelWebView.setText(profileSelect.getValue().getUrlImageServer());
+            if (StringUtils.isNotEmpty(result.getProfileDto().getUrlImageServer())) {
+                imageWebView.getEngine().load(result.getProfileDto().getUrlImageServer());
+                labelWebView.setText(result.getProfileDto().getUrlImageServer());
             } else {
                 File file = new File(System.getProperty("user.dir") + "/external-images/no-server-photo.png");
                 if (file.exists()) {
@@ -1737,6 +1737,8 @@ public class MainContentController implements Initializable {
 
                 String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName() : StringUtils.EMPTY;
                 facade.updateProfileSetUrlImageServer(profileName, urlImageServer);
+                ProfileDto databaseProfile = facade.findProfileDtoByName(profileSelect.getValue().getName());
+                Session.getInstance().setActualProfileName(databaseProfile.getName());
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -1768,6 +1770,8 @@ public class MainContentController implements Initializable {
             labelWebView.setText(StringUtils.EMPTY);
             String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName() : StringUtils.EMPTY;
             facade.updateProfileSetUrlImageServer(profileName, StringUtils.EMPTY);
+            ProfileDto databaseProfile = facade.findProfileDtoByName(profileSelect.getValue().getName());
+            Session.getInstance().setActualProfileName(databaseProfile.getName());
 
             File undertowFolder = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("undertow")).toURI());
             Files.walk(Paths.get(undertowFolder.getAbsolutePath()))
