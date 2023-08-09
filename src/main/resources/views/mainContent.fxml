@@ -248,20 +248,37 @@
                             </GridPane.margin>
                         </Label>
                         <CheckBox fx:id="takeover" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#takeoverOnAction" opacity="0.75" text="Enable takeover" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="8" GridPane.valignment="CENTER" />
-                        <StackPane GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowSpan="2" GridPane.valignment="TOP">
-                           <children>
-      
-                              <WebView fx:id="imageWebView" maxHeight="200.0" maxWidth="400.0" prefHeight="-1.0" prefWidth="-1.0" StackPane.alignment="TOP_CENTER">
-                                 <StackPane.margin>
-                                    <Insets />
-                                 </StackPane.margin>
-                              </WebView>
-                              <TextField fx:id="urlImageServer" opacity="0.75" StackPane.alignment="BOTTOM_CENTER" />
-                           </children>
-                           <GridPane.margin>
-                              <Insets bottom="8.0" right="5.0" top="5.0" />
-                           </GridPane.margin>
-                        </StackPane>
+
+                         <WebView fx:id="imageWebView" maxHeight="230.0" maxWidth="460.0" prefHeight="230.0" prefWidth="460.0" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowSpan="2" GridPane.valignment="CENTER">
+                             <GridPane.margin>
+                                 <Insets bottom="7.0" right="10.0" top="7.0" />
+                             </GridPane.margin>
+                         </WebView>
+                         <Label fx:id="labelWebView" styleClass="width300" text="http://external_ip:8081/default" textFill="WHITE" visible="false" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                             <GridPane.margin>
+                                 <Insets bottom="30.0" left="10.0" />
+                             </GridPane.margin>
+                         </Label>
+                         <Button fx:id="exploreFile" maxWidth="32.0" mnemonicParsing="false" onAction="#exploreFileOnAction" opacity="0.8" visible="false" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                             <graphic>
+                                 <ImageView>
+                                     <Image url="@../images/folder.png" />
+                                 </ImageView>
+                             </graphic>
+                             <GridPane.margin>
+                                 <Insets bottom="36.0" right="76.0" />
+                             </GridPane.margin>
+                         </Button>
+                         <Button fx:id="trash" maxWidth="32.0" mnemonicParsing="false" onAction="#trashOnAction" opacity="0.8" visible="false" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                             <graphic>
+                                 <ImageView>
+                                     <Image url="@../images/trash.png" />
+                                 </ImageView>
+                             </graphic>
+                             <GridPane.margin>
+                                 <Insets bottom="36.0" right="16.0" />
+                             </GridPane.margin>
+                         </Button>
 
                         <ImageView fx:id="clanImg" fitHeight="30.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                             <image>

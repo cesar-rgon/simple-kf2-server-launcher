@@ -24,13 +24,17 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.web.WebView;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 import pojos.enums.EnumPlatform;
 import pojos.session.Session;
 import start.MainApplication;
@@ -42,10 +46,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.util.Objects;
-import java.util.ResourceBundle;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Timestamp;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MainContentController implements Initializable {
@@ -72,7 +79,6 @@ public class MainContentController implements Initializable {
     @FXML private TextField queryPort;
     @FXML private TextField yourClan;
     @FXML private TextField yourWebLink;
-    @FXML private TextField urlImageServer;
     @FXML private TextArea welcomeMessage;
     @FXML private TextArea customParameters;
     @FXML private CheckBox webPage;
@@ -209,6 +215,9 @@ public class MainContentController implements Initializable {
     @FXML private ProgressIndicator progressIndicator;
     @FXML private ImageView kf2logo;
     @FXML private ImageView kf2animated;
+    @FXML private Label labelWebView;
+    @FXML private Button exploreFile;
+    @FXML private Button trash;
 
     public MainContentController() {
         facade = new MainContentManagerFacadeImpl();
@@ -259,7 +268,17 @@ public class MainContentController implements Initializable {
                     }
                 }
 
+                // Put black color for background of the browser's page
+                Field f = imageWebView.getEngine().getClass().getDeclaredField("page");
+                f.setAccessible(true);
+                com.sun.webkit.WebPage page = (com.sun.webkit.WebPage) f.get(imageWebView.getEngine());
+                page.setBackgroundColor((new java.awt.Color(0.0f, 0.0f, 0.0f, 1f)).getRGB());
+
                 Session.getInstance().setActualProfileName(profileSelect.getValue() != null ? profileSelect.getValue().getName(): StringUtils.EMPTY);
+                labelWebView.setStyle("-fx-font-weight: bold;");
+                labelWebView.setVisible(true);
+                exploreFile.setVisible(true);
+                trash.setVisible(true);
                 progressIndicator.setVisible(false);
 
             } catch (Exception e) {
@@ -670,44 +689,6 @@ public class MainContentController implements Initializable {
             }
         });
 
-        urlImageServer.setOnMouseEntered(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                imageWebView.setStyle("-fx-effect: dropshadow(three-pass-box, #c15d11, 60, 0, 0, 0);");
-            }
-        });
-        urlImageServer.setOnMouseExited(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent mouseEvent) {
-                imageWebView.setStyle("-fx-effect: none;");
-            }
-        });
-
-        urlImageServer.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
-                try {
-                    if (!newPropertyValue) {
-                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): StringUtils.EMPTY;
-                        facade.updateProfileSetUrlImageServer(profileName, urlImageServer.getText());
-                        if (StringUtils.isNotEmpty(urlImageServer.getText())) {
-                            imageWebView.getEngine().load(urlImageServer.getText());
-                        } else {
-                            File file = new File(System.getProperty("user.dir") + "/external-images/no-server-photo.png");
-                            if (file.exists()) {
-                                imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/no-server-photo.png");
-                            } else {
-                                imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/no-server-photo.png").getPath());
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                    Utils.errorDialog(e.getMessage(), e);
-                }
-            }
-        });
-
         welcomeMessage.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
@@ -986,10 +967,6 @@ public class MainContentController implements Initializable {
                 facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
         );
 
-        Tooltip urlImageServerTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.urlImage"));
-        urlImageServerTooltip.setShowDuration(Duration.seconds(tooltipDuration));
-        urlImageServer.setTooltip(urlImageServerTooltip);
-
         String runServerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.runServer");
         runServer.setText(runServerText);
         Tooltip runServerTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.runServer"));
@@ -1197,14 +1174,14 @@ public class MainContentController implements Initializable {
         queryPort.setText(queryPortValue != null? String.valueOf(queryPortValue): "");
         yourClan.setText(result.getProfileDto().getYourClan());
         yourWebLink.setText(result.getProfileDto().getYourWebLink());
-        urlImageServer.setText(result.getProfileDto().getUrlImageServer());
         welcomeMessage.setText(result.getProfileDto().getWelcomeMessage());
         customParameters.setText(result.getProfileDto().getCustomParameters());
         webPage.setSelected(result.getProfileDto().getWebPage() != null ? result.getProfileDto().getWebPage(): false);
         takeover.setSelected(result.getProfileDto().getTakeover() != null ? result.getProfileDto().getTakeover(): false);
         try {
-            if (StringUtils.isNotEmpty(urlImageServer.getText())) {
-                imageWebView.getEngine().load(urlImageServer.getText());
+            if (StringUtils.isNotEmpty(profileSelect.getValue().getUrlImageServer())) {
+                imageWebView.getEngine().load(profileSelect.getValue().getUrlImageServer());
+                labelWebView.setText(profileSelect.getValue().getUrlImageServer());
             } else {
                 File file = new File(System.getProperty("user.dir") + "/external-images/no-server-photo.png");
                 if (file.exists()) {
@@ -1390,9 +1367,18 @@ public class MainContentController implements Initializable {
                 );
             }
 
-            if (MainApplication.getEmbeddedWebServer() == null) {
+            if (MainApplication.getEmbeddedWebServer() == null && profileSelect.getValue() != null && StringUtils.isNotEmpty(profileSelect.getValue().getUrlImageServer())) {
                 runEmbeddedWebServer(listValuesMainContentFacadeResult.getProfileDtoList());
-                imageWebView.getEngine().load(urlImageServer.getText());
+                imageWebView.getEngine().load("http://localhost:8081/" + profileSelect.getValue().getName().toLowerCase());
+            }
+            if (profileSelect.getValue() == null || StringUtils.isEmpty(profileSelect.getValue().getUrlImageServer())) {
+                File file = new File(System.getProperty("user.dir") + "/external-images/no-server-photo.png");
+                if (file.exists()) {
+                    imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/no-server-photo.png");
+                } else {
+                    imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/no-server-photo.png").getPath());
+                }
+                labelWebView.setText(StringUtils.EMPTY);
             }
         } catch (Exception e) {
             String headerText = "The language value could not be saved!";
@@ -1669,7 +1655,7 @@ public class MainContentController implements Initializable {
         PathHandler pathHandler = Handlers.path();
         for (ProfileDto profileDto: profileDtoList) {
             try {
-                byte[] imageBytes = IOUtils.toByteArray(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("undertow/" + profileDto.getName().toLowerCase() + ".png")));
+                byte[] imageBytes = IOUtils.toByteArray(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("undertow/" + lastTimeStamp(profileDto.getName().toLowerCase()))));
                 pathHandler
                     .addExactPath("/" + profileDto.getName().toLowerCase(), exchange -> {
                         exchange.getResponseHeaders()
@@ -1690,5 +1676,87 @@ public class MainContentController implements Initializable {
                         .build()
         );
         MainApplication.getEmbeddedWebServer().start();
+    }
+
+    private String lastTimeStamp(String profileName) throws Exception {
+       File file = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("undertow")).toURI());
+       Optional<String> newerProfileFileName = Files.walk(Paths.get(file.getAbsolutePath()))
+               .filter(Files::isRegularFile)
+               .filter(path -> path.getFileName().toString().startsWith(profileName))
+               .filter(path -> path.getFileName().toString().toLowerCase().endsWith(".png"))
+               .max((o1, o2) -> o1.getFileName().toString().compareTo(o2.getFileName().toString()))
+               .map(path -> path.getFileName().toString());
+
+        return newerProfileFileName.orElse(StringUtils.EMPTY);
+    }
+
+    @FXML
+    private void exploreFileOnAction() {
+
+        try {
+            FileChooser fileChooser = new FileChooser();
+            String message = "Browse PNG image file";
+            fileChooser.setTitle(message);
+            File selectedFile = fileChooser.showOpenDialog(MainApplication.getPrimaryStage());
+
+            if (selectedFile != null) {
+                if (MainApplication.getEmbeddedWebServer() != null) {
+                    MainApplication.getEmbeddedWebServer().stop();
+                }
+                imageWebView.getEngine().loadContent(StringUtils.EMPTY);
+
+                URL undertowUrl = getClass().getClassLoader().getResource("undertow/");
+                assert undertowUrl != null;
+                Date date = new Date();
+                Timestamp timestamp = new Timestamp(date.getTime());
+                String timestampStr = StringUtils.replace(timestamp.toString(), " ", "_");
+                timestampStr = StringUtils.replace(timestampStr, ":", "_");
+                timestampStr = StringUtils.replace(timestampStr, ".", "_");
+                File targetFile = new File(undertowUrl.getPath() + "/" + profileSelect.getValue().getName().toLowerCase() + "_" + timestampStr + ".png");
+                FileUtils.copyFile(selectedFile, targetFile);
+
+                runEmbeddedWebServer(profileSelect.getItems());
+
+                String urlImageServer = "http://localhost:8081/" + profileSelect.getValue().getName().toLowerCase();
+                labelWebView.setText(urlImageServer);
+                imageWebView.getEngine().load(urlImageServer);
+
+                String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName() : StringUtils.EMPTY;
+                facade.updateProfileSetUrlImageServer(profileName, urlImageServer);
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+
+            File file = new File(System.getProperty("user.dir") + "/external-images/no-server-photo.png");
+            if (file.exists()) {
+                imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/no-server-photo.png");
+            } else {
+                imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/no-server-photo.png").getPath());
+            }
+            labelWebView.setText(StringUtils.EMPTY);
+
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void trashOnAction() {
+        try {
+            if (MainApplication.getEmbeddedWebServer() != null) {
+                MainApplication.getEmbeddedWebServer().stop();
+            }
+            File file = new File(System.getProperty("user.dir") + "/external-images/no-server-photo.png");
+            if (file.exists()) {
+                imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/no-server-photo.png");
+            } else {
+                imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/no-server-photo.png").getPath());
+            }
+            labelWebView.setText(StringUtils.EMPTY);
+            String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName() : StringUtils.EMPTY;
+            facade.updateProfileSetUrlImageServer(profileName, StringUtils.EMPTY);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
     }
 }

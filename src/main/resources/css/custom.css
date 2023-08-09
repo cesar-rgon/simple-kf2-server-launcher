@@ -202,6 +202,10 @@
     -fx-max-width: 160px;
 }
 
+.width300 {
+    -fx-max-width: 300px;
+}
+
 #runServer, #joinServer {
     -fx-border-color: transparent;
     -fx-background-color: transparent;
