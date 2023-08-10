@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.tools.picocli.CommandLine;
+import org.xnio.Options;
 import pojos.enums.EnumPlatform;
 import pojos.session.Session;
 import start.MainApplication;
@@ -1378,9 +1379,8 @@ public class MainContentController implements Initializable {
                 removeOldWebServerFiles();
                 if (profileSelect.getValue() != null && StringUtils.isNotEmpty(profileSelect.getValue().getUrlImageServer())) {
                     runEmbeddedWebServer(listValuesMainContentFacadeResult.getProfileDtoList());
-                    String webServerIp = facade.findPropertyValue("properties/config.properties", "prop.config.webServerIp");
                     String webServerPort = facade.findPropertyValue("properties/config.properties", "prop.config.webServerPort");
-                    imageWebView.getEngine().load("http://" + webServerIp + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase());
+                    imageWebView.getEngine().load("http://" + Utils.getPublicIp() + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase());
                 }
             }
             if (profileSelect.getValue() == null || StringUtils.isEmpty(profileSelect.getValue().getUrlImageServer())) {
@@ -1691,6 +1691,7 @@ public class MainContentController implements Initializable {
                     Undertow.builder()
                             .addHttpListener(webServerPort, webServerIp)
                             .setHandler(pathHandler)
+                            .setSocketOption(Options.SSL_ENABLED, false)
                             .build()
             );
             MainApplication.getEmbeddedWebServer().start();
@@ -1738,9 +1739,8 @@ public class MainContentController implements Initializable {
 
                 runEmbeddedWebServer(profileSelect.getItems());
 
-                String webServerIp = facade.findPropertyValue("properties/config.properties", "prop.config.webServerIp");
                 String webServerPort = facade.findPropertyValue("properties/config.properties", "prop.config.webServerPort");
-                String urlImageServer = "http://" + webServerIp + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase();
+                String urlImageServer = "http://" + Utils.getPublicIp() + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase();
                 labelWebView.setText(urlImageServer);
                 imageWebView.getEngine().load(urlImageServer);
 

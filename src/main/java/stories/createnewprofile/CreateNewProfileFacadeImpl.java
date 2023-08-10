@@ -12,6 +12,7 @@ import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import services.*;
 import start.MainApplication;
+import utils.Utils;
 
 import java.io.File;
 import java.net.URL;
@@ -56,7 +57,6 @@ public class CreateNewProfileFacadeImpl
         String defaultGamePort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultGamePort");
         String defaultQueryPort = propertyService.getPropertyValue("properties/config.properties", "prop.config.defaultQueryPort");
         Optional<MaxPlayers> defaultMaxPlayers = maxPlayersService.findByCode("6");
-        String webServerIp = propertyService.getPropertyValue("properties/config.properties", "prop.config.webServerIp");
         String webServerPort = propertyService.getPropertyValue("properties/config.properties", "prop.config.webServerPort");
 
         List<AbstractMap> officialMaps = officialMapService.listAllMaps();
@@ -94,7 +94,7 @@ public class CreateNewProfileFacadeImpl
                 Integer.parseInt(defaultQueryPort),
                 null,
                 null,
-                "http://" + webServerIp + ":" + webServerPort + "/" + facadeModelContext.getProfileName().toLowerCase(),
+                "http://" + Utils.getPublicIp() + ":" + webServerPort + "/" + facadeModelContext.getProfileName().toLowerCase(),
                 null,
                 null,
                 false,

@@ -133,7 +133,6 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
     public Profile cloneProfile(Profile profileToBeCloned, String newProfileName) throws Exception {
         PlatformProfileMapService platformProfileMapService = new PlatformProfileMapServiceImpl(em);
         PropertyService propertyService = new PropertyServiceImpl();
-        String webServerIp = propertyService.getPropertyValue("properties/config.properties", "prop.config.webServerIp");
         String webServerPort = propertyService.getPropertyValue("properties/config.properties", "prop.config.webServerPort");
 
         if (StringUtils.isNotBlank(profileToBeCloned.getUrlImageServer())) {
@@ -167,7 +166,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                 profileToBeCloned.getQueryPort(),
                 profileToBeCloned.getYourClan(),
                 profileToBeCloned.getYourWebLink(),
-                StringUtils.isNotBlank(profileToBeCloned.getUrlImageServer()) ? "http://" + webServerIp + ":" + webServerPort + "/" + newProfileName.toLowerCase(): StringUtils.EMPTY,
+                StringUtils.isNotBlank(profileToBeCloned.getUrlImageServer()) ? "http://" + Utils.getPublicIp() + ":" + webServerPort + "/" + newProfileName.toLowerCase(): StringUtils.EMPTY,
                 profileToBeCloned.getWelcomeMessage(),
                 profileToBeCloned.getCustomParameters(),
                 profileToBeCloned.getTakeover(),
