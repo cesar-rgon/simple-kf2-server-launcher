@@ -14,13 +14,19 @@ import javafx.stage.Stage;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.h2.store.fs.FileUtils;
+import pojos.kf2factory.Kf2SteamLinuxImpl;
+import pojos.kf2factory.Kf2SteamWindowsImpl;
 import pojos.listener.TimeListener;
 import services.*;
 import stories.populatedatabase.PopulateDatabaseFacade;
 import stories.populatedatabase.PopulateDatabaseFacadeImpl;
 import utils.Utils;
 
+import java.io.File;
 import java.nio.ByteBuffer;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class MainApplication extends Application {
@@ -31,12 +37,14 @@ public class MainApplication extends Application {
     private static FXMLLoader template;
     private static Timer timer;
     private static Undertow embeddedWebServer;
+    private static File appData;
 
     @Override
     public void start(Stage primaryStage) throws Exception {
         // Fix a problem with newest JDK and JavaFX WebView. http2 support need to be disabled
         Properties systemProperties = System.getProperties();
         systemProperties.setProperty("com.sun.webkit.useHTTP2Loader", "false");
+        prepareUndertow();
 
         PropertyService propertyService = new PropertyServiceImpl();
         Font.loadFont(getClass().getClassLoader().getResource("fonts/Ubuntu-R.ttf").toExternalForm(), 13);
@@ -86,6 +94,25 @@ public class MainApplication extends Application {
                 }
             }
         });
+    }
+
+    private void prepareUndertow() {
+        String os = System.getProperty("os.name");
+        if (os.contains("Windows")) {
+            String appDataPath = System.getenv("APPDATA");
+            appData = new File(appDataPath);
+        } else {
+            if (os.contains("Linux")) {
+                String appDataPath = System.getProperty("user.home");
+                appData = new File(appDataPath);
+            }
+        }
+        if (appData != null) {
+            File undertowFolder = new File(appData.getAbsolutePath() + "/.undertow");
+            if (!undertowFolder.exists()) {
+                undertowFolder.mkdir();
+            }
+        }
     }
 
     public static void main(String[] args) {
@@ -147,5 +174,13 @@ public class MainApplication extends Application {
 
     public static void setEmbeddedWebServer(Undertow embeddedWebServer) {
         MainApplication.embeddedWebServer = embeddedWebServer;
+    }
+
+    public static File getAppData() {
+        return appData;
+    }
+
+    public static void setAppData(File appData) {
+        MainApplication.appData = appData;
     }
 }

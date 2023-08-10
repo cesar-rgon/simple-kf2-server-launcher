@@ -47,6 +47,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.net.URI;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
@@ -277,7 +278,11 @@ public class MainContentController implements Initializable {
 
                 Session.getInstance().setActualProfileName(profileSelect.getValue() != null ? profileSelect.getValue().getName(): StringUtils.EMPTY);
                 labelWebView.setStyle("-fx-font-weight: bold;");
-                labelWebView.setVisible(true);
+                if (profileSelect.getValue() != null && StringUtils.isNotBlank(profileSelect.getValue().getUrlImageServer())) {
+                    labelWebView.setVisible(true);
+                } else {
+                    labelWebView.setVisible(false);
+                }
                 exploreFile.setVisible(true);
                 trash.setVisible(true);
                 progressIndicator.setVisible(false);
@@ -1369,11 +1374,14 @@ public class MainContentController implements Initializable {
                 );
             }
 
-            if (MainApplication.getEmbeddedWebServer() == null && profileSelect.getValue() != null && StringUtils.isNotEmpty(profileSelect.getValue().getUrlImageServer())) {
-                runEmbeddedWebServer(listValuesMainContentFacadeResult.getProfileDtoList());
-                String webServerIp = facade.findPropertyValue("properties/config.properties", "prop.config.webServerIp");
-                String webServerPort = facade.findPropertyValue("properties/config.properties", "prop.config.webServerPort");
-                imageWebView.getEngine().load("http://" + webServerIp + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase());
+            if (MainApplication.getEmbeddedWebServer() == null) {
+                removeOldWebServerFiles();
+                if (profileSelect.getValue() != null && StringUtils.isNotEmpty(profileSelect.getValue().getUrlImageServer())) {
+                    runEmbeddedWebServer(listValuesMainContentFacadeResult.getProfileDtoList());
+                    String webServerIp = facade.findPropertyValue("properties/config.properties", "prop.config.webServerIp");
+                    String webServerPort = facade.findPropertyValue("properties/config.properties", "prop.config.webServerPort");
+                    imageWebView.getEngine().load("http://" + webServerIp + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase());
+                }
             }
             if (profileSelect.getValue() == null || StringUtils.isEmpty(profileSelect.getValue().getUrlImageServer())) {
                 File file = new File(System.getProperty("user.dir") + "/external-images/no-server-photo.png");
@@ -1659,7 +1667,9 @@ public class MainContentController implements Initializable {
         PathHandler pathHandler = Handlers.path();
         for (ProfileDto profileDto: profileDtoList) {
             try {
-                byte[] imageBytes = IOUtils.toByteArray(Objects.requireNonNull(getClass().getClassLoader().getResourceAsStream("undertow/" + lastTimeStamp(profileDto.getName().toLowerCase()))));
+                File undertowFolder = new File(MainApplication.getAppData() + "/.undertow/" + lastTimeStamp(profileDto.getName().toLowerCase()));
+                InputStream undertowIS = Files.newInputStream(undertowFolder.toPath());
+                byte[] imageBytes = IOUtils.toByteArray(undertowIS);
                 pathHandler
                     .addExactPath("/" + profileDto.getName().toLowerCase(), exchange -> {
                         exchange.getResponseHeaders()
@@ -1691,8 +1701,8 @@ public class MainContentController implements Initializable {
     }
 
     private String lastTimeStamp(String profileName) throws Exception {
-       File file = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("undertow")).toURI());
-       Optional<String> newerProfileFileName = Files.walk(Paths.get(file.getAbsolutePath()))
+       File undertowFolder = new File(MainApplication.getAppData() + "/.undertow");
+       Optional<String> newerProfileFileName = Files.walk(Paths.get(undertowFolder.getAbsolutePath()))
                .filter(Files::isRegularFile)
                .filter(path -> path.getFileName().toString().startsWith(profileName))
                .filter(path -> path.getFileName().toString().toLowerCase().endsWith(".png"))
@@ -1717,14 +1727,13 @@ public class MainContentController implements Initializable {
                 }
                 imageWebView.getEngine().loadContent(StringUtils.EMPTY);
 
-                URL undertowUrl = getClass().getClassLoader().getResource("undertow/");
-                assert undertowUrl != null;
+                File undertowFolder = new File(MainApplication.getAppData() + "/.undertow");
                 Date date = new Date();
                 Timestamp timestamp = new Timestamp(date.getTime());
                 String timestampStr = StringUtils.replace(timestamp.toString(), " ", "_");
                 timestampStr = StringUtils.replace(timestampStr, ":", "_");
                 timestampStr = StringUtils.replace(timestampStr, ".", "_");
-                File targetFile = new File(undertowUrl.getPath() + "/" + profileSelect.getValue().getName().toLowerCase() + "_" + timestampStr + ".png");
+                File targetFile = new File(undertowFolder.getAbsolutePath() + "/" + profileSelect.getValue().getName().toLowerCase() + "_" + timestampStr + ".png");
                 FileUtils.copyFile(selectedFile, targetFile);
 
                 runEmbeddedWebServer(profileSelect.getItems());
@@ -1773,7 +1782,7 @@ public class MainContentController implements Initializable {
             ProfileDto databaseProfile = facade.findProfileDtoByName(profileSelect.getValue().getName());
             Session.getInstance().setActualProfileName(databaseProfile.getName());
 
-            File undertowFolder = new File(Objects.requireNonNull(getClass().getClassLoader().getResource("undertow")).toURI());
+            File undertowFolder = new File(MainApplication.getAppData() + "/.undertow");
             Files.walk(Paths.get(undertowFolder.getAbsolutePath()))
                     .filter(Files::isRegularFile)
                     .filter(path -> path.getFileName().toString().startsWith(profileName.toLowerCase()))
@@ -1792,5 +1801,37 @@ public class MainContentController implements Initializable {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
         }
+    }
+
+    private void removeOldWebServerFiles() throws Exception {
+        File undertowFolder = new File(MainApplication.getAppData() + "/.undertow");
+        List<URI> newerProfileUriList = new ArrayList<URI>();
+
+        for (ProfileDto profileDto: profileSelect.getItems()) {
+            Optional<URI> newerProfileUri = Files.walk(Paths.get(undertowFolder.getAbsolutePath()))
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().startsWith(profileDto.getName().toLowerCase()))
+                    .filter(path -> path.getFileName().toString().toLowerCase().endsWith(".png"))
+                    .max((o1, o2) -> o1.getFileName().toString().compareTo(o2.getFileName().toString()))
+                    .map(Path::toUri);
+
+            if (!newerProfileUri.isPresent()) {
+                continue;
+            }
+            newerProfileUriList.add(newerProfileUri.get());
+        }
+
+        Files.walk(Paths.get(undertowFolder.getAbsolutePath()))
+                .filter(Files::isRegularFile)
+                .filter(path -> path.getFileName().toString().toLowerCase().endsWith(".png"))
+                .map(Path::toUri)
+                .filter(uri -> !newerProfileUriList.contains(uri))
+                .forEach(uri -> {
+                    try {
+                        FileUtils.delete(new File(uri.getPath()));
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                });
     }
 }

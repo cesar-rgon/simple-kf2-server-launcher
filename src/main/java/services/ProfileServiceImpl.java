@@ -12,13 +12,18 @@ import org.hibernate.Hibernate;
 import pojos.MapToDisplay;
 import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Factory;
+import start.MainApplication;
 import utils.Utils;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -107,6 +112,19 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
             }
         });
 
+        File undertowFolder = new File(MainApplication.getAppData() + "/.undertow");
+        Files.walk(Paths.get(undertowFolder.getAbsolutePath()))
+                .filter(Files::isRegularFile)
+                .filter(path -> path.getFileName().toString().startsWith(profile.getName().toLowerCase()))
+                .filter(path -> path.getFileName().toString().toLowerCase().endsWith(".png"))
+                .forEach(path -> {
+                    try {
+                        FileUtils.delete(new File(path.toUri()));
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                });
+
         Profile updatedProfile = new ProfileDao(em).get(profile.getId());
         return new ProfileDao(em).remove(updatedProfile);
     }
@@ -114,6 +132,23 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
     @Override
     public Profile cloneProfile(Profile profileToBeCloned, String newProfileName) throws Exception {
         PlatformProfileMapService platformProfileMapService = new PlatformProfileMapServiceImpl(em);
+        PropertyService propertyService = new PropertyServiceImpl();
+        String webServerIp = propertyService.getPropertyValue("properties/config.properties", "prop.config.webServerIp");
+        String webServerPort = propertyService.getPropertyValue("properties/config.properties", "prop.config.webServerPort");
+
+        if (StringUtils.isNotBlank(profileToBeCloned.getUrlImageServer())) {
+            URL imagesUrl = getClass().getClassLoader().getResource("images/");
+            assert imagesUrl != null;
+            File undertowFolder = new File(MainApplication.getAppData() + "/.undertow");
+            Date date = new Date();
+            Timestamp timestamp = new Timestamp(date.getTime());
+            String timestampStr = StringUtils.replace(timestamp.toString(), " ", "_");
+            timestampStr = StringUtils.replace(timestampStr, ":", "_");
+            timestampStr = StringUtils.replace(timestampStr, ".", "_");
+            File sourceFile = new File(undertowFolder.getAbsolutePath() + "/" + lastTimeStamp(profileToBeCloned.getName().toLowerCase()));
+            File targetFile = new File(undertowFolder.getAbsolutePath() + "/" + newProfileName.toLowerCase() + "_" + timestampStr + ".png");
+            FileUtils.copyFile(sourceFile, targetFile);
+        }
 
         Profile newProfile = new Profile(
                 newProfileName,
@@ -132,7 +167,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                 profileToBeCloned.getQueryPort(),
                 profileToBeCloned.getYourClan(),
                 profileToBeCloned.getYourWebLink(),
-                profileToBeCloned.getUrlImageServer(),
+                StringUtils.isNotBlank(profileToBeCloned.getUrlImageServer()) ? "http://" + webServerIp + ":" + webServerPort + "/" + newProfileName.toLowerCase(): StringUtils.EMPTY,
                 profileToBeCloned.getWelcomeMessage(),
                 profileToBeCloned.getCustomParameters(),
                 profileToBeCloned.getTakeover(),
@@ -175,6 +210,18 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
         });
 
         return savedProfile;
+    }
+
+    private String lastTimeStamp(String profileName) throws Exception {
+        File undertowFolder = new File(MainApplication.getAppData() + "/.undertow");
+        Optional<String> newerProfileFileName = Files.walk(Paths.get(undertowFolder.getAbsolutePath()))
+                .filter(Files::isRegularFile)
+                .filter(path -> path.getFileName().toString().startsWith(profileName))
+                .filter(path -> path.getFileName().toString().toLowerCase().endsWith(".png"))
+                .max((o1, o2) -> o1.getFileName().toString().compareTo(o2.getFileName().toString()))
+                .map(path -> path.getFileName().toString());
+
+        return newerProfileFileName.orElse(StringUtils.EMPTY);
     }
 
     private void exportMapValues(PlatformProfileMap ppm, int profileIndex, int mapIndex, List<Integer> idsOfficialMapList, Properties properties) {

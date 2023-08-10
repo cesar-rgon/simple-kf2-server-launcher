@@ -67,15 +67,14 @@ public class CreateNewProfileFacadeImpl
 
         URL imagesUrl = getClass().getClassLoader().getResource("images/");
         assert imagesUrl != null;
-        URL undertowUrl = getClass().getClassLoader().getResource("undertow/");
-        assert undertowUrl != null;
+        File undertowFolder = new File(MainApplication.getAppData() + "/.undertow");
         Date date = new Date();
         Timestamp timestamp = new Timestamp(date.getTime());
         String timestampStr = StringUtils.replace(timestamp.toString(), " ", "_");
         timestampStr = StringUtils.replace(timestampStr, ":", "_");
         timestampStr = StringUtils.replace(timestampStr, ".", "_");
         File sourceFile = new File(imagesUrl.getPath() + "/default-banner.png");
-        File targetFile = new File(undertowUrl.getPath() + "/" + facadeModelContext.getProfileName().toLowerCase() + "_" + timestampStr + ".png");
+        File targetFile = new File(undertowFolder.getAbsolutePath() + "/" + facadeModelContext.getProfileName().toLowerCase() + "_" + timestampStr + ".png");
         FileUtils.copyFile(sourceFile, targetFile);
 
         Profile newProfile = new Profile(
@@ -95,7 +94,7 @@ public class CreateNewProfileFacadeImpl
                 Integer.parseInt(defaultQueryPort),
                 null,
                 null,
-                "http://" + webServerIp + ":" + webServerPort + "/" + facadeModelContext.getProfileName(),
+                "http://" + webServerIp + ":" + webServerPort + "/" + facadeModelContext.getProfileName().toLowerCase(),
                 null,
                 null,
                 false,

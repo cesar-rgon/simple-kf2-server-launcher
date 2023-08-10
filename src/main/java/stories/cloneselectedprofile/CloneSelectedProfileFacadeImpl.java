@@ -10,6 +10,7 @@ import jakarta.persistence.EntityManager;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import services.*;
+import start.MainApplication;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -60,6 +61,11 @@ public class CloneSelectedProfileFacadeImpl
         for (AbstractPlatform platform: validPlatformList) {
             Kf2Common kf2Common = Kf2Factory.getInstance(platform, em);
             kf2Common.createConfigFolder(platform.getInstallationFolder(), newProfile.getName());
+        }
+
+        if (MainApplication.getEmbeddedWebServer() != null) {
+            MainApplication.getEmbeddedWebServer().stop();
+            MainApplication.setEmbeddedWebServer(null);
         }
 
         return new CloneSelectedProfileFacadeResult(

@@ -13,6 +13,7 @@ import services.PlatformService;
 import services.PlatformServiceImpl;
 import services.ProfileService;
 import services.ProfileServiceImpl;
+import start.MainApplication;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -44,6 +45,11 @@ public class DeleteSelectedProfileFacadeImpl
         }
 
         if (profileService.deleteProfile(profileOpt.get())) {
+
+            if (MainApplication.getEmbeddedWebServer() != null) {
+                MainApplication.getEmbeddedWebServer().stop();
+                MainApplication.setEmbeddedWebServer(null);
+            }
 
             List<AbstractPlatform> validPlatformList = new ArrayList<AbstractPlatform>();
             Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();
