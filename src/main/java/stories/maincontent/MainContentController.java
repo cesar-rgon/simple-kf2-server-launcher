@@ -3,6 +3,7 @@ package stories.maincontent;
 import dtos.*;
 import io.undertow.Handlers;
 import io.undertow.Undertow;
+import io.undertow.UndertowOptions;
 import io.undertow.server.handlers.PathHandler;
 import io.undertow.util.Headers;
 import javafx.beans.value.ChangeListener;
@@ -1691,7 +1692,9 @@ public class MainContentController implements Initializable {
                     Undertow.builder()
                             .addHttpListener(webServerPort, webServerIp)
                             .setHandler(pathHandler)
-                            .setSocketOption(Options.SSL_ENABLED, false)
+                            .setSocketOption(Options.SSL_ENABLED, Boolean.FALSE)
+                            .setServerOption(Options.SSL_ENABLED, Boolean.FALSE)
+                            .setServerOption(UndertowOptions.ENABLE_HTTP2, Boolean.FALSE)
                             .build()
             );
             MainApplication.getEmbeddedWebServer().start();

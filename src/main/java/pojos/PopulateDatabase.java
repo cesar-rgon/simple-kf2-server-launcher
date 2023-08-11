@@ -10,6 +10,7 @@ import pojos.enums.EnumPlatform;
 import pojos.listener.TimeListener;
 import services.PropertyService;
 import services.PropertyServiceImpl;
+import utils.Utils;
 
 import java.io.File;
 import java.net.URL;
@@ -140,12 +141,14 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
 
     @Override
     protected void populateProfiles() throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
 
         Optional<Language> languageOptional = languageService.findByCode("en");
         Optional<GameType> gametypeOptional = gameTypeService.findByCode("KFGameContent.KFGameInfo_Survival");
         Optional<Difficulty> difficultyOptional = difficultyService.findByCode("0");
         Optional<Length> lengthOptional = lengthService.findByCode("0");
         Optional<MaxPlayers> maxPlayersOptional = maxPlayersService.findByCode("6");
+        int webServerPort = Integer.parseInt(propertyService.getPropertyValue("properties/config.properties", "prop.config.webServerPort"));
 
         if (languageOptional.isPresent() && gametypeOptional.isPresent() && difficultyOptional.isPresent() && lengthOptional.isPresent() && maxPlayersOptional.isPresent()) {
             populateProfile(
@@ -165,7 +168,7 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
                     27015,
                     null,
                     null,
-                    "http://art.tripwirecdn.com/TestItemIcons/MOTDServer.png",
+                    "http://" + Utils.getPublicIp() + ":" + webServerPort + "/default",
                     null,
                     null,
                     false,
