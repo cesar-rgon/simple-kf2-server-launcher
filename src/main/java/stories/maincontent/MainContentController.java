@@ -16,7 +16,6 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -25,7 +24,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.web.WebView;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Screen;
 import javafx.util.Callback;
@@ -35,7 +33,6 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 import org.xnio.Options;
 import pojos.enums.EnumPlatform;
 import pojos.session.Session;
@@ -1381,7 +1378,7 @@ public class MainContentController implements Initializable {
                 if (profileSelect.getValue() != null && StringUtils.isNotEmpty(profileSelect.getValue().getUrlImageServer())) {
                     runEmbeddedWebServer(listValuesMainContentFacadeResult.getProfileDtoList());
                     String webServerPort = facade.findPropertyValue("properties/config.properties", "prop.config.webServerPort");
-                    imageWebView.getEngine().load("http://" + Utils.getPublicIp() + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase());
+                    imageWebView.getEngine().load("http://" + Utils.getPublicIp() + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase() + ".png");
                 }
             }
             if (profileSelect.getValue() == null || StringUtils.isEmpty(profileSelect.getValue().getUrlImageServer())) {
@@ -1672,7 +1669,7 @@ public class MainContentController implements Initializable {
                 InputStream undertowIS = Files.newInputStream(undertowFolder.toPath());
                 byte[] imageBytes = IOUtils.toByteArray(undertowIS);
                 pathHandler
-                    .addExactPath("/" + profileDto.getName().toLowerCase(), exchange -> {
+                    .addExactPath("/" + profileDto.getName().toLowerCase() + ".png", exchange -> {
                         exchange.getResponseHeaders()
                                 .put(Headers.CONTENT_TYPE, "image/png");
                         exchange.getResponseSender()
@@ -1743,7 +1740,7 @@ public class MainContentController implements Initializable {
                 runEmbeddedWebServer(profileSelect.getItems());
 
                 String webServerPort = facade.findPropertyValue("properties/config.properties", "prop.config.webServerPort");
-                String urlImageServer = "http://" + Utils.getPublicIp() + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase();
+                String urlImageServer = "http://" + Utils.getPublicIp() + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase() + ".png";
                 labelWebView.setText(urlImageServer);
                 imageWebView.getEngine().load(urlImageServer);
 

@@ -1,8 +1,6 @@
 package start;
 
-import io.undertow.Handlers;
 import io.undertow.Undertow;
-import io.undertow.util.Headers;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -11,23 +9,22 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.h2.store.fs.FileUtils;
-import pojos.kf2factory.Kf2SteamLinuxImpl;
-import pojos.kf2factory.Kf2SteamWindowsImpl;
 import pojos.listener.TimeListener;
-import services.*;
+import services.ConsoleService;
+import services.ConsoleServiceImpl;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import stories.populatedatabase.PopulateDatabaseFacade;
 import stories.populatedatabase.PopulateDatabaseFacadeImpl;
 import utils.Utils;
 
 import java.io.File;
-import java.nio.ByteBuffer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Properties;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainApplication extends Application {
 

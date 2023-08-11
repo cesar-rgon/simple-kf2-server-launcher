@@ -166,7 +166,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                 profileToBeCloned.getQueryPort(),
                 profileToBeCloned.getYourClan(),
                 profileToBeCloned.getYourWebLink(),
-                StringUtils.isNotBlank(profileToBeCloned.getUrlImageServer()) ? "http://" + Utils.getPublicIp() + ":" + webServerPort + "/" + newProfileName.toLowerCase(): StringUtils.EMPTY,
+                StringUtils.isNotBlank(profileToBeCloned.getUrlImageServer()) ? "http://" + Utils.getPublicIp() + ":" + webServerPort + "/" + newProfileName.toLowerCase() + ".png": StringUtils.EMPTY,
                 profileToBeCloned.getWelcomeMessage(),
                 profileToBeCloned.getCustomParameters(),
                 profileToBeCloned.getTakeover(),
