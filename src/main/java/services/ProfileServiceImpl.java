@@ -136,8 +136,6 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
         String webServerPort = propertyService.getPropertyValue("properties/config.properties", "prop.config.webServerPort");
 
         if (StringUtils.isNotBlank(profileToBeCloned.getUrlImageServer())) {
-            URL imagesUrl = getClass().getClassLoader().getResource("images/");
-            assert imagesUrl != null;
             File undertowFolder = new File(MainApplication.getAppData().getAbsolutePath() + "/.undertow");
             Date date = new Date();
             Timestamp timestamp = new Timestamp(date.getTime());

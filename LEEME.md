@@ -13,7 +13,6 @@ Desarrollado por: César Rodríguez González
 Idiomas: Inglés, Español, Francés, Ruso
 Traducción a inglés y español: César Rodríguez González
 Traducción a francés por: -foG.Nox
-Traducción a ruso por: Medarel Moore 
 ```
 **Servidor Discord: https://discord.gg/WdwRU522Fb**
 

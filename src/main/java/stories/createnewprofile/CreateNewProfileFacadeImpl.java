@@ -65,17 +65,16 @@ public class CreateNewProfileFacadeImpl
             firstOfficialMap = (OfficialMap) officialMaps.get(0);
         }
 
-        URL imagesUrl = getClass().getClassLoader().getResource("images/");
-        assert imagesUrl != null;
+        URL sourceUrl = getClass().getClassLoader().getResource("images/default-banner.png");
+        assert sourceUrl != null;
         File undertowFolder = new File(MainApplication.getAppData().getAbsolutePath() + "/.undertow");
         Date date = new Date();
         Timestamp timestamp = new Timestamp(date.getTime());
         String timestampStr = StringUtils.replace(timestamp.toString(), " ", "_");
         timestampStr = StringUtils.replace(timestampStr, ":", "_");
         timestampStr = StringUtils.replace(timestampStr, ".", "_");
-        File sourceFile = new File(imagesUrl.getPath() + "/default-banner.png");
         File targetFile = new File(undertowFolder.getAbsolutePath() + "/" + facadeModelContext.getProfileName().toLowerCase() + "_" + timestampStr + ".png");
-        FileUtils.copyFile(sourceFile, targetFile);
+        FileUtils.copyURLToFile(sourceUrl, targetFile);
 
         Profile newProfile = new Profile(
                 facadeModelContext.getProfileName(),
