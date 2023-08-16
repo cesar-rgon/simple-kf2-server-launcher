@@ -1665,7 +1665,7 @@ public class MainContentController implements Initializable {
         PathHandler pathHandler = Handlers.path();
         for (ProfileDto profileDto: profileDtoList) {
             try {
-                File undertowFolder = new File(MainApplication.getAppData() + "/.undertow/" + lastTimeStamp(profileDto.getName().toLowerCase()));
+                File undertowFolder = new File(MainApplication.getAppData().getAbsolutePath() + "/.undertow/" + lastTimeStamp(profileDto.getName().toLowerCase()));
                 InputStream undertowIS = Files.newInputStream(undertowFolder.toPath());
                 byte[] imageBytes = IOUtils.toByteArray(undertowIS);
                 pathHandler
@@ -1702,7 +1702,7 @@ public class MainContentController implements Initializable {
     }
 
     private String lastTimeStamp(String profileName) throws Exception {
-       File undertowFolder = new File(MainApplication.getAppData() + "/.undertow");
+       File undertowFolder = new File(MainApplication.getAppData().getAbsolutePath() + "/.undertow");
        Optional<String> newerProfileFileName = Files.walk(Paths.get(undertowFolder.getAbsolutePath()))
                .filter(Files::isRegularFile)
                .filter(path -> path.getFileName().toString().startsWith(profileName))
@@ -1728,7 +1728,7 @@ public class MainContentController implements Initializable {
                 }
                 imageWebView.getEngine().loadContent(StringUtils.EMPTY);
 
-                File undertowFolder = new File(MainApplication.getAppData() + "/.undertow");
+                File undertowFolder = new File(MainApplication.getAppData().getAbsolutePath() + "/.undertow");
                 Date date = new Date();
                 Timestamp timestamp = new Timestamp(date.getTime());
                 String timestampStr = StringUtils.replace(timestamp.toString(), " ", "_");
@@ -1782,7 +1782,7 @@ public class MainContentController implements Initializable {
             ProfileDto databaseProfile = facade.findProfileDtoByName(profileSelect.getValue().getName());
             Session.getInstance().setActualProfileName(databaseProfile.getName());
 
-            File undertowFolder = new File(MainApplication.getAppData() + "/.undertow");
+            File undertowFolder = new File(MainApplication.getAppData().getAbsolutePath() + "/.undertow");
             Files.walk(Paths.get(undertowFolder.getAbsolutePath()))
                     .filter(Files::isRegularFile)
                     .filter(path -> path.getFileName().toString().startsWith(profileName.toLowerCase()))
@@ -1804,7 +1804,7 @@ public class MainContentController implements Initializable {
     }
 
     private void removeOldWebServerFiles() throws Exception {
-        File undertowFolder = new File(MainApplication.getAppData() + "/.undertow");
+        File undertowFolder = new File(MainApplication.getAppData().getAbsolutePath() + "/.undertow");
         List<URI> newerProfileUriList = new ArrayList<URI>();
 
         for (ProfileDto profileDto: profileSelect.getItems()) {

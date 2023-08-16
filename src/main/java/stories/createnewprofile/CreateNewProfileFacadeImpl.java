@@ -67,7 +67,7 @@ public class CreateNewProfileFacadeImpl
 
         URL imagesUrl = getClass().getClassLoader().getResource("images/");
         assert imagesUrl != null;
-        File undertowFolder = new File(MainApplication.getAppData() + "/.undertow");
+        File undertowFolder = new File(MainApplication.getAppData().getAbsolutePath() + "/.undertow");
         Date date = new Date();
         Timestamp timestamp = new Timestamp(date.getTime());
         String timestampStr = StringUtils.replace(timestamp.toString(), " ", "_");

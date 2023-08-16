@@ -112,7 +112,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
             }
         });
 
-        File undertowFolder = new File(MainApplication.getAppData() + "/.undertow");
+        File undertowFolder = new File(MainApplication.getAppData().getAbsolutePath() + "/.undertow");
         Files.walk(Paths.get(undertowFolder.getAbsolutePath()))
                 .filter(Files::isRegularFile)
                 .filter(path -> path.getFileName().toString().startsWith(profile.getName().toLowerCase()))
@@ -138,7 +138,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
         if (StringUtils.isNotBlank(profileToBeCloned.getUrlImageServer())) {
             URL imagesUrl = getClass().getClassLoader().getResource("images/");
             assert imagesUrl != null;
-            File undertowFolder = new File(MainApplication.getAppData() + "/.undertow");
+            File undertowFolder = new File(MainApplication.getAppData().getAbsolutePath() + "/.undertow");
             Date date = new Date();
             Timestamp timestamp = new Timestamp(date.getTime());
             String timestampStr = StringUtils.replace(timestamp.toString(), " ", "_");
@@ -212,7 +212,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
     }
 
     private String lastTimeStamp(String profileName) throws Exception {
-        File undertowFolder = new File(MainApplication.getAppData() + "/.undertow");
+        File undertowFolder = new File(MainApplication.getAppData().getAbsolutePath() + "/.undertow");
         Optional<String> newerProfileFileName = Files.walk(Paths.get(undertowFolder.getAbsolutePath()))
                 .filter(Files::isRegularFile)
                 .filter(path -> path.getFileName().toString().startsWith(profileName))
