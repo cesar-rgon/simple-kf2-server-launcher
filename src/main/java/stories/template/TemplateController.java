@@ -15,6 +15,7 @@ import javafx.scene.layout.GridPane;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
@@ -166,6 +167,26 @@ public class TemplateController implements Initializable {
         }
     }
 
+    private void loadNewContent(String fxmlFilePath) {
+        try {
+            GridPane templateContent = (GridPane) MainApplication.getTemplate().getNamespace().get("content");
+            templateContent.getColumnConstraints().clear();
+            templateContent.getRowConstraints().clear();
+            templateContent.getChildren().clear();
+            FXMLLoader content = new FXMLLoader(getClass().getResource(fxmlFilePath));
+            content.setRoot(MainApplication.getTemplate().getNamespace().get("content"));
+            content.load();
+
+            mainPage.setDisable(false);
+            webAdmin.setDisable(false);
+            console.setDisable(false);
+            maps.setDisable(false);
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
     @FXML
     private void profilesMenuOnAction() {
         try {
@@ -289,8 +310,9 @@ public class TemplateController implements Initializable {
     @FXML
     private void documentationMenuOnAction() {
         try {
-            String readmeUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.helpReadmeUrl");
-            Desktop.getDesktop().browse(new URI(readmeUrl));
+            String documentationUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.helpReadmeUrl");
+            Session.getInstance().setUrl(documentationUrl);
+            loadNewContent("/views/webBrowser.fxml");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -301,7 +323,8 @@ public class TemplateController implements Initializable {
     private void githubMenuOnAction() {
         try {
             String githubUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.helpGithubUrl");
-            Desktop.getDesktop().browse(new URI(githubUrl));
+            Session.getInstance().setUrl(githubUrl);
+            loadNewContent("/views/webBrowser.fxml");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -312,7 +335,8 @@ public class TemplateController implements Initializable {
     private void releasesMenuOnAction() {
         try {
             String releasesUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.releasePageGithubUrl");
-            Desktop.getDesktop().browse(new URI(releasesUrl));
+            Session.getInstance().setUrl(releasesUrl);
+            loadNewContent("/views/webBrowser.fxml");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -358,8 +382,9 @@ public class TemplateController implements Initializable {
     @FXML
     private void donationMenuOnAction() {
         try {
-            String dotationUrl = "https://www.paypal.me/cesarrgon";
-            Desktop.getDesktop().browse(new URI(dotationUrl));
+            String donationUrl = "https://www.paypal.me/cesarrgon";
+            Session.getInstance().setUrl(donationUrl);
+            loadNewContent("/views/webBrowser.fxml");
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);

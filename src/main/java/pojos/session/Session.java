@@ -4,6 +4,7 @@ import dtos.PlatformDto;
 import dtos.PlatformProfileMapDto;
 import dtos.ProfileDto;
 import entities.PlatformProfileMap;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.enums.EnumMapsTab;
@@ -27,13 +28,15 @@ public class Session {
     private EnumMapsTab selectedMapTab;
     private List<PlatformProfileMapDto> platformProfileMapList;
     private PlatformDto platform;
+    private String url;
 
     /**
      * Singleton constructor
      */
     private Session() {
         super();
-        console = "";
+        console = StringUtils.EMPTY;
+        url = StringUtils.EMPTY;
         ppm = null;
         processList = new ArrayList<Process>();
         sortedMapsCriteria = EnumSortedMapsCriteria.NAME_DESC;
@@ -130,5 +133,13 @@ public class Session {
 
     public void setPlatform(PlatformDto platform) {
         this.platform = platform;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 }
