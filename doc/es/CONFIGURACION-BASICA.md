@@ -17,10 +17,10 @@ Si hay más de un perfil definido, puedes lanzar múltiples servidores a la vez 
 Si hay más de un perfil definido, puedes seleccionar a qué servidor quieres unirte (uno por perfil).
 
 #### Parametros basicos
- 
-* _Idioma_: Este combo es obligatorio. Permite seleccionar un idioma para la interfaz del lanzador. La lista de idiomas disponibles están en el apartado [Caracteristicas](#caracteristicas) de este documento.
 
 * _Mapa_: Este combo es obligatorio. Permite seleccionar un mapa oficial o personalizado específico. *NOTA: Los mapas personalizados son visibles en este campo sólamente si han sido descargados previamente.*
+
+* _Idioma_: Este combo es obligatorio. Permite seleccionar un idioma para la interfaz del lanzador. La lista de idiomas disponibles están en el apartado [Caracteristicas](#caracteristicas) de este documento.
 
 * _Tipo de juego_: Este combo es obligatorio. Permite seleccionar un tipo de juego específico.
 
@@ -34,19 +34,30 @@ Si hay más de un perfil definido, puedes seleccionar a qué servidor quieres un
 
 * _Contraseña de servidor_: Este campo es opcional. Permite proteger tu servidor con una contraseña (se necesita conocer para poder unirse al juego).
 
-* _Página web_: Si el check de página web está activo, puedes gestionar el servidor mediante la página WebAdmin. El servidor de Killing Floor 2 debe haberse lanzado previamente a acceder a la página de WebAdmin.
-
-* _Contraseña web_: Este campo es opcional. Permite proteger la página de WebAdmin con una contraseña para autenticarse.
-
-* _Toma de control_: Si este check está habilitado, otras personas pueden tomar control del servidor, esto es, cambiar la contraseña y otras configuraciones, etc.
-
-* _URL imágen servidor_: Este campo es opcional. Este enlace debe corresponder a una imagen subida a internet que será usada como imágen de bienvenida en el servidor de Killing Floor 2. El formato y resolución debe ser PNG 512x256 píxeles.
+* _URL imágen servidor_: Este campo es opcional. Esta es una imágen local subida a un servidor web http embebido. La resolución de la imágen debe ser 512x256 y el formato PNG. Si es definido, será visible en la pantalla de bienvenida del servidor pero sólo si los parámetros "Tu clan", "Tu enlace web" y "Mensaje de bienvenida" son definidos también.
   
 * _Tu clan_: Este campo es opcional.
 
 * _Tu página web_: Este campo es opcional.
 
 * _Mensaje de bienvenida_: Este campo es opcional. Es un mensaje de bienvenida en la pantalla iniciar del servidor.
+
+* _Página web_: Si el check de página web está activo, puedes gestionar el servidor mediante la página WebAdmin. El servidor de Killing Floor 2 debe haberse lanzado previamente a acceder a la página de WebAdmin.
+
+* _Contraseña web_: Este campo es opcional. Permite proteger la página de WebAdmin con una contraseña para autenticarse.
+
+* _Toma de control_: Si este check está habilitado, otras personas pueden tomar control del servidor, esto es, cambiar la contraseña y otras configuraciones, etc.
+
+#### Imágen de Servidor Personalizada
+Puedes subir una imágen personalizada al servidor web http embebido para ser visible en el servidor de KF2.
+No todas las imágenes son soportadas por el juego. Sólanente las imágenes que cumplen tener resolución 512x256, formato PNG y profundidad de color en 16 bits.
+
+*Un ejemplo*
+![Launcher screenshot](../images/screenshot14.png)
+
+*En la sala de espera del juego*
+![Launcher screenshot](../images/screenshot-in-game2.jpg)
+
 
 #### Parámetros avanzados
 

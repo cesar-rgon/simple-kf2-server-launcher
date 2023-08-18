@@ -17,9 +17,9 @@ If more than one profile, you can select wich server you want to join (one per p
 
 #### Basic parameters
 
-* _Language_: This combo is mandatory. It allows to select a language for the launcher's interface. List of available languages are described in the [Features](#features) section of this document. 
-
 * _Map_: This combo is mandatory. It allows you to select one specific official map or custom map. *NOTE: Custom maps are visible in this field only if they were already downloaded before*.
+
+* _Language_: This combo is mandatory. It allows to select a language for the launcher's interface. List of available languages are described in the [Features](#features) section of this document. 
 
 * _Game Type_: This combo is mandatory. It allows you to select one specific game type.
 
@@ -33,19 +33,31 @@ If more than one profile, you can select wich server you want to join (one per p
 
 * _Server password_: This field is optional. It allows you to protect your server with a password (needed to known to be able to join the game).
 
+* _URL image server_: This field is optional. This is a local image uploaded to an embedded http web server. The image resolution must be 512x256 and format PNG. If defined, it will be visible in the welcome screen of the server game but only if "Your clan", "Your web link" and "Welcome message" parameters are defined too.
+ 
+* _Your clan_: This field is optional.
+
+* _Your web link_: This field is optional.
+
+* _Welcome message_: This field is optional. It's a welcome message in starting screen of the server.
+
 * _Web page_: If web page check is enabled you can manage the server through WebAdmin page. Killing Floor 2 server must be launched before you can access WebAdmin page.
 
 * _Web password_: This field is optional. It allows you to protect WebAdmin page with a password to login.
 
 * _Takeover_: If this check is enabled other people can takeover the server, that means, change the password, change other configurations and take the control of the server.
 
-* _URL image server_: This field is optional. This link must return an uploaded image to internet and it will be used as the welcome image in your Killing Floor 2 server. Format and resolution must be PNG 512x256 pixels.
 
-* _Your clan_: This field is optional.
+#### Custom Image Server
+You can upload a custom image to the embedded http web server to be visible in KF2's server.
+Not all the images are supported in the game. Only images that meet image resolution must be 512x256, format PNG and color in 16 bits depth.
 
-* _Your web link_: This field is optional.
+*An example*
+![Launcher screenshot](images/screenshot14.png)
 
-* _Welcome message_: This field is optional. It's a welcome message in starting screen of the server.
+*In game lobby*
+![Launcher screenshot](images/screenshot-in-game2.jpg)
+
 
 #### Advanced parameters
 
