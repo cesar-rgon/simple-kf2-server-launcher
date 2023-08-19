@@ -10,7 +10,7 @@ Version: 2.1.4 final
 Supported OS: Microsoft Windows and Linux (Ubuntu/Debian)
 Supported platforms: Steam and Epic Games
 Developed by: César Rodríguez González
-Languages: English, Spanish, French, Russian
+Languages: English, Spanish, French
 Translation to english and spanish: César Rodríguez González
 Translation to french by: -foG.Nox
 ```

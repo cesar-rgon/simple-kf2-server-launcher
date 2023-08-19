@@ -10,7 +10,7 @@ Versión: 2.1.4 final
 S.O. soportados: Microsoft Windows y Linux (Ubuntu/Debian)
 Plataformas soportadas: Steam y Epic Games
 Desarrollado por: César Rodríguez González
-Idiomas: Inglés, Español, Francés, Ruso
+Idiomas: Inglés, Español, Francés
 Traducción a inglés y español: César Rodríguez González
 Traducción a francés por: -foG.Nox
 ```
