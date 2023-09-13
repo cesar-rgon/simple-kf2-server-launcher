@@ -68,7 +68,7 @@ public class MainApplication extends Application {
         timer = new Timer();
         String checkDownloadedMapsEveryMilliseconds = propertyService.getPropertyValue("properties/config.properties", "prop.config.checkDownloadedMapsEveryMilliseconds");
         timer.schedule(timeListener, 0, Long.parseLong(checkDownloadedMapsEveryMilliseconds));
-        this.primaryStage = primaryStage;
+        MainApplication.primaryStage = primaryStage;
 
         String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
         Boolean checkForUpgrades = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.checkForUpgrades"));

@@ -33,7 +33,7 @@ public class UpdateProfileSetGamePortFacadeImpl
         }
         Profile profile = profileOpt.get();
 
-        profile.setWebPort(facadeModelContext.getGamePort());
+        profile.setGamePort(facadeModelContext.getGamePort());
         profileService.updateItem(profile);
         return new EmptyFacadeResult();
     }

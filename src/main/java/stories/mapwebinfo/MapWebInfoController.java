@@ -105,19 +105,6 @@ public class MapWebInfoController implements Initializable {
                 progressIndicator.setVisible(false);
                 if (Session.getInstance().getPpm() == null || !Session.getInstance().getPpm().getMapDto().isOfficial()) {
                     try {
-                        String steamWorkshopStr = "Steam Workshop";
-                        NodeList htmlList = doc.getElementsByTagName("html");
-                        if (htmlList != null && htmlList.getLength() > 0) {
-                            Node html = htmlList.item(0);
-                            if (html.hasAttributes()) {
-                                NamedNodeMap htmlAttrList = html.getAttributes();
-                                if ("ru".equalsIgnoreCase(htmlAttrList.getNamedItem("lang").getTextContent())) {
-                                    steamWorkshopStr = "Мастерская Steam";
-                                }
-
-                            }
-                        }
-
                         NodeList titleList = doc.getElementsByTagName("title");
                         String urlWorkShop = doc.getDocumentURI();
                         if (StringUtils.isNotBlank(urlWorkShop)) {
@@ -131,8 +118,9 @@ public class MapWebInfoController implements Initializable {
                             }
                             if (titleList != null && titleList.getLength() > 0) {
                                 Node title = titleList.item(0);
-                                if (title.getTextContent().startsWith(steamWorkshopStr)) {
-                                    mapName = title.getTextContent().replace(steamWorkshopStr + "::", "");
+                                if (idWorkShop != null) {
+                                    String[] contentArray = title.getTextContent().split("::");
+                                    mapName = contentArray[1];
                                     NodeList linkList = doc.getElementsByTagName("link");
                                     for (int i=0; i < linkList.getLength(); i++) {
                                         Node link = linkList.item(i);
