@@ -31,7 +31,7 @@ public class AddPlatformProfilesToMapFacadeImpl
         ProfileService profileService = new ProfileServiceImpl(em);
         PlatformService platformService = new PlatformServiceImpl(em);
         AbstractMapService officialMapService = new OfficialMapServiceImpl(em);
-        AbstractMapService customMapModService = new CustomMapModServiceImpl(em);
+        CustomMapModServiceImpl customMapModService = new CustomMapModServiceImpl(em);
         StringBuffer success = new StringBuffer();
         StringBuffer errors = new StringBuffer();
 
@@ -80,6 +80,10 @@ public class AddPlatformProfilesToMapFacadeImpl
                 assert map != null;
                 Utils.downloadImageFromUrlToFile(facadeModelContext.getStrUrlMapImage(), absoluteTargetFolder, Long.toString(((CustomMapMod) map).getIdWorkShop()));
             }
+        }
+
+        if (customMapModOptional.isPresent()) {
+            customMapModService.downloadMapFromSteamCmd(facadeModelContext.getPlatformNameList(), (CustomMapMod) map, em);
         }
 
         return new AddPlatformProfilesToMapFacadeResult(

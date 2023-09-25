@@ -5,15 +5,25 @@ import entities.*;
 import jakarta.persistence.EntityManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import pojos.kf2factory.Kf2Common;
+import pojos.kf2factory.Kf2Factory;
+import stories.addcustommapstoprofile.AddCustomMapsToProfileFacadeImpl;
 import utils.Utils;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class CustomMapModServiceImpl extends AbstractMapService {
+
+    private static final Logger logger = LogManager.getLogger(CustomMapModServiceImpl.class);
 
     private final PlatformProfileMapService platformProfileMapService;
     private final PlatformService platformService;
@@ -137,4 +147,45 @@ public class CustomMapModServiceImpl extends AbstractMapService {
         CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop);
         return (CustomMapMod) customMapModService.createMap(platformList, customMap, profileList, success, errors);
     }
+
+    public void downloadMapFromSteamCmd(List<String> platformNameList, CustomMapMod customMap, EntityManager em) {
+        PlatformService platformService = new PlatformServiceImpl(em);
+        PlatformProfileMapService platformProfileMapService = new PlatformProfileMapServiceImpl(em);
+        StringBuffer success = new StringBuffer();
+        StringBuffer errors = new StringBuffer();
+        boolean alreadyDownloaded = false;
+        List<AbstractPlatform> platformList = platformService.getPlatformListByNames(platformNameList, success, errors);
+
+        for (AbstractPlatform platform: platformList) {
+            try {
+                List<PlatformProfileMap> ppmList = platformProfileMapService.listPlatformProfileMaps(platform, customMap);
+                Optional<PlatformProfileMap> downloadedPpm = ppmList.stream()
+                        .filter(ppm -> ppm.isDownloaded())
+                        .findFirst();
+                if (downloadedPpm.isPresent()) {
+                    for (PlatformProfileMap ppm: ppmList){
+                        ppm.setDownloaded(true);
+                        platformProfileMapService.updateItem(ppm);
+                    }
+                    continue;
+                }
+
+                Kf2Common kf2Common = Kf2Factory.getInstance(platform, em);
+                if (alreadyDownloaded || kf2Common.downloadMapFromSteamCmd(customMap)) {
+                    alreadyDownloaded = true;
+
+                    kf2Common.copyMapToCachePlatform(customMap);
+
+                    for (PlatformProfileMap ppm: ppmList){
+                        ppm.setDownloaded(true);
+                        platformProfileMapService.updateItem(ppm);
+                    }
+                }
+            } catch (Exception e) {
+                logger.error("Error downloading map from SteamCmd", e);
+                Utils.errorDialog(e.getMessage(), e);
+            }
+        }
+    }
+
 }

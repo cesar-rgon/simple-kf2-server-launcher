@@ -46,6 +46,8 @@ public class CreateCustomMapFromWorkshopFacadeImpl
             return new CreateCustomMapFromWorkshopFacadeResult(null, success, errors);
         }
 
+        customMapModService.downloadMapFromSteamCmd(facadeModelContext.getPlatformNameList(), newCustomMapMod, em);
+
         return new CreateCustomMapFromWorkshopFacadeResult(
                 (CustomMapModDto) mapDtoFactory.newDto(newCustomMapMod),
                 success,

@@ -1,6 +1,8 @@
 package pojos.kf2factory;
 
 import entities.AbstractPlatform;
+import entities.CustomMapMod;
+import entities.PlatformProfileMap;
 import entities.Profile;
 import jakarta.persistence.EntityManager;
 import org.apache.commons.io.FileUtils;
@@ -12,6 +14,7 @@ import utils.Utils;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.List;
 
 public abstract class Kf2AbstractCommon extends Kf2Utils implements Kf2Common {
 
@@ -30,6 +33,8 @@ public abstract class Kf2AbstractCommon extends Kf2Utils implements Kf2Common {
     public abstract Long getIdWorkShopFromPath(Path path);
     public abstract String joinServer(Profile profile);
     protected abstract boolean prepareSteamCmd();
+    public abstract boolean downloadMapFromSteamCmd(CustomMapMod customMap) throws Exception;
+    public abstract void copyMapToCachePlatform(CustomMapMod customMap) throws Exception;
 
     protected boolean prerequisitesAreValid() {
         return prerequisitesAreValid(true);

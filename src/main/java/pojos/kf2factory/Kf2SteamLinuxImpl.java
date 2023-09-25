@@ -1,5 +1,6 @@
 package pojos.kf2factory;
 
+import entities.CustomMapMod;
 import entities.Profile;
 import jakarta.persistence.EntityManager;
 import org.apache.commons.io.FileUtils;
@@ -7,6 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.session.Session;
+import services.PlatformProfileMapService;
+import services.PlatformProfileMapServiceImpl;
 import services.ProfileService;
 import services.ProfileServiceImpl;
 import utils.Utils;
@@ -19,6 +22,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class Kf2SteamLinuxImpl extends Kf2Steam {
 
@@ -307,6 +311,54 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
                     null, fileToBeExecuted.getParentFile());
         } else {
             Runtime.getRuntime().exec(fileToBeExecuted.getAbsolutePath(), null, fileToBeExecuted.getParentFile());
+        }
+    }
+
+    @Override
+    public boolean downloadMapFromSteamCmd(CustomMapMod customMap) throws Exception {
+        if (prerequisitesAreValid()) {
+            String tempFolder = System.getProperty("java.io.tmpdir");
+            StringBuffer command = new StringBuffer("/usr/games/steamcmd +force_install_dir ");
+            command.append(tempFolder);
+            command.append("/steamcmd +login anonymous +workshop_download_item 232090 ");
+            command.append(customMap.getIdWorkShop());
+            command.append(" +exit");
+            Process process = Runtime.getRuntime().exec(new String[]{"xterm",
+                    "-T", "Installing/Updating the server",
+                    "-fa", "DejaVu Sans Mono",
+                    "-fs", "11",
+                    "-geometry", "120x25+0-0",
+                    "-xrm", "XTerm.vt100.allowTitleOps: false",
+                    "-e", command.toString()});
+            process.waitFor();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void copyMapToCachePlatform(CustomMapMod customMap) throws Exception {
+        String tempFolder = System.getProperty("java.io.tmpdir");
+
+        List<File> sourceFileList = Files.walk(Paths.get(tempFolder + "/steamcmd/steamapps/workshop/content/232090/" + customMap.getIdWorkShop()))
+                .filter(Files::isRegularFile)
+                .map(Path::toFile)
+                .collect(Collectors.toList());
+
+
+        for (File sourceFile: sourceFileList) {
+            String relativePath = StringUtils.replace(sourceFile.getAbsolutePath(), tempFolder + "/steamcmd/steamapps/workshop/content/232090/" + customMap.getIdWorkShop() , "");
+            String[] relativePathArray = relativePath.split("/");
+            StringBuffer relativeFolder = new StringBuffer();
+            for (int i=0; i< (relativePathArray.length - 1) ; i++) {
+                if (StringUtils.isNotBlank(relativePathArray[i])) {
+                    relativeFolder.append(relativePathArray[i]);
+                    relativeFolder.append("/");
+                }
+            }
+            File targetFolder = new File(platform.getInstallationFolder() + "/KFGame/Cache/" + customMap.getIdWorkShop() + "/0/" + relativeFolder.toString());
+            targetFolder.mkdirs();
+            FileUtils.copyFileToDirectory(sourceFile, targetFolder);
         }
     }
 }

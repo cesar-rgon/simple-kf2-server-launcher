@@ -1,6 +1,8 @@
 package pojos.kf2factory;
 
 import com.github.tuupertunut.powershelllibjava.PowerShell;
+import entities.CustomMapMod;
+import entities.PlatformProfileMap;
 import entities.Profile;
 import jakarta.persistence.EntityManager;
 import net.lingala.zip4j.ZipFile;
@@ -10,6 +12,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.WindowsRegistry;
 import pojos.session.Session;
+import services.PlatformProfileMapService;
+import services.PlatformProfileMapServiceImpl;
 import services.ProfileService;
 import services.ProfileServiceImpl;
 import utils.Utils;
@@ -23,6 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 public class Kf2SteamWindowsImpl extends Kf2Steam {
@@ -247,6 +252,50 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
         }
         command.append(fileToBeExecuted.getAbsolutePath());
         Runtime.getRuntime().exec(command.toString(),null, fileToBeExecuted.getParentFile());
+    }
+
+    @Override
+    public boolean downloadMapFromSteamCmd(CustomMapMod customMap) throws Exception {
+        if (prerequisitesAreValid()) {
+            String tempFolder = System.getProperty("java.io.tmpdir");
+            StringBuffer command = new StringBuffer("cmd /C start /wait ");
+            command.append(tempFolder);
+            command.append("steamcmd\\steamcmd.exe +force_install_dir ");
+            command.append(tempFolder);
+            command.append("steamcmd +login anonymous +workshop_download_item 232090 ");
+            command.append(customMap.getIdWorkShop());
+            command.append(" +exit");
+            Process downloadMapProcess = Runtime.getRuntime().exec(command.toString(),null, new File(tempFolder + "\\steamcmd\\"));
+            downloadMapProcess.waitFor();
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public void copyMapToCachePlatform(CustomMapMod customMap) throws Exception {
+        String tempFolder = System.getProperty("java.io.tmpdir");
+
+        List<File> sourceFileList = Files.walk(Paths.get(tempFolder + "steamcmd\\steamapps\\workshop\\content\\232090\\" + customMap.getIdWorkShop()))
+                .filter(Files::isRegularFile)
+                .map(Path::toFile)
+                .collect(Collectors.toList());
+
+
+        for (File sourceFile: sourceFileList) {
+            String relativePath = StringUtils.replace(sourceFile.getAbsolutePath(), tempFolder + "steamcmd\\steamapps\\workshop\\content\\232090\\" + customMap.getIdWorkShop() , "");
+            String[] relativePathArray = relativePath.split("\\\\");
+            StringBuffer relativeFolder = new StringBuffer();
+            for (int i=0; i< (relativePathArray.length - 1) ; i++) {
+                if (StringUtils.isNotBlank(relativePathArray[i])) {
+                    relativeFolder.append(relativePathArray[i]);
+                    relativeFolder.append("\\");
+                }
+            }
+            File targetFolder = new File(platform.getInstallationFolder() + "\\KFGame\\Cache\\" + customMap.getIdWorkShop() + "\\0\\" + relativeFolder.toString());
+            targetFolder.mkdirs();
+            FileUtils.copyFileToDirectory(sourceFile, targetFolder);
+        }
     }
 }
 

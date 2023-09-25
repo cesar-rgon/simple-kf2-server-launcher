@@ -5,17 +5,25 @@ import dtos.factories.PlatformProfileMapDtoFactory;
 import entities.*;
 import framework.AbstractTransactionalFacade;
 import jakarta.persistence.EntityManager;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Hibernate;
+import pojos.MapToDisplay;
 import pojos.PlatformProfile;
+import pojos.kf2factory.Kf2Common;
+import pojos.kf2factory.Kf2Factory;
 import services.*;
 import utils.Utils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,6 +90,7 @@ public class AddCustomMapsToProfileFacadeImpl
                                 facadeModelContext.getPlatformNameList(), idWorkShop, profileNameList, mapName, strUrlMapImage, success, errors
                         );
                         if (customMap != null) {
+                            customMapService.downloadMapFromSteamCmd(facadeModelContext.getPlatformNameList(), customMap, em);
                             if (facadeModelContext.getProfileName().equalsIgnoreCase(facadeModelContext.getActualSelectedProfile())) {
                                 Optional<Profile> profileOptional = profileService.findByCode(facadeModelContext.getProfileName());
                                 if (!platformList.isEmpty() && profileOptional.isPresent()) {
@@ -95,6 +104,7 @@ public class AddCustomMapsToProfileFacadeImpl
                             throw new RuntimeException("Error adding map/mod with name with idWorkshop " + idWorkShop);
                         }
                     } else {
+                        customMapService.downloadMapFromSteamCmd(facadeModelContext.getPlatformNameList(), mapModInDataBase.get(), em);
                         List<AbstractPlatform> platformListForProfileWithoutMap = getPlatformProfileListWithoutMap(idWorkShop, em).stream().map(PlatformProfile::getPlatform).collect(Collectors.toList());
                         List<PlatformProfileMap> ppmList = new ArrayList<PlatformProfileMap>();
                         String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
