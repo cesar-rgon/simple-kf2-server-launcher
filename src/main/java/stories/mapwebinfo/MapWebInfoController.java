@@ -1,8 +1,10 @@
 package stories.mapwebinfo;
 
 import dtos.CustomMapModDto;
+import dtos.PlatformProfileMapDto;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -205,106 +207,132 @@ public class MapWebInfoController implements Initializable {
             StringBuffer success = new StringBuffer();
             StringBuffer errors = new StringBuffer();
             if (selectedPlatformProfiles != null && !selectedPlatformProfiles.isEmpty()) {
-                List<String> selectedProfileNameList = selectedPlatformProfiles.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
-                CustomMapModDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
+                progressIndicator.setVisible(true);
 
-                int countPlatformsProfilesForMap = 0;
-                if (mapModInDataBase != null) {
-                    countPlatformsProfilesForMap = facade.countPlatformsProfilesForMap(mapModInDataBase.getKey());
-                }
+                Task<Integer> task = new Task<Integer>() {
+                    @Override
+                    protected Integer call() throws Exception {
+                        List<String> selectedProfileNameList = selectedPlatformProfiles.stream().map(p -> p.getProfileName()).collect(Collectors.toList());
+                        CustomMapModDto mapModInDataBase = facade.findMapOrModByIdWorkShop(idWorkShop);
 
-                for (String selectedProfileName: selectedProfileNameList) {
-                    try {
-                        Optional<String> platformNameOptional = selectedPlatformProfiles.stream().
-                                filter(p -> p.getProfileName().equals(selectedProfileName)).
-                                map(PlatformProfileToDisplay::getPlatformName).
-                                findFirst();
-
-                        if (!platformNameOptional.isPresent()) {
-                            logger.error("The platform could not be found for the profile " + selectedProfileName);
-                            continue;
+                        int countPlatformsProfilesForMap = 0;
+                        if (mapModInDataBase != null) {
+                            countPlatformsProfilesForMap = facade.countPlatformsProfilesForMap(mapModInDataBase.getKey());
                         }
 
-                        List<String> platformNameList = new ArrayList<String>();
-                        switch (platformNameOptional.get()) {
-                            case "Steam":
-                                if (facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
-                                    platformNameList.add(EnumPlatform.STEAM.name());
+                        for (String selectedProfileName: selectedProfileNameList) {
+                            try {
+                                Optional<String> platformNameOptional = selectedPlatformProfiles.stream().
+                                        filter(p -> p.getProfileName().equals(selectedProfileName)).
+                                        map(PlatformProfileToDisplay::getPlatformName).
+                                        findFirst();
+
+                                if (!platformNameOptional.isPresent()) {
+                                    logger.error("The platform could not be found for the profile " + selectedProfileName);
+                                    continue;
                                 }
-                                break;
 
-                            case "Epic Games":
-                                if (facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
-                                    platformNameList.add(EnumPlatform.EPIC.name());
+                                List<String> platformNameList = new ArrayList<String>();
+                                switch (platformNameOptional.get()) {
+                                    case "Steam":
+                                        if (facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
+                                            platformNameList.add(EnumPlatform.STEAM.name());
+                                        }
+                                        break;
+
+                                    case "Epic Games":
+                                        if (facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
+                                            platformNameList.add(EnumPlatform.EPIC.name());
+                                        }
+                                        break;
+
+                                    case "All platforms":
+                                        if (facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
+                                            platformNameList.add(EnumPlatform.STEAM.name());
+                                        }
+                                        if (facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
+                                            platformNameList.add(EnumPlatform.EPIC.name());
+                                        }
+                                        break;
                                 }
-                                break;
 
-                            case "All platforms":
-                                if (facade.isCorrectInstallationFolder(EnumPlatform.STEAM.name())) {
-                                    platformNameList.add(EnumPlatform.STEAM.name());
+                                List<String> profileNameList = new ArrayList<String>();
+                                profileNameList.add(selectedProfileName);
+
+                                if (mapModInDataBase == null) {
+                                    CreateCustomMapFromWorkshopFacadeResult result = facade.createNewCustomMapFromWorkshop(
+                                            platformNameList,
+                                            idWorkShop,
+                                            mapName,
+                                            strUrlMapImage,
+                                            profileNameList
+                                    );
+                                    mapModInDataBase = result.getCustomMapDto();
+                                    success.append(result.getSuccess());
+                                    errors.append(result.getErrors());
+
+                                    if (mapModInDataBase == null) {
+                                        throw new RuntimeException("Error adding map/mod with name " + mapName);
+                                    }
+                                } else {
+                                    AddPlatformProfilesToMapFacadeResult result = facade.addPlatformProfilesToMap(
+                                            platformNameList,
+                                            mapModInDataBase.getKey(),
+                                            strUrlMapImage,
+                                            profileNameList
+                                    );
+                                    success.append(result.getSuccess());
+                                    errors.append(result.getErrors());
+
                                 }
-                                if (facade.isCorrectInstallationFolder(EnumPlatform.EPIC.name())) {
-                                    platformNameList.add(EnumPlatform.EPIC.name());
-                                }
-                                break;
-                        }
-
-                        List<String> profileNameList = new ArrayList<String>();
-                        profileNameList.add(selectedProfileName);
-
-                        if (mapModInDataBase == null) {
-                            CreateCustomMapFromWorkshopFacadeResult result = facade.createNewCustomMapFromWorkshop(
-                                    platformNameList,
-                                    idWorkShop,
-                                    mapName,
-                                    strUrlMapImage,
-                                    profileNameList
-                            );
-                            mapModInDataBase = result.getCustomMapDto();
-                            success.append(result.getSuccess());
-                            errors.append(result.getErrors());
-
-                            if (mapModInDataBase == null) {
-                                throw new RuntimeException("Error adding map/mod with name " + mapName);
+                            } catch (Exception e) {
+                                String message = "Error adding map/mod to the launcher";
+                                logger.error(message, e);
+                                Utils.errorDialog(message, e);
                             }
-                        } else {
-                            AddPlatformProfilesToMapFacadeResult result = facade.addPlatformProfilesToMap(
-                                    platformNameList,
-                                    mapModInDataBase.getKey(),
-                                    strUrlMapImage,
-                                    profileNameList
-                            );
-                            success.append(result.getSuccess());
-                            errors.append(result.getErrors());
+                        }
 
+                        int countPlatformsProfilesForMapAfterProcess = 0;
+                        if (mapModInDataBase != null) {
+                            countPlatformsProfilesForMapAfterProcess = facade.countPlatformsProfilesForMap(mapModInDataBase.getKey());
+                        }
+
+                        return countPlatformsProfilesForMapAfterProcess - countPlatformsProfilesForMap;
+                    }
+                };
+
+                task.setOnSucceeded(wse -> {
+                    try {
+                        int countNewPlatformsProfilesForMap = task.getValue();
+                        if (platformProfileListWithoutMap.size() - countNewPlatformsProfilesForMap == 0) {
+                            addMap.setVisible(false);
+                            alreadyInLauncher.setVisible(true);
+                        }
+
+                        progressIndicator.setVisible(false);
+
+                        if (StringUtils.isNotBlank(success)) {
+                            String successHeaderText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
+                            Utils.infoDialog(successHeaderText, success.toString());
+                        }
+
+                        if (StringUtils.isNotBlank(errors)) {
+                            String errorsHeaderText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                            Utils.infoDialog(errorsHeaderText, errors.toString());
                         }
                     } catch (Exception e) {
                         String message = "Error adding map/mod to the launcher";
                         logger.error(message, e);
                         Utils.errorDialog(message, e);
                     }
-                }
+                });
 
-                int countPlatformsProfilesForMapAfterProcess = 0;
-                if (mapModInDataBase != null) {
-                    countPlatformsProfilesForMapAfterProcess = facade.countPlatformsProfilesForMap(mapModInDataBase.getKey());
-                }
-                int countNewPlatformsProfilesForMap = countPlatformsProfilesForMapAfterProcess - countPlatformsProfilesForMap;
+                task.setOnFailed(wse -> {
+                    progressIndicator.setVisible(false);
+                });
 
-                if (platformProfileListWithoutMap.size() - countNewPlatformsProfilesForMap == 0) {
-                    addMap.setVisible(false);
-                    alreadyInLauncher.setVisible(true);
-                }
-
-                if (StringUtils.isNotBlank(success)) {
-                    String successHeaderText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.OperationDone");
-                    Utils.infoDialog(successHeaderText, success.toString());
-                }
-
-                if (StringUtils.isNotBlank(errors)) {
-                    String errorsHeaderText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                    Utils.infoDialog(errorsHeaderText, errors.toString());
-                }
+                Thread thread = new Thread(task);
+                thread.start();
             }
         } catch (Exception e) {
             String message = "Error adding map/mod to the launcher";

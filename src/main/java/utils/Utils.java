@@ -7,6 +7,7 @@ import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -387,7 +388,62 @@ public class Utils {
         customMapsColumn.setText(defineMapsToAddText);
         customMapsColumn.setMinWidth(500);
         customMapsColumn.setSortable(false);
-        customMapsColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+        // Commit value when lost focus
+        customMapsColumn.setCellFactory(cell -> new TableCell<AddMapsToPlatformProfile, String>() {
+            private TextField textField = new TextField();
+            {
+                textField.setOnAction(e -> {
+                    commitEdit(textField.getText());
+                });
+                textField.focusedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+                    if (!newValue) {
+                        System.out.println("Commiting " + textField.getText());
+                        commitEdit(textField.getText());
+                    }
+                });
+            }
+
+            @Override
+            public void updateItem(String value, boolean empty) {
+                super.updateItem(value, empty);
+                if (empty) {
+                    setText(null);
+                    setGraphic(null);
+                } else if (isEditing()) {
+                    textField.setText(value);
+                    setText(null);
+                    setGraphic(textField);
+                } else {
+                    setText(value);
+                    setGraphic(null);
+                }
+            }
+
+            @Override
+            public void startEdit() {
+                super.startEdit();
+                textField.setText(getItem());
+                setText(null);
+                setGraphic(textField);
+                textField.selectAll();
+                textField.requestFocus();
+            }
+
+            @Override
+            public void cancelEdit() {
+                super.cancelEdit();
+                setText(getItem());
+                setGraphic(null);
+            }
+
+            @Override
+            public void commitEdit(String value) {
+                super.commitEdit(value);
+                setText(textField.getText());
+                setGraphic(null);
+            }
+        });
+
         customMapsColumn.setCellValueFactory(cellData -> cellData.getValue().mapListProperty());
         customMapsColumn.setEditable(true);
 
