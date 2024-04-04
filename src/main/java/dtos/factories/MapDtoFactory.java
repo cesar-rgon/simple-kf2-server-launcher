@@ -91,6 +91,7 @@ public class MapDtoFactory {
                 map.getUrlInfo(),
                 map.getUrlPhoto(),
                 customMapMod.getIdWorkShop(),
+                customMapMod.getMap(),
                 releaseDate,
                 importedDateByProfileDtoList
         );

@@ -247,10 +247,10 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
             }
             command.append("?ConfigSubDir=").append(profile.getCode());
 
-            replaceInFileKfEngineIni(this.platform.getInstallationFolder(), profile, "LinuxServer-KFEngine.ini");
-            replaceInFileKfWebIni(this.platform.getInstallationFolder(), profile, StandardCharsets.UTF_8);
-            replaceInFileKfGameIni(this.platform.getInstallationFolder(), profile, "LinuxServer-KFGame.ini");
-            replaceInFileKfWebAdminIni(this.platform.getInstallationFolder(), profile);
+            replaceInFileKfEngineIni(this.platform, profile, "LinuxServer-KFEngine.ini");
+            replaceInFileKfWebIni(this.platform, profile, StandardCharsets.UTF_8);
+            replaceInFileKfGameIni(this.platform, profile, "LinuxServer-KFGame.ini");
+            replaceInFileKfWebAdminIni(this.platform, profile);
 
             Process proccess = null;
             if (!byConsole) {

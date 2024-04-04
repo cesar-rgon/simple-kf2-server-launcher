@@ -104,7 +104,7 @@ public class CustomMapModServiceImpl extends AbstractMapService {
     }
 
 
-    public CustomMapMod createNewCustomMapFromWorkshop(List<String> platformNameList, Long idWorkShop, List<String> profileNameList, String mapName, String strUrlMapImage, StringBuffer success, StringBuffer errors) throws Exception {
+    public CustomMapMod createNewCustomMapFromWorkshop(List<String> platformNameList, Long idWorkShop, List<String> profileNameList, String mapName, String strUrlMapImage, boolean isMap, StringBuffer success, StringBuffer errors) throws Exception {
         ProfileService profileService = new ProfileServiceImpl(em);
 
         List<Profile> profileList = profileService.getProfileListByNames(profileNameList, success, errors);
@@ -124,7 +124,7 @@ public class CustomMapModServiceImpl extends AbstractMapService {
         }
 
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
-        CustomMapMod insertedMap = createNewCustomMap(platformList, mapName, idWorkShop, relativeTargetFolder, profileList, success, errors, em);
+        CustomMapMod insertedMap = createNewCustomMap(platformList, mapName, idWorkShop, relativeTargetFolder, isMap, profileList, success, errors, em);
         if (insertedMap == null) {
             String message = "The map with name " + mapName + " could not be added to the launcher";
             errors.append(message + "\n");
@@ -135,7 +135,7 @@ public class CustomMapModServiceImpl extends AbstractMapService {
         return insertedMap;
     }
 
-    private CustomMapMod createNewCustomMap(List<AbstractPlatform> platformList, String mapName, Long idWorkShop, String urlPhoto, List<Profile> profileList, StringBuffer success, StringBuffer errors, EntityManager em) throws Exception {
+    private CustomMapMod createNewCustomMap(List<AbstractPlatform> platformList, String mapName, Long idWorkShop, String urlPhoto, boolean isMap, List<Profile> profileList, StringBuffer success, StringBuffer errors, EntityManager em) throws Exception {
         PropertyService propertyService = new PropertyServiceImpl();
         CustomMapModServiceImpl customMapModService = new CustomMapModServiceImpl(em);
 
@@ -144,7 +144,7 @@ public class CustomMapModServiceImpl extends AbstractMapService {
         }
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         String urlInfo = baseUrlWorkshop + idWorkShop;
-        CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop);
+        CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop, isMap);
         return (CustomMapMod) customMapModService.createMap(platformList, customMap, profileList, success, errors);
     }
 
@@ -183,7 +183,6 @@ public class CustomMapModServiceImpl extends AbstractMapService {
                 }
             } catch (Exception e) {
                 logger.error("Error downloading map from SteamCmd", e);
-                Utils.errorDialog(e.getMessage(), e);
             }
         }
     }

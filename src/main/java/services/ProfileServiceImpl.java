@@ -889,7 +889,8 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                 map = new OfficialMap(mapName, urlInfo, urlPhoto, releaseDate);
                 return officialMapService.createItem(map);
             } else {
-                map = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop);
+                // TODO: Se esta considerando que es un mapa. Corregir esto
+                map = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop, true);
                 if (createNewCustomMapFromWorkshop((CustomMapMod) map)) {
                     return map;
                 }

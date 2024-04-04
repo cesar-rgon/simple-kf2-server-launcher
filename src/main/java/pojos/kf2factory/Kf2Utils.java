@@ -1,9 +1,6 @@
 package pojos.kf2factory;
 
-import entities.AbstractMap;
-import entities.CustomMapMod;
-import entities.PlatformProfileMap;
-import entities.Profile;
+import entities.*;
 import jakarta.persistence.EntityManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -151,11 +148,11 @@ public class Kf2Utils {
         }
     }
 
-    protected void replaceInFileKfWebAdminIni(String installationFolder, Profile profile) {
+    protected void replaceInFileKfWebAdminIni(AbstractPlatform platform, Profile profile) {
         try {
-            File kfWebAdminIni = new File(installationFolder + "/KFGame/Config/" + profile.getCode() + "/KFWebAdmin.ini");
+            File kfWebAdminIni = new File(platform.getInstallationFolder() + "/KFGame/Config/" + profile.getCode() + "/KFWebAdmin.ini");
             BufferedReader br = new BufferedReader(new FileReader(kfWebAdminIni));
-            String strTempFile = installationFolder + "/KFGame/Config/" + profile.getCode() + "/KFWebAdmin.ini.tmp";
+            String strTempFile = platform.getInstallationFolder() + "/KFGame/Config/" + profile.getCode() + "/KFWebAdmin.ini.tmp";
             File tempFile = new File(strTempFile);
             PrintWriter pw = new PrintWriter(new FileWriter(strTempFile));
             String line;
@@ -189,11 +186,11 @@ public class Kf2Utils {
         }
     }
 
-    protected void replaceInFileKfEngineIni(String installationFolder, Profile profile, String filename) {
+    protected void replaceInFileKfEngineIni(AbstractPlatform platform, Profile profile, String filename) {
         try {
-            File kfEngineIni = new File(installationFolder + "/KFGame/Config/" + profile.getCode() + "/" + filename);
+            File kfEngineIni = new File(platform.getInstallationFolder() + "/KFGame/Config/" + profile.getCode() + "/" + filename);
             BufferedReader br = new BufferedReader(new FileReader(kfEngineIni));
-            String strTempFile = installationFolder + "/KFGame/Config/" + profile.getCode() + "/" + filename + ".tmp";
+            String strTempFile = platform.getInstallationFolder() + "/KFGame/Config/" + profile.getCode() + "/" + filename + ".tmp";
             File tempFile = new File(strTempFile);
             PrintWriter pw = new PrintWriter(new FileWriter(strTempFile));
             String line;
@@ -227,7 +224,7 @@ public class Kf2Utils {
             }
 
             List<AbstractMap> allCustomMapModList = customMapService.listAllMaps();
-            List<AbstractMap> customMapsMods = platformProfileMapService.listPlatformProfileMaps(profile).stream().
+            List<AbstractMap> customMapsMods = platformProfileMapService.listPlatformProfileMaps(platform, profile).stream().
                     filter(ppm -> allCustomMapModList.contains(ppm.getMap())).
                     map(PlatformProfileMap::getMap).
                     collect(Collectors.toList());
@@ -254,11 +251,11 @@ public class Kf2Utils {
         }
     }
 
-    protected void replaceInFileKfGameIni(String installationFolder, Profile profile, String filename) {
+    protected void replaceInFileKfGameIni(AbstractPlatform platform, Profile profile, String filename) {
         try {
-            File kfGameIni = new File(installationFolder + "/KFGame/Config/" + profile.getCode() + "/" + filename);
+            File kfGameIni = new File(platform.getInstallationFolder() + "/KFGame/Config/" + profile.getCode() + "/" + filename);
             BufferedReader br = new BufferedReader(new FileReader(kfGameIni));
-            String strTempFile = installationFolder + "/KFGame/Config/" + profile.getCode() + "/" + filename + ".tmp";
+            String strTempFile = platform.getInstallationFolder() + "/KFGame/Config/" + profile.getCode() + "/" + filename + ".tmp";
             File tempFile = new File(strTempFile);
             PrintWriter pw = new PrintWriter(new FileWriter(strTempFile));
             String line;
@@ -267,7 +264,7 @@ public class Kf2Utils {
                     String[] array = line.split(" ");
                     String mapName = array[0].replace("[", "");
 
-                    Optional<AbstractMap> map = platformProfileMapService.listPlatformProfileMaps(profile).stream().
+                    Optional<AbstractMap> map = platformProfileMapService.listPlatformProfileMaps(platform, profile).stream().
                             map(PlatformProfileMap::getMap).
                             filter(m -> m.getCode().equals(mapName)).
                             findFirst();
@@ -288,14 +285,14 @@ public class Kf2Utils {
                         pw.println(line);
                     }
                 } else {
-                    String modifiedLine = replaceLineKfGameIni(line, profile);
+                    String modifiedLine = replaceLineKfGameIni(line, platform, profile);
                     if (modifiedLine != null) {
                         pw.println(modifiedLine);
                     }
                 }
             }
 
-            List<AbstractMap> customMaps = platformProfileMapService.listPlatformProfileMaps(profile).stream().
+            List<AbstractMap> customMaps = platformProfileMapService.listPlatformProfileMaps(platform, profile).stream().
                     map(PlatformProfileMap::getMap).
                     filter(m -> {
                         try {
@@ -331,8 +328,8 @@ public class Kf2Utils {
         }
     }
 
-    protected void replaceInFileKfWebIni(String installationFolder, Profile profile, Charset charset) throws Exception {
-        String kfWebIniFile = installationFolder + "/KFGame/Config/" + profile.getCode() + "/KFWeb.ini";
+    protected void replaceInFileKfWebIni(AbstractPlatform platform, Profile profile, Charset charset) throws Exception {
+        String kfWebIniFile = platform.getInstallationFolder() + "/KFGame/Config/" + profile.getCode() + "/KFWeb.ini";
         StringBuilder contentBuilder = new StringBuilder();
         Path filePath = Paths.get(kfWebIniFile);
         Stream<String> stream = Files.lines( filePath, charset);
@@ -358,7 +355,7 @@ public class Kf2Utils {
         return modifiedLine;
     }
 
-    protected String replaceLineKfGameIni(String line, Profile profile) {
+    protected String replaceLineKfGameIni(String line, AbstractPlatform platform, Profile profile) {
         String modifiedLine = line;
 
         if (line.contains("MapName=") || line.contains("MapAssociation=") || line.contains("ScreenshotPathName=")) {
@@ -367,7 +364,7 @@ public class Kf2Utils {
         if (line.contains("GameMapCycles=(Maps=(")) {
 
             try {
-                List<PlatformProfileMap> platformProfileMapListForProfile = platformProfileMapService.listPlatformProfileMaps(profile);
+                List<PlatformProfileMap> platformProfileMapListForProfile = platformProfileMapService.listPlatformProfileMaps(platform, profile);
                 if (platformProfileMapListForProfile != null && !platformProfileMapListForProfile.isEmpty()) {
 
                     List<AbstractMap> officialMaps = platformProfileMapListForProfile.stream().

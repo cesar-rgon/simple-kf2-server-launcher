@@ -122,6 +122,7 @@ public class ImportCustomMapsFromServerFacadeImpl
             CustomMapMod customMap = createNewCustomMapFromWorkshop(
                     platformNameList,
                     ppmToImport.getMapToDisplay().getIdWorkShop(),
+                    !ppmToImport.getMapToDisplay().getCommentary().startsWith("MOD ["),
                     ppmToImport.getMapToDisplay().getCommentary(),
                     selectedProfileNameList,
                     success,
@@ -159,7 +160,7 @@ public class ImportCustomMapsFromServerFacadeImpl
         return ppmToImport;
     }
 
-    private CustomMapMod createNewCustomMapFromWorkshop(List<String> platformNameList, Long idWorkShop, String mapName, List<String> profileNameList, StringBuffer success, StringBuffer errors, EntityManager em) throws Exception {
+    private CustomMapMod createNewCustomMapFromWorkshop(List<String> platformNameList, Long idWorkShop, boolean isMap, String mapName, List<String> profileNameList, StringBuffer success, StringBuffer errors, EntityManager em) throws Exception {
         ProfileService profileService = new ProfileServiceImpl(em);
         PlatformService platformService = new PlatformServiceImpl(em);
         PropertyService propertyService = new PropertyServiceImpl();
@@ -210,10 +211,10 @@ public class ImportCustomMapsFromServerFacadeImpl
         }
         String relativeTargetFolder = customMapLocalFolder + "/" + localfile.getName();
 
-        return createNewCustomMap(platformList, mapName, idWorkShop, relativeTargetFolder, profileList, success, errors, em);
+        return createNewCustomMap(platformList, mapName, idWorkShop, isMap, relativeTargetFolder, profileList, success, errors, em);
     }
 
-    private CustomMapMod createNewCustomMap(List<AbstractPlatform> platformList, String mapName, Long idWorkShop, String urlPhoto, List<Profile> profileList, StringBuffer success, StringBuffer errors, EntityManager em) throws Exception {
+    private CustomMapMod createNewCustomMap(List<AbstractPlatform> platformList, String mapName, Long idWorkShop, boolean isMap, String urlPhoto, List<Profile> profileList, StringBuffer success, StringBuffer errors, EntityManager em) throws Exception {
         PropertyService propertyService = new PropertyServiceImpl();
         CustomMapModServiceImpl customMapModService = new CustomMapModServiceImpl(em);
 
@@ -222,7 +223,8 @@ public class ImportCustomMapsFromServerFacadeImpl
         }
         String baseUrlWorkshop = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapBaseUrlWorkshop");
         String urlInfo = baseUrlWorkshop + idWorkShop;
-        CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop);
+
+        CustomMapMod customMap = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop, isMap);
         return (CustomMapMod) customMapModService.createMap(platformList, customMap, profileList, success, errors);
     }
 

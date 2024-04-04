@@ -11,6 +11,9 @@ import stories.updatemapsetalias.UpdateMapSetAliasModelContext;
 import stories.updatemapsetinfourl.UpdateMapSetInfoUrlFacade;
 import stories.updatemapsetinfourl.UpdateMapSetInfoUrlFacadeImpl;
 import stories.updatemapsetinfourl.UpdateMapSetInfoUrlModelContext;
+import stories.updatemapsetitemtype.UpdateMapSetItemTypeFacade;
+import stories.updatemapsetitemtype.UpdateMapSetItemTypeFacadeImpl;
+import stories.updatemapsetitemtype.UpdateMapSetItemTypeModelContext;
 import stories.updatemapsetreleasedate.UpdateMapSetReleaseDateFacade;
 import stories.updatemapsetreleasedate.UpdateMapSetReleaseDateFacadeImpl;
 import stories.updatemapsetreleasedate.UpdateMapSetReleaseDateModelContext;
@@ -91,5 +94,15 @@ public class MapEditionManagerFacadeImpl
         );
         UpdateMapSetReleaseDateFacade updateMapSetReleaseDateFacade = new UpdateMapSetReleaseDateFacadeImpl(updateMapSetReleaseDateModelContext);
         updateMapSetReleaseDateFacade.execute();
+    }
+
+    @Override
+    public void updateMapSetItemType(String mapName, boolean isMap) throws Exception {
+        UpdateMapSetItemTypeModelContext updateMapSetItemTypeModelContext = new UpdateMapSetItemTypeModelContext(
+                mapName,
+                isMap
+        );
+        UpdateMapSetItemTypeFacade updateMapSetItemTypeFacade = new UpdateMapSetItemTypeFacadeImpl(updateMapSetItemTypeModelContext);
+        updateMapSetItemTypeFacade.execute();
     }
 }

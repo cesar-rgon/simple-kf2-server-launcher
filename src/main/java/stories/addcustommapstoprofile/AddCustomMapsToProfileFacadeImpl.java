@@ -79,6 +79,7 @@ public class AddCustomMapsToProfileFacadeImpl
                     String[] result = getMapNameAndUrlImage(idWorkShop);
                     String mapName = result[0];
                     String strUrlMapImage = result[1];
+                    boolean isMap = Boolean.parseBoolean(result[2]);
 
                     Optional<CustomMapMod> mapModInDataBase = customMapService.findByIdWorkShop(idWorkShop);
                     if (!mapModInDataBase.isPresent()) {
@@ -87,7 +88,8 @@ public class AddCustomMapsToProfileFacadeImpl
                         profileNameList.add(facadeModelContext.getProfileName());
 
                         CustomMapMod customMap = customMapService.createNewCustomMapFromWorkshop(
-                                facadeModelContext.getPlatformNameList(), idWorkShop, profileNameList, mapName, strUrlMapImage, success, errors
+                                // TODO: Se considera que es un mapa. Corregir esto
+                                facadeModelContext.getPlatformNameList(), idWorkShop, profileNameList, mapName, strUrlMapImage, isMap, success, errors
                         );
                         if (customMap != null) {
                             customMapService.downloadMapFromSteamCmd(facadeModelContext.getPlatformNameList(), customMap, em);
@@ -151,6 +153,7 @@ public class AddCustomMapsToProfileFacadeImpl
         String strUrlMapImage = null;
         String mapName = null;
         String line;
+        Boolean isMap = null;
         while ((line = reader.readLine()) != null) {
             if (line.contains("image_src")) {
                 String[] array = line.split("\"");
@@ -161,12 +164,23 @@ public class AddCustomMapsToProfileFacadeImpl
                 String[] array2 = array[1].split("<");
                 mapName = array2[0];
             }
-            if (StringUtils.isNotEmpty(strUrlMapImage) && StringUtils.isNotEmpty(mapName)) {
+            if (line.contains("workshopTags") && line.contains("Maps and Mods")) {
+                String[] array = line.split("Maps and Mods");
+                if (array[1].contains("Maps")) {
+                    isMap = true;
+                } else {
+                    isMap = false;
+                }
+            } else {
+                isMap = false;
+            }
+
+            if (StringUtils.isNotEmpty(strUrlMapImage) && StringUtils.isNotEmpty(mapName) && isMap != null) {
                 break;
             }
         }
         reader.close();
-        return new String[]{mapName, strUrlMapImage};
+        return new String[]{mapName, strUrlMapImage, String.valueOf(isMap)};
     }
 
     private List<PlatformProfile> getPlatformProfileListWithoutMap(Long idWorkShop, EntityManager em) throws SQLException {

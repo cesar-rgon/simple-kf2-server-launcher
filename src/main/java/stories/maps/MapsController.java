@@ -33,7 +33,6 @@ import pojos.*;
 import pojos.enums.EnumMapsTab;
 import pojos.enums.EnumPlatform;
 import pojos.enums.EnumSortedMapsCriteria;
-import pojos.kf2factory.Kf2Common;
 import pojos.session.Session;
 import start.MainApplication;
 import stories.addcustommapstoprofile.AddCustomMapsToProfileFacadeResult;
@@ -47,10 +46,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class MapsController implements Initializable {
@@ -384,8 +384,14 @@ public class MapsController implements Initializable {
         gridpane.getStyleClass().add("gridPane");
         gridpane.setAlignment(Pos.CENTER);
 
-        mapPreview.setPreserveRatio(true);
-        mapPreview.setFitWidth(gridpane.getPrefWidth());
+        if (platformProfileMapDto.getMapDto().isOfficial()) {
+            mapPreview.setPreserveRatio(true);
+            mapPreview.setFitWidth(gridpane.getPrefWidth());
+        } else {
+            mapPreview.setPreserveRatio(false);
+            mapPreview.setFitWidth(gridpane.getPrefWidth());
+            mapPreview.setFitHeight(mapPreview.getFitWidth());
+        }
         gridpane.add(mapPreview, 1, 1);
         GridPane.setMargin(mapPreview, new Insets(3,3,0,3));
         GridPane.setHalignment(mapPreview, HPos.CENTER);
@@ -473,17 +479,52 @@ public class MapsController implements Initializable {
         if (platformProfileMapDto.getMapDto().isOfficial()) {
             importedDateText.setPadding(new Insets(0,0,10,0));
         } else {
-            String labelText = "";
+            CustomMapModDto customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
+            Label stateLabel;
+            String isMapModLabelText;
+
+            if (customMapMod.isMap() == null) {
+                try {
+                    isMapModLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unknownType");
+                } catch (Exception e) {
+                    isMapModLabelText = "UNKOWN TYPE";
+                }
+            } else {
+                if (customMapMod.isMap()) {
+                    try {
+                        isMapModLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.isMap");
+                    } catch (Exception e) {
+                        isMapModLabelText = "MAP";
+                    }
+                } else {
+                    try {
+                        isMapModLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.isMod");
+                    } catch (Exception e) {
+                        isMapModLabelText = "MOD / MUTATOR";
+                    }
+                }
+            }
+            stateLabel = new Label(isMapModLabelText);
+            stateLabel.setStyle("-fx-text-fill: #5fbb3d; -fx-font-weight: bold;");
+            HBox statePane = new HBox();
+            statePane.getChildren().addAll(stateLabel);
+            statePane.setMaxWidth(Double.MAX_VALUE);
+            statePane.setAlignment(Pos.CENTER);
+            statePane.setPadding(new Insets(10,0,10,0));
+            gridpane.add(statePane,1, rowIndex);
+            rowIndex++;
+
+            String downloadedLabelText = "";
             if (platformProfileMapDto.isDownloaded()) {
                 try {
-                    labelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.downloaded");
+                    downloadedLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.downloaded");
                 } catch (Exception e) {
-                    labelText = "DOWNLOADED";
+                    downloadedLabelText = "DOWNLOADED";
                 }
 
-                Label stateLabel = new Label(labelText);
+                stateLabel = new Label(downloadedLabelText);
                 stateLabel.setStyle("-fx-text-fill: gold; -fx-padding: 3; -fx-border-color: gold; -fx-border-radius: 5;");
-                HBox statePane = new HBox();
+                statePane = new HBox();
                 statePane.getChildren().addAll(stateLabel);
                 statePane.setMaxWidth(Double.MAX_VALUE);
                 statePane.setAlignment(Pos.CENTER);
@@ -492,12 +533,12 @@ public class MapsController implements Initializable {
 
             } else {
                 try {
-                    labelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.startServer");
+                    downloadedLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.startServer");
                 } catch (Exception e) {
-                    labelText = "Start server to download it";
+                    downloadedLabelText = "Start server to download it";
                 }
 
-                Hyperlink startServerLink = new Hyperlink(labelText);
+                Hyperlink startServerLink = new Hyperlink(downloadedLabelText);
                 startServerLink.setStyle("-fx-text-fill: #f03830; -fx-underline: true;");
                 startServerLink.setMaxWidth(Double.MAX_VALUE);
                 startServerLink.setAlignment(Pos.CENTER);
@@ -590,13 +631,16 @@ public class MapsController implements Initializable {
     }
 
     private Double getWidthGridPaneByNumberOfColums() {
-        return (MainApplication.getPrimaryStage().getWidth() - (50 * mapsSlider.getValue()) - 154) / mapsSlider.getValue();
+        return (MainApplication.getPrimaryStage().getWidth() - (50 * mapsSlider.getValue()) - 180) / mapsSlider.getValue();
     }
 
     private void resizeGridPane(GridPane gridPane) {
         gridPane.setPrefWidth(getWidthGridPaneByNumberOfColums());
         ImageView mapPreview = (ImageView) gridPane.getChildren().get(0);
         mapPreview.setFitWidth(gridPane.getPrefWidth());
+        if (!mapPreview.isPreserveRatio()) {
+            mapPreview.setFitHeight(mapPreview.getFitWidth());
+        }
         Label mapNameLabel = (Label) gridPane.getChildren().get(2);
         mapNameLabel.setMaxWidth(mapPreview.getFitWidth() - 25);
     }

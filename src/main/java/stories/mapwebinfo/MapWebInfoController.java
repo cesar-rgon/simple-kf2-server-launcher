@@ -32,6 +32,8 @@ import stories.getplatformprofilelistwithoutmap.GetPlatformProfileListWithoutMap
 import stories.getplatformprofilelistwithoutmap.GetPlatformProfileListWithoutMapModelContext;
 import utils.Utils;
 
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.ByteArrayInputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
@@ -47,6 +49,7 @@ public class MapWebInfoController implements Initializable {
     private Long idWorkShop;
     private String mapName;
     private String strUrlMapImage;
+    private boolean isMap;
     protected String languageCode;
 
     @FXML private WebView mapInfoWebView;
@@ -62,6 +65,7 @@ public class MapWebInfoController implements Initializable {
         idWorkShop = null;
         mapName = null;
         strUrlMapImage = null;
+        isMap = false;
     }
 
     @FXML
@@ -132,6 +136,20 @@ public class MapWebInfoController implements Initializable {
                                             if ("image_src".equalsIgnoreCase(linkAttrList.getNamedItem("rel").getTextContent())) {
                                                 strUrlMapImage = linkAttrList.getNamedItem("href").getTextContent();
                                                 break;
+                                            }
+                                        }
+                                    }
+
+                                    NodeList divList = doc.getElementsByTagName("div");
+                                    for (int i=0; i < divList.getLength(); i++) {
+                                        Node div = divList.item(i);
+                                        if (div.hasAttributes()) {
+                                            NamedNodeMap divAttrList = div.getAttributes();
+                                            if (divAttrList.getNamedItem("class") != null) {
+                                                if ("workshopTags".equalsIgnoreCase(divAttrList.getNamedItem("class").getTextContent())) {
+                                                    isMap = div.getTextContent().replace("Maps and Mods", "").contains("Maps");
+                                                    break;
+                                                }
                                             }
                                         }
                                     }
@@ -265,6 +283,7 @@ public class MapWebInfoController implements Initializable {
                                             idWorkShop,
                                             mapName,
                                             strUrlMapImage,
+                                            isMap,
                                             profileNameList
                                     );
                                     mapModInDataBase = result.getCustomMapDto();

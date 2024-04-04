@@ -1,5 +1,6 @@
 package stories.loadactualprofile;
 
+import dtos.CustomMapModDto;
 import dtos.PlatformDto;
 import dtos.PlatformProfileMapDto;
 import dtos.ProfileDto;
@@ -7,6 +8,7 @@ import dtos.factories.PlatformDtoFactory;
 import dtos.factories.PlatformProfileMapDtoFactory;
 import dtos.factories.ProfileDtoFactory;
 import entities.AbstractPlatform;
+import entities.CustomMapMod;
 import entities.PlatformProfileMap;
 import entities.Profile;
 import framework.AbstractTransactionalFacade;
@@ -60,6 +62,7 @@ public class LoadActualProfileFacadeImpl
         List<PlatformProfileMapDto> downloadedCustomMaps = platformProfileMapList.stream()
                 .sorted((ppm1, ppm2) -> ppm1.getAlias().compareTo(ppm2.getAlias()))
                 .filter(ppm -> !ppm.getMapDto().isOfficial())
+                .filter(ppm -> ((CustomMapModDto)ppm.getMapDto()).isMap())
                 .filter(ppm -> ppm.isDownloaded())
                 .collect(Collectors.toList());
 

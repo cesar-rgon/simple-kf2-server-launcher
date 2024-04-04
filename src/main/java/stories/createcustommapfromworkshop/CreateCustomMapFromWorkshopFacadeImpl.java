@@ -38,6 +38,7 @@ public class CreateCustomMapFromWorkshopFacadeImpl
                 facadeModelContext.getProfileNameList(),
                 facadeModelContext.getMapName(),
                 facadeModelContext.getStrUrlMapImage(),
+                facadeModelContext.isMap(),
                 success,
                 errors
         );

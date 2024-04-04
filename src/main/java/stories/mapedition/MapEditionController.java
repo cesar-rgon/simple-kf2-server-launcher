@@ -20,8 +20,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import pojos.session.Session;
-import services.PropertyService;
-import services.PropertyServiceImpl;
 import start.MainApplication;
 import utils.Utils;
 
@@ -74,6 +72,8 @@ public class MapEditionController implements Initializable {
     @FXML private TextField aliasTextField;
     @FXML private Label aliasLabel;
     @FXML private ImageView aliasImg;
+    @FXML private RadioButton mapRadioButton;
+    @FXML private RadioButton modRadioButton;
 
     public MapEditionController() {
         super();
@@ -173,7 +173,6 @@ public class MapEditionController implements Initializable {
                     if (imgList != null && imgList.getLength() > 0) {
                         Element img = (Element) imgList.item(0);
                         img.setAttribute("preserveRatio", "true");
-                        //img.setAttribute("width", "512");
                         img.setAttribute("height", "256");
                     }
 
@@ -343,7 +342,17 @@ public class MapEditionController implements Initializable {
                 String yesText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.yes");
                 String noText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.no");
 
-                officialValue.setText(platformProfileMapDto.getMapDto().isOfficial() ? yesText : noText);
+                if (platformProfileMapDto.getMapDto().isOfficial()) {
+                    officialValue.setText(yesText);
+                    mapRadioButton.setSelected(true);
+                    modRadioButton.setDisable(true);
+                } else {
+                    officialValue.setText(noText);
+                    mapRadioButton.setSelected(((CustomMapModDto)platformProfileMapDto.getMapDto()).isMap());
+                    modRadioButton.setDisable(false);
+                }
+                modRadioButton.setSelected(!mapRadioButton.isSelected());
+
                 downloadedValue.setText(platformProfileMapDto.getMapDto().isOfficial() ? yesText : platformProfileMapDto.isDownloaded() ? yesText : noText);
                 platformValue.setText(platformProfileMapDto.getPlatformDto().getValue());
                 idWorkShopValue.setText(platformProfileMapDto.getMapDto().isOfficial() ? StringUtils.EMPTY : String.valueOf(((CustomMapModDto) platformProfileMapDto.getMapDto()).getIdWorkShop()));
@@ -430,4 +439,33 @@ public class MapEditionController implements Initializable {
         loadProfileMapData(profileMapIndex);
     }
 
+    @FXML
+    private void mapRadioButtonOnAction() {
+        PlatformProfileMapDto edittedPlatformProfileMap = Session.getInstance().getPlatformProfileMapList().get(profileMapIndex);
+        boolean isMap = true;
+        try {
+            facade.updateMapSetItemType(
+                    edittedPlatformProfileMap.getMapDto().getKey(),
+                    isMap
+            );
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog("Error setting map radio button value", e);
+        }
+    }
+
+    @FXML
+    private void modRadioButtonOnAction() {
+        PlatformProfileMapDto edittedPlatformProfileMap = Session.getInstance().getPlatformProfileMapList().get(profileMapIndex);
+        boolean isMap = false;
+        try {
+            facade.updateMapSetItemType(
+                    edittedPlatformProfileMap.getMapDto().getKey(),
+                    isMap
+            );
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog("Error setting mod radio button value", e);
+        }
+    }
 }

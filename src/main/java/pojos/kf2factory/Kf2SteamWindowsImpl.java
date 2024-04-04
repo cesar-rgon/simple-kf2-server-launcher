@@ -199,10 +199,10 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
             }
             command.append("?ConfigSubDir=").append(profile.getCode());
 
-            replaceInFileKfEngineIni(this.platform.getInstallationFolder(), profile, "PCServer-KFEngine.ini");
-            replaceInFileKfWebIni(this.platform.getInstallationFolder(), profile, StandardCharsets.ISO_8859_1);
-            replaceInFileKfGameIni(this.platform.getInstallationFolder(), profile, "PCServer-KFGame.ini");
-            replaceInFileKfWebAdminIni(this.platform.getInstallationFolder(), profile);
+            replaceInFileKfEngineIni(this.platform, profile, "PCServer-KFEngine.ini");
+            replaceInFileKfWebIni(this.platform, profile, StandardCharsets.ISO_8859_1);
+            replaceInFileKfGameIni(this.platform, profile, "PCServer-KFGame.ini");
+            replaceInFileKfWebAdminIni(this.platform, profile);
 
             Process process = Runtime.getRuntime().exec(command.toString(),null, new File(this.platform.getInstallationFolder()));
             Session.getInstance().getProcessList().add(process);
