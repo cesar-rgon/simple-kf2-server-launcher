@@ -391,6 +391,7 @@ public class Kf2Utils {
                                     throw new RuntimeException(e.getMessage(), e);
                                 }
                             }).
+                            filter(m -> ((CustomMapMod)m).getMap() != null ? ((CustomMapMod)m).getMap(): false).
                             sorted((o1, o2) -> o1.getCode().compareTo(o2.getCode())).
                             collect(Collectors.toList());
 

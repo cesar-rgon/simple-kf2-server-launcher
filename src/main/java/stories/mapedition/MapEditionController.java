@@ -19,14 +19,19 @@ import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+import pojos.enums.EnumPlatform;
 import pojos.session.Session;
 import start.MainApplication;
+import stories.maps.MapsManagerFacade;
+import stories.maps.MapsManagerFacadeImpl;
+import stories.mapsinitialize.MapsInitializeModelContext;
 import utils.Utils;
 
 import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class MapEditionController implements Initializable {
@@ -34,6 +39,7 @@ public class MapEditionController implements Initializable {
     private static final Logger logger = LogManager.getLogger(MapEditionController.class);
 
     private final MapEditionManagerFacade facade;
+    private final MapsManagerFacade mapsManagerFacade;
     private String languageCode;
     private int profileMapIndex;
 
@@ -75,9 +81,15 @@ public class MapEditionController implements Initializable {
     @FXML private RadioButton mapRadioButton;
     @FXML private RadioButton modRadioButton;
 
+
     public MapEditionController() {
         super();
         facade = new MapEditionManagerFacadeImpl();
+        profileMapIndex = 0;
+        MapsInitializeModelContext mapsInitializeModelContext = new MapsInitializeModelContext(
+                Session.getInstance().getPlatformProfileMapList().get(profileMapIndex).getProfileDto().getName()
+        );
+        mapsManagerFacade = new MapsManagerFacadeImpl(mapsInitializeModelContext);
     }
 
 
@@ -162,7 +174,6 @@ public class MapEditionController implements Initializable {
             Utils.errorDialog(e.getMessage(), e);
         }
 
-        profileMapIndex = 0;
         loadProfileMapData(profileMapIndex);
 
         mapPreviewWebView.getEngine().documentProperty().addListener(new ChangeListener<Document>() {
@@ -334,8 +345,16 @@ public class MapEditionController implements Initializable {
             WebEngine webEngine = mapPreviewWebView.getEngine();
 
             if (!Session.getInstance().getPlatformProfileMapList().isEmpty()) {
-                PlatformProfileMapDto platformProfileMapDto = Session.getInstance().getPlatformProfileMapList().get(mapIndex);
+                Optional<PlatformProfileMapDto> platformProfileMapDtoOptional = mapsManagerFacade.findPlatformProfileMapDtoByName(
+                        Session.getInstance().getPlatformProfileMapList().get(mapIndex).getPlatformDto().getKey(),
+                        Session.getInstance().getPlatformProfileMapList().get(mapIndex).getProfileDto().getName(),
+                        Session.getInstance().getPlatformProfileMapList().get(mapIndex).getMapDto().getKey()
+                );
+                if (!platformProfileMapDtoOptional.isPresent()) {
+                    throw new RuntimeException("The map can not be found to be editted!:" + Session.getInstance().getPlatformProfileMapList().get(mapIndex).getMapDto().getKey());
+                }
 
+                PlatformProfileMapDto platformProfileMapDto = platformProfileMapDtoOptional.get();
                 mapNameValue.setText(platformProfileMapDto.getMapDto().getKey());
                 aliasTextField.setText(platformProfileMapDto.getAlias());
 
