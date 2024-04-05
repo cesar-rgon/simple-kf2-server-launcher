@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.hibernate.Hibernate;
+import pojos.CustomMapIndex;
 import pojos.MapToDisplay;
 import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Factory;
@@ -235,6 +236,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
         if (!isOfficialMap) {
             CustomMapMod customMapMod = (CustomMapMod) Hibernate.unproxy(ppm.getMap());
             properties.setProperty("exported.profile" + profileIndex + ".platform" + ppm.getPlatform().getCode() + ".map" + mapIndex + ".idWorkShop", customMapMod.getIdWorkShop()!=null? String.valueOf(customMapMod.getIdWorkShop()): "");
+            properties.setProperty("exported.profile" + profileIndex + ".platform" + ppm.getPlatform().getCode() + ".map" + mapIndex + ".isMap", customMapMod.getMap()!=null? String.valueOf(customMapMod.getMap()): "");
         }
 
         // Save copied map values (they could be edited and changed)
@@ -643,6 +645,11 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
         return (Long) (StringUtils.isNotBlank(strIdWorkShop) ? Long.parseLong(strIdWorkShop): 0L);
     }
 
+    private Boolean getIsMap(int profileIndex, EnumPlatform enumPlatform, int mapIndex, Properties properties) throws NumberFormatException {
+        String strIsMap = properties.getProperty("exported.profile" + profileIndex + ".platform" + enumPlatform.name() + ".map" + mapIndex + ".isMap");
+        return (Boolean) (StringUtils.isNotBlank(strIsMap) ? Boolean.parseBoolean(strIsMap): null);
+    }
+
     private List<AbstractMap> importPlatformProfileMapsFromFile(int profileIndex, Profile profile, Properties properties) throws Exception {
         OfficialMapServiceImpl officialMapService = new OfficialMapServiceImpl(em);
         CustomMapModServiceImpl customMapService = new CustomMapModServiceImpl(em);
@@ -653,8 +660,9 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
 
         java.util.Map<String,Integer> steamOfficialMapsIndex = new HashMap<String, Integer>();
         java.util.Map<String,Integer> epicOfficialMapsIndex = new HashMap<String, Integer>();
-        java.util.Map<Long,Integer> steamCustomMapsIndex = new HashMap<Long, Integer>();
-        java.util.Map<Long,Integer> epicCustomMapsIndex = new HashMap<Long, Integer>();
+
+        List<CustomMapIndex> steamCustomMapList = new ArrayList<CustomMapIndex>();
+        List<CustomMapIndex> epicCustomMapList = new ArrayList<CustomMapIndex>();
 
         int steamMapListSize = getMapListSize(profileIndex, EnumPlatform.STEAM, properties);
         for (int mapIndex = 1; mapIndex <= steamMapListSize; mapIndex++) {
@@ -665,10 +673,11 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                     steamOfficialMapsIndex.put(mapName, Integer.valueOf(mapIndex));
                 } else {
                     Long idWorkShop = getIdWorkShop(profileIndex, EnumPlatform.STEAM, mapIndex, properties);
+                    Boolean isMap = getIsMap(profileIndex, EnumPlatform.STEAM, mapIndex, properties);
                     MapToDisplay mapToDisplay = new MapToDisplay(idWorkShop, mapName);
                     mapToDisplay.setPlatformDescription(EnumPlatform.STEAM.getDescripcion());
                     customMapListToDisplay.add(mapToDisplay);
-                    steamCustomMapsIndex.put(idWorkShop, Integer.valueOf(mapIndex));
+                    steamCustomMapList.add(new CustomMapIndex(Integer.valueOf(mapIndex), idWorkShop, isMap));
                 }
             } catch (Exception e) {
                 logger.error("Error importing the map " + mapName + " of profile index " + profileIndex + " in platform " + EnumPlatform.STEAM.getDescripcion() + " from file", e);
@@ -684,10 +693,11 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                     epicOfficialMapsIndex.put(mapName, Integer.valueOf(mapIndex));
                 } else {
                     Long idWorkShop = getIdWorkShop(profileIndex, EnumPlatform.EPIC, mapIndex, properties);
+                    Boolean isMap = getIsMap(profileIndex, EnumPlatform.EPIC, mapIndex, properties);
                     MapToDisplay mapToDisplay = new MapToDisplay(idWorkShop, mapName);
                     mapToDisplay.setPlatformDescription(EnumPlatform.EPIC.getDescripcion());
                     customMapListToDisplay.add(mapToDisplay);
-                    epicCustomMapsIndex.put(idWorkShop, Integer.valueOf(mapIndex));
+                    epicCustomMapList.add(new CustomMapIndex(Integer.valueOf(mapIndex), idWorkShop, isMap));
                 }
             } catch (Exception e) {
                 logger.error("Error importing the map " + mapName + " of profile index " + profileIndex + " in platform " + EnumPlatform.EPIC.getDescripcion() + " from file", e);
@@ -703,7 +713,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
             Integer mapIndex = entry.getValue();
             try {
                 Optional mapInDataBaseOpt = officialMapService.findMapByCode(mapName);
-                AbstractMap map = getImportedMap(EnumPlatform.STEAM, mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, mapName, null, true);
+                AbstractMap map = getImportedMap(EnumPlatform.STEAM, mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, mapName, null, true,true);
                 if (map != null) {
                     mapList.add(map);
                     importPlatformProfileMap(EnumPlatform.STEAM, profile, map, true, profileIndex, mapIndex,  properties);
@@ -718,7 +728,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
             Integer mapIndex = entry.getValue();
             try {
                 Optional mapInDataBaseOpt = officialMapService.findMapByCode(mapName);
-                AbstractMap map = getImportedMap(EnumPlatform.EPIC, mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, mapName, null, true);
+                AbstractMap map = getImportedMap(EnumPlatform.EPIC, mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, mapName, null, true, true);
                 if (map != null) {
                     mapList.add(map);
                     importPlatformProfileMap(EnumPlatform.EPIC, profile, map, true, profileIndex, mapIndex,  properties);
@@ -731,17 +741,29 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
         for (MapToDisplay customMap: selectedCustomMapList) {
             EnumPlatform enumPlatform = null;
             Integer mapIndex = null;
+            Boolean isMap = null;
             if (customMap.getPlatformDescription().equals(EnumPlatform.STEAM.getDescripcion())) {
                 enumPlatform = EnumPlatform.STEAM;
-                mapIndex = steamCustomMapsIndex.get(customMap.getIdWorkShop());
+                Optional<CustomMapIndex> steamCustomMapIndexOptional = steamCustomMapList.stream().filter(cm -> cm.getIdWorkShop().equals(customMap.getIdWorkShop())).findFirst();
+                if (!steamCustomMapIndexOptional.isPresent()) {
+                    continue;
+                }
+                mapIndex = steamCustomMapIndexOptional.get().getMapIndex();
+                isMap = steamCustomMapIndexOptional.get().getMap();
+
             } else {
                 enumPlatform = EnumPlatform.EPIC;
-                mapIndex = epicCustomMapsIndex.get(customMap.getIdWorkShop());
+                Optional<CustomMapIndex> epicCustomMapIndexOptional = epicCustomMapList.stream().filter(cm -> cm.getIdWorkShop().equals(customMap.getIdWorkShop())).findFirst();
+                if (!epicCustomMapIndexOptional.isPresent()) {
+                    continue;
+                }
+                mapIndex = epicCustomMapIndexOptional.get().getMapIndex();
+                isMap = epicCustomMapIndexOptional.get().getMap();
             }
 
             try {
                 Optional mapInDataBaseOpt = customMapService.findByIdWorkShop(customMap.getIdWorkShop());
-                AbstractMap map = getImportedMap(enumPlatform, mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, customMap.getCommentary(), customMap.getIdWorkShop(), false);
+                AbstractMap map = getImportedMap(enumPlatform, mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, customMap.getCommentary(), customMap.getIdWorkShop(), isMap, false);
                 if (map != null) {
                     mapList.add(map);
                     importPlatformProfileMap(enumPlatform, profile, map, false, profileIndex, mapIndex,  properties);
@@ -865,7 +887,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
         return StringUtils.isNotBlank(releaseDateStr) ? new SimpleDateFormat("yyyy/MM/dd").parse(releaseDateStr): null;
     }
 
-    private AbstractMap getImportedMap(EnumPlatform enumPlatform, Optional<AbstractMap> mapInDataBaseOpt, Profile profile, Properties properties, int profileIndex, Integer mapIndex, String mapName, Long idWorkShop, boolean official) throws Exception {
+    private AbstractMap getImportedMap(EnumPlatform enumPlatform, Optional<AbstractMap> mapInDataBaseOpt, Profile profile, Properties properties, int profileIndex, Integer mapIndex, String mapName, Long idWorkShop, Boolean isMap, boolean official) throws Exception {
         OfficialMapServiceImpl officialMapService = new OfficialMapServiceImpl(em);
         CustomMapModServiceImpl customMapService = new CustomMapModServiceImpl(em);
 
@@ -889,8 +911,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                 map = new OfficialMap(mapName, urlInfo, urlPhoto, releaseDate);
                 return officialMapService.createItem(map);
             } else {
-                // TODO: Se esta considerando que es un mapa. Corregir esto
-                map = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop, true);
+                map = new CustomMapMod(mapName, urlInfo, urlPhoto, idWorkShop, isMap);
                 if (createNewCustomMapFromWorkshop((CustomMapMod) map)) {
                     return map;
                 }

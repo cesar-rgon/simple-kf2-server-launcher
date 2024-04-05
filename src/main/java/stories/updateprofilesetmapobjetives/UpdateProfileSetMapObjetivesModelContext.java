@@ -17,7 +17,7 @@ public class UpdateProfileSetMapObjetivesModelContext extends ModelContext {
         return profileName;
     }
 
-    public boolean isMapObjetivesSelected() {
+    public Boolean isMapObjetivesSelected() {
         return mapObjetivesSelected;
     }
 }

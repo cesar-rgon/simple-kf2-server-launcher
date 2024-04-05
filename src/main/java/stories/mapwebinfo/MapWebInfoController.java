@@ -49,7 +49,7 @@ public class MapWebInfoController implements Initializable {
     private Long idWorkShop;
     private String mapName;
     private String strUrlMapImage;
-    private boolean isMap;
+    private Boolean isMap;
     protected String languageCode;
 
     @FXML private WebView mapInfoWebView;

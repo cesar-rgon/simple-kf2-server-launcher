@@ -62,7 +62,7 @@ public class LoadActualProfileFacadeImpl
         List<PlatformProfileMapDto> downloadedCustomMaps = platformProfileMapList.stream()
                 .sorted((ppm1, ppm2) -> ppm1.getAlias().compareTo(ppm2.getAlias()))
                 .filter(ppm -> !ppm.getMapDto().isOfficial())
-                .filter(ppm -> ((CustomMapModDto)ppm.getMapDto()).isMap())
+                .filter(ppm -> ((CustomMapModDto)ppm.getMapDto()).isMap() != null ? ((CustomMapModDto)ppm.getMapDto()).isMap(): false)
                 .filter(ppm -> ppm.isDownloaded())
                 .collect(Collectors.toList());
 

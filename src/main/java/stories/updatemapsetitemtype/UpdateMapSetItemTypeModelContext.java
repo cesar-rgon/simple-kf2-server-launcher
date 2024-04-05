@@ -5,9 +5,9 @@ import framework.ModelContext;
 public class UpdateMapSetItemTypeModelContext extends ModelContext {
 
     private final String mapName;
-    private final boolean isMap;
+    private final Boolean isMap;
 
-    public UpdateMapSetItemTypeModelContext(String mapName, boolean isMap) {
+    public UpdateMapSetItemTypeModelContext(String mapName, Boolean isMap) {
         super();
         this.mapName = mapName;
         this.isMap = isMap;
@@ -17,7 +17,7 @@ public class UpdateMapSetItemTypeModelContext extends ModelContext {
         return mapName;
     }
 
-    public boolean isMap() {
+    public Boolean isMap() {
         return isMap;
     }
 }

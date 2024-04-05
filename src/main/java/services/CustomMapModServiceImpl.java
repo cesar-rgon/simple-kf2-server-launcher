@@ -104,7 +104,7 @@ public class CustomMapModServiceImpl extends AbstractMapService {
     }
 
 
-    public CustomMapMod createNewCustomMapFromWorkshop(List<String> platformNameList, Long idWorkShop, List<String> profileNameList, String mapName, String strUrlMapImage, boolean isMap, StringBuffer success, StringBuffer errors) throws Exception {
+    public CustomMapMod createNewCustomMapFromWorkshop(List<String> platformNameList, Long idWorkShop, List<String> profileNameList, String mapName, String strUrlMapImage, Boolean isMap, StringBuffer success, StringBuffer errors) throws Exception {
         ProfileService profileService = new ProfileServiceImpl(em);
 
         List<Profile> profileList = profileService.getProfileListByNames(profileNameList, success, errors);
@@ -135,7 +135,7 @@ public class CustomMapModServiceImpl extends AbstractMapService {
         return insertedMap;
     }
 
-    private CustomMapMod createNewCustomMap(List<AbstractPlatform> platformList, String mapName, Long idWorkShop, String urlPhoto, boolean isMap, List<Profile> profileList, StringBuffer success, StringBuffer errors, EntityManager em) throws Exception {
+    private CustomMapMod createNewCustomMap(List<AbstractPlatform> platformList, String mapName, Long idWorkShop, String urlPhoto, Boolean isMap, List<Profile> profileList, StringBuffer success, StringBuffer errors, EntityManager em) throws Exception {
         PropertyService propertyService = new PropertyServiceImpl();
         CustomMapModServiceImpl customMapModService = new CustomMapModServiceImpl(em);
 

@@ -160,7 +160,7 @@ public class ImportCustomMapsFromServerFacadeImpl
         return ppmToImport;
     }
 
-    private CustomMapMod createNewCustomMapFromWorkshop(List<String> platformNameList, Long idWorkShop, boolean isMap, String mapName, List<String> profileNameList, StringBuffer success, StringBuffer errors, EntityManager em) throws Exception {
+    private CustomMapMod createNewCustomMapFromWorkshop(List<String> platformNameList, Long idWorkShop, Boolean isMap, String mapName, List<String> profileNameList, StringBuffer success, StringBuffer errors, EntityManager em) throws Exception {
         ProfileService profileService = new ProfileServiceImpl(em);
         PlatformService platformService = new PlatformServiceImpl(em);
         PropertyService propertyService = new PropertyServiceImpl();
@@ -214,7 +214,7 @@ public class ImportCustomMapsFromServerFacadeImpl
         return createNewCustomMap(platformList, mapName, idWorkShop, isMap, relativeTargetFolder, profileList, success, errors, em);
     }
 
-    private CustomMapMod createNewCustomMap(List<AbstractPlatform> platformList, String mapName, Long idWorkShop, boolean isMap, String urlPhoto, List<Profile> profileList, StringBuffer success, StringBuffer errors, EntityManager em) throws Exception {
+    private CustomMapMod createNewCustomMap(List<AbstractPlatform> platformList, String mapName, Long idWorkShop, Boolean isMap, String urlPhoto, List<Profile> profileList, StringBuffer success, StringBuffer errors, EntityManager em) throws Exception {
         PropertyService propertyService = new PropertyServiceImpl();
         CustomMapModServiceImpl customMapModService = new CustomMapModServiceImpl(em);
 

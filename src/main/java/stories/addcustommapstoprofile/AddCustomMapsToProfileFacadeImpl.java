@@ -79,7 +79,7 @@ public class AddCustomMapsToProfileFacadeImpl
                     String[] result = getMapNameAndUrlImage(idWorkShop);
                     String mapName = result[0];
                     String strUrlMapImage = result[1];
-                    boolean isMap = Boolean.parseBoolean(result[2]);
+                    Boolean isMap = Boolean.parseBoolean(result[2]);
 
                     Optional<CustomMapMod> mapModInDataBase = customMapService.findByIdWorkShop(idWorkShop);
                     if (!mapModInDataBase.isPresent()) {

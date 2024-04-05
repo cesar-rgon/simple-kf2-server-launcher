@@ -15,7 +15,7 @@ public interface MapWebInfoManagerFacade {
     boolean isCorrectInstallationFolder(String platformName) throws Exception;
     CustomMapModDto findMapOrModByIdWorkShop(Long idWorkShop) throws Exception;
     int countPlatformsProfilesForMap(String customMapName) throws Exception;
-    CreateCustomMapFromWorkshopFacadeResult createNewCustomMapFromWorkshop(List<String> platformNameList, Long idWorkShop, String mapName, String strUrlMapImage, boolean isMap, List<String> profileNameList) throws Exception;
+    CreateCustomMapFromWorkshopFacadeResult createNewCustomMapFromWorkshop(List<String> platformNameList, Long idWorkShop, String mapName, String strUrlMapImage, Boolean isMap, List<String> profileNameList) throws Exception;
     AddPlatformProfilesToMapFacadeResult addPlatformProfilesToMap(List<String> platformNameList, String mapName, String strUrlMapImage, List<String> profileNameList) throws Exception;
     List<PlatformProfileToDisplay> getSelectedPlatformProfileList(List<PlatformProfile> platformProfileList) throws Exception;
     String findPropertyValue(String propertyFilePath, String key) throws Exception;

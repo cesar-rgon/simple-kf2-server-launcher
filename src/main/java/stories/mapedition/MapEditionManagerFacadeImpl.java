@@ -97,7 +97,7 @@ public class MapEditionManagerFacadeImpl
     }
 
     @Override
-    public void updateMapSetItemType(String mapName, boolean isMap) throws Exception {
+    public void updateMapSetItemType(String mapName, Boolean isMap) throws Exception {
         UpdateMapSetItemTypeModelContext updateMapSetItemTypeModelContext = new UpdateMapSetItemTypeModelContext(
                 mapName,
                 isMap

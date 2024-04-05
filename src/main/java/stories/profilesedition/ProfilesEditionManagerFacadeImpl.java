@@ -8,6 +8,7 @@ import javafx.collections.ObservableList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.ProfileToDisplay;
+import services.GameTypeServiceImpl;
 import services.ProfileServiceImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -24,6 +25,10 @@ import stories.deleteallitems.DeleteAllItemsFacadeImpl;
 import stories.deleteselectedprofile.DeleteSelectedProfileFacade;
 import stories.deleteselectedprofile.DeleteSelectedProfileFacadeImpl;
 import stories.deleteselectedprofile.DeleteSelectedProfileModelContext;
+import stories.entitydescriptions.EntityDescriptionsFacade;
+import stories.entitydescriptions.EntityDescriptionsFacadeImpl;
+import stories.entitydescriptions.EntityDescriptionsFacadeResult;
+import stories.entitydescriptions.EntityDescriptionsModelContext;
 import stories.exportprofilestofile.ExportProfilesToFileFacade;
 import stories.exportprofilestofile.ExportProfilesToFileFacadeImpl;
 import stories.exportprofilestofile.ExportProfilesToFileModelContext;
@@ -176,14 +181,20 @@ public class ProfilesEditionManagerFacadeImpl
             String profileName = properties.getProperty("exported.profile" + profileIndex + ".name");
             try {
                 String gameTypeCode = properties.getProperty("exported.profile" + profileIndex + ".gameType");
-                String gameTypeDescription = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.gametype." + gameTypeCode);
                 String difficultyCode = properties.getProperty("exported.profile" + profileIndex + ".difficulty");
-                String difficultyDescription = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.difficulty." + difficultyCode);
                 String lengthCode = properties.getProperty("exported.profile" + profileIndex + ".length");
-                String lengthDescription = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.length." + lengthCode);
+
+                EntityDescriptionsModelContext entityDescriptionsModelContext = new EntityDescriptionsModelContext(
+                        languageCode,
+                        gameTypeCode,
+                        difficultyCode,
+                        lengthCode
+                );
+                EntityDescriptionsFacade entityDescriptionsFacade = new EntityDescriptionsFacadeImpl(entityDescriptionsModelContext);
+                EntityDescriptionsFacadeResult result = entityDescriptionsFacade.execute();
                 String mapName = properties.getProperty("exported.profile" + profileIndex + ".map");
 
-                ProfileToDisplay profileToDisplay = new ProfileToDisplay(profileIndex, profileName, gameTypeDescription, mapName, difficultyDescription, lengthDescription);
+                ProfileToDisplay profileToDisplay = new ProfileToDisplay(profileIndex, profileName, result.getGametypeDescription(), mapName, result.getDifficultyDescription(), result.getLengthDescription());
                 profileToDisplay.setSelected(true);
                 profileToDisplayList.add(profileToDisplay);
 

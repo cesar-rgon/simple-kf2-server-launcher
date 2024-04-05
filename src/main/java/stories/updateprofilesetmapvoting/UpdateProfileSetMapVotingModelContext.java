@@ -17,7 +17,7 @@ public class UpdateProfileSetMapVotingModelContext extends ModelContext {
         return profileName;
     }
 
-    public boolean isMapVotingSelected() {
+    public Boolean isMapVotingSelected() {
         return mapVotingSelected;
     }
 }

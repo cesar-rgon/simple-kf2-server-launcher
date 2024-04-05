@@ -13,7 +13,7 @@ public class CreateCustomMapFromWorkshopModelContext extends ModelContext {
     private final boolean isMap;
     private final List<String> profileNameList;
 
-    public CreateCustomMapFromWorkshopModelContext(List<String> platformNameList, Long idWorkShop, String mapName, String strUrlMapImage, boolean isMap, List<String> profileNameList) {
+    public CreateCustomMapFromWorkshopModelContext(List<String> platformNameList, Long idWorkShop, String mapName, String strUrlMapImage, Boolean isMap, List<String> profileNameList) {
         super();
         this.platformNameList = platformNameList;
         this.idWorkShop = idWorkShop;

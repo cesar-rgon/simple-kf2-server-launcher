@@ -87,7 +87,7 @@ public class MapWebInfoManagerFacadeImpl
     }
 
     @Override
-    public CreateCustomMapFromWorkshopFacadeResult createNewCustomMapFromWorkshop(List<String> platformNameList, Long idWorkShop, String mapName, String strUrlMapImage, boolean isMap, List<String> profileNameList) throws Exception {
+    public CreateCustomMapFromWorkshopFacadeResult createNewCustomMapFromWorkshop(List<String> platformNameList, Long idWorkShop, String mapName, String strUrlMapImage, Boolean isMap, List<String> profileNameList) throws Exception {
         CreateCustomMapFromWorkshopModelContext createCustomMapFromWorkshopModelContext = new CreateCustomMapFromWorkshopModelContext(
                 platformNameList,
                 idWorkShop,

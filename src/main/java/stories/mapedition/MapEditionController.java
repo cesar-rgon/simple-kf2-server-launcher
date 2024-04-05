@@ -345,13 +345,19 @@ public class MapEditionController implements Initializable {
                 if (platformProfileMapDto.getMapDto().isOfficial()) {
                     officialValue.setText(yesText);
                     mapRadioButton.setSelected(true);
+                    modRadioButton.setSelected(false);
                     modRadioButton.setDisable(true);
                 } else {
                     officialValue.setText(noText);
-                    mapRadioButton.setSelected(((CustomMapModDto)platformProfileMapDto.getMapDto()).isMap());
                     modRadioButton.setDisable(false);
+                    if (((CustomMapModDto)platformProfileMapDto.getMapDto()).isMap() != null) {
+                        mapRadioButton.setSelected(((CustomMapModDto)platformProfileMapDto.getMapDto()).isMap());
+                        modRadioButton.setSelected(!mapRadioButton.isSelected());
+                    } else {
+                        mapRadioButton.setSelected(false);
+                        modRadioButton.setSelected(false);
+                    }
                 }
-                modRadioButton.setSelected(!mapRadioButton.isSelected());
 
                 downloadedValue.setText(platformProfileMapDto.getMapDto().isOfficial() ? yesText : platformProfileMapDto.isDownloaded() ? yesText : noText);
                 platformValue.setText(platformProfileMapDto.getPlatformDto().getValue());
@@ -442,7 +448,7 @@ public class MapEditionController implements Initializable {
     @FXML
     private void mapRadioButtonOnAction() {
         PlatformProfileMapDto edittedPlatformProfileMap = Session.getInstance().getPlatformProfileMapList().get(profileMapIndex);
-        boolean isMap = true;
+        Boolean isMap = true;
         try {
             facade.updateMapSetItemType(
                     edittedPlatformProfileMap.getMapDto().getKey(),
@@ -457,7 +463,7 @@ public class MapEditionController implements Initializable {
     @FXML
     private void modRadioButtonOnAction() {
         PlatformProfileMapDto edittedPlatformProfileMap = Session.getInstance().getPlatformProfileMapList().get(profileMapIndex);
-        boolean isMap = false;
+        Boolean isMap = false;
         try {
             facade.updateMapSetItemType(
                     edittedPlatformProfileMap.getMapDto().getKey(),
