@@ -103,11 +103,14 @@ public class PlatformProfileMap extends AbstractEntity {
     @Column(name="DOWNLOADED")
     private boolean downloaded;
 
+    @Column(name="IN_MAPS_CYCLE")
+    private boolean inMapsCycle;
+
     public PlatformProfileMap() {
         super();
     }
 
-    public PlatformProfileMap(AbstractPlatform platform, Profile profile, AbstractMap map, Date releaseDate, String urlInfo, String urlPhoto, boolean downloaded) {
+    public PlatformProfileMap(AbstractPlatform platform, Profile profile, AbstractMap map, Date releaseDate, String urlInfo, String urlPhoto, boolean downloaded, boolean inMapsCycle) {
         super();
         this.idPlatformProfileMap = new IdPlatformProfileMap(platform.getId(), profile.getId(), map.getId());
         this.platform = platform;
@@ -119,6 +122,7 @@ public class PlatformProfileMap extends AbstractEntity {
         this.urlInfo = urlInfo;
         this.urlPhoto = urlPhoto;
         this.downloaded = downloaded;
+        this.inMapsCycle = inMapsCycle;
     }
 
     // Getters y Setters
@@ -205,6 +209,14 @@ public class PlatformProfileMap extends AbstractEntity {
         this.downloaded = downloaded;
     }
 
+    public boolean isInMapsCycle() {
+        return inMapsCycle;
+    }
+
+    public void setInMapsCycle(boolean inMapsCycle) {
+        this.inMapsCycle = inMapsCycle;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o != null && o instanceof PlatformProfileMap) {
@@ -233,6 +245,7 @@ public class PlatformProfileMap extends AbstractEntity {
                 ", importedDate=" + importedDate +
                 ", urlInfo='" + urlInfo + '\'' +
                 ", downloaded='" + downloaded + '\'' +
+                ", inMapsCycle='" + inMapsCycle + '\'' +
                 '}';
     }
 }

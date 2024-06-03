@@ -139,7 +139,7 @@ public class CreateNewProfileFacadeImpl
         for (AbstractMap map: officialMaps) {
             for (AbstractPlatform platform: validPlatformList) {
                 try {
-                    PlatformProfileMap ppm = new PlatformProfileMap(platform, savedProfile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), true);
+                    PlatformProfileMap ppm = new PlatformProfileMap(platform, savedProfile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), true, true);
                     platformProfileMapService.createItem(ppm);
                 } catch (Exception e) {
                     logger.error("Error creating the relation between the profile: " + savedProfile.getName() + " and the map: " + map.getCode(), e);

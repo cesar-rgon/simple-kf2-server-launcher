@@ -43,7 +43,8 @@ public class PlatformProfileMapDtoFactory {
                 releaseDate,
                 importedDate,
                 platformProfileMap.getUrlInfo(),
-                platformProfileMap.isDownloaded()
+                platformProfileMap.isDownloaded(),
+                platformProfileMap.isInMapsCycle()
         );
     }
 

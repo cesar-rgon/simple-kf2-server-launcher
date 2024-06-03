@@ -132,7 +132,8 @@ public class ImportOfficialMapsFromServerFacadeImpl
 
             List<PlatformProfileMap> platformProfileMapListToAdd = new ArrayList<PlatformProfileMap>();
             platformProfileMapListToAdd.add(
-                    new PlatformProfileMap(platformOptional.get(), profileOptional.get(), officialMap, officialMap.getReleaseDate(), officialMap.getUrlInfo(), officialMap.getUrlPhoto(), true)
+                    // TODO: Es correcto el Maps Cycle?
+                    new PlatformProfileMap(platformOptional.get(), profileOptional.get(), officialMap, officialMap.getReleaseDate(), officialMap.getUrlInfo(), officialMap.getUrlPhoto(), true, true)
             );
 
             StringBuffer success = new StringBuffer();

@@ -54,20 +54,22 @@ public class LoadActualProfileFacadeImpl
         Profile profile = profileOptional.get();
         List<PlatformProfileMapDto> platformProfileMapList = listPlatformProfileMaps(platformOptional.get(), profile, em);
 
-        List<PlatformProfileMapDto> officialMaps = platformProfileMapList.stream()
-                .sorted((ppm1, ppm2) -> ppm1.getAlias().compareTo(ppm2.getAlias()))
+        List<PlatformProfileMapDto> officialMapsInMapsCycle = platformProfileMapList.stream()
                 .filter(ppm -> ppm.getMapDto().isOfficial())
+                .filter(PlatformProfileMapDto::isInMapsCycle)
+                .sorted((ppm1, ppm2) -> ppm1.getAlias().compareTo(ppm2.getAlias()))
                 .collect(Collectors.toList());
 
-        List<PlatformProfileMapDto> downloadedCustomMaps = platformProfileMapList.stream()
-                .sorted((ppm1, ppm2) -> ppm1.getAlias().compareTo(ppm2.getAlias()))
+        List<PlatformProfileMapDto> downloadedCustomMapsInMapsCycle = platformProfileMapList.stream()
                 .filter(ppm -> !ppm.getMapDto().isOfficial())
                 .filter(ppm -> ((CustomMapModDto)ppm.getMapDto()).isMap() != null ? ((CustomMapModDto)ppm.getMapDto()).isMap(): false)
-                .filter(ppm -> ppm.isDownloaded())
+                .filter(PlatformProfileMapDto::isDownloaded)
+                .filter(PlatformProfileMapDto::isInMapsCycle)
+                .sorted((ppm1, ppm2) -> ppm1.getAlias().compareTo(ppm2.getAlias()))
                 .collect(Collectors.toList());
 
-        List<PlatformProfileMapDto> filteredMapList = new ArrayList<PlatformProfileMapDto>(officialMaps);
-        filteredMapList.addAll(downloadedCustomMaps);
+        List<PlatformProfileMapDto> filteredMapList = new ArrayList<PlatformProfileMapDto>(officialMapsInMapsCycle);
+        filteredMapList.addAll(downloadedCustomMapsInMapsCycle);
         ObservableList<PlatformProfileMapDto> filteredMapDtoList = FXCollections.observableArrayList(filteredMapList);
 
         Optional<PlatformProfileMapDto> selectedProfileMapOptional = Optional.empty();

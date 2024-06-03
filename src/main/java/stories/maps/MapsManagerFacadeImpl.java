@@ -57,6 +57,9 @@ import stories.prepareimportmapsfromserver.PrepareImportMapsFromServerModelConte
 import stories.runservers.RunServersFacade;
 import stories.runservers.RunServersFacadeImpl;
 import stories.runservers.RunServersModelContext;
+import stories.updatemapscycleflaginmaplist.UpdateMapsCycleFlagInMapListFacade;
+import stories.updatemapscycleflaginmaplist.UpdateMapsCycleFlagInMapListFacadeImpl;
+import stories.updatemapscycleflaginmaplist.UpdateMapsCycleFlagInMapListModelContext;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -225,4 +228,22 @@ public class MapsManagerFacadeImpl
         return result.getImportMapResultToDisplayList();
     }
 
+    @Override
+    public void updateMapsCycleFlagInMapList(String profileName,
+                                      List<String> steamOfficialMapNameListToRemoveFromMapsCycle,
+                                      List<String> steamCustomMapNameListToRemoveFromMapsCycle,
+                                      List<String> epicOfficialMapNameListToRemoveFromMapsCycle,
+                                      List<String> epicCustomMapNameListToRemoveFromMapsCycle,
+                                      boolean isInMapsCycle) throws Exception {
+        UpdateMapsCycleFlagInMapListModelContext updateMapsCycleFlagInMapListModelContext = new UpdateMapsCycleFlagInMapListModelContext(
+                profileName,
+                steamOfficialMapNameListToRemoveFromMapsCycle,
+                steamCustomMapNameListToRemoveFromMapsCycle,
+                epicOfficialMapNameListToRemoveFromMapsCycle,
+                epicCustomMapNameListToRemoveFromMapsCycle,
+                isInMapsCycle
+        );
+        UpdateMapsCycleFlagInMapListFacade ipdateMapsCycleFlagInMapListFacade = new UpdateMapsCycleFlagInMapListFacadeImpl(updateMapsCycleFlagInMapListModelContext);
+        ipdateMapsCycleFlagInMapListFacade.execute();
+    }
 }

@@ -92,6 +92,8 @@ public class MapsController implements Initializable {
     @FXML private MenuItem orderMapsByDownload;
     @FXML private MenuItem editMaps;
     @FXML ProgressIndicator progressIndicator;
+    @FXML private MenuItem addToMapsCycle;
+    @FXML private MenuItem removeFromMapsCycle;
 
     public MapsController() {
         super();
@@ -249,6 +251,12 @@ public class MapsController implements Initializable {
 
         String importMapsFromServerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.importMaps");
         importMapsFromServer.setText(importMapsFromServerText);
+
+        String addToMapsCycleText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.addToMapsCycle");
+        addToMapsCycle.setText(addToMapsCycleText);
+
+        String removeFromMapsCycleText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.removeFromMapsCycle");
+        removeFromMapsCycle.setText(removeFromMapsCycleText);
 
         String orderMapsText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMaps");
         orderMaps.setText(orderMapsText);
@@ -476,10 +484,11 @@ public class MapsController implements Initializable {
         gridpane.add(isOfficialText, 1, 1);
 
         int rowIndex = 6;
+        CustomMapModDto customMapMod = null;
         if (platformProfileMapDto.getMapDto().isOfficial()) {
             importedDateText.setPadding(new Insets(0,0,10,0));
         } else {
-            CustomMapModDto customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
+            customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
             Label stateLabel;
             String isMapModLabelText;
 
@@ -510,7 +519,7 @@ public class MapsController implements Initializable {
             statePane.getChildren().addAll(stateLabel);
             statePane.setMaxWidth(Double.MAX_VALUE);
             statePane.setAlignment(Pos.CENTER);
-            statePane.setPadding(new Insets(10,0,10,0));
+            statePane.setPadding(new Insets(10,0,0,0));
             gridpane.add(statePane,1, rowIndex);
             rowIndex++;
 
@@ -561,6 +570,25 @@ public class MapsController implements Initializable {
                 gridpane.add(startServerLink,1, rowIndex);
             }
             rowIndex++;
+        }
+
+        if (customMapMod == null || platformProfileMapDto.isDownloaded() && customMapMod.isMap()) {
+            Label isInMapsCycleLabel = new Label();
+            String isInMapsCycleText;
+            if (platformProfileMapDto.isInMapsCycle()) {
+                isInMapsCycleText = "IN MAPS CYCLE";
+                isInMapsCycleLabel.setStyle("-fx-text-fill: #ef2828; -fx-font-weight: bold; -fx-padding: 3; -fx-border-color: #ef2828; -fx-border-radius: 5;");
+            } else {
+                isInMapsCycleText = "NOT IN MAPS CYCLE";
+                isInMapsCycleLabel.setStyle("-fx-text-fill: grey; -fx-font-weight: bold; -fx-padding: 3; -fx-border-color: grey; -fx-border-radius: 5;");
+            }
+            isInMapsCycleLabel.setText(isInMapsCycleText);
+            HBox isInMapsCyclePane = new HBox();
+            isInMapsCyclePane.getChildren().addAll(isInMapsCycleLabel);
+            isInMapsCyclePane.setMaxWidth(Double.MAX_VALUE);
+            isInMapsCyclePane.setAlignment(Pos.CENTER);
+            isInMapsCyclePane.setPadding(new Insets(0,0,10,0));
+            gridpane.add(isInMapsCyclePane,1, rowIndex);
         }
 
         StringBuffer tooltipText = new StringBuffer();
@@ -1774,6 +1802,247 @@ public class MapsController implements Initializable {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void addToMapsCycleOnAction() {
+        try {
+            StringBuffer message = new StringBuffer();
+            List<Node> steamOfficialAddMapsCycleList = new ArrayList<Node>();
+            for (Node node : steamOfficialMapsFlowPane.getChildren()) {
+                Node selectedNode = getNodeIfSelected(node, message);
+                if (selectedNode != null) {
+                    steamOfficialAddMapsCycleList.add(selectedNode);
+                }
+            }
+
+            List<Node> steamCustomAddMapsCycleList = new ArrayList<Node>();
+            for (Node node : steamCustomMapsFlowPane.getChildren()) {
+                Node selectedNode = getNodeIfSelected(node, message);
+                if (selectedNode != null) {
+                    steamCustomAddMapsCycleList.add(selectedNode);
+                }
+            }
+
+            List<Node> epicOfficialAddMapsCycleList = new ArrayList<Node>();
+            for (Node node : epicOfficialMapsFlowPane.getChildren()) {
+                Node selectedNode = getNodeIfSelected(node, message);
+                if (selectedNode != null) {
+                    epicOfficialAddMapsCycleList.add(selectedNode);
+                }
+            }
+
+            List<Node> epicCustomAddMapsCycleList = new ArrayList<Node>();
+            for (Node node : epicCustomMapsFlowPane.getChildren()) {
+                Node selectedNode = getNodeIfSelected(node, message);
+                if (selectedNode != null) {
+                    epicCustomAddMapsCycleList.add(selectedNode);
+                }
+            }
+
+            if (steamOfficialAddMapsCycleList.isEmpty() && steamCustomAddMapsCycleList.isEmpty() && epicOfficialAddMapsCycleList.isEmpty() && epicCustomAddMapsCycleList.isEmpty()) {
+                logger.warn("No selected maps to add to maps cycle. You must select at least one item to be added");
+                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapsNotSelected");
+                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectItems");
+                Utils.warningDialog(headerText, contentText);
+
+            } else {
+
+                List<String> steamOfficialMapNameListToAddFromMapsCycle = steamOfficialAddMapsCycleList.stream().
+                        map(node -> {
+                            GridPane gridpane = (GridPane) node;
+                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                            return mapNameLabel.getText();
+                        }).
+                        collect(Collectors.toList());
+
+                List<String> steamCustomMapNameListToAddFromMapsCycle = steamCustomAddMapsCycleList.stream().
+                        map(node -> {
+                            GridPane gridpane = (GridPane) node;
+                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                            return mapNameLabel.getText();
+                        }).
+                        collect(Collectors.toList());
+
+                List<String> epicOfficialMapNameListToAddFromMapsCycle = epicOfficialAddMapsCycleList.stream().
+                        map(node -> {
+                            GridPane gridpane = (GridPane) node;
+                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                            return mapNameLabel.getText();
+                        }).
+                        collect(Collectors.toList());
+
+                List<String> epicCustomMapNameListToAddFromMapsCycle = epicCustomAddMapsCycleList.stream().
+                        map(node -> {
+                            GridPane gridpane = (GridPane) node;
+                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                            return mapNameLabel.getText();
+                        }).
+                        collect(Collectors.toList());
+
+                facade.updateMapsCycleFlagInMapList(
+                        profileSelect.getValue().getName(),
+                        steamOfficialMapNameListToAddFromMapsCycle,
+                        steamCustomMapNameListToAddFromMapsCycle,
+                        epicOfficialMapNameListToAddFromMapsCycle,
+                        epicCustomMapNameListToAddFromMapsCycle,
+                        true
+                );
+
+                for (Node node : steamOfficialAddMapsCycleList) {
+                    setMapInMapsCycle(node, true, 7);
+                }
+                for (Node node : steamCustomAddMapsCycleList) {
+                    setMapInMapsCycle(node, true, 9);
+                }
+                for (Node node : epicOfficialAddMapsCycleList) {
+                    setMapInMapsCycle(node, true, 7);
+                }
+                for (Node node : epicCustomAddMapsCycleList) {
+                    setMapInMapsCycle(node, true, 9);
+                }
+
+                ListPlatformProfileMapFacadeResult listPlatformProfileMapFacadeResult = facade.getPlatformProfileMapList(profileSelect.getValue().getName());
+                steamPlatformProfileMapDtoList.clear();
+                steamPlatformProfileMapDtoList = listPlatformProfileMapFacadeResult.getSteamPlatformProfileMapDtoList();
+                epicPlatformProfileMapDtoList.clear();
+                epicPlatformProfileMapDtoList = listPlatformProfileMapFacadeResult.getEpicPlatformProfileMapDtoList();
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void removeFromMapsCycleOnAction() {
+        try {
+            StringBuffer message = new StringBuffer();
+            List<Node> steamOfficialRemoveMapsCycleList = new ArrayList<Node>();
+            for (Node node : steamOfficialMapsFlowPane.getChildren()) {
+                Node selectedNode = getNodeIfSelected(node, message);
+                if (selectedNode != null) {
+                    steamOfficialRemoveMapsCycleList.add(selectedNode);
+                }
+            }
+
+            List<Node> steamCustomRemoveMapsCycleList = new ArrayList<Node>();
+            for (Node node : steamCustomMapsFlowPane.getChildren()) {
+                Node selectedNode = getNodeIfSelected(node, message);
+                if (selectedNode != null) {
+                    steamCustomRemoveMapsCycleList.add(selectedNode);
+                }
+            }
+
+            List<Node> epicOfficialRemoveMapsCycleList = new ArrayList<Node>();
+            for (Node node : epicOfficialMapsFlowPane.getChildren()) {
+                Node selectedNode = getNodeIfSelected(node, message);
+                if (selectedNode != null) {
+                    epicOfficialRemoveMapsCycleList.add(selectedNode);
+                }
+            }
+
+            List<Node> epicCustomRemoveMapsCycleList = new ArrayList<Node>();
+            for (Node node : epicCustomMapsFlowPane.getChildren()) {
+                Node selectedNode = getNodeIfSelected(node, message);
+                if (selectedNode != null) {
+                    epicCustomRemoveMapsCycleList.add(selectedNode);
+                }
+            }
+
+            if (steamOfficialRemoveMapsCycleList.isEmpty() && steamCustomRemoveMapsCycleList.isEmpty() && epicOfficialRemoveMapsCycleList.isEmpty() && epicCustomRemoveMapsCycleList.isEmpty()) {
+                logger.warn("No selected maps to delete from maps cycle. You must select at least one item to be deleted");
+                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapsNotSelected");
+                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectItems");
+                Utils.warningDialog(headerText, contentText);
+
+            } else {
+                List<String> steamOfficialMapNameListToRemoveFromMapsCycle = steamOfficialRemoveMapsCycleList.stream().
+                        map(node -> {
+                            GridPane gridpane = (GridPane) node;
+                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                            return mapNameLabel.getText();
+                        }).
+                        collect(Collectors.toList());
+
+                List<String> steamCustomMapNameListToRemoveFromMapsCycle = steamCustomRemoveMapsCycleList.stream().
+                        map(node -> {
+                            GridPane gridpane = (GridPane) node;
+                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                            return mapNameLabel.getText();
+                        }).
+                        collect(Collectors.toList());
+
+                List<String> epicOfficialMapNameListToRemoveFromMapsCycle = epicOfficialRemoveMapsCycleList.stream().
+                        map(node -> {
+                            GridPane gridpane = (GridPane) node;
+                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                            return mapNameLabel.getText();
+                        }).
+                        collect(Collectors.toList());
+
+                List<String> epicCustomMapNameListToRemoveFromMapsCycle = epicCustomRemoveMapsCycleList.stream().
+                        map(node -> {
+                            GridPane gridpane = (GridPane) node;
+                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                            return mapNameLabel.getText();
+                        }).
+                        collect(Collectors.toList());
+
+                facade.updateMapsCycleFlagInMapList(
+                        profileSelect.getValue().getName(),
+                        steamOfficialMapNameListToRemoveFromMapsCycle,
+                        steamCustomMapNameListToRemoveFromMapsCycle,
+                        epicOfficialMapNameListToRemoveFromMapsCycle,
+                        epicCustomMapNameListToRemoveFromMapsCycle,
+                        false
+                );
+
+                for (Node node : steamOfficialRemoveMapsCycleList) {
+                    setMapInMapsCycle(node, false, 7);
+                }
+                for (Node node : steamCustomRemoveMapsCycleList) {
+                    setMapInMapsCycle(node, false, 9);
+                }
+                for (Node node : epicOfficialRemoveMapsCycleList) {
+                    setMapInMapsCycle(node, false, 7);
+                }
+                for (Node node : epicCustomRemoveMapsCycleList) {
+                    setMapInMapsCycle(node, false, 9);
+                }
+
+                ListPlatformProfileMapFacadeResult listPlatformProfileMapFacadeResult = facade.getPlatformProfileMapList(profileSelect.getValue().getName());
+                steamPlatformProfileMapDtoList.clear();
+                steamPlatformProfileMapDtoList = listPlatformProfileMapFacadeResult.getSteamPlatformProfileMapDtoList();
+                epicPlatformProfileMapDtoList.clear();
+                epicPlatformProfileMapDtoList = listPlatformProfileMapFacadeResult.getEpicPlatformProfileMapDtoList();
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+
+    private void setMapInMapsCycle(Node node, boolean inMapCycle, int row) throws Exception {
+        GridPane gridpane = (GridPane) node;
+        Label aliasLabel = (Label) gridpane.getChildren().get(1);
+        CheckBox checkbox = (CheckBox) aliasLabel.getGraphic();
+        checkbox.setSelected(false);
+
+        try {
+            if (inMapCycle) {
+                Label isInMapsCycleLabel = (Label) ((HBox) gridpane.getChildren().get(row)).getChildren().get(0);
+                isInMapsCycleLabel.setText("IN MAPS CYCLE");
+                isInMapsCycleLabel.setStyle("-fx-text-fill: #ef2828; -fx-font-weight: bold; -fx-padding: 3; -fx-border-color: #ef2828; -fx-border-radius: 5;");
+            } else {
+                Label isInMapsCycleLabel = (Label) ((HBox) gridpane.getChildren().get(row)).getChildren().get(0);
+                isInMapsCycleLabel.setText("NOT IN MAPS CYCLE");
+                isInMapsCycleLabel.setStyle("-fx-text-fill: grey; -fx-font-weight: bold; -fx-padding: 3; -fx-border-color: grey; -fx-border-radius: 5;");
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
         }
     }
 }

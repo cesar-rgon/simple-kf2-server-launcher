@@ -65,7 +65,7 @@ public abstract class AbstractMapService extends AbstractService<AbstractMap> {
         profileList.stream().forEach(profile -> {
             platformList.stream().forEach(platform -> {
                 try {
-                    PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(platform, profile, finalInsertedMap, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), finalDownloaded);
+                    PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(platform, profile, finalInsertedMap, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), finalDownloaded, true);
                     platformProfileMapService.createItem(newPlatformProfileMap);
 
                     String successMessage = "The relation between the map " + map.getCode() + ", the profile " + profile.getCode() + " and the platform " + platform.getDescription() + " has been created";

@@ -146,7 +146,7 @@ public class ImportCustomMapsFromServerFacadeImpl
             } else {
                 List<PlatformProfileMap> platformProfileMapListToAdd = new ArrayList<PlatformProfileMap>();
                 platformProfileMapListToAdd.add(
-                        new PlatformProfileMap(platformOptional.get(), profileOptional.get(), customMap, customMap.getReleaseDate(), customMap.getUrlInfo(), customMap.getUrlPhoto(), false)
+                        new PlatformProfileMap(platformOptional.get(), profileOptional.get(), customMap, customMap.getReleaseDate(), customMap.getUrlInfo(), customMap.getUrlPhoto(), false, false)
                 );
 
                 customMapModService.addPlatformProfileMapList(platformProfileMapListToAdd, success, errors);

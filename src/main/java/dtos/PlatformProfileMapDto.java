@@ -13,10 +13,10 @@ public class PlatformProfileMapDto {
     private final LocalDate releaseDate;
     private final LocalDateTime importedDate;
     private final String urlInfo;
+    private final boolean downloaded;
+    private final boolean inMapsCycle;
 
-    private boolean downloaded;
-
-    public PlatformProfileMapDto(PlatformDto platformDto, ProfileDto profileDto, AbstractMapDto mapDto, String alias, String urlPhoto, LocalDate releaseDate, LocalDateTime importedDate, String urlInfo, boolean downloaded) {
+    public PlatformProfileMapDto(PlatformDto platformDto, ProfileDto profileDto, AbstractMapDto mapDto, String alias, String urlPhoto, LocalDate releaseDate, LocalDateTime importedDate, String urlInfo, boolean downloaded, boolean inMapsCycle) {
         super();
         this.platformDto = platformDto;
         this.profileDto = profileDto;
@@ -27,6 +27,7 @@ public class PlatformProfileMapDto {
         this.importedDate = importedDate;
         this.urlInfo = urlInfo;
         this.downloaded = downloaded;
+        this.inMapsCycle = inMapsCycle;
     }
 
     public PlatformDto getPlatformDto() {
@@ -63,5 +64,9 @@ public class PlatformProfileMapDto {
 
     public boolean isDownloaded() {
         return downloaded;
+    }
+
+    public boolean isInMapsCycle() {
+        return inMapsCycle;
     }
 }

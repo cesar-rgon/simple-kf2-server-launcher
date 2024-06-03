@@ -199,7 +199,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
 
         platformProfileMapListForProfileToBeCloned.stream().forEach(ppm -> {
             try {
-                PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(ppm.getPlatform(), savedProfile, ppm.getMap(), ppm.getReleaseDate(), ppm.getUrlInfo(), ppm.getUrlPhoto(), ppm.isDownloaded());
+                PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(ppm.getPlatform(), savedProfile, ppm.getMap(), ppm.getReleaseDate(), ppm.getUrlInfo(), ppm.getUrlPhoto(), ppm.isDownloaded(), ppm.isInMapsCycle());
                 newPlatformProfileMap.setAlias(ppm.getAlias());
                 platformProfileMapService.createItem(newPlatformProfileMap);
             } catch (Exception e) {
@@ -841,7 +841,8 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
         Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(enumPlatform.name());
         if (platformOptional.isPresent()) {
             if (Kf2Factory.getInstance(platformOptional.get(), em).isValidInstallationFolder()) {
-                PlatformProfileMap platformProfileMap = new PlatformProfileMap(platformOptional.get(), profile, map, releaseDate, urlInfo, urlPhoto, downloaded);
+                // TODO: pasar por parámetro si está en Maps Cycle
+                PlatformProfileMap platformProfileMap = new PlatformProfileMap(platformOptional.get(), profile, map, releaseDate, urlInfo, urlPhoto, downloaded, true);
                 platformProfileMap.setAlias(alias);
                 platformProfileMapService.createItem(platformProfileMap);
             }

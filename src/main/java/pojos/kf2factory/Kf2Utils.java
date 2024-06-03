@@ -1,5 +1,7 @@
 package pojos.kf2factory;
 
+import dtos.CustomMapModDto;
+import dtos.PlatformProfileMapDto;
 import entities.*;
 import jakarta.persistence.EntityManager;
 import org.apache.commons.io.FileUtils;
@@ -224,14 +226,19 @@ public class Kf2Utils {
             }
 
             List<AbstractMap> allCustomMapModList = customMapService.listAllMaps();
-            List<AbstractMap> customMapsMods = platformProfileMapService.listPlatformProfileMaps(platform, profile).stream().
-                    filter(ppm -> allCustomMapModList.contains(ppm.getMap())).
-                    map(PlatformProfileMap::getMap).
-                    collect(Collectors.toList());
+            List<AbstractMap> downloadedCustomMapsInMapsCycle = platformProfileMapService.listPlatformProfileMaps(platform, profile).stream()
+                    .filter(ppm -> allCustomMapModList.contains(ppm.getMap()))
+                    .filter(ppm -> ((CustomMapMod)ppm.getMap()).getMap() != null ? ((CustomMapMod)ppm.getMap()).getMap(): false)
+                    .filter(PlatformProfileMap::isDownloaded)
+                    .filter(PlatformProfileMap::isInMapsCycle)
+                    .sorted((ppm1, ppm2) -> ppm1.getMap().getCode().compareTo(ppm2.getMap().getCode()))
+                    .map(PlatformProfileMap::getMap)
+                    .collect(Collectors.toList());
 
-            if (customMapsMods != null && !customMapsMods.isEmpty()) {
+
+            if (downloadedCustomMapsInMapsCycle != null && !downloadedCustomMapsInMapsCycle.isEmpty()) {
                 pw.println("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]");
-                for (AbstractMap map: customMapsMods) {
+                for (AbstractMap map: downloadedCustomMapsInMapsCycle) {
                     CustomMapMod customMap = (CustomMapMod) Hibernate.unproxy(map);
                     pw.println("ServerSubscribedWorkshopItems=" + customMap.getIdWorkShop() + " // " + customMap.getCode());
                 }

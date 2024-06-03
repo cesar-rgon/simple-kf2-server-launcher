@@ -97,7 +97,7 @@ public class AddCustomMapsToProfileFacadeImpl
                                 Optional<Profile> profileOptional = profileService.findByCode(facadeModelContext.getProfileName());
                                 if (!platformList.isEmpty() && profileOptional.isPresent()) {
                                     for (AbstractPlatform platform: platformList) {
-                                        PlatformProfileMap platformProfileMap = new PlatformProfileMap(platform, profileOptional.get(), customMap, customMap.getReleaseDate(), customMap.getUrlInfo(), customMap.getUrlPhoto(), false);
+                                        PlatformProfileMap platformProfileMap = new PlatformProfileMap(platform, profileOptional.get(), customMap, customMap.getReleaseDate(), customMap.getUrlInfo(), customMap.getUrlPhoto(), false, false);
                                         mapAddedList.add(platformProfileMapDtoFactory.newDto(platformProfileMap));
                                     }
                                 }
@@ -113,7 +113,7 @@ public class AddCustomMapsToProfileFacadeImpl
 
                         for (AbstractPlatform platform: platformList) {
                             if (platformListForProfileWithoutMap.contains(platform)) {
-                                PlatformProfileMap ppm = new PlatformProfileMap(platform, profileOpt.get(), mapModInDataBase.get(), mapModInDataBase.get().getReleaseDate(), mapModInDataBase.get().getUrlInfo(), mapModInDataBase.get().getUrlPhoto(), false);
+                                PlatformProfileMap ppm = new PlatformProfileMap(platform, profileOpt.get(), mapModInDataBase.get(), mapModInDataBase.get().getReleaseDate(), mapModInDataBase.get().getUrlInfo(), mapModInDataBase.get().getUrlPhoto(), false, false);
                                 ppmList.add(ppm);
 
                                 String absoluteTargetFolder = ppm.getPlatform().getInstallationFolder() + customMapLocalFolder;

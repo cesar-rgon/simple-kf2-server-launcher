@@ -115,7 +115,7 @@ public abstract class AbstractPopulateDatabase {
     }
 
     protected void populatePlatformProfileMap(AbstractPlatform platform, Profile profile, AbstractMap map) throws Exception {
-        PlatformProfileMap platformProfileMap = new PlatformProfileMap(platform, profile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), true);
+        PlatformProfileMap platformProfileMap = new PlatformProfileMap(platform, profile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), true, true);
         platformProfileMapService.createItem(platformProfileMap);
     }
 
