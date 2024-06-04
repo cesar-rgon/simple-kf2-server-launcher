@@ -84,12 +84,14 @@ public class MapsController implements Initializable {
     @FXML private ComboBox<ProfileDto> profileSelect;
     @FXML private Label profileLabel;
     @FXML private Label actionsLabel;
+    @FXML private Menu mapsCycle;
     @FXML private Menu orderMaps;
     @FXML private MenuItem orderMapsByAlias;
     @FXML private MenuItem orderMapsByName;
     @FXML private MenuItem orderMapsByReleaseDate;
     @FXML private MenuItem orderMapsByImportedDate;
     @FXML private MenuItem orderMapsByDownload;
+    @FXML private MenuItem orderMapsByMapsCycle;
     @FXML private MenuItem editMaps;
     @FXML ProgressIndicator progressIndicator;
     @FXML private MenuItem addToMapsCycle;
@@ -258,6 +260,9 @@ public class MapsController implements Initializable {
         String removeFromMapsCycleText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.removeFromMapsCycle");
         removeFromMapsCycle.setText(removeFromMapsCycleText);
 
+        String mapsCycleText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.mapsCycle");
+        mapsCycle.setText(mapsCycleText);
+
         String orderMapsText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMaps");
         orderMaps.setText(orderMapsText);
 
@@ -275,6 +280,9 @@ public class MapsController implements Initializable {
 
         String orderMapsByDownloadText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByDownload");
         orderMapsByDownload.setText(orderMapsByDownloadText);
+
+        String orderMapsByMapsCycleText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.orderMapsByMapsCycle");
+        orderMapsByMapsCycle.setText(orderMapsByMapsCycleText);
 
         String editMapsText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.editMaps");
         editMaps.setText(editMapsText);
@@ -576,10 +584,18 @@ public class MapsController implements Initializable {
             Label isInMapsCycleLabel = new Label();
             String isInMapsCycleText;
             if (platformProfileMapDto.isInMapsCycle()) {
-                isInMapsCycleText = "IN MAPS CYCLE";
+                try {
+                    isInMapsCycleText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.inMapsCycle");
+                } catch (Exception e) {
+                    isInMapsCycleText = "IN MAPS CYCLE";
+                }
                 isInMapsCycleLabel.setStyle("-fx-text-fill: #ef2828; -fx-font-weight: bold; -fx-padding: 3; -fx-border-color: #ef2828; -fx-border-radius: 5;");
             } else {
-                isInMapsCycleText = "NOT IN MAPS CYCLE";
+                try {
+                    isInMapsCycleText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.notInMapsCycle");
+                } catch (Exception e) {
+                    isInMapsCycleText = "NOT IN MAPS CYCLE";
+                }
                 isInMapsCycleLabel.setStyle("-fx-text-fill: grey; -fx-font-weight: bold; -fx-padding: 3; -fx-border-color: grey; -fx-border-radius: 5;");
             }
             isInMapsCycleLabel.setText(isInMapsCycleText);
@@ -1673,16 +1689,12 @@ public class MapsController implements Initializable {
             steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().
                     filter(ppm -> !ppm.getMapDto().isOfficial()).
                     sorted((ppm1, ppm2) -> {
-                Boolean map1Downloaded = ppm1.isDownloaded();
-                Boolean map2Downloaded = ppm2.isDownloaded();
-                return map1Downloaded.compareTo(map2Downloaded);
+                return ppm1.isDownloaded().compareTo(ppm2.isDownloaded());
             }).collect(Collectors.toList());
             epicPlatformProfileMapDtoList = epicPlatformProfileMapDtoList.stream().
                     filter(ppm -> !ppm.getMapDto().isOfficial()).
                     sorted((ppm1, ppm2) -> {
-                        Boolean map1Downloaded = ppm1.isDownloaded();
-                        Boolean map2Downloaded = ppm2.isDownloaded();
-                        return map1Downloaded.compareTo(map2Downloaded);
+                        return ppm1.isDownloaded().compareTo(ppm2.isDownloaded());
                     }).collect(Collectors.toList());
 
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.DOWNLOAD_ASC);
@@ -1690,16 +1702,14 @@ public class MapsController implements Initializable {
             steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().
                     filter(ppm -> !ppm.getMapDto().isOfficial()).
                     sorted((ppm1, ppm2) -> {
-                Boolean map1Downloaded = ppm1.isDownloaded();
-                Boolean map2Downloaded = ppm2.isDownloaded();
-                return map2Downloaded.compareTo(map1Downloaded);
+                    return ppm2.isDownloaded().compareTo(ppm1.isDownloaded());
             }).collect(Collectors.toList());
             epicPlatformProfileMapDtoList = epicPlatformProfileMapDtoList.stream().
                     filter(ppm -> !ppm.getMapDto().isOfficial()).
                     sorted((ppm1, ppm2) -> {
                         Boolean map1Downloaded = ppm1.isDownloaded();
                         Boolean map2Downloaded = ppm2.isDownloaded();
-                        return map2Downloaded.compareTo(map1Downloaded);
+                        return ppm2.isDownloaded().compareTo(ppm1.isDownloaded());
                     }).collect(Collectors.toList());
 
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.DOWNLOAD_DESC);
@@ -2032,17 +2042,66 @@ public class MapsController implements Initializable {
         checkbox.setSelected(false);
 
         try {
+            String isInMapsCycleText = StringUtils.EMPTY;
+            String color = StringUtils.EMPTY;
             if (inMapCycle) {
-                Label isInMapsCycleLabel = (Label) ((HBox) gridpane.getChildren().get(row)).getChildren().get(0);
-                isInMapsCycleLabel.setText("IN MAPS CYCLE");
-                isInMapsCycleLabel.setStyle("-fx-text-fill: #ef2828; -fx-font-weight: bold; -fx-padding: 3; -fx-border-color: #ef2828; -fx-border-radius: 5;");
+                try {
+                    isInMapsCycleText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.inMapsCycle");
+                } catch (Exception e) {
+                    isInMapsCycleText = "IN MAPS CYCLE";
+                }
+                color = "#ef2828";
             } else {
-                Label isInMapsCycleLabel = (Label) ((HBox) gridpane.getChildren().get(row)).getChildren().get(0);
-                isInMapsCycleLabel.setText("NOT IN MAPS CYCLE");
-                isInMapsCycleLabel.setStyle("-fx-text-fill: grey; -fx-font-weight: bold; -fx-padding: 3; -fx-border-color: grey; -fx-border-radius: 5;");
+                try {
+                    isInMapsCycleText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.notInMapsCycle");
+                } catch (Exception e) {
+                    isInMapsCycleText = "NOT IN MAPS CYCLE";
+                }
+                color = "grey";
             }
+
+            Label isInMapsCycleLabel = (Label) ((HBox) gridpane.getChildren().get(row)).getChildren().get(0);
+            isInMapsCycleLabel.setText(isInMapsCycleText);
+            isInMapsCycleLabel.setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold; -fx-padding: 3; -fx-border-color: " + color + "; -fx-border-radius: 5;");
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void orderMapsByMapsCycleOnAction() {
+        steamCustomMapsFlowPane.getChildren().clear();
+        steamOfficialMapsFlowPane.getChildren().clear();
+        epicCustomMapsFlowPane.getChildren().clear();
+        epicOfficialMapsFlowPane.getChildren().clear();
+
+        if (EnumSortedMapsCriteria.MAPS_CYCLE_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
+            steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm1.isInMapsCycle().compareTo(pm2.isInMapsCycle())).collect(Collectors.toList());
+            epicPlatformProfileMapDtoList = epicPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm1.isInMapsCycle().compareTo(pm2.isInMapsCycle())).collect(Collectors.toList());
+            Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.MAPS_CYCLE_ASC);
+        } else {
+            steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm2.isInMapsCycle().compareTo(pm1.isInMapsCycle())).collect(Collectors.toList());
+            epicPlatformProfileMapDtoList = epicPlatformProfileMapDtoList.stream().sorted((pm1, pm2) -> pm2.isInMapsCycle().compareTo(pm1.isInMapsCycle())).collect(Collectors.toList());
+            Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.MAPS_CYCLE_DESC);
+        }
+
+        for (PlatformProfileMapDto platformProfileMapDto : steamPlatformProfileMapDtoList) {
+            GridPane gridpane = createMapGridPane(platformProfileMapDto);
+            if (platformProfileMapDto.getMapDto().isOfficial()) {
+                steamOfficialMapsFlowPane.getChildren().add(gridpane);
+            } else {
+                steamCustomMapsFlowPane.getChildren().add(gridpane);
+            }
+        }
+
+        for (PlatformProfileMapDto platformProfileMapDto : epicPlatformProfileMapDtoList) {
+            GridPane gridpane = createMapGridPane(platformProfileMapDto);
+            if (platformProfileMapDto.getMapDto().isOfficial()) {
+                epicOfficialMapsFlowPane.getChildren().add(gridpane);
+            } else {
+                epicCustomMapsFlowPane.getChildren().add(gridpane);
+            }
         }
     }
 }

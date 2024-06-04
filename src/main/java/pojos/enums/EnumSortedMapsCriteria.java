@@ -11,7 +11,9 @@ public enum EnumSortedMapsCriteria {
     IMPORTED_DATE_ASC,
     IMPORTED_DATE_DESC,
     DOWNLOAD_ASC,
-    DOWNLOAD_DESC;
+    DOWNLOAD_DESC,
+    MAPS_CYCLE_ASC,
+    MAPS_CYCLE_DESC;
 
     private EnumSortedMapsCriteria() {
     }

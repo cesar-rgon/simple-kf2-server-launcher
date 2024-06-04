@@ -885,7 +885,7 @@ public class MainContentController implements Initializable {
         });
     }
 
-    private void loadPlatformProfileMapSelect() throws Exception {
+    private LoadActualProfileFacadeResult loadPlatformProfileMapSelect() throws Exception {
         LoadActualProfileFacadeResult result = facade.loadActualProfile(
                 platformSelect.getValue().getKey(),
                 profileSelect.getValue().getName()
@@ -900,6 +900,7 @@ public class MainContentController implements Initializable {
         } else {
             platformProfileMapSelect.setValue(null);
         }
+        return result;
     }
 
     private void loadLanguageTexts(String languageCode) throws Exception {
@@ -1110,17 +1111,7 @@ public class MainContentController implements Initializable {
 
     }
 
-    private void loadActualProfile() throws Exception {
-
-        platformSelect.getSelectionModel().select(
-                Session.getInstance().getPlatform() != null ?
-                        EnumPlatform.getByName(Session.getInstance().getPlatform().getKey()).getIndex() : 0
-        );
-
-        LoadActualProfileFacadeResult result = facade.loadActualProfile(
-                platformSelect.getValue().getKey(),
-                profileSelect.getValue().getName()
-        );
+    private void loadActualProfile(LoadActualProfileFacadeResult result) throws Exception {
 
         if (!userInteractLanguageSelect) {
             languageSelect.getSelectionModel().select(
@@ -1240,8 +1231,16 @@ public class MainContentController implements Initializable {
     @FXML
     private void profileOnAction() {
         Session.getInstance().setActualProfileName(profileSelect.getValue().getName());
+
         try {
-            loadActualProfile();
+            platformSelect.getSelectionModel().select(
+                    Session.getInstance().getPlatform() != null ?
+                            EnumPlatform.getByName(Session.getInstance().getPlatform().getKey()).getIndex() : 0
+            );
+
+            LoadActualProfileFacadeResult loadActualProfileFacadeResult = loadPlatformProfileMapSelect();
+            loadActualProfile(loadActualProfileFacadeResult);
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);

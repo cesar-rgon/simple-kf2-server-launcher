@@ -129,7 +129,7 @@
                <MenuItem fx:id="editMaps" mnemonicParsing="false" onAction="#editMapsOnAction" text="Edit selected maps" />
                <MenuItem fx:id="removeMaps" mnemonicParsing="false" onAction="#removeMapsOnAction" text="Delete selected maps" />
                <MenuItem fx:id="importMapsFromServer" mnemonicParsing="false" onAction="#importMapsFromServerOnAction" text="Import maps from KF2 server" />
-               <Menu fx:id="mapsCycle" mnemonicParsing="false" text="Maps Cycle">
+               <Menu fx:id="mapsCycle" mnemonicParsing="false" text="Maps cycle">
                   <items>
                      <MenuItem fx:id="addToMapsCycle" mnemonicParsing="false" onAction="#addToMapsCycleOnAction" text="Add selected maps to maps cycle" />
                      <MenuItem fx:id="removeFromMapsCycle" mnemonicParsing="false" onAction="#removeFromMapsCycleOnAction" text="Remove selected maps from maps cycle" />
@@ -142,6 +142,7 @@
                      <MenuItem fx:id="orderMapsByReleaseDate" mnemonicParsing="false" onAction="#orderMapsByReleaseDateOnAction" text="By release date" />
                      <MenuItem fx:id="orderMapsByImportedDate" mnemonicParsing="false" onAction="#orderMapsByImportedDateOnAction" text="By release date" />
                      <MenuItem fx:id="orderMapsByDownload" mnemonicParsing="false" onAction="#orderMapsByDownloadOnAction" text="By download" />
+                     <MenuItem fx:id="orderMapsByMapsCycle" mnemonicParsing="false" onAction="#orderMapsByMapsCycleOnAction" text="By maps cycle" />
                   </items>
                </Menu>
             </items>
