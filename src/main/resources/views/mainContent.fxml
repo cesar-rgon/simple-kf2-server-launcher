@@ -519,20 +519,20 @@
                       <CheckBox fx:id="chatLoggingFileTimestamp" lineSpacing="0.9" mnemonicParsing="false" onAction="#chatLoggingFileTimestampOnAction" text="With timestamp" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="11" GridPane.valignment="CENTER" />
                       <TextField fx:id="chatLoggingFile" maxWidth="160.0" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="11" GridPane.valignment="CENTER" />
 
-                      <ImageView fx:id="customParametersImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="10" GridPane.valignment="TOP">
+                      <ImageView fx:id="tickrateImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="10" GridPane.valignment="TOP">
                           <image>
                               <Image url="@../images/label-inverted.png" />
                           </image>
                        <GridPane.margin>
-                          <Insets top="3.0" />
+                          <Insets top="9.0" />
                        </GridPane.margin>
                       </ImageView>
-                      <Label fx:id="customParametersLabel" styleClass="width150" text="CUSTOM PARAMETERS" textFill="WHITE" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="10" GridPane.valignment="TOP">
+                        <Label fx:id="tickrateLabel" styleClass="width150" text="TICKRATE" textFill="WHITE" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="10" GridPane.valignment="TOP">
                           <GridPane.margin>
-                              <Insets left="10.0" top="10.0" />
+                              <Insets left="10.0" top="15.0" />
                           </GridPane.margin>
                       </Label>
-                      <TextArea fx:id="customParameters" opacity="0.75" prefHeight="100.0" prefWidth="350.0" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="10" GridPane.rowSpan="2" GridPane.valignment="TOP" />
+                      <TextField fx:id="tickrate" alignment="CENTER_RIGHT" opacity="0.75" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="10" GridPane.valignment="CENTER" />
 
                       <ImageView fx:id="timeBetweenKicksImg" fitHeight="30.0" fitWidth="170.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
                             <image>
@@ -645,6 +645,18 @@
 
                   </GridPane>
                </content>
+          </Tab>
+          <Tab id="titleConfigLabel" fx:id="customParameters" text="Custom Parameters">
+              <content>
+                  <VBox alignment="CENTER" spacing="20">
+                      <Label fx:id="customParametersFormat" text="Format: ?param1=value1?param2=value2?mutator=mutatorValue1,mutatorValue2, ... ?param4=value4 ..." textFill="WHITE">
+                          <padding>
+                              <Insets top="20.0" />
+                          </padding>
+                      </Label>
+                      <TextArea fx:id="customParametersTextArea" opacity="0.75" prefHeight="500" wrapText="true" />
+                  </VBox>
+              </content>
           </Tab>
         </tabs>
       </TabPane>

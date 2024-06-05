@@ -81,7 +81,7 @@ public class MainContentController implements Initializable {
     @FXML private TextField yourClan;
     @FXML private TextField yourWebLink;
     @FXML private TextArea welcomeMessage;
-    @FXML private TextArea customParameters;
+    @FXML private TextArea customParametersTextArea;
     @FXML private CheckBox webPage;
     @FXML private WebView imageWebView;
     @FXML private Label profileLabel;
@@ -98,7 +98,7 @@ public class MainContentController implements Initializable {
     @FXML private Label webLinkLabel;
 
     @FXML private Label welcomeLabel;
-    @FXML private Label customParametersLabel;
+    @FXML private Label tickrateLabel;
     @FXML private Button runServer;
     @FXML private Button joinServer;
     @FXML private ImageView runServerImage;
@@ -709,13 +709,13 @@ public class MainContentController implements Initializable {
             }
         });
 
-        customParameters.focusedProperty().addListener(new ChangeListener<Boolean>() {
+        customParametersTextArea.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
                         String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
-                        facade.updateProfileSetCustomParameters(profileName, customParameters.getText());
+                        facade.updateProfileSetCustomParameters(profileName, customParametersTextArea.getText());
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -995,9 +995,9 @@ public class MainContentController implements Initializable {
         TextField[] portsArray = {gamePort, queryPort, webPort};
         Utils.loadTooltip(languageCode, "prop.tooltip.ports", portsImg, portsLabel, portsArray);
 
-        String customParametersLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.customParameters");
-        customParametersLabel.setText(customParametersLabelText);
-        Utils.loadTooltip(languageCode, "prop.tooltip.customParameters", customParametersImg, customParametersLabel, customParameters);
+        String tickrateLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.tickrate");
+        tickrateLabel.setText(tickrateLabelText);
+        Utils.loadTooltip(languageCode, "prop.tooltip.customParameters", customParametersImg, tickrateLabel, customParametersTextArea);
 
         String teamCollisionLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.teamCollision");
         String teamCollisionText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.teamCollisionEnable");
@@ -1171,7 +1171,7 @@ public class MainContentController implements Initializable {
         yourClan.setText(result.getProfileDto().getYourClan());
         yourWebLink.setText(result.getProfileDto().getYourWebLink());
         welcomeMessage.setText(result.getProfileDto().getWelcomeMessage());
-        customParameters.setText(result.getProfileDto().getCustomParameters());
+        customParametersTextArea.setText(result.getProfileDto().getCustomParameters());
         webPage.setSelected(result.getProfileDto().getWebPage() != null ? result.getProfileDto().getWebPage(): false);
         takeover.setSelected(result.getProfileDto().getTakeover() != null ? result.getProfileDto().getTakeover(): false);
         try {

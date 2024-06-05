@@ -259,3 +259,9 @@
 #profileSelect:hover, #profileSelect .combo-box:hover, #profileSelect .combo-box-popup .list-view .list-cell:hover {
     -fx-background-color: #c15d11;
 }
+
+#customParametersFormat {
+    -fx-font-family: "Ubuntu Bold";
+    -fx-text-fill: white;
+    -fx-font-size: 16;
+}
