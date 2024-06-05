@@ -260,7 +260,7 @@
     -fx-background-color: #c15d11;
 }
 
-#customParametersFormat {
+#customParametersFormatLabel {
     -fx-font-family: "Ubuntu Bold";
     -fx-text-fill: white;
     -fx-font-size: 16;

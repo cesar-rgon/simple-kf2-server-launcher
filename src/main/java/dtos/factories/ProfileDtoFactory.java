@@ -74,7 +74,11 @@ public class ProfileDtoFactory {
                 profile.getMaxSpectators(),
                 profile.getMapObjetives(),
                 profile.getPickupItems(),
-                profile.getFriendlyFirePercentage()
+                profile.getFriendlyFirePercentage(),
+                profile.getNetTickrate(),
+                profile.getLanTickrate(),
+                profile.getLanMaxClientRate(),
+                profile.getInternetMaxClientRate()
         );
     }
 

@@ -1554,6 +1554,19 @@ public class Utils {
         }
     }
 
+    public static void loadTooltip(String languageCode, String propKey, ImageView img, Label label, TextField textField1, TextField textField2) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
+        Tooltip.install(img, tooltip);
+        label.setTooltip(tooltip);
+        textField1.setTooltip(tooltip);
+        textField2.setTooltip(tooltip);
+    }
+
     public static void loadTooltip(String languageCode, String propKey, ImageView img, Label label, CheckBox checkBox, TextField textField) throws Exception {
         PropertyService propertyService = new PropertyServiceImpl();
         Double tooltipDuration = Double.parseDouble(
@@ -1587,6 +1600,17 @@ public class Utils {
         Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
         tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(img, tooltip);
+        label.setTooltip(tooltip);
+        textArea.setTooltip(tooltip);
+    }
+
+    public static void loadTooltip(String languageCode, String propKey, Label label, TextArea textArea) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
         label.setTooltip(tooltip);
         textArea.setTooltip(tooltip);
     }

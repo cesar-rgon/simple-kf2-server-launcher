@@ -147,6 +147,17 @@ public class Profile extends AbstractExtendedEntity {
     @Column(name="FRIENDLY_FIRE_PERCENTAGE")
     private Double friendlyFirePercentage;
 
+    @Column(name="NET_TICKRATE")
+    private Integer netTickrate;
+
+    @Column(name="LAN_TICKRATE")
+    private Integer lanTickrate;
+
+    @Column(name="LAN_MAXCLIENTRATE")
+    private Integer lanMaxClientRate;
+
+    @Column(name="INTERNET_MAXCLIENTRATE")
+    private Integer internetMaxClientRate;
 
     public Profile() {
         super();
@@ -158,7 +169,8 @@ public class Profile extends AbstractExtendedEntity {
                    boolean teamCollision, boolean adminCanPause, boolean announceAdminLogin, boolean mapVoting, double mapVotingTime,
                    boolean kickVoting, double kickPercentage, boolean publicTextChat, boolean spectatorsOnlyChatToOtherSpectators, boolean voip,
                    boolean chatLogging, String chatLoggingFile, boolean chatLoggingFileTimestamp, double timeBetweenKicks, double maxIdleTime, boolean deadPlayersCanTalk,
-                   int readyUpDelay, int gameStartDelay, int maxSpectators, boolean mapObjetives, boolean pickupItems, double friendlyFirePercentage) {
+                   int readyUpDelay, int gameStartDelay, int maxSpectators, boolean mapObjetives, boolean pickupItems, double friendlyFirePercentage,
+                   Integer netTickrate, Integer lanTickrate, Integer lanMaxClientRate, Integer internetMaxClientRate) {
 
         super();
         this.name = name;
@@ -203,6 +215,10 @@ public class Profile extends AbstractExtendedEntity {
         this.mapObjetives = (Boolean) mapObjetives;
         this.pickupItems = (Boolean) pickupItems;
         this.friendlyFirePercentage = (Double) friendlyFirePercentage;
+        this.netTickrate = netTickrate;
+        this.lanTickrate = lanTickrate;
+        this.lanMaxClientRate = lanMaxClientRate;
+        this.internetMaxClientRate = internetMaxClientRate;
     }
 
     @Override
@@ -570,6 +586,38 @@ public class Profile extends AbstractExtendedEntity {
         this.name = name;
     }
 
+    public Integer getNetTickrate() {
+        return netTickrate;
+    }
+
+    public void setNetTickrate(Integer netTickrate) {
+        this.netTickrate = netTickrate;
+    }
+
+    public Integer getLanTickrate() {
+        return lanTickrate;
+    }
+
+    public void setLanTickrate(Integer lanTickrate) {
+        this.lanTickrate = lanTickrate;
+    }
+
+    public Integer getLanMaxClientRate() {
+        return lanMaxClientRate;
+    }
+
+    public void setLanMaxClientRate(Integer lanMaxClientRate) {
+        this.lanMaxClientRate = lanMaxClientRate;
+    }
+
+    public Integer getInternetMaxClientRate() {
+        return internetMaxClientRate;
+    }
+
+    public void setInternetMaxClientRate(Integer internetMaxClientRate) {
+        this.internetMaxClientRate = internetMaxClientRate;
+    }
+
     @Override
     public String toString() {
         return "Profile{" +
@@ -616,6 +664,10 @@ public class Profile extends AbstractExtendedEntity {
                 ", mapObjetives=" + mapObjetives +
                 ", pickupItems=" + pickupItems +
                 ", friendlyFirePercentage=" + friendlyFirePercentage +
+                ", netTickrate=" + netTickrate +
+                ", lanTickrate=" + lanTickrate +
+                ", lanMaxClientRate = " + lanMaxClientRate +
+                ", internetMaxClientRate=" + internetMaxClientRate +
                 '}';
     }
 }

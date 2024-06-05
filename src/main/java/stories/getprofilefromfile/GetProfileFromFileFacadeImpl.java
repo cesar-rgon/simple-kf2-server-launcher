@@ -70,6 +70,10 @@ public class GetProfileFromFileFacadeImpl
         String mapObjetivesStr = properties.getProperty("exported.profile" + profileIndex + ".mapObjetives");
         String pickupItemsStr = properties.getProperty("exported.profile" + profileIndex + ".pickupItems");
         String platformName = properties.getProperty("exported.profile" + profileIndex + ".platform");
+        String netTickrateStr = properties.getProperty("exported.profile" + profileIndex + ".netTickrate");
+        String lanTickrateStr = properties.getProperty("exported.profile" + profileIndex + ".lanTickrate");
+        String lanMaxClientRateStr = properties.getProperty("exported.profile" + profileIndex + ".lanMaxClientRate");
+        String internetMaxClientRateStr = properties.getProperty("exported.profile" + profileIndex + ".internetMaxClientRate");
 
         Profile profileFromFile = new Profile(
                 profileName,
@@ -113,7 +117,11 @@ public class GetProfileFromFileFacadeImpl
                 StringUtils.isNotBlank(maxSpectatorsStr) ? Integer.parseInt(maxSpectatorsStr): 2,
                 StringUtils.isNotBlank(mapObjetivesStr) ? Boolean.valueOf(mapObjetivesStr): true,
                 StringUtils.isNotBlank(pickupItemsStr) ? Boolean.valueOf(pickupItemsStr): true,
-                StringUtils.isNotBlank(friendlyFirePercentageStr) ? Double.parseDouble(friendlyFirePercentageStr): 0
+                StringUtils.isNotBlank(friendlyFirePercentageStr) ? Double.parseDouble(friendlyFirePercentageStr): 0,
+                StringUtils.isNotBlank(netTickrateStr) ? Integer.parseInt(netTickrateStr): 30,
+                StringUtils.isNotBlank(lanTickrateStr) ? Integer.parseInt(lanTickrateStr): 35,
+                StringUtils.isNotBlank(lanMaxClientRateStr) ? Integer.parseInt(lanMaxClientRateStr): 15000,
+                StringUtils.isNotBlank(internetMaxClientRateStr) ? Integer.parseInt(internetMaxClientRateStr): 10000
         );
 
         return new GetProfileFromFileFacadeResult(

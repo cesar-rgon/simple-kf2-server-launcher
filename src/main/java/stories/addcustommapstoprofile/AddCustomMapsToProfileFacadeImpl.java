@@ -88,7 +88,6 @@ public class AddCustomMapsToProfileFacadeImpl
                         profileNameList.add(facadeModelContext.getProfileName());
 
                         CustomMapMod customMap = customMapService.createNewCustomMapFromWorkshop(
-                                // TODO: Se considera que es un mapa. Corregir esto
                                 facadeModelContext.getPlatformNameList(), idWorkShop, profileNameList, mapName, strUrlMapImage, isMap, success, errors
                         );
                         if (customMap != null) {

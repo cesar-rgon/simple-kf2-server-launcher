@@ -118,7 +118,11 @@ public class CreateNewProfileFacadeImpl
                 2,
                 true,
                 true,
-                0.0
+                0.0,
+                30,
+                35,
+                15000,
+                10000
         );
 
         Profile savedProfile = profileService.createItem(newProfile);

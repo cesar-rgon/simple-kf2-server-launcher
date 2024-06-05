@@ -3,8 +3,6 @@ package stories.maincontent;
 import dtos.ProfileDto;
 import framework.AbstractManagerFacade;
 import framework.EmptyModelContext;
-import javafx.scene.text.Text;
-import javafx.stage.Popup;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
@@ -66,6 +64,9 @@ import stories.updateprofilesetgamestartdelay.UpdateProfileSetGameStartDelayMode
 import stories.updateprofilesetgametype.UpdateProfileSetGameTypeFacade;
 import stories.updateprofilesetgametype.UpdateProfileSetGameTypeFacadeImpl;
 import stories.updateprofilesetgametype.UpdateProfileSetGameTypeModelContext;
+import stories.updateprofilesetinternetmaxclientrate.UpdateProfileSetInternetMaxClientRateFacade;
+import stories.updateprofilesetinternetmaxclientrate.UpdateProfileSetInternetMaxClientRateFacadeImpl;
+import stories.updateprofilesetinternetmaxclientrate.UpdateProfileSetInternetMaxClientRateModelContext;
 import stories.updateprofilesetkickpercentage.UpdateProfileSetKickPercentageFacade;
 import stories.updateprofilesetkickpercentage.UpdateProfileSetKickPercentageFacadeImpl;
 import stories.updateprofilesetkickpercentage.UpdateProfileSetKickPercentageModelContext;
@@ -75,6 +76,12 @@ import stories.updateprofilesetkickvoting.UpdateProfileSetKickVotingModelContext
 import stories.updateprofilesetlanguage.UpdateProfileSetLanguageFacade;
 import stories.updateprofilesetlanguage.UpdateProfileSetLanguageFacadeImpl;
 import stories.updateprofilesetlanguage.UpdateProfileSetLanguageModelContext;
+import stories.updateprofilesetlanmaxclientrate.UpdateProfileSetLanMaxClientRateFacade;
+import stories.updateprofilesetlanmaxclientrate.UpdateProfileSetLanMaxClientRateFacadeImpl;
+import stories.updateprofilesetlanmaxclientrate.UpdateProfileSetLanMaxClientRateModelContext;
+import stories.updateprofilesetlantickrate.UpdateProfileSetLanTickrateFacade;
+import stories.updateprofilesetlantickrate.UpdateProfileSetLanTickrateFacadeImpl;
+import stories.updateprofilesetlantickrate.UpdateProfileSetLanTickrateModelContext;
 import stories.updateprofilesetlength.UpdateProfileSetLengthFacade;
 import stories.updateprofilesetlength.UpdateProfileSetLengthFacadeImpl;
 import stories.updateprofilesetlength.UpdateProfileSetLengthModelContext;
@@ -99,6 +106,9 @@ import stories.updateprofilesetmaxplayers.UpdateProfileSetMaxPlayersModelContext
 import stories.updateprofilesetmaxspectators.UpdateProfileSetMaxSpectatorsFacade;
 import stories.updateprofilesetmaxspectators.UpdateProfileSetMaxSpectatorsFacadeImpl;
 import stories.updateprofilesetmaxspectators.UpdateProfileSetMaxSpectatorsModelContext;
+import stories.updateprofilesetnettickrate.UpdateProfileSetNetTickrateFacade;
+import stories.updateprofilesetnettickrate.UpdateProfileSetNetTickrateFacadeImpl;
+import stories.updateprofilesetnettickrate.UpdateProfileSetNetTickrateModelContext;
 import stories.updateprofilesetpickupitems.UpdateProfileSetPickupItemsFacade;
 import stories.updateprofilesetpickupitems.UpdateProfileSetPickupItemsFacadeImpl;
 import stories.updateprofilesetpickupitems.UpdateProfileSetPickupItemsModelContext;
@@ -153,9 +163,6 @@ import stories.updateprofilesetyourclan.UpdateProfileSetYourClanModelContext;
 import stories.updateprofilesetyourweblink.UpdateProfileSetYourWebLinkFacade;
 import stories.updateprofilesetyourweblink.UpdateProfileSetYourWebLinkFacadeImpl;
 import stories.updateprofilesetyourweblink.UpdateProfileSetYourWebLinkModelContext;
-import utils.Utils;
-
-import java.sql.SQLException;
 
 public class MainContentManagerFacadeImpl
         extends AbstractManagerFacade<EmptyModelContext, ListValuesMainContentFacadeResult>
@@ -657,5 +664,45 @@ public class MainContentManagerFacadeImpl
     public String findPropertyValue(String propertyFilePath, String key) throws Exception {
         PropertyService propertyService = new PropertyServiceImpl();
         return propertyService.getPropertyValue(propertyFilePath, key);
+    }
+
+    @Override
+    public void updateProfileSetNetTickrate(String profileName, Integer netTickrate) throws Exception {
+        UpdateProfileSetNetTickrateModelContext updateProfileSetNetTickrateModelContext = new UpdateProfileSetNetTickrateModelContext(
+                profileName,
+                netTickrate
+        );
+        UpdateProfileSetNetTickrateFacade updateProfileSetNetTickrateFacade = new UpdateProfileSetNetTickrateFacadeImpl(updateProfileSetNetTickrateModelContext);
+        updateProfileSetNetTickrateFacade.execute();
+    }
+
+    @Override
+    public void updateProfileSetLanTickrate(String profileName, Integer lanTickrate) throws Exception {
+        UpdateProfileSetLanTickrateModelContext updateProfileSetLanTickrateModelContext = new UpdateProfileSetLanTickrateModelContext(
+                profileName,
+                lanTickrate
+        );
+        UpdateProfileSetLanTickrateFacade updateProfileSetLanTickrateFacade = new UpdateProfileSetLanTickrateFacadeImpl(updateProfileSetLanTickrateModelContext);
+        updateProfileSetLanTickrateFacade.execute();
+    }
+
+    @Override
+    public void updateProfileSetLanMaxClientRate(String profileName, Integer lanMaxClientRate) throws Exception {
+        UpdateProfileSetLanMaxClientRateModelContext updateProfileSetLanMaxClientRateModelContext = new UpdateProfileSetLanMaxClientRateModelContext(
+                profileName,
+                lanMaxClientRate
+        );
+        UpdateProfileSetLanMaxClientRateFacade updateProfileSetLanMaxClientRateFacade = new UpdateProfileSetLanMaxClientRateFacadeImpl(updateProfileSetLanMaxClientRateModelContext);
+        updateProfileSetLanMaxClientRateFacade.execute();
+    }
+
+    @Override
+    public void updateProfileSetInternetMaxClientRate(String profileName, Integer internetMaxClientRate) throws Exception {
+        UpdateProfileSetInternetMaxClientRateModelContext updateProfileSetInternetMaxClientRateModelContext = new UpdateProfileSetInternetMaxClientRateModelContext(
+                profileName,
+                internetMaxClientRate
+        );
+        UpdateProfileSetInternetMaxClientRateFacade updateProfileSetInternetMaxClientRateFacade = new UpdateProfileSetInternetMaxClientRateFacadeImpl(updateProfileSetInternetMaxClientRateModelContext);
+        updateProfileSetInternetMaxClientRateFacade.execute();
     }
 }

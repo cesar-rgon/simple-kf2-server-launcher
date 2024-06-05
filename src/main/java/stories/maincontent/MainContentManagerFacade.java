@@ -57,4 +57,8 @@ public interface MainContentManagerFacade {
     boolean isCorrectInstallationFolder(String platformName) throws Exception;
     ProfileDto findProfileDtoByName(String name) throws Exception;
     String findPropertyValue(String propertyFilePath, String key) throws Exception;
+    void updateProfileSetNetTickrate(String profileName, Integer netTickrate) throws Exception;
+    void updateProfileSetLanTickrate(String profileName, Integer lanTickrate) throws Exception;
+    void updateProfileSetLanMaxClientRate(String profileName, Integer lanMaxClientRate) throws Exception;
+    void updateProfileSetInternetMaxClientRate(String profileName, Integer internetMaxClientRate) throws Exception;
 }

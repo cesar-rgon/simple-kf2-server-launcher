@@ -193,7 +193,11 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
                     2,
                     true,
                     true,
-                    0.0
+                    0.0,
+                    30,
+                    35,
+                    15000,
+                    10000
             );
 
         } else {

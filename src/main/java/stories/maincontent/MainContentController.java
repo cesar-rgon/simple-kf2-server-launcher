@@ -81,6 +81,7 @@ public class MainContentController implements Initializable {
     @FXML private TextField yourClan;
     @FXML private TextField yourWebLink;
     @FXML private TextArea welcomeMessage;
+    @FXML private Label customParametersFormatLabel;
     @FXML private TextArea customParametersTextArea;
     @FXML private CheckBox webPage;
     @FXML private WebView imageWebView;
@@ -98,7 +99,17 @@ public class MainContentController implements Initializable {
     @FXML private Label webLinkLabel;
 
     @FXML private Label welcomeLabel;
+
+    @FXML private ImageView tickrateImg;
     @FXML private Label tickrateLabel;
+    @FXML private TextField netTickrate;
+    @FXML private TextField lanTickrate;
+
+    @FXML private ImageView maxClientRateImg;
+    @FXML private Label maxClientRateLabel;
+    @FXML private TextField lanMaxClientRate;
+    @FXML private TextField internetMaxClientRate;
+
     @FXML private Button runServer;
     @FXML private Button joinServer;
     @FXML private ImageView runServerImage;
@@ -883,6 +894,78 @@ public class MainContentController implements Initializable {
                 }
             }
         });
+
+        netTickrate.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                Integer oldValue = null;
+                try {
+                    if (!newPropertyValue) {
+                        oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getNetTickrate();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
+                        facade.updateProfileSetNetTickrate(profileName, StringUtils.isNotEmpty(netTickrate.getText()) ? Integer.parseInt(netTickrate.getText()): null);
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    Utils.errorDialog(e.getMessage(), e);
+                    netTickrate.setText(oldValue != null? String.valueOf(oldValue): "");
+                }
+            }
+        });
+
+        lanTickrate.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                Integer oldValue = null;
+                try {
+                    if (!newPropertyValue) {
+                        oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getLanTickrate();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
+                        facade.updateProfileSetLanTickrate(profileName, StringUtils.isNotEmpty(lanTickrate.getText()) ? Integer.parseInt(lanTickrate.getText()): null);
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    Utils.errorDialog(e.getMessage(), e);
+                    lanTickrate.setText(oldValue != null? String.valueOf(oldValue): "");
+                }
+            }
+        });
+
+        lanMaxClientRate.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                Integer oldValue = null;
+                try {
+                    if (!newPropertyValue) {
+                        oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getLanMaxClientRate();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
+                        facade.updateProfileSetLanMaxClientRate(profileName, StringUtils.isNotEmpty(lanMaxClientRate.getText()) ? Integer.parseInt(lanMaxClientRate.getText()): null);
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    Utils.errorDialog(e.getMessage(), e);
+                    lanMaxClientRate.setText(oldValue != null? String.valueOf(oldValue): "");
+                }
+            }
+        });
+
+        internetMaxClientRate.focusedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+                Integer oldValue = null;
+                try {
+                    if (!newPropertyValue) {
+                        oldValue = facade.findProfileDtoByName(profileSelect.getValue().getName()).getInternetMaxClientRate();
+                        String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName(): null;
+                        facade.updateProfileSetInternetMaxClientRate(profileName, StringUtils.isNotEmpty(internetMaxClientRate.getText()) ? Integer.parseInt(internetMaxClientRate.getText()): null);
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    Utils.errorDialog(e.getMessage(), e);
+                    internetMaxClientRate.setText(oldValue != null? String.valueOf(oldValue): "");
+                }
+            }
+        });
     }
 
     private LoadActualProfileFacadeResult loadPlatformProfileMapSelect() throws Exception {
@@ -995,9 +1078,17 @@ public class MainContentController implements Initializable {
         TextField[] portsArray = {gamePort, queryPort, webPort};
         Utils.loadTooltip(languageCode, "prop.tooltip.ports", portsImg, portsLabel, portsArray);
 
+        String customParametersFormatLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.customParametersFormat");
+        customParametersFormatLabel.setText(customParametersFormatLabelText);
+        Utils.loadTooltip(languageCode, "prop.tooltip.customParameters", customParametersFormatLabel, customParametersTextArea);
+
         String tickrateLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.tickrate");
         tickrateLabel.setText(tickrateLabelText);
-        Utils.loadTooltip(languageCode, "prop.tooltip.customParameters", customParametersImg, tickrateLabel, customParametersTextArea);
+        Utils.loadTooltip(languageCode, "prop.tooltip.tickrate", tickrateImg, tickrateLabel, netTickrate, lanTickrate);
+
+        String maxClientRateLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.maxClientRate");
+        maxClientRateLabel.setText(maxClientRateLabelText);
+        Utils.loadTooltip(languageCode, "prop.tooltip.maxClientRate", maxClientRateImg, maxClientRateLabel, lanMaxClientRate, internetMaxClientRate);
 
         String teamCollisionLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.teamCollision");
         String teamCollisionText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.teamCollisionEnable");
@@ -1215,6 +1306,15 @@ public class MainContentController implements Initializable {
         mapObjetives.setSelected(result.getProfileDto().getMapObjetives() != null ? result.getProfileDto().getMapObjetives(): false);
         pickupItems.setSelected(result.getProfileDto().getPickupItems() != null ? result.getProfileDto().getPickupItems(): false);
         friendlyFirePercentage.setText(result.getProfileDto().getFriendlyFirePercentage() != null? String.valueOf(result.getProfileDto().getFriendlyFirePercentage()): "");
+
+        Integer netTickrateValue = result.getProfileDto().getNetTickrate();
+        netTickrate.setText(netTickrateValue != null? String.valueOf(netTickrateValue): "");
+        Integer lanTickrateValue = result.getProfileDto().getLanTickrate();
+        lanTickrate.setText(lanTickrateValue != null? String.valueOf(lanTickrateValue): "");
+        Integer lanMaxClientRateValue = result.getProfileDto().getLanMaxClientRate();
+        lanMaxClientRate.setText(lanMaxClientRateValue != null? String.valueOf(lanMaxClientRateValue): "");
+        Integer internetMaxClientRateValue = result.getProfileDto().getInternetMaxClientRate();
+        internetMaxClientRate.setText(internetMaxClientRateValue != null? String.valueOf(internetMaxClientRateValue): "");
 
         Session.getInstance().setActualProfileName(result.getProfileDto().getName());
         if (Session.getInstance().getMapsProfile() == null || result.getProfileDto().getName().equals(Session.getInstance().getMapsProfile().getName())) {

@@ -52,8 +52,15 @@ public class AddPlatformProfilesToMapFacadeImpl
         List<PlatformProfileMap> platformProfileMapListToAdd = new ArrayList<PlatformProfileMap>();
         for (Profile profile: profileList) {
             for (AbstractPlatform platform: platformList) {
-                // TODO: Es correcto así el Maps Cycle?
-                platformProfileMapListToAdd.add(new PlatformProfileMap(platform, profile, map, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), officialMapOptional.isPresent(), officialMapOptional.isPresent()));
+                platformProfileMapListToAdd.add(new PlatformProfileMap(platform,
+                        profile,
+                        map,
+                        map.getReleaseDate(),
+                        map.getUrlInfo(),
+                        map.getUrlPhoto(),
+                        officialMapOptional.isPresent(),
+                        officialMapOptional.isPresent()
+                ));
             }
         }
 

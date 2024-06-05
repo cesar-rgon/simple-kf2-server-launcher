@@ -47,6 +47,10 @@ public class ProfileDto {
     private final Boolean mapObjetives;
     private final Boolean pickupItems;
     private final Double friendlyFirePercentage;
+    private final Integer netTickrate;
+    private final Integer lanTickrate;
+    private final Integer lanMaxClientRate;
+    private final Integer internetMaxClientRate;
 
     public ProfileDto(String name, SelectDto language, GameTypeDto gametype, AbstractMapDto map, SelectDto difficulty, SelectDto length, SelectDto maxPlayers,
                       String serverName, String serverPassword, Boolean webPage, String webPassword, Integer webPort, Integer gamePort, Integer queryPort,
@@ -54,7 +58,8 @@ public class ProfileDto {
                       Boolean takeover, Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting,
                       Double mapVotingTime, Boolean kickVoting, Double kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators,
                       Boolean voip, Boolean chatLogging, String chatLoggingFile, Boolean chatLoggingFileTimestamp, Double timeBetweenKicks, Double maxIdleTime, Boolean deadPlayersCanTalk,
-                      Integer readyUpDelay, Integer gameStartDelay, Integer maxSpectators, Boolean mapObjetives, Boolean pickupItems, Double friendlyFirePercentage) {
+                      Integer readyUpDelay, Integer gameStartDelay, Integer maxSpectators, Boolean mapObjetives, Boolean pickupItems, Double friendlyFirePercentage,
+                      Integer netTickrate, Integer lanTickrate, Integer lanMaxClientRate, Integer internetMaxClientRate) {
 
         super();
         this.name = new SimpleStringProperty(name);
@@ -99,6 +104,10 @@ public class ProfileDto {
         this.mapObjetives = mapObjetives;
         this.pickupItems = pickupItems;
         this.friendlyFirePercentage = friendlyFirePercentage;
+        this.netTickrate = netTickrate;
+        this.lanTickrate = lanTickrate;
+        this.lanMaxClientRate = lanMaxClientRate;
+        this.internetMaxClientRate = internetMaxClientRate;
     }
 
     public StringProperty getNameProperty() {
@@ -271,6 +280,23 @@ public class ProfileDto {
 
     public Integer getGameStartDelay() {
         return gameStartDelay;
+    }
+
+
+    public Integer getNetTickrate() {
+        return netTickrate;
+    }
+
+    public Integer getLanTickrate() {
+        return lanTickrate;
+    }
+
+    public Integer getLanMaxClientRate() {
+        return lanMaxClientRate;
+    }
+
+    public Integer getInternetMaxClientRate() {
+        return internetMaxClientRate;
     }
 
     @Override

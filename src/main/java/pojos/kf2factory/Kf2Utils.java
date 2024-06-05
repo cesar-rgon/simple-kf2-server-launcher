@@ -197,6 +197,7 @@ public class Kf2Utils {
             PrintWriter pw = new PrintWriter(new FileWriter(strTempFile));
             String line;
             boolean firstDownloadManager = true;
+            boolean rateParameters = false;
             while ((line = br.readLine()) != null) {
                 if (firstDownloadManager) {
                     if (StringUtils.isNotBlank(line) && line.contains("DownloadManagers=")) {
@@ -207,6 +208,17 @@ public class Kf2Utils {
                     }
                     if (StringUtils.isNotBlank(line) && line.contains("bUsedForTakeover=")) {
                         pw.println("bUsedForTakeover=" + (profile.getTakeover()!=null?profile.getTakeover():"FALSE"));
+                    } else if (StringUtils.isNotBlank(line) && line.contains("[IpDrv.TcpNetDriver]")) {
+                        pw.println("[IpDrv.TcpNetDriver]");
+                        rateParameters = true;
+                    } else if (StringUtils.isNotBlank(line) && rateParameters && line.contains("NetServerMaxTickRate=")) {
+                        pw.println("NetServerMaxTickRate=" + ((profile.getNetTickrate() != null) ? profile.getNetTickrate(): 30));
+                    } else if (StringUtils.isNotBlank(line) && rateParameters && line.contains("LanServerMaxTickRate=")) {
+                        pw.println("LanServerMaxTickRate=" + ((profile.getLanTickrate() != null) ? profile.getLanTickrate(): 35));
+                    } else if (StringUtils.isNotBlank(line) && rateParameters && line.contains("MaxClientRate=")) {
+                        pw.println("MaxClientRate=" + ((profile.getLanMaxClientRate() != null) ? profile.getLanMaxClientRate(): 15000));
+                    } else if (StringUtils.isNotBlank(line) && rateParameters && line.contains("MaxInternetClientRate=")) {
+                        pw.println("MaxInternetClientRate=" + ((profile.getInternetMaxClientRate() != null) ? profile.getInternetMaxClientRate(): 10000));
                     } else {
                         if (StringUtils.isBlank(line) || (!line.contains("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]") &&
                                 !line.contains("ServerSubscribedWorkshopItems="))) {
@@ -215,7 +227,18 @@ public class Kf2Utils {
                     }
                 } else {
                     if (StringUtils.isNotBlank(line) && line.contains("bUsedForTakeover=")) {
-                        pw.println("bUsedForTakeover=" + (profile.getTakeover()!=null?profile.getTakeover():"FALSE"));
+                        pw.println("bUsedForTakeover=" + (profile.getTakeover() != null ? profile.getTakeover() : "FALSE"));
+                    } else if (StringUtils.isNotBlank(line) && line.contains("[IpDrv.TcpNetDriver]")) {
+                        pw.println("[IpDrv.TcpNetDriver]");
+                        rateParameters = true;
+                    } else if (StringUtils.isNotBlank(line) && rateParameters && line.contains("NetServerMaxTickRate=")) {
+                        pw.println("NetServerMaxTickRate=" + ((profile.getNetTickrate() != null) ? profile.getNetTickrate(): 30));
+                    } else if (StringUtils.isNotBlank(line) && rateParameters && line.contains("LanServerMaxTickRate=")) {
+                        pw.println("LanServerMaxTickRate=" + ((profile.getLanTickrate() != null) ? profile.getLanTickrate(): 35));
+                    } else if (StringUtils.isNotBlank(line) && rateParameters && line.contains("MaxClientRate=")) {
+                        pw.println("MaxClientRate=" + ((profile.getLanMaxClientRate() != null) ? profile.getLanMaxClientRate(): 15000));
+                    } else if (StringUtils.isNotBlank(line) && rateParameters && line.contains("MaxInternetClientRate=")) {
+                        pw.println("MaxInternetClientRate=" + ((profile.getInternetMaxClientRate() != null) ? profile.getInternetMaxClientRate(): 10000));
                     } else {
                         if (StringUtils.isBlank(line) || (!line.contains("DownloadManagers=OnlineSubsystemSteamworks.SteamWorkshopDownload") &&
                                 !line.contains("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]") && !line.contains("ServerSubscribedWorkshopItems="))) {

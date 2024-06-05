@@ -190,7 +190,11 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                 profileToBeCloned.getMaxSpectators(),
                 profileToBeCloned.getMapObjetives(),
                 profileToBeCloned.getPickupItems(),
-                profileToBeCloned.getFriendlyFirePercentage()
+                profileToBeCloned.getFriendlyFirePercentage(),
+                profileToBeCloned.getNetTickrate(),
+                profileToBeCloned.getLanTickrate(),
+                profileToBeCloned.getLanMaxClientRate(),
+                profileToBeCloned.getInternetMaxClientRate()
         );
 
         Profile savedProfile = createItem(newProfile);
@@ -716,7 +720,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                 AbstractMap map = getImportedMap(EnumPlatform.STEAM, mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, mapName, null, true,true);
                 if (map != null) {
                     mapList.add(map);
-                    importPlatformProfileMap(EnumPlatform.STEAM, profile, map, true, profileIndex, mapIndex,  properties);
+                    importPlatformProfileMap(EnumPlatform.STEAM, profile, map, true, true, profileIndex, mapIndex,  properties);
                 }
             } catch (Exception e) {
                 logger.error("Error importing the official map " + mapName + " of profile index " + profileIndex + " in platform " + EnumPlatform.STEAM.getDescripcion() + " from file", e);
@@ -731,7 +735,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                 AbstractMap map = getImportedMap(EnumPlatform.EPIC, mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, mapName, null, true, true);
                 if (map != null) {
                     mapList.add(map);
-                    importPlatformProfileMap(EnumPlatform.EPIC, profile, map, true, profileIndex, mapIndex,  properties);
+                    importPlatformProfileMap(EnumPlatform.EPIC, profile, map, true, true, profileIndex, mapIndex,  properties);
                 }
             } catch (Exception e) {
                 logger.error("Error importing the official map " + mapName + " of profile index " + profileIndex + " in platform " + EnumPlatform.EPIC.getDescripcion() + " from file", e);
@@ -766,7 +770,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                 AbstractMap map = getImportedMap(enumPlatform, mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, customMap.getCommentary(), customMap.getIdWorkShop(), isMap, false);
                 if (map != null) {
                     mapList.add(map);
-                    importPlatformProfileMap(enumPlatform, profile, map, false, profileIndex, mapIndex,  properties);
+                    importPlatformProfileMap(enumPlatform, profile, map, false, false, profileIndex, mapIndex,  properties);
                 }
             } catch (Exception e) {
                 logger.error("Error importing the official map " + customMap.getCommentary() + " of profile index " + profileIndex + " from file", e);
@@ -828,7 +832,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
         return StringUtils.isNotBlank(urlPhotoCopy) ? urlPhotoCopy: originalUrlPhoto;
     }
 
-    private void importPlatformProfileMap(EnumPlatform enumPlatform, Profile profile, AbstractMap map, boolean downloaded, int profileIndex, int mapIndex, Properties properties) throws Exception {
+    private void importPlatformProfileMap(EnumPlatform enumPlatform, Profile profile, AbstractMap map, boolean downloaded, boolean isInMapsCycle, int profileIndex, int mapIndex, Properties properties) throws Exception {
         PlatformService platformService = new PlatformServiceImpl(em);
         PlatformProfileMapService platformProfileMapService = new PlatformProfileMapServiceImpl(em);
 
@@ -841,8 +845,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
         Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(enumPlatform.name());
         if (platformOptional.isPresent()) {
             if (Kf2Factory.getInstance(platformOptional.get(), em).isValidInstallationFolder()) {
-                // TODO: pasar por parámetro si está en Maps Cycle
-                PlatformProfileMap platformProfileMap = new PlatformProfileMap(platformOptional.get(), profile, map, releaseDate, urlInfo, urlPhoto, downloaded, true);
+                PlatformProfileMap platformProfileMap = new PlatformProfileMap(platformOptional.get(), profile, map, releaseDate, urlInfo, urlPhoto, downloaded, isInMapsCycle);
                 platformProfileMap.setAlias(alias);
                 platformProfileMapService.createItem(platformProfileMap);
             }

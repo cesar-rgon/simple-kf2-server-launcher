@@ -86,7 +86,8 @@ public abstract class AbstractPopulateDatabase {
                                    Boolean teamCollision, Boolean adminCanPause, Boolean announceAdminLogin, Boolean mapVoting, Double mapVotingTime,
                                    Boolean kickVoting, Double kickPercentage, Boolean publicTextChat, Boolean spectatorsOnlyChatToOtherSpectators, Boolean voip,
                                    Boolean chatLogging, String chatLoggingFile, Boolean chatLoggingFileTimestamp, Double timeBetweenKicks, Double maxIdleTime, Boolean deadPlayersCanTalk,
-                                   Integer readyUpDelay, Integer gameStartDelay, Integer maxSpectators, Boolean mapObjetives, Boolean pickupItems, Double friendlyFirePercentage) throws Exception {
+                                   Integer readyUpDelay, Integer gameStartDelay, Integer maxSpectators, Boolean mapObjetives, Boolean pickupItems, Double friendlyFirePercentage,
+                                   Integer netTickrateStr, Integer lanTickrateStr, Integer lanMaxClientRateStr, Integer internetMaxClientRateStr) throws Exception {
 
         Profile profile = new Profile(name, language, gametype, map, difficulty, length, maxPlayers,
                 serverName, serverPassword, webPage, webPassword, webPort, gamePort, queryPort,
@@ -94,7 +95,8 @@ public abstract class AbstractPopulateDatabase {
                 teamCollision, adminCanPause, announceAdminLogin, mapVoting, mapVotingTime,
                 kickVoting, kickPercentage, publicTextChat, spectatorsOnlyChatToOtherSpectators, voip,
                 chatLogging, chatLoggingFile, chatLoggingFileTimestamp, timeBetweenKicks, maxIdleTime, deadPlayersCanTalk,
-                readyUpDelay, gameStartDelay, maxSpectators, mapObjetives, pickupItems, friendlyFirePercentage);
+                readyUpDelay, gameStartDelay, maxSpectators, mapObjetives, pickupItems, friendlyFirePercentage,
+                netTickrateStr, lanTickrateStr, lanMaxClientRateStr, internetMaxClientRateStr);
 
         profileService.createItem(profile);
     }
