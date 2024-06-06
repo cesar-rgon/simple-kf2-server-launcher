@@ -34,7 +34,7 @@ public abstract class Kf2AbstractCommon extends Kf2Utils implements Kf2Common {
     public abstract String joinServer(Profile profile);
     protected abstract boolean prepareSteamCmd();
     public abstract boolean downloadMapFromSteamCmd(CustomMapMod customMap) throws Exception;
-    public abstract void copyMapToCachePlatform(CustomMapMod customMap) throws Exception;
+    public abstract String copyMapToCachePlatform(CustomMapMod customMap) throws Exception;
 
     protected boolean prerequisitesAreValid() {
         return prerequisitesAreValid(true);

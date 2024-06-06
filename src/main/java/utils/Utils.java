@@ -1631,4 +1631,18 @@ public class Utils {
 
         ImageIO.write(newBufferedImage, "jpg", targetJpgFile);
     }
+
+    public static String normalizeMapName(String mapName) {
+        if (StringUtils.isBlank(mapName)) {
+            return StringUtils.EMPTY;
+        }
+
+        StringBuilder result = new StringBuilder();
+        if (!mapName.toUpperCase().startsWith("KF")) {
+            result.append("KF-");
+        }
+        result.append(mapName.replaceAll(" ", "_"));
+
+        return result.toString();
+    }
 }

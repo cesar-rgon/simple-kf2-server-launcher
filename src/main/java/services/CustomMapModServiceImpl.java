@@ -150,6 +150,7 @@ public class CustomMapModServiceImpl extends AbstractMapService {
 
     public void downloadMapFromSteamCmd(List<String> platformNameList, CustomMapMod customMap, EntityManager em) {
         PlatformService platformService = new PlatformServiceImpl(em);
+        AbstractMapService mapService = new CustomMapModServiceImpl(em);
         PlatformProfileMapService platformProfileMapService = new PlatformProfileMapServiceImpl(em);
         StringBuffer success = new StringBuffer();
         StringBuffer errors = new StringBuffer();
@@ -174,10 +175,13 @@ public class CustomMapModServiceImpl extends AbstractMapService {
                 if (alreadyDownloaded || kf2Common.downloadMapFromSteamCmd(customMap)) {
                     alreadyDownloaded = true;
 
-                    kf2Common.copyMapToCachePlatform(customMap);
+                    String mapFilename = kf2Common.copyMapToCachePlatform(customMap);
 
                     for (PlatformProfileMap ppm: ppmList){
                         ppm.setDownloaded(true);
+                        ppm.setInMapsCycle(true);
+                        ppm.getMap().setCode(mapFilename);
+                        mapService.updateItem(ppm.getMap());
                         platformProfileMapService.updateItem(ppm);
                     }
                 }

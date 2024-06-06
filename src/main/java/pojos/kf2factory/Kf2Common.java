@@ -17,5 +17,5 @@ public interface Kf2Common {
     void runExecutableFile();
     void createConfigFolder(String installationFolder, String profileName);
     boolean downloadMapFromSteamCmd(CustomMapMod customMap) throws Exception;
-    void copyMapToCachePlatform(CustomMapMod customMap) throws Exception;
+    String copyMapToCachePlatform(CustomMapMod customMap) throws Exception;
 }

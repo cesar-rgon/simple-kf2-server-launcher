@@ -161,7 +161,7 @@ public class AddCustomMapsToProfileFacadeImpl
             if (line.contains("workshopItemTitle")) {
                 String[] array = line.split(">");
                 String[] array2 = array[1].split("<");
-                mapName = array2[0];
+                mapName = Utils.normalizeMapName(array2[0]);
             }
             if (line.contains("workshopTags") && line.contains("Maps and Mods")) {
                 String[] array = line.split("Maps and Mods");

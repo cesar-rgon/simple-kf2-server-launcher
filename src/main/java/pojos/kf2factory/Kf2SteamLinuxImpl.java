@@ -337,7 +337,7 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
         }
     }
 
-    public void copyMapToCachePlatform(CustomMapMod customMap) throws Exception {
+    public String copyMapToCachePlatform(CustomMapMod customMap) throws Exception {
         String tempFolder = System.getProperty("java.io.tmpdir");
 
         List<File> sourceFileList = Files.walk(Paths.get(tempFolder + "/steamcmd/steamapps/workshop/content/232090/" + customMap.getIdWorkShop()))
@@ -345,7 +345,7 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
                 .map(Path::toFile)
                 .collect(Collectors.toList());
 
-
+        String mapFilename = customMap.getCode();
         for (File sourceFile: sourceFileList) {
             String relativePath = StringUtils.replace(sourceFile.getAbsolutePath(), tempFolder + "/steamcmd/steamapps/workshop/content/232090/" + customMap.getIdWorkShop() , "");
             String[] relativePathArray = relativePath.split("/");
@@ -359,6 +359,11 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
             File targetFolder = new File(platform.getInstallationFolder() + "/KFGame/Cache/" + customMap.getIdWorkShop() + "/0/" + relativeFolder.toString());
             targetFolder.mkdirs();
             FileUtils.copyFileToDirectory(sourceFile, targetFolder);
+            if (sourceFile.getName().toUpperCase().startsWith("KF") && sourceFile.getName().toLowerCase().endsWith(".kfm")) {
+                mapFilename = sourceFile.getName();
+            }
         }
+
+        return mapFilename;
     }
 }

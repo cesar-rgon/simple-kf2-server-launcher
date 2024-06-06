@@ -209,7 +209,7 @@ public class Kf2Utils {
                     if (StringUtils.isNotBlank(line) && line.contains("bUsedForTakeover=")) {
                         pw.println("bUsedForTakeover=" + (profile.getTakeover()!=null?profile.getTakeover():"FALSE"));
                     } else if (StringUtils.isNotBlank(line) && line.contains("[IpDrv.TcpNetDriver]")) {
-                        pw.println("[IpDrv.TcpNetDriver]");
+                        pw.println(line);
                         rateParameters = true;
                     } else if (StringUtils.isNotBlank(line) && rateParameters && line.contains("NetServerMaxTickRate=")) {
                         pw.println("NetServerMaxTickRate=" + ((profile.getNetTickrate() != null) ? profile.getNetTickrate(): 30));
@@ -229,7 +229,7 @@ public class Kf2Utils {
                     if (StringUtils.isNotBlank(line) && line.contains("bUsedForTakeover=")) {
                         pw.println("bUsedForTakeover=" + (profile.getTakeover() != null ? profile.getTakeover() : "FALSE"));
                     } else if (StringUtils.isNotBlank(line) && line.contains("[IpDrv.TcpNetDriver]")) {
-                        pw.println("[IpDrv.TcpNetDriver]");
+                        pw.println(line);
                         rateParameters = true;
                     } else if (StringUtils.isNotBlank(line) && rateParameters && line.contains("NetServerMaxTickRate=")) {
                         pw.println("NetServerMaxTickRate=" + ((profile.getNetTickrate() != null) ? profile.getNetTickrate(): 30));

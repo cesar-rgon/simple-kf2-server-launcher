@@ -1,7 +1,6 @@
 package stories.mapwebinfo;
 
 import dtos.CustomMapModDto;
-import dtos.PlatformProfileMapDto;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
@@ -24,7 +23,6 @@ import pojos.PlatformProfile;
 import pojos.PlatformProfileToDisplay;
 import pojos.enums.EnumPlatform;
 import pojos.session.Session;
-import services.CustomMapModServiceImpl;
 import start.MainApplication;
 import stories.addplatformprofilestomap.AddPlatformProfilesToMapFacadeResult;
 import stories.createcustommapfromworkshop.CreateCustomMapFromWorkshopFacadeResult;
@@ -32,8 +30,6 @@ import stories.getplatformprofilelistwithoutmap.GetPlatformProfileListWithoutMap
 import stories.getplatformprofilelistwithoutmap.GetPlatformProfileListWithoutMapModelContext;
 import utils.Utils;
 
-import javax.xml.parsers.DocumentBuilderFactory;
-import java.io.ByteArrayInputStream;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
@@ -127,7 +123,7 @@ public class MapWebInfoController implements Initializable {
                                 Node title = titleList.item(0);
                                 if (idWorkShop != null) {
                                     String[] contentArray = title.getTextContent().split("::");
-                                    mapName = contentArray[1];
+                                    mapName = Utils.normalizeMapName(contentArray[1]);
                                     NodeList linkList = doc.getElementsByTagName("link");
                                     for (int i=0; i < linkList.getLength(); i++) {
                                         Node link = linkList.item(i);
