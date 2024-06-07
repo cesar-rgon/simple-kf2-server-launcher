@@ -91,7 +91,6 @@ public class AddCustomMapsToProfileFacadeImpl
                                 facadeModelContext.getPlatformNameList(), idWorkShop, profileNameList, mapName, strUrlMapImage, isMap, success, errors
                         );
                         if (customMap != null) {
-                            customMapService.downloadMapFromSteamCmd(facadeModelContext.getPlatformNameList(), customMap, em);
                             if (facadeModelContext.getProfileName().equalsIgnoreCase(facadeModelContext.getActualSelectedProfile())) {
                                 Optional<Profile> profileOptional = profileService.findByCode(facadeModelContext.getProfileName());
                                 if (!platformList.isEmpty() && profileOptional.isPresent()) {
@@ -105,7 +104,6 @@ public class AddCustomMapsToProfileFacadeImpl
                             throw new RuntimeException("Error adding map/mod with name with idWorkshop " + idWorkShop);
                         }
                     } else {
-                        customMapService.downloadMapFromSteamCmd(facadeModelContext.getPlatformNameList(), mapModInDataBase.get(), em);
                         List<AbstractPlatform> platformListForProfileWithoutMap = getPlatformProfileListWithoutMap(idWorkShop, em).stream().map(PlatformProfile::getPlatform).collect(Collectors.toList());
                         List<PlatformProfileMap> ppmList = new ArrayList<PlatformProfileMap>();
                         String customMapLocalFolder = propertyService.getPropertyValue("properties/config.properties", "prop.config.mapCustomLocalFolder");
@@ -163,15 +161,13 @@ public class AddCustomMapsToProfileFacadeImpl
                 String[] array2 = array[1].split("<");
                 mapName = Utils.normalizeMapName(array2[0]);
             }
-            if (line.contains("workshopTags") && line.contains("Maps and Mods")) {
+            if (line.contains("workshopTagsTitle") && line.contains("Maps and Mods")) {
                 String[] array = line.split("Maps and Mods");
                 if (array[1].contains("Maps")) {
                     isMap = true;
                 } else {
                     isMap = false;
                 }
-            } else {
-                isMap = false;
             }
 
             if (StringUtils.isNotEmpty(strUrlMapImage) && StringUtils.isNotEmpty(mapName) && isMap != null) {

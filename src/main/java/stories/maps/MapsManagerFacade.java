@@ -42,5 +42,5 @@ public interface MapsManagerFacade {
                                       List<String> epicOfficialMapNameListToRemoveFromMapsCycle,
                                       List<String> epicCustomMapNameListToRemoveFromMapsCycle,
                                       boolean isInMapsCycle) throws Exception;
-
+    void downloadMapListFromSteamCmd(List<String> platformNameList, List<String> mapNameList) throws Exception;
 }

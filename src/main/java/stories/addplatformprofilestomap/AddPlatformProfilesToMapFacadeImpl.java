@@ -90,10 +90,6 @@ public class AddPlatformProfilesToMapFacadeImpl
             }
         }
 
-        if (customMapModOptional.isPresent()) {
-            customMapModService.downloadMapFromSteamCmd(facadeModelContext.getPlatformNameList(), (CustomMapMod) map, em);
-        }
-
         return new AddPlatformProfilesToMapFacadeResult(
                 success,
                 errors

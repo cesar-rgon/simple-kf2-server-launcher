@@ -67,11 +67,13 @@ public class CheckDownloadedCustomMapsFacadeImpl
                         customMap.setCode(filenameWithoutExtension);
                         customMapModService.updateItem(customMap);
                         ppm.setDownloaded(true);
+                        ppm.setInMapsCycle(true);
                         platformProfileMapService.updateItem(ppm);
                     } else {
                         File folder = new File(ppm.getPlatform().getInstallationFolder() + "/KFGame/Cache/" + customMap.getIdWorkShop());
                         if (folder.exists()) {
                             ppm.setDownloaded(true);
+                            ppm.setInMapsCycle(true);
                             platformProfileMapService.updateItem(ppm);
                         }
                     }

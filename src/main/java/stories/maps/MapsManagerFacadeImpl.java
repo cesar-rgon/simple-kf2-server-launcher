@@ -22,6 +22,9 @@ import stories.deletemapfromplatformprofile.DeleteMapFromPlatformProfileFacade;
 import stories.deletemapfromplatformprofile.DeleteMapFromPlatformProfileFacadeImpl;
 import stories.deletemapfromplatformprofile.DeleteMapFromPlatformProfileFacadeResult;
 import stories.deletemapfromplatformprofile.DeleteMapFromPlatformProfileModelContext;
+import stories.downloadmaplistfromsteamcmd.DownloadMapListFromSteamCmdFacade;
+import stories.downloadmaplistfromsteamcmd.DownloadMapListFromSteamCmdFacadeImpl;
+import stories.downloadmaplistfromsteamcmd.DownloadMapListFromSteamCmdModelContext;
 import stories.findplatformprofilemapbynames.FindPlatformProfileMapByNameFacade;
 import stories.findplatformprofilemapbynames.FindPlatformProfileMapByNameFacadeImpl;
 import stories.findplatformprofilemapbynames.FindPlatformProfileMapByNameFacadeResult;
@@ -245,5 +248,15 @@ public class MapsManagerFacadeImpl
         );
         UpdateMapsCycleFlagInMapListFacade ipdateMapsCycleFlagInMapListFacade = new UpdateMapsCycleFlagInMapListFacadeImpl(updateMapsCycleFlagInMapListModelContext);
         ipdateMapsCycleFlagInMapListFacade.execute();
+    }
+
+    @Override
+    public void downloadMapListFromSteamCmd(List<String> platformNameList, List<String> mapNameList) throws Exception {
+        DownloadMapListFromSteamCmdModelContext downloadMapListFromSteamCmdModelContext = new DownloadMapListFromSteamCmdModelContext(
+                platformNameList,
+                mapNameList
+        );
+        DownloadMapListFromSteamCmdFacade downloadMapListFromSteamCmdFacade = new DownloadMapListFromSteamCmdFacadeImpl(downloadMapListFromSteamCmdModelContext);
+        downloadMapListFromSteamCmdFacade.execute();
     }
 }

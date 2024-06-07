@@ -1,6 +1,7 @@
 package stories.maps;
 
 import dtos.*;
+import entities.CustomMapMod;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -550,32 +551,34 @@ public class MapsController implements Initializable {
 
             } else {
                 try {
-                    downloadedLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.startServer");
+                    downloadedLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.clickToDownloadMap");
                 } catch (Exception e) {
-                    downloadedLabelText = "Start server to download it";
+                    downloadedLabelText = "Click to download it!";
                 }
 
-                Hyperlink startServerLink = new Hyperlink(downloadedLabelText);
-                startServerLink.setStyle("-fx-text-fill: #f03830; -fx-underline: true;");
-                startServerLink.setMaxWidth(Double.MAX_VALUE);
-                startServerLink.setAlignment(Pos.CENTER);
-                startServerLink.setPadding(new Insets(10,0,10,0));
-                startServerLink.setOnAction(new EventHandler<ActionEvent>() {
+                Hyperlink clickToDownloadMapLink = new Hyperlink(downloadedLabelText);
+                clickToDownloadMapLink.setStyle("-fx-text-fill: #f03830; -fx-underline: true;");
+                clickToDownloadMapLink.setMaxWidth(Double.MAX_VALUE);
+                clickToDownloadMapLink.setAlignment(Pos.CENTER);
+                clickToDownloadMapLink.setPadding(new Insets(10,0,10,0));
+                clickToDownloadMapLink.setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent e) {
                         try {
-                            facade.runServer(
-                                    platformProfileMapDto.getPlatformDto().getKey(),
-                                    profileSelect.getValue().getName(),
-                                    languageCode
-                            );
+                            List<String> platformNameList = new ArrayList<String>();
+                            platformNameList.add(platformProfileMapDto.getPlatformDto().getKey());
+                            List<String> mapNameList = new ArrayList<String>();
+                            mapNameList.add(platformProfileMapDto.getMapDto().getKey());
+
+                            facade.downloadMapListFromSteamCmd(platformNameList, mapNameList);
+
                         } catch (Exception ex) {
                             logger.error(ex.getMessage(), ex);
                             Utils.errorDialog(ex.getMessage(), ex);
                         }
                     }
                 });
-                gridpane.add(startServerLink,1, rowIndex);
+                gridpane.add(clickToDownloadMapLink,1, rowIndex);
             }
             rowIndex++;
         }
