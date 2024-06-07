@@ -81,6 +81,7 @@ public class MainContentController implements Initializable {
     @FXML private TextField yourClan;
     @FXML private TextField yourWebLink;
     @FXML private TextArea welcomeMessage;
+    @FXML private Tab customParameters;
     @FXML private Label customParametersFormatLabel;
     @FXML private TextArea customParametersTextArea;
     @FXML private CheckBox webPage;
@@ -297,6 +298,16 @@ public class MainContentController implements Initializable {
                 trash.setVisible(true);
                 progressIndicator.setVisible(false);
 
+                if (Session.getInstance().isFirstBoot()) {
+                    String languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+                    Boolean checkForUpgrades = Boolean.parseBoolean(facade.findPropertyValue("properties/config.properties", "prop.config.checkForUpgrades"));
+                    if (checkForUpgrades) {
+                        Utils.checkApplicationUpgrade(languageCode, true);
+                    }
+                    Utils.showTipsOnStasrtup();
+                    Session.getInstance().setFirstBoot(false);
+                }
+
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
                 Utils.errorDialog(e.getMessage(), e);
@@ -310,7 +321,6 @@ public class MainContentController implements Initializable {
 
         Thread thread = new Thread(task);
         thread.start();
-
 
         platformSelect.setCellFactory(new Callback<ListView<PlatformDto>, ListCell<PlatformDto>>() {
             @Override
@@ -1001,6 +1011,9 @@ public class MainContentController implements Initializable {
 
         String advancedParametersText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.advancedParameters");
         advancedParameters.setText(advancedParametersText);
+
+        String customParametersText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.customParameters");
+        customParameters.setText(customParametersText);
 
         Utils.loadTooltip(languageCode, "prop.tooltip.language", languageImg, languageLabel, languageSelect);
 

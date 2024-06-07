@@ -89,6 +89,9 @@ public class Utils {
             alert.getDialogPane().setMinWidth(600);
             alert.getDialogPane().setMinHeight(400);
         }
+
+        alert.setWidth(400);
+        alert.setHeight(500);
         alert.setResizable(true);
         alert.showAndWait();
     }
@@ -105,6 +108,9 @@ public class Utils {
         } catch (Exception ex) {
             dialog.setTitle("");
         }
+
+        dialog.setWidth(400);
+        dialog.setHeight(500);
         dialog.setHeaderText(header);
         dialog.setContentText(content);
         return dialog.showAndWait();
@@ -172,6 +178,9 @@ public class Utils {
                 return null;
             }
         });
+
+        dialog.setWidth(400);
+        dialog.setHeight(500);
         return dialog.showAndWait();
     }
 
@@ -191,6 +200,9 @@ public class Utils {
         area.setEditable(false);
         alert.getDialogPane().setContent(area);
         alert.setResizable(true);
+
+        alert.setWidth(400);
+        alert.setHeight(300);
         return alert.showAndWait();
     }
 
@@ -210,6 +222,9 @@ public class Utils {
         area.setEditable(false);
         alert.getDialogPane().setContent(area);
         alert.setResizable(true);
+
+        alert.setWidth(400);
+        alert.setHeight(300);
         alert.showAndWait();
     }
 
@@ -229,6 +244,9 @@ public class Utils {
         area.setEditable(false);
         alert.getDialogPane().setContent(area);
         alert.setResizable(true);
+
+        alert.setWidth(400);
+        alert.setHeight(300);
         alert.showAndWait();
     }
 
@@ -305,6 +323,8 @@ public class Utils {
             }
         });
 
+        dialog.setWidth(400);
+        dialog.setHeight(300);
         return dialog.showAndWait();
     }
 
@@ -317,6 +337,9 @@ public class Utils {
             alert.setHeaderText(header);
             alert.getDialogPane().setContent(content);
             alert.setResizable(true);
+
+            alert.setWidth(400);
+            alert.setHeight(300);
             alert.showAndWait();
 
         } catch (Exception e) {
@@ -489,6 +512,8 @@ public class Utils {
             }
         });
 
+        dialog.setWidth(500);
+        dialog.setHeight(500);
         Optional<TableView<AddMapsToPlatformProfile>> result = dialog.showAndWait();
         if (result.isPresent() && result.get() != null && result.get().getItems() != null && !result.get().getItems().isEmpty()) {
             return result.get().getItems();
@@ -624,6 +649,8 @@ public class Utils {
             return null;
         });
 
+        dialog.setWidth(500);
+        dialog.setHeight(500);
         Optional<TableView<ProfileToDisplay>> result = dialog.showAndWait();
         if (result.isPresent() && result.get() != null && result.get().getItems() != null && !result.get().getItems().isEmpty()) {
             List<ProfileToDisplay> selectedProfiles = new ArrayList<ProfileToDisplay>();
@@ -818,6 +845,8 @@ public class Utils {
             return null;
         });
 
+        dialog.setWidth(500);
+        dialog.setHeight(500);
         Optional<TableView<PlatformProfileToDisplay>> result = dialog.showAndWait();
         if (result.isPresent() && result.get() != null && result.get().getItems() != null && !result.get().getItems().isEmpty()) {
             List<PlatformProfileToDisplay> selectedProfiles = new ArrayList<PlatformProfileToDisplay>();
@@ -958,6 +987,8 @@ public class Utils {
             return null;
         });
 
+        dialog.setWidth(500);
+        dialog.setHeight(500);
         Optional<TableView<MapToDisplay>> result = dialog.showAndWait();
         if (result.isPresent() && result.get() != null && result.get().getItems() != null && !result.get().getItems().isEmpty()) {
             List<MapToDisplay> selectedMaps = new ArrayList<MapToDisplay>();
@@ -1084,6 +1115,8 @@ public class Utils {
             }
         });
 
+        dialog.setWidth(500);
+        dialog.setHeight(500);
         Optional<TableView<PlatformProfileToDisplay>> result = dialog.showAndWait();
         if (result.isPresent()) {
             return Optional.ofNullable(result.get().getSelectionModel().getSelectedItem());
@@ -1322,6 +1355,8 @@ public class Utils {
             }
         });
 
+        dialog.setWidth(500);
+        dialog.setHeight(500);
         return dialog.showAndWait();
     }
 
@@ -1472,6 +1507,8 @@ public class Utils {
                 }
             });
 
+            dialog.setWidth(800);
+            dialog.setHeight(600);
             return dialog.showAndWait();
 
         } catch (Exception e) {

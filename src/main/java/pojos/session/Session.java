@@ -20,7 +20,6 @@ public class Session {
 
     private String actualProfileName;
     private String console;
-
     private PlatformProfileMapDto ppm;
     private List<Process> processList;
     private ProfileDto mapsProfile;
@@ -29,6 +28,7 @@ public class Session {
     private List<PlatformProfileMapDto> platformProfileMapList;
     private PlatformDto platform;
     private String url;
+    private boolean firstBoot;
 
     /**
      * Singleton constructor
@@ -42,6 +42,7 @@ public class Session {
         sortedMapsCriteria = EnumSortedMapsCriteria.NAME_DESC;
         selectedMapTab = EnumMapsTab.STEAM_OFFICIAL_MAPS_TAB;
         platformProfileMapList = new ArrayList<PlatformProfileMapDto>();
+        firstBoot = true;
     }
 
     public static Session getInstance() {
@@ -141,5 +142,13 @@ public class Session {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public boolean isFirstBoot() {
+        return firstBoot;
+    }
+
+    public void setFirstBoot(boolean firstBoot) {
+        this.firstBoot = firstBoot;
     }
 }

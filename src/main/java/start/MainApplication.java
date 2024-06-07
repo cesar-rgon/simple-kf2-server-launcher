@@ -70,14 +70,6 @@ public class MainApplication extends Application {
         timer.schedule(timeListener, 0, Long.parseLong(checkDownloadedMapsEveryMilliseconds));
         MainApplication.primaryStage = primaryStage;
 
-        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-        Boolean checkForUpgrades = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.checkForUpgrades"));
-        if (checkForUpgrades != null && checkForUpgrades) {
-            Utils.checkApplicationUpgrade(languageCode, true);
-        }
-
-        Utils.showTipsOnStasrtup();
-
         this.primaryStage.maximizedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> ov, Boolean t, Boolean t1) {
