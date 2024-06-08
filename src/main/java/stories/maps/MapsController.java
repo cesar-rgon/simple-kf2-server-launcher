@@ -97,6 +97,7 @@ public class MapsController implements Initializable {
     @FXML ProgressIndicator progressIndicator;
     @FXML private MenuItem addToMapsCycle;
     @FXML private MenuItem removeFromMapsCycle;
+    @FXML private MenuItem downloadMaps;
 
     public MapsController() {
         super();
@@ -287,6 +288,9 @@ public class MapsController implements Initializable {
 
         String editMapsText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.editMaps");
         editMaps.setText(editMapsText);
+
+        String downloadMapsText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.downloadMaps");
+        downloadMaps.setText(downloadMapsText);
 
         String sliderLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.slider");
         sliderLabel.setText(sliderLabelText);
@@ -2105,6 +2109,63 @@ public class MapsController implements Initializable {
             } else {
                 epicCustomMapsFlowPane.getChildren().add(gridpane);
             }
+        }
+    }
+
+    @FXML
+    private void downloadMapsOnAction() {
+        try {
+            StringBuffer message = new StringBuffer();
+            List<Node> steamCustomMapToDownloadList = new ArrayList<Node>();
+            for (Node node : steamCustomMapsFlowPane.getChildren()) {
+                Node selectedNode = getNodeIfSelected(node, message);
+                if (selectedNode != null) {
+                    steamCustomMapToDownloadList.add(selectedNode);
+                }
+            }
+
+            List<Node> epicCustomMapToDownloadList = new ArrayList<Node>();
+            for (Node node : epicCustomMapsFlowPane.getChildren()) {
+                Node selectedNode = getNodeIfSelected(node, message);
+                if (selectedNode != null) {
+                    epicCustomMapToDownloadList.add(selectedNode);
+                }
+            }
+
+            if (steamCustomMapToDownloadList.isEmpty() && epicCustomMapToDownloadList.isEmpty()) {
+                logger.warn("No selected maps to download. You must select at least one item to be downloaded");
+                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapsNotSelected");
+                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectItems");
+                Utils.warningDialog(headerText, contentText);
+
+            } else {
+                List<String> steamCustomMapNameListToDownload = steamCustomMapToDownloadList.stream().
+                        map(node -> {
+                            GridPane gridpane = (GridPane) node;
+                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                            return mapNameLabel.getText();
+                        }).
+                        collect(Collectors.toList());
+
+                List<String> platformNameList = new ArrayList<String>();
+                platformNameList.add(EnumPlatform.STEAM.name());
+                facade.downloadMapListFromSteamCmd(platformNameList, steamCustomMapNameListToDownload);
+
+                List<String> epicCustomMapNameListToDownload = epicCustomMapToDownloadList.stream().
+                        map(node -> {
+                            GridPane gridpane = (GridPane) node;
+                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
+                            return mapNameLabel.getText();
+                        }).
+                        collect(Collectors.toList());
+
+                platformNameList.clear();
+                platformNameList.add(EnumPlatform.EPIC.name());
+                facade.downloadMapListFromSteamCmd(platformNameList, epicCustomMapNameListToDownload);
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 }

@@ -266,7 +266,7 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
             command.append(customMap.getIdWorkShop());
             command.append(" +exit");
             Process downloadMapProcess = Runtime.getRuntime().exec(command.toString(),null, new File(tempFolder + "\\steamcmd\\"));
-            downloadMapProcess.waitFor();
+            //downloadMapProcess.waitFor();
             return true;
         } else {
             return false;
