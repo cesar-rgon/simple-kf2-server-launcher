@@ -648,7 +648,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
 
     private boolean isInMapCycle(int profileIndex, EnumPlatform enumPlatform, int mapIndex, Properties properties) {
         String strIsInMapsCycle = properties.getProperty("exported.profile" + profileIndex + ".platform" + enumPlatform.name() + ".profilemap" + mapIndex + ".isInMapsCycle");
-        return Boolean.parseBoolean(strIsInMapsCycle);
+        return Boolean.parseBoolean(StringUtils.isNotBlank(strIsInMapsCycle) ? strIsInMapsCycle: "true");
     }
 
     private Long getIdWorkShop(int profileIndex, EnumPlatform enumPlatform, int mapIndex, Properties properties) throws NumberFormatException {

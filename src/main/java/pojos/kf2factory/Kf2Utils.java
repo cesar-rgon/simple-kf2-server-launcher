@@ -397,7 +397,8 @@ public class Kf2Utils {
                 List<PlatformProfileMap> platformProfileMapListForProfile = platformProfileMapService.listPlatformProfileMaps(platform, profile);
                 if (platformProfileMapListForProfile != null && !platformProfileMapListForProfile.isEmpty()) {
 
-                    List<AbstractMap> officialMaps = platformProfileMapListForProfile.stream().
+                    List<AbstractMap> officialMapsInMapCycles = platformProfileMapListForProfile.stream().
+                            filter(ppm -> ppm.isInMapsCycle()).
                             map(PlatformProfileMap::getMap).
                             filter(m -> {
                                 try {
@@ -410,8 +411,9 @@ public class Kf2Utils {
                             sorted((o1, o2) -> o1.getCode().compareTo(o2.getCode())).
                             collect(Collectors.toList());
 
-                    List<AbstractMap> downloadedCustomMaps = platformProfileMapListForProfile.stream().
+                    List<AbstractMap> downloadedCustomMapsInMapCycles = platformProfileMapListForProfile.stream().
                             filter(ppm -> ppm.isDownloaded()).
+                            filter(ppm -> ppm.isInMapsCycle()).
                             map(PlatformProfileMap::getMap).
                             filter(m -> {
                                 try {
@@ -425,7 +427,7 @@ public class Kf2Utils {
                             sorted((o1, o2) -> o1.getCode().compareTo(o2.getCode())).
                             collect(Collectors.toList());
 
-                    modifiedLine = generateMapCycleLine(officialMaps, downloadedCustomMaps);
+                    modifiedLine = generateMapCycleLine(officialMapsInMapCycles, downloadedCustomMapsInMapCycles);
                 }
             } catch (SQLException e) {
                 logger.error(e.getMessage(), e);
