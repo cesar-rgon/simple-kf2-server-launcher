@@ -107,7 +107,15 @@ No todas las imágenes son soportadas por el juego. Sólanente las imágenes que
 
 * _Puertos_: Los puertos son opcionales. Necesitas abrir los puertos en tu router y firewall. Si se lanza más de un servidor, los puertos deben ser diferentes entre ellos (una configuración por perfil).
 
-* _Parámetros opcionales_: Este campo es opcional. Define parámetros adicionales. El formato debe ser: [?]parametro1=valor1?parametror2=valor2?...?parametroN=valorN
+* _Tickrate_: Estos parámetros significan cuántas veces el servidor actualiza por segundo. Mayor valor es mejor. El valor máximo permitido es 60.
+
+* _Max client rate_: Estos parámetros significan límite de ancho de banda en bytes.
+
+#### Parámetros personalizados
+
+![Launcher screenshot](../images/screenshot15.png)
+
+* _Parámetros personalizados_: Este campo es opcional. Define parámetros adicionales. El formato debe ser: [?]parametro1=valor1?parametror2=valor2?...?parametroN=valorN
 
   [?] significa: opcionalmente puedes comenzar los parámetros por "?"
 

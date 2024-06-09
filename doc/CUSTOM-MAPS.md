@@ -11,14 +11,18 @@ Under Maps/Mods page you can manage custom maps, mods and official maps present 
 * _Actions menu_: It has several options to manage custom or official maps.
   * _Add new maps by URL/Id WorkShop_: It allows to add new custom maps and mods from Steam's WorkShop by WorkShop's Id or URL. If more than one element, use comma as separator.
   * _Search maps in WorkShop_: It allows to browse in Workshop's pages looking for new maps and mods. Then you can choose wich of them add to the launcher.
+  * _Download selected maps_: It allows to download all maps and mods previously selected.
   * _Edit selected maps_: It allows to edit all maps and mods previously selected.
   * _Delete selected maps_: It allows to delete all maps and mods previously selected.
   * _Import maps from server_: It allows to import all custom maps, mods and official maps from the server to the launcher. Only the elements not present already in the launcher.
+  * _Add selected maps to maps cycle_: It allows to add all selected official/custom maps to voting list displayed at the end of each match in-game.
+  * _Remove selected maps from maps cycle_: It allows to remove all selected official/custom maps from voting list displayed at the end of each match in-game.
   * _Order maps by alias_: It allows to sort the maps alphabetically by alias (ascendent or descendent).
   * _Order maps by name_: It allows to sort the maps alphabetically by name (ascendent or descendent).
   * _Order maps by release date_: It allows to sort the maps by release date (ascendent or descendent).
   * _Order maps by imported date_: It allows to sort the maps by imported date to the launcher (ascendent or descendent).
   * _Order maps by download_: It allows to sort the maps by download state (ascendent or descendent).
+  * _Order maps by maps cycle_: It allows to sort the maps by in maps cycle state (ascendent or descendent).
 
 * _Search filter_: It allows to filter maps and mods by name while you are writing the text.
 

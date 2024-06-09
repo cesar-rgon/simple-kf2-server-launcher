@@ -107,6 +107,14 @@ Not all the images are supported in the game. Only images that meet image resolu
 
 * _Ports_: These fields are optional. You need to open ports in your router and firewall. If more than one server is launched, ports must be different between them (one configuration per profile).
 
+* _Tickrate_: These parameters mean how many times the server updates per second. The higher the better. Manimum value admited is 60.
+
+* _Max client rate_: These parameters mean bandwith cap in bytes.
+
+#### Custom parameters
+
+![Launcher screenshot](images/screenshot15.png)
+
 * _Custom parameters_: This field is optional. It defines additional parameters. The format must be: [?]parameter1=value1?parameter2=value2?...?parameterN=valueN
 
   [?] means: optionally you can start parameters by "?"

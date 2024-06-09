@@ -17,5 +17,8 @@
   - JDK puede ser descargado desde [aquí](https://www.oracle.com/java/technologies/downloads/).
   - OpenJDK puede ser descargado desde [aquí](https://openjdk.java.net/).
 
+- Instalar Git en tu SO.
+  - Windows: https://gitforwindows.org/
+  - Linux: ```$ sudo apt install git```
 ---
 Back to main page [here](../../LEEME.md).

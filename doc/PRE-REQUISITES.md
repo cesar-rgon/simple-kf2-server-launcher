@@ -2,6 +2,7 @@
 
 # Pre-requisites
 - Internet connection to download, update and publish a Killing Floor 2 server.
+
 - Open needed ports in your router and firewall if you want your server be visible on internet.
 
   | Port       | Default | Protocol | What this option controls                                                   |
@@ -16,6 +17,10 @@
 - Install Oracle JDK 17 or a newer one (Java Development Kit) or OpenJDK in order to be able to execute the launcher.
   - JDK can be downloaded from [here](https://www.oracle.com/java/technologies/downloads/).
   - OpenJDK can be downloaded from [here](https://openjdk.java.net/).
+
+- Install Git in your OS.
+  - Windows: https://gitforwindows.org/
+  - Linux: ```$ sudo apt install git```
 
 ---
 Back to main page [here](../README.md).
