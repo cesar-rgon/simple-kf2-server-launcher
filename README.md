@@ -41,37 +41,74 @@ Translation to french by: -foG.Nox
 - All those features are available through the launcher's interface on Windows and Linux OS.
 
 ## Pre-requisites
+
 See documentation about this section [here](doc/PRE-REQUISITES.md).
 
-## Install and run the launcher
+[![YouTube video](doc/images/video00-prerequisites.png)](https://www.youtube.com/watch?v=hTaJCDZ3ahQ)
 
-[![YouTube video](doc/images/video01.png)](https://www.youtube.com/watch?v=1fAL5AK55QY)
+
+## Install and run the Launcher
 
 See documentation about this section [here](doc/INSTALL-LAUNCHER.md).
 
-## Install the server
+[![YouTube video](doc/images/video01-launcher-install.png)](https://www.youtube.com/watch?v=ew7t6XHTFOg)
 
-[![YouTube video](doc/images/video02.png)](https://www.youtube.com/watch?v=JYf4dvg04nc)
+
+## Install and run the Killing Floor 2's Server
 
 See documentation about this section [here](doc/INSTALL-SERVER.md).
 
-## Basic configuration
+[![YouTube video](doc/images/video02-server-install.png)](https://www.youtube.com/watch?v=s41C-PLWcQI)
 
-[![YouTube video](doc/images/video03.png)](https://www.youtube.com/watch?v=2qVCiDyYjdw)
+
+## Basic configuration
 
 See documentation about this section [here](doc/BASIC-CONFIGURATION.md).
 
-## Custom maps and mods
+[![YouTube video](doc/images/video03-basic-parameters.png)](https://www.youtube.com/watch?v=FFKeWvROfmo)
 
-[![YouTube video](doc/images/video04.png)](https://www.youtube.com/watch?v=Y94hFK6jOEI)
+
+## Custom maps and mods
 
 See documentation about this section [here](doc/CUSTOM-MAPS.md).
 
+### Add maps
+
+[![YouTube video](doc/images/video04-add-maps.png)](https://www.youtube.com/watch?v=kUKtUBQkYX0)
+
+### Manage maps cycle
+
+[![YouTube video](doc/images/video05-maps-cycle.png)](https://www.youtube.com/watch?v=K7_IrQxcWgQ)
+
+### Add mutators
+
+[![YouTube video](doc/images/video06-add-mutators.png)](https://www.youtube.com/watch?v=knku3crQW7s)
+
+### Manage maps
+
+[![YouTube video](doc/images/video07-manage-maps.png)](https://www.youtube.com/watch?v=zk7BFij-jEs)
+
+### Import maps from server
+
+[![YouTube video](doc/images/video08-import-maps.png)](https://www.youtube.com/watch?v=Oh5q5XVlGDk)
+
+
+
 ## Advanced configuration
 
-[![YouTube video](doc/images/video05.png)](https://www.youtube.com/watch?v=tFxy_neabug)
-
 See documentation about this section [here](doc/ADVANCED-CONFIGURATION.md).
+
+### Manage profiles
+
+[![YouTube video](doc/images/video09-manage-profiles.png)](https://www.youtube.com/watch?v=hif6yBDUfzE)
+
+### Manage game types
+
+Example: This video shows how to add and setup Zedternal Reborn mod to the launcher.
+
+New custom game types are needed for it.
+
+[![YouTube video](doc/images/video10-zedternal-reborn.png)](https://www.youtube.com/watch?v=emb2y1rN3iE)
 
 ## Annex
 - [Execute a file before launch the server](doc/ANNEX.md#execute-a-file-before-launch-the-server)

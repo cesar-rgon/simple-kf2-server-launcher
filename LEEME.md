@@ -41,37 +41,74 @@ Traducción a francés por: -foG.Nox
 - Todas estas características están disponibles a través de la interfaz del lanzador en Windows y Linux.
 
 ## Pre-requisitos
+
 Mira la documentación de esta sección [aquí](doc/es/PRE-REQUISITOS.md).
+
+[![YouTube video](doc/images/video00-prerequisites.png)](https://www.youtube.com/watch?v=hTaJCDZ3ahQ)
+
 
 ## Instalar y ejecutar el lanzador
 
-[![YouTube video](doc/images/video01.png)](https://www.youtube.com/watch?v=8k_-Q_7bxjI)
-
 Mira la documentación de esta sección [aquí](doc/es/INSTALAR-LANZADOR.md).
 
-## Instalar el servidor
+[![YouTube video](doc/images/video01-launcher-install.png)](https://www.youtube.com/watch?v=ew7t6XHTFOg)
 
-[![YouTube video](doc/images/video02.png)](https://www.youtube.com/watch?v=5voaloIeQDs)
+
+## Instalar y ejecutar el servidor de Killing Floor 2
 
 Mira la documentación de esta sección [aquí](doc/es/INSTALAR-SERVIDOR.md).
 
-## Configuración básica
+[![YouTube video](doc/images/video02-server-install.png)](https://www.youtube.com/watch?v=s41C-PLWcQI)
 
-[![YouTube video](doc/images/video03.png)](https://www.youtube.com/watch?v=TyOpbeKMaM0)
+
+## Configuración básica
 
 Mira la documentación de esta sección [aquí](doc/es/CONFIGURACION-BASICA.md).
 
-## Mapas personalizados y mods
+[![YouTube video](doc/images/video03-basic-parameters.png)](https://www.youtube.com/watch?v=FFKeWvROfmo)
 
-[![YouTube video](doc/images/video04.png)](https://www.youtube.com/watch?v=1WzDAc8bdgY)
+
+## Mapas personalizados y mods
 
 Mira la documentación de esta sección [aquí](doc/es/MAPAS-PERSONALIZADOS.md).
 
+### Añadir mapas
+
+[![YouTube video](doc/images/video04-add-maps.png)](https://www.youtube.com/watch?v=kUKtUBQkYX0)
+
+### Gestionar ciclo de mapas
+
+[![YouTube video](doc/images/video05-maps-cycle.png)](https://www.youtube.com/watch?v=K7_IrQxcWgQ)
+
+### Añadir mutadores
+
+[![YouTube video](doc/images/video06-add-mutators.png)](https://www.youtube.com/watch?v=knku3crQW7s)
+
+### Gestionar mapas
+
+[![YouTube video](doc/images/video07-manage-maps.png)](https://www.youtube.com/watch?v=zk7BFij-jEs)
+
+### Importar mapas del servidor
+
+[![YouTube video](doc/images/video08-import-maps.png)](https://www.youtube.com/watch?v=Oh5q5XVlGDk)
+
+
 ## Configuracion avanzada
 
-[![YouTube video](doc/images/video05.png)](https://www.youtube.com/watch?v=d3ZwFLU7izw)
-
 Mira la documentación de esta sección [aquí](doc/es/CONFIGURACION-AVANZADA.md).
+
+### Gestionar perfiles
+
+[![YouTube video](doc/images/video09-manage-profiles.png)](https://www.youtube.com/watch?v=hif6yBDUfzE)
+
+### Gestionar tipos de juego
+
+Ejemplo: Este video muestra cómo añadir y configurar el mod Zedternal Reborn al lanzador. 
+
+Para ello se necesitan nuevos modos de juego.
+
+[![YouTube video](doc/images/video10-zedternal-reborn.png)](https://www.youtube.com/watch?v=emb2y1rN3iE)
+
 
 ## Anexo
 - [Ejecutar un fichero antes de lanzar el servidor](doc/es/ANEXO.md#ejecutar-un-fichero-antes-de-lanzar-el-servidor)
