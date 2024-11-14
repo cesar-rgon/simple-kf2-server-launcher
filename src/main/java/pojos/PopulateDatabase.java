@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.enums.EnumLanguage;
 import pojos.enums.EnumPlatform;
-import pojos.listener.TimeListener;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import utils.Utils;
@@ -46,7 +45,7 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
         populateLanguage(EnumLanguage.en.name(), EnumLanguage.en.getDescripcion());
         populateLanguage(EnumLanguage.es.name(), EnumLanguage.es.getDescripcion());
         populateLanguage(EnumLanguage.fr.name(), EnumLanguage.fr.getDescripcion());
-        //populateLanguage(EnumLanguage.ru.name(), EnumLanguage.ru.getDescripcion());
+        populateLanguage(EnumLanguage.ru.name(), EnumLanguage.ru.getDescripcion());
     }
 
     @Override
