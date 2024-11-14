@@ -57,7 +57,7 @@ public class MainApplication extends Application {
         primaryStage.setTitle(applicationTitle + " " + applicationVersion);
         primaryStage.setScene(scene);
         primaryStage.setMinWidth(1024);
-        primaryStage.setMinHeight(700);
+        primaryStage.setMinHeight(750);
         String[] resolution = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationResolution").split("x");
         primaryStage.setWidth(Double.parseDouble(resolution[0]));
         primaryStage.setHeight(Double.parseDouble(resolution[1]));

@@ -271,14 +271,14 @@ public class TemplateController implements Initializable {
             noxImageView.setPreserveRatio(true);
             noxImageView.setFitWidth(128);
 
-            InputStream dreadmorInputStream = getClass().getClassLoader().getResourceAsStream("images/dreadmor-photo.png");
-            Image dreadmorImage = new Image(dreadmorInputStream);
-            ImageView dreadmorImageView = new ImageView(dreadmorImage);
-            dreadmorImageView.setPreserveRatio(true);
-            dreadmorImageView.setFitWidth(128);
+            InputStream dreadmore404InputStream = getClass().getClassLoader().getResourceAsStream("images/dreadmor404-photo.png");
+            Image dreadmore404Image = new Image(dreadmore404InputStream);
+            ImageView dreadmore404ImageView = new ImageView(dreadmore404Image);
+            dreadmore404ImageView.setPreserveRatio(true);
+            dreadmore404ImageView.setFitWidth(128);
 
             Label frenchTranslationLabel = new Label(translatedToFrenchBy + " -foG.Nox");
-            Label russianTranslationLabel = new Label(translatedToRussianBy + " dreadmor");
+            Label russianTranslationLabel = new Label(translatedToRussianBy + " Dreadmore404");
 
             GridPane gridPane = new GridPane();
             gridPane.add(cesarRgonImageView, 1, 1);
@@ -289,10 +289,10 @@ public class TemplateController implements Initializable {
             gridPane.add(noxImageView, 1, 3);
             gridPane.add(frenchTranslationLabel, 2, 3);
 
-            gridPane.add(dreadmorImageView, 1, 4);
+            gridPane.add(dreadmore404ImageView, 1, 4);
             gridPane.add(russianTranslationLabel, 2, 4);
 
-            gridPane.setPrefWidth(400);
+            gridPane.setPrefWidth(450);
             gridPane.setHgap(10);
             gridPane.setVgap(10);
 

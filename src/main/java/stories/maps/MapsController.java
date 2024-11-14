@@ -362,6 +362,7 @@ public class MapsController implements Initializable {
         title.setFill(Color.WHITE);
 
         HBox contentPane = new HBox();
+        contentPane.setAlignment(Pos.CENTER);
         contentPane.getChildren().addAll(tabCheckbox, stackPane, title);
 
         return contentPane;

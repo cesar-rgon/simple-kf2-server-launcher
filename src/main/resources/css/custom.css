@@ -38,14 +38,14 @@
 
 .label {
     -fx-font-family: "Ubuntu";
-    -fx-font-size: 13;
+    -fx-font-size: 10;
     -fx-text-fill: white;
 }
 
 .button {
     -fx-font-family: "Ubuntu Bold";
     -fx-background-color: #4d0304;
-    -fx-font-size: 13;
+    -fx-font-size: 11;
     -fx-text-fill: white;
     -fx-cursor: hand;
 }
@@ -84,8 +84,8 @@
 }
 
 .check-box {
-    -fx-font-family: "Ubuntu Bold";
-    -fx-font-size: 14;
+    -fx-font-family: "Ubuntu";
+    -fx-font-size: 9;
     -fx-text-fill: white;
     -fx-cursor: hand;
 }
@@ -137,7 +137,7 @@
 #titleConfigLabel {
     -fx-font-family: "Ubuntu Bold";
     -fx-text-fill: #fba140;
-    -fx-font-size: 16;
+    -fx-font-size: 11;
 }
 
 #alreadyInLauncher {
@@ -162,6 +162,7 @@
     -fx-text-base-color: white;
     -fx-background-color: #191513;
     -fx-cursor: hand;
+    -fx-font-size: 11;
 }
 
 .tab:hover {
@@ -199,7 +200,7 @@
 }
 
 .width150 {
-    -fx-max-width: 160px;
+    -fx-max-width: 300px;
 }
 
 .width300 {

@@ -13,7 +13,7 @@ Developed by: César Rodríguez González
 Languages: English, Spanish, French, Russian
 Translation to english and spanish: César Rodríguez González
 Translation to french by: -foG.Nox
-Translation to russian by: dreadmor404
+Translation to russian by: Dreadmor404
 ```
 **Discord server: https://discord.gg/WdwRU522Fb**
 
