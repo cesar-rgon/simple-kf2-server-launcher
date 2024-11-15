@@ -38,6 +38,7 @@ public class EntityDescriptionsFacadeImpl
                 EnumLanguage.en.name().equals(facadeModelContext.getLanguageCode()) ? gameTypeOptional.get().getDescription().getEnglishValue():
                 EnumLanguage.es.name().equals(facadeModelContext.getLanguageCode()) ? gameTypeOptional.get().getDescription().getSpanishValue():
                 EnumLanguage.fr.name().equals(facadeModelContext.getLanguageCode()) ? gameTypeOptional.get().getDescription().getFrenchValue():
+                EnumLanguage.ru.name().equals(facadeModelContext.getLanguageCode()) ? gameTypeOptional.get().getDescription().getRussianValue():
                 StringUtils.EMPTY:
                 StringUtils.EMPTY;
 
@@ -46,6 +47,7 @@ public class EntityDescriptionsFacadeImpl
                 EnumLanguage.en.name().equals(facadeModelContext.getLanguageCode()) ? difficultyOptional.get().getDescription().getEnglishValue():
                 EnumLanguage.es.name().equals(facadeModelContext.getLanguageCode()) ? difficultyOptional.get().getDescription().getSpanishValue():
                 EnumLanguage.fr.name().equals(facadeModelContext.getLanguageCode()) ? difficultyOptional.get().getDescription().getFrenchValue():
+                EnumLanguage.ru.name().equals(facadeModelContext.getLanguageCode()) ? difficultyOptional.get().getDescription().getRussianValue():
                 StringUtils.EMPTY:
                 StringUtils.EMPTY;
 
@@ -54,6 +56,7 @@ public class EntityDescriptionsFacadeImpl
                 EnumLanguage.en.name().equals(facadeModelContext.getLanguageCode()) ? lengthOptional.get().getDescription().getEnglishValue():
                 EnumLanguage.es.name().equals(facadeModelContext.getLanguageCode()) ? lengthOptional.get().getDescription().getSpanishValue():
                 EnumLanguage.fr.name().equals(facadeModelContext.getLanguageCode()) ? lengthOptional.get().getDescription().getFrenchValue():
+                EnumLanguage.ru.name().equals(facadeModelContext.getLanguageCode()) ? lengthOptional.get().getDescription().getRussianValue():
                 StringUtils.EMPTY:
                 StringUtils.EMPTY;
 

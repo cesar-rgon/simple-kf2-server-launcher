@@ -17,7 +17,7 @@
       </ImageView>
       <Label fx:id="profileLabel" alignment="CENTER_RIGHT" text="PROFILE" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
          <GridPane.margin>
-            <Insets right="10.0" top="26.0" />
+            <Insets right="10.0" top="28.0" />
          </GridPane.margin>
       </Label>
       <ComboBox fx:id="profileSelect" cache="true" onAction="#profileOnAction" prefWidth="350.0" GridPane.columnIndex="2" GridPane.valignment="TOP">
@@ -116,7 +116,7 @@
       </ImageView>
       <Label fx:id="actionsLabel" text="ACTIONS" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
          <GridPane.margin>
-            <Insets right="40.0" top="26.0" />
+            <Insets right="40.0" top="28.0" />
          </GridPane.margin>
       </Label>
 

@@ -684,9 +684,9 @@
                 <Insets right="190.0" top="85.0" />
             </GridPane.margin>
         </ImageView>
-        <Button fx:id="joinServer" alignment="CENTER_LEFT" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#joinServerOnAction" text="JOIN" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+        <Button fx:id="joinServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#joinServerOnAction" text="JOIN" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
             <GridPane.margin>
-                <Insets left="170.0" top="85.0" />
+                <Insets left="165.0" top="85.0" />
             </GridPane.margin></Button>
 
         <ImageView fx:id="runServerImage" GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="2">
@@ -695,9 +695,9 @@
             <Insets top="85.0" />
          </GridPane.margin>
         </ImageView>
-        <Button fx:id="runServer" alignment="CENTER_LEFT" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#runServerOnAction" text="RUN" GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+        <Button fx:id="runServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="180.0" mnemonicParsing="false" onAction="#runServerOnAction" text="RUN" GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
          <GridPane.margin>
-            <Insets left="50.0" top="85.0" />
+            <Insets left="35.0" top="85.0" />
          </GridPane.margin></Button>
         <ProgressIndicator fx:id="progressIndicator" maxHeight="150.0" maxWidth="150.0" visible="false" GridPane.columnSpan="7" GridPane.halignment="CENTER" GridPane.rowSpan="5" GridPane.valignment="CENTER" />
     </children>

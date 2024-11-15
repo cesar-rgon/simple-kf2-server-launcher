@@ -196,17 +196,9 @@ public class MapsManagerFacadeImpl
 
     @Override
     public String findPropertyValue(String propFileRelativePath, String propKey, String profileParam, String platformParam) throws Exception {
-        Properties prop = new Properties();
-        InputStream inputStream = null;
-        try {
-            inputStream = new FileInputStream("./" + propFileRelativePath);
-        } catch (FileNotFoundException e) {
-            inputStream = getClass().getClassLoader().getResourceAsStream(propFileRelativePath);
-        }
-        prop.load(inputStream);
-        inputStream.close();
-
-        return MessageFormat.format(prop.getProperty(propKey), profileParam, platformParam);
+        PropertyService propertyService = new PropertyServiceImpl();
+        String propValue = propertyService.getPropertyValue(propFileRelativePath, propKey);
+        return MessageFormat.format(propValue, profileParam, platformParam);
     }
 
     @Override
