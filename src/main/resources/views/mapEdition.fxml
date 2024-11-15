@@ -32,9 +32,9 @@
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <Label fx:id="mapNameLabel" alignment="CENTER_RIGHT" styleClass="width150" text="MAP NAME" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+        <Label fx:id="mapNameLabel" alignment="CENTER_LEFT" text="MAP NAME" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
             <GridPane.margin>
-                <Insets right="10.0" />
+                <Insets left="10.0" />
             </GridPane.margin>
         </Label>
 
@@ -55,9 +55,9 @@
             <Insets top="3.0" />
          </GridPane.margin>
         </ImageView>
-        <Label fx:id="aliasLabel" alignment="CENTER_RIGHT" styleClass="width150" text="ALIAS" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP">
+        <Label fx:id="aliasLabel" alignment="CENTER_LEFT" text="ALIAS" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP">
             <GridPane.margin>
-                <Insets right="10.0" top="7.0" />
+                <Insets left="10.0" top="10.0" />
             </GridPane.margin>
         </Label>
         <TextField fx:id="aliasTextField" maxWidth="681.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP">
@@ -70,9 +70,9 @@
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <Label fx:id="officialLabel" alignment="CENTER_RIGHT" styleClass="width150" text="OFFICIAL ?" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
+        <Label fx:id="officialLabel" alignment="CENTER_LEFT" text="OFFICIAL ?" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="11" GridPane.valignment="CENTER">
             <GridPane.margin>
-                <Insets right="10.0" />
+                <Insets left="10.0" />
             </GridPane.margin>
         </Label>
 
@@ -150,9 +150,9 @@
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <Label fx:id="downloadedLabel" alignment="CENTER_RIGHT" styleClass="width150" text="DOWNLOADED" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="12" GridPane.valignment="CENTER">
+        <Label fx:id="downloadedLabel" alignment="CENTER_LEFT" text="DOWNLOADED" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="12" GridPane.valignment="CENTER">
             <GridPane.margin>
-                <Insets right="10.0" />
+                <Insets left="10.0" />
             </GridPane.margin>
         </Label>
 
@@ -177,9 +177,9 @@
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <Label fx:id="mapPreviewUrlLabel" alignment="CENTER_RIGHT" styleClass="width150" text="MAP/MOD URL" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
+        <Label fx:id="mapPreviewUrlLabel" alignment="CENTER_LEFT" text="MAP/MOD URL" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="9" GridPane.valignment="CENTER">
             <GridPane.margin>
-                <Insets right="10.0" />
+                <Insets left="10.0" />
             </GridPane.margin>
         </Label>
 
@@ -193,9 +193,9 @@
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <Label fx:id="itemTypeLabel" alignment="CENTER_RIGHT" styleClass="width150" text="ITEM TYPE" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
+        <Label fx:id="itemTypeLabel" alignment="CENTER_LEFT" text="ITEM TYPE" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="10" GridPane.valignment="CENTER">
             <GridPane.margin>
-                <Insets right="10.0" />
+                <Insets left="10.0" />
             </GridPane.margin>
         </Label>
 
@@ -218,9 +218,9 @@
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <Label fx:id="releaseDateLabel" alignment="CENTER_RIGHT" styleClass="width150" text="RELEASE DATE" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="13" GridPane.valignment="CENTER">
+        <Label fx:id="releaseDateLabel" alignment="CENTER_LEFT" text="RELEASE DATE" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="13" GridPane.valignment="CENTER">
             <GridPane.margin>
-                <Insets right="10.0" />
+                <Insets left="10.0" />
             </GridPane.margin>
         </Label>
         <DatePicker fx:id="releaseDatePicker" maxWidth="681.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="13" GridPane.valignment="CENTER">
@@ -234,9 +234,9 @@
                 <Image url="@../images/label.png" />
             </image>
         </ImageView>
-        <Label fx:id="infoUrlLabel" alignment="CENTER_RIGHT" styleClass="width150" text="INFO URL" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="14" GridPane.valignment="CENTER">
+        <Label fx:id="infoUrlLabel" alignment="CENTER_LEFT" text="INFO URL" textFill="WHITE" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="14" GridPane.valignment="CENTER">
             <GridPane.margin>
-                <Insets right="10.0" />
+                <Insets left="10.0" />
             </GridPane.margin>
         </Label>
         <TextField fx:id="infoUrlTextField" maxWidth="681.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="14" GridPane.valignment="CENTER">

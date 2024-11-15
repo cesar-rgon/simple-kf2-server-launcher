@@ -83,7 +83,7 @@
     -fx-text-fill: white;
 }
 
-.check-box {
+.check-box .text {
     -fx-font-family: "Ubuntu";
     -fx-font-size: 9;
     -fx-text-fill: white;

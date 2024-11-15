@@ -80,7 +80,7 @@ public class MapEditionController implements Initializable {
     @FXML private ImageView aliasImg;
     @FXML private RadioButton mapRadioButton;
     @FXML private RadioButton modRadioButton;
-
+    @FXML private Label itemTypeLabel;
 
     public MapEditionController() {
         super();
@@ -127,7 +127,18 @@ public class MapEditionController implements Initializable {
             mapNameLabel.setText(mapNameText);
             loadTooltip(languageCode, "prop.tooltip.mapName", mapNameImg, mapNameLabel, mapNameValue);
 
+            String aliasText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.alias");
+            aliasLabel.setText(aliasText);
             loadTooltip(languageCode, "prop.tooltip.alias", aliasImg, aliasLabel, aliasTextField);
+
+            String itemTypeText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.itemType");
+            itemTypeLabel.setText(itemTypeText);
+
+            String mapText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.mapText");
+            mapRadioButton.setText(mapText);
+
+            String modText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.modText");
+            modRadioButton.setText(modText);
 
             String mapPreviewUrlText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.mapPrevireUrl");
             mapPreviewUrlLabel.setText(mapPreviewUrlText);
