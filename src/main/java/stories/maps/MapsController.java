@@ -2,12 +2,14 @@ package stories.maps;
 
 import dtos.*;
 import entities.CustomMapMod;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,6 +22,7 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
@@ -38,6 +41,7 @@ import pojos.session.Session;
 import start.MainApplication;
 import stories.addcustommapstoprofile.AddCustomMapsToProfileFacadeResult;
 import stories.listplatformprofilemap.ListPlatformProfileMapFacadeResult;
+import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
 import stories.mapsinitialize.MapsInitializeFacadeResult;
 import stories.mapsinitialize.MapsInitializeModelContext;
 import stories.prepareimportmapsfromserver.PrepareImportMapsFromServerFacadeResult;
@@ -503,7 +507,7 @@ public class MapsController implements Initializable {
             importedDateText.setPadding(new Insets(0,0,10,0));
         } else {
             customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
-            Label stateLabel;
+            Label isMapModLabel;
             String isMapModLabelText;
 
             if (customMapMod.isMap() == null) {
@@ -527,32 +531,33 @@ public class MapsController implements Initializable {
                     }
                 }
             }
-            stateLabel = new Label(isMapModLabelText);
-            stateLabel.setStyle("-fx-text-fill: #5fbb3d; -fx-font-weight: bold;");
+            isMapModLabel = new Label(isMapModLabelText);
+            isMapModLabel.setStyle("-fx-text-fill: #5fbb3d; -fx-font-weight: bold;");
             HBox statePane = new HBox();
-            statePane.getChildren().addAll(stateLabel);
+            statePane.getChildren().addAll(isMapModLabel);
             statePane.setMaxWidth(Double.MAX_VALUE);
             statePane.setAlignment(Pos.CENTER);
             statePane.setPadding(new Insets(10,0,0,0));
             gridpane.add(statePane,1, rowIndex);
             rowIndex++;
 
+            Label stateLabel = new Label();
             String downloadedLabelText = "";
+            HBox downloadedStatePane = new HBox();
+            downloadedStatePane.getChildren().addAll(stateLabel);
+            downloadedStatePane.setMaxWidth(Double.MAX_VALUE);
+            downloadedStatePane.setAlignment(Pos.CENTER);
+            downloadedStatePane.setPadding(new Insets(10,0,10,0));
+            gridpane.add(downloadedStatePane,1, rowIndex);
+
             if (platformProfileMapDto.isDownloaded()) {
                 try {
                     downloadedLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.downloaded");
                 } catch (Exception e) {
                     downloadedLabelText = "DOWNLOADED";
                 }
-
-                stateLabel = new Label(downloadedLabelText);
+                stateLabel.setText(downloadedLabelText);
                 stateLabel.setStyle("-fx-text-fill: gold; -fx-padding: 3; -fx-border-color: gold; -fx-border-radius: 5;");
-                statePane = new HBox();
-                statePane.getChildren().addAll(stateLabel);
-                statePane.setMaxWidth(Double.MAX_VALUE);
-                statePane.setAlignment(Pos.CENTER);
-                statePane.setPadding(new Insets(10,0,10,0));
-                gridpane.add(statePane,1, rowIndex);
 
             } else {
                 try {
@@ -566,16 +571,43 @@ public class MapsController implements Initializable {
                 clickToDownloadMapLink.setMaxWidth(Double.MAX_VALUE);
                 clickToDownloadMapLink.setAlignment(Pos.CENTER);
                 clickToDownloadMapLink.setPadding(new Insets(10,0,10,0));
-                clickToDownloadMapLink.setOnAction(new EventHandler<ActionEvent>() {
+
+                clickToDownloadMapLink.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
-                    public void handle(ActionEvent e) {
+                    public void handle(MouseEvent e) {
                         try {
                             List<String> platformNameList = new ArrayList<String>();
                             platformNameList.add(platformProfileMapDto.getPlatformDto().getKey());
                             List<String> mapNameList = new ArrayList<String>();
                             mapNameList.add(platformProfileMapDto.getMapDto().getKey());
 
-                            facade.downloadMapListFromSteamCmd(platformNameList, mapNameList);
+                            progressIndicator.setVisible(true);
+                            Task<Void> task = new Task<Void>() {
+                                @Override
+                                protected Void call() throws Exception {
+                                    facade.downloadMapListFromSteamCmd(platformNameList, mapNameList);
+                                    return null;
+                                }
+                            };
+                            task.setOnSucceeded(wse -> {
+                                progressIndicator.setVisible(false);
+                                if (EnumPlatform.STEAM.name().equals(platformProfileMapDto.getPlatformDto().getKey())) {
+                                    String downloadedLabelText = StringUtils.EMPTY;
+                                    try {
+                                        downloadedLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.downloaded");
+                                    } catch (Exception ex) {
+                                        downloadedLabelText = "DOWNLOADED";
+                                    }
+                                    stateLabel.setText(downloadedLabelText);
+                                    stateLabel.setStyle("-fx-text-fill: gold; -fx-padding: 3; -fx-border-color: gold; -fx-border-radius: 5;");
+                                    clickToDownloadMapLink.setVisible(false);
+                                }
+                            });
+                            task.setOnFailed(wse -> {
+                                progressIndicator.setVisible(false);
+                            });
+                            Thread thread = new Thread(task);
+                            thread.start();
 
                         } catch (Exception ex) {
                             logger.error(ex.getMessage(), ex);
@@ -2140,29 +2172,42 @@ public class MapsController implements Initializable {
                 Utils.warningDialog(headerText, contentText);
 
             } else {
-                List<String> steamCustomMapNameListToDownload = steamCustomMapToDownloadList.stream().
-                        map(node -> {
+                progressIndicator.setVisible(true);
+                Task<Void> task = new Task<Void>() {
+                    @Override
+                    protected Void call() throws Exception {
+                        steamCustomMapToDownloadList.stream().forEach(node ->{
                             GridPane gridpane = (GridPane) node;
-                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
-                            return mapNameLabel.getText();
-                        }).
-                        collect(Collectors.toList());
-
-                List<String> platformNameList = new ArrayList<String>();
-                platformNameList.add(EnumPlatform.STEAM.name());
-                facade.downloadMapListFromSteamCmd(platformNameList, steamCustomMapNameListToDownload);
-
-                List<String> epicCustomMapNameListToDownload = epicCustomMapToDownloadList.stream().
-                        map(node -> {
+                            Hyperlink clickToDownloadMapLink = (Hyperlink) gridpane.getChildren().get(9);
+                            Event.fireEvent(clickToDownloadMapLink, new MouseEvent(MouseEvent.MOUSE_CLICKED,
+                                    clickToDownloadMapLink.getLayoutX(), clickToDownloadMapLink.getLayoutY(), clickToDownloadMapLink.getLayoutX(), clickToDownloadMapLink.getLayoutY(), MouseButton.PRIMARY, 1,
+                                    true, true, true, true, true, true, true, true, true, true, null));
+                            Label aliasLabel = (Label) gridpane.getChildren().get(1);
+                            CheckBox selectedMap = (CheckBox) aliasLabel.getGraphic();
+                            selectedMap.setSelected(false);
+                        });
+                        epicCustomMapToDownloadList.stream().forEach(node ->{
                             GridPane gridpane = (GridPane) node;
-                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
-                            return mapNameLabel.getText();
-                        }).
-                        collect(Collectors.toList());
+                            Hyperlink clickToDownloadMapLink = (Hyperlink) gridpane.getChildren().get(9);
+                            Event.fireEvent(clickToDownloadMapLink, new MouseEvent(MouseEvent.MOUSE_CLICKED,
+                                    clickToDownloadMapLink.getLayoutX(), clickToDownloadMapLink.getLayoutY(), clickToDownloadMapLink.getLayoutX(), clickToDownloadMapLink.getLayoutY(), MouseButton.PRIMARY, 1,
+                                    true, true, true, true, true, true, true, true, true, true, null));
+                            Label aliasLabel = (Label) gridpane.getChildren().get(1);
+                            CheckBox selectedMap = (CheckBox) aliasLabel.getGraphic();
+                            selectedMap.setSelected(false);
+                        });
+                        return null;
+                    }
+                };
 
-                platformNameList.clear();
-                platformNameList.add(EnumPlatform.EPIC.name());
-                facade.downloadMapListFromSteamCmd(platformNameList, epicCustomMapNameListToDownload);
+                task.setOnSucceeded(wse -> {
+                    progressIndicator.setVisible(false);
+                });
+                task.setOnFailed(wse -> {
+                    progressIndicator.setVisible(false);
+                });
+                Thread thread = new Thread(task);
+                thread.start();
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
