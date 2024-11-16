@@ -6,11 +6,15 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<fx:root id="centerPane" fx:id="installUpdateServerContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.installupdateepicserver.InstallUpdateEpicServerController">
+<fx:root fx:id="installUpdateServerContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.installupdateepicserver.InstallUpdateEpicServerController">
     <rowConstraints>
-        <RowConstraints minHeight="94.0" prefHeight="94.0" />
+        <RowConstraints minHeight="20.0" prefHeight="20.0" />
         <RowConstraints minHeight="470.0" prefHeight="470.0" />
-        <RowConstraints minHeight="96.0" prefHeight="96.0" />
+        <RowConstraints minHeight="20.0" prefHeight="20.0" />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
+      <RowConstraints />
     </rowConstraints>
     <columnConstraints>
         <ColumnConstraints minWidth="334.0" prefWidth="334.0" />
@@ -21,7 +25,7 @@
       <ColumnConstraints />
     </columnConstraints>
     <children>
-        <ImageView fitHeight="660.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+        <ImageView fitHeight="480.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/radiation700.png" />
             </image>

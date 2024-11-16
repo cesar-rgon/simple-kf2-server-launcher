@@ -8,7 +8,7 @@
 
 <fx:root fx:id="profilesEdition" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.profilesedition.ProfilesEditionController">
    <children>
-      <ImageView fitHeight="660.0" pickOnBounds="true" preserveRatio="true" GridPane.columnSpan="5" GridPane.halignment="CENTER" GridPane.rowSpan="4" GridPane.valignment="CENTER">
+      <ImageView fitHeight="480.0" pickOnBounds="true" preserveRatio="true" GridPane.columnSpan="5" GridPane.halignment="CENTER" GridPane.rowSpan="4" GridPane.valignment="CENTER">
          <image>
             <Image url="@../images/radiation700.png" />
          </image>
@@ -39,7 +39,7 @@
          </GridPane.margin></Button>
       <Label fx:id="messageLabel" text="One click on an item to select it, double click to edit it" GridPane.columnSpan="5" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="TOP">
          <GridPane.margin>
-            <Insets />
+            <Insets top="-20.0" />
          </GridPane.margin></Label>
       <Button fx:id="importProfile" minWidth="200.0" mnemonicParsing="false" onAction="#importProfileOnAction" text="Import profiles" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP">
          <GridPane.margin>

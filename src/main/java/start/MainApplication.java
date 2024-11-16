@@ -38,24 +38,15 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        // Fix a problem with newest JDK and JavaFX WebView. http2 support need to be disabled
-        Properties systemProperties = System.getProperties();
-        systemProperties.setProperty("com.sun.webkit.useHTTP2Loader", "false");
-        prepareUndertow();
 
-        PropertyService propertyService = new PropertyServiceImpl();
         Font.loadFont(getClass().getClassLoader().getResource("fonts/Ubuntu-R.ttf").toExternalForm(), 13);
         Font.loadFont(getClass().getClassLoader().getResource("fonts/Ubuntu-B.ttf").toExternalForm(), 13);
-        template = new FXMLLoader(getClass().getResource("/views/template.fxml"));
-        Scene scene = new Scene(template.load());
-        FXMLLoader mainContent = new FXMLLoader(getClass().getResource("/views/mainContent.fxml"));
-        mainContent.setRoot(template.getNamespace().get("content"));
-        mainContent.load();
+        PropertyService propertyService = new PropertyServiceImpl();
+        MainApplication.primaryStage = primaryStage;
         primaryStage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("images/logo.png")));
         String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
         String applicationVersion = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion");
         primaryStage.setTitle(applicationTitle + " " + applicationVersion);
-        primaryStage.setScene(scene);
         primaryStage.setMinWidth(1024);
         primaryStage.setMinHeight(750);
         String[] resolution = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationResolution").split("x");
@@ -63,12 +54,29 @@ public class MainApplication extends Application {
         primaryStage.setHeight(Double.parseDouble(resolution[1]));
         Boolean applicationMaximized = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationMaximized"));
         primaryStage.setMaximized(applicationMaximized != null? applicationMaximized: false);
-        primaryStage.show();
-        TimerTask timeListener = new TimeListener();
-        timer = new Timer();
-        String checkDownloadedMapsEveryMilliseconds = propertyService.getPropertyValue("properties/config.properties", "prop.config.checkDownloadedMapsEveryMilliseconds");
-        timer.schedule(timeListener, 0, Long.parseLong(checkDownloadedMapsEveryMilliseconds));
-        MainApplication.primaryStage = primaryStage;
+
+        boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
+        if (createDatabase) {
+            startWizard();
+            propertyService.setProperty("properties/config.properties", "prop.config.createDatabase", "false");
+        } else {
+            // Fix a problem with newest JDK and JavaFX WebView. http2 support need to be disabled
+            Properties systemProperties = System.getProperties();
+            systemProperties.setProperty("com.sun.webkit.useHTTP2Loader", "false");
+            prepareUndertow();
+            template = new FXMLLoader(getClass().getResource("/views/template.fxml"));
+            Scene scene = new Scene(template.load());
+            FXMLLoader mainContent = new FXMLLoader(getClass().getResource("/views/mainContent.fxml"));
+            mainContent.setRoot(template.getNamespace().get("content"));
+            mainContent.load();
+            primaryStage.setScene(scene);
+            primaryStage.show();
+
+            TimerTask timeListener = new TimeListener();
+            timer = new Timer();
+            String checkDownloadedMapsEveryMilliseconds = propertyService.getPropertyValue("properties/config.properties", "prop.config.checkDownloadedMapsEveryMilliseconds");
+            timer.schedule(timeListener, 0, Long.parseLong(checkDownloadedMapsEveryMilliseconds));
+        }
 
         this.primaryStage.maximizedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
@@ -138,6 +146,13 @@ public class MainApplication extends Application {
         } catch (Exception e) {
              logger.error(e.getMessage(), e);
         }
+    }
+
+    private void startWizard() throws Exception {
+        template = new FXMLLoader(getClass().getResource("/views/wizard-step1.fxml"));
+        Scene scene = new Scene(template.load());
+        primaryStage.setScene(scene);
+        primaryStage.show();
     }
 
     @Override

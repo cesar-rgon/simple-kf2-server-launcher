@@ -32,7 +32,7 @@
     -fx-font-size: 14;
 }
 
-#leftPane, #rightPane, #centerPane, #bottomPanel {
+#leftPane, #rightPane, #centerPane, #bottomPane {
     -fx-background-color: black;
 }
 
@@ -265,4 +265,32 @@
     -fx-font-family: "Ubuntu Bold";
     -fx-text-fill: white;
     -fx-font-size: 16;
+}
+
+#wizardTopPane, #wizardLeftPane, #wizardRightPane, #wizardCenterGridPane, #wizardBottomPane {
+    -fx-background-color: #414141;
+}
+
+#wizardTitleLabel {
+    -fx-font-family: "Ubuntu Bold";
+    -fx-font-size: 18;
+    -fx-text-fill: #fba140;
+}
+
+#step1TitleLabel, #step2TitleLabel, #step3TitleLabel, #step4TitleLabel, #step5TitleLabel, #nextStep {
+    -fx-font-family: "Ubuntu";
+    -fx-font-size: 12;
+    -fx-text-fill: #fba140;
+}
+
+#step1Description {
+    -fx-font-family: "Ubuntu";
+    -fx-font-size: 12;
+    -fx-text-fill: white;
+}
+
+#previousStep, #nextStep, #finish {
+    -fx-font-family: "Ubuntu";
+    -fx-font-size: 14;
+    -fx-text-fill: white;
 }

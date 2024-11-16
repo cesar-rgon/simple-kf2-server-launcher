@@ -39,8 +39,6 @@ public class PopulateDatabaseFacadeImpl
         logger.info("----- Starting the populate process over the application database -----");
         PopulateDatabase populateDatabase = new PopulateDatabase(em);
         populateDatabase.start();
-        PropertyService propertyService = new PropertyServiceImpl();
-        propertyService.setProperty("properties/config.properties", "prop.config.createDatabase", "false");
         logger.info("----- Ending the populate process over the application database -----");
 
         return new EmptyFacadeResult();

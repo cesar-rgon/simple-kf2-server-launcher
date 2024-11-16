@@ -44,7 +44,7 @@
         <GridPane id="centerGridPane" fx:id="content" alignment="CENTER" BorderPane.alignment="CENTER" />
     </center>
    <bottom>
-      <Pane id="bottomPanel" minHeight="10.0" prefHeight="10.0" BorderPane.alignment="CENTER" />
+      <Pane id="bottomPane" minHeight="10.0" prefHeight="10.0" BorderPane.alignment="CENTER" />
    </bottom>
    <right>
       <Pane id="rightPane" minWidth="10.0" prefWidth="10.0" BorderPane.alignment="CENTER" />
