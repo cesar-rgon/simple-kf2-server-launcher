@@ -388,6 +388,9 @@ public class TemplateController implements Initializable {
             MainApplication.setTemplate(new FXMLLoader(getClass().getResource("/views/wizard-step1.fxml")));
             Scene scene = new Scene(MainApplication.getTemplate().load());
             MainApplication.getPrimaryStage().setScene(scene);
+            MainApplication.getPrimaryStage().setWidth(1024);
+            MainApplication.getPrimaryStage().setHeight(750);
+            MainApplication.getPrimaryStage().setMaximized(false);
             MainApplication.getPrimaryStage().show();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
