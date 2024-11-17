@@ -5,7 +5,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<fx:root id="centerPane" fx:id="mapsEditionGridPane" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maps.MapsController">
+<fx:root fx:id="mapsEditionGridPane" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maps.MapsController">
    <children>
       <ImageView fx:id="profileImg" fitHeight="30.0" fitWidth="110.0" pickOnBounds="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
          <image>
@@ -164,6 +164,6 @@
    </columnConstraints>
    <rowConstraints>
       <RowConstraints minHeight="60.0" prefHeight="60.0" vgrow="NEVER" />
-      <RowConstraints minHeight="600.0" prefHeight="600.0" vgrow="ALWAYS" />
+      <RowConstraints minHeight="350.0" prefHeight="350.0" vgrow="ALWAYS" />
    </rowConstraints>
 </fx:root>

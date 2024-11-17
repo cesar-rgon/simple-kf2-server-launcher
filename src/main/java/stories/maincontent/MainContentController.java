@@ -186,6 +186,7 @@ public class MainContentController implements Initializable {
     @FXML private TextField chatLoggingFile;
     @FXML private CheckBox chatLoggingFileTimestamp;
 
+
     @FXML private ImageView timeBetweenKicksImg;
     @FXML private Label timeBetweenKicksLabel;
     @FXML private TextField timeBetweenKicks;

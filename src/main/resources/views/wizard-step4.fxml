@@ -5,7 +5,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="700.0" minWidth="1024.0" stylesheets="@../css/custom.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="700.0" minWidth="1024.0" style="-fx-background-color: #414141;" stylesheets="@../css/custom.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
    <top>
        <VBox id="wizardTopPane" alignment="CENTER" prefWidth="800.0">
            <children>
@@ -59,14 +59,17 @@
        <HBox id="wizardBottomPane" alignment="CENTER_RIGHT" spacing="40">
            <Button fx:id="previousStep" minWidth="80.0" mnemonicParsing="false" text="Previous step">
                <HBox.margin>
-                   <Insets bottom="20"></Insets>
+                   <Insets bottom="20" />
                </HBox.margin>
            </Button>
            <Button fx:id="nextStep" minWidth="80.0" mnemonicParsing="false" text="Next step">
                 <HBox.margin>
-                    <Insets right="30" bottom="20"></Insets>
+                    <Insets bottom="20" right="30" />
                 </HBox.margin>
            </Button>
+           <BorderPane.margin>
+               <Insets top="20" />
+           </BorderPane.margin>
        </HBox>
    </bottom>
    <right>

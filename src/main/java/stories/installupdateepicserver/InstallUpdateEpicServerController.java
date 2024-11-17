@@ -5,6 +5,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
@@ -77,6 +78,18 @@ public class InstallUpdateEpicServerController implements Initializable {
             installUpdateTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             installUpdate.setTooltip(installUpdateTooltip);
 
+            PropertyService propertyService = new PropertyServiceImpl();
+            boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
+            if (createDatabase) {
+                FXMLLoader wizardStepTemplate = MainApplication.getTemplate();
+                Button nextStep = (Button) wizardStepTemplate.getNamespace().get("nextStep");
+                if (StringUtils.isNotBlank(installationFolder.getText())) {
+                    nextStep.setDisable(false);
+                } else {
+                    nextStep.setDisable(true);
+                }
+            }
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -87,7 +100,19 @@ public class InstallUpdateEpicServerController implements Initializable {
             public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
                 try {
                     if (!newPropertyValue) {
-                        if (!facade.updatePlatformInstallationFolder(installationFolder.getText())) {
+                        if (facade.updatePlatformInstallationFolder(installationFolder.getText())) {
+                            PropertyService propertyService = new PropertyServiceImpl();
+                            boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
+                            if (createDatabase) {
+                                FXMLLoader wizardStepTemplate = MainApplication.getTemplate();
+                                Button nextStep = (Button) wizardStepTemplate.getNamespace().get("nextStep");
+                                if (StringUtils.isNotBlank(installationFolder.getText())) {
+                                    nextStep.setDisable(false);
+                                } else {
+                                    nextStep.setDisable(true);
+                                }
+                            }
+                        } else {
                             logger.warn("The installation folder value could not be saved!:" + installationFolder.getText());
                             String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
                             String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");
@@ -111,7 +136,19 @@ public class InstallUpdateEpicServerController implements Initializable {
             File selectedDirectory = directoryChooser.showDialog(MainApplication.getPrimaryStage());
             if (selectedDirectory != null) {
                 installationFolder.setText(selectedDirectory.getAbsolutePath());
-                if (!facade.updatePlatformInstallationFolder(installationFolder.getText())) {
+                if (facade.updatePlatformInstallationFolder(installationFolder.getText())) {
+                    PropertyService propertyService = new PropertyServiceImpl();
+                    boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
+                    if (createDatabase) {
+                        FXMLLoader wizardStepTemplate = MainApplication.getTemplate();
+                        Button nextStep = (Button) wizardStepTemplate.getNamespace().get("nextStep");
+                        if (StringUtils.isNotBlank(installationFolder.getText())) {
+                            nextStep.setDisable(false);
+                        } else {
+                            nextStep.setDisable(true);
+                        }
+                    }
+                } else {
                     logger.warn("The installation folder value could not be saved!: " + installationFolder.getText());
                     String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
                     String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");

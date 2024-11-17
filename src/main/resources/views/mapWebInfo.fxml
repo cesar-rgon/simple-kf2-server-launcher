@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.*?>
 
-<fx:root id="centerPane" fx:id="mapWebInfo" alignment="CENTER" gridLinesVisible="true" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapwebinfo.MapWebInfoController">
+<fx:root fx:id="mapWebInfo" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapwebinfo.MapWebInfoController">
    <children>
       <Label id="titleConfigLabel" fx:id="mapIdWorkshop" alignment="CENTER" text="id WorkShop" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
       <Label fx:id="alreadyInLauncher" text="It is already in the launcher" visible="false" GridPane.halignment="RIGHT">
@@ -32,6 +32,6 @@
    </columnConstraints>
    <rowConstraints>
       <RowConstraints fillHeight="false" maxHeight="50.0" minHeight="50.0" prefHeight="50.0" vgrow="NEVER" />
-      <RowConstraints minHeight="610.0" prefHeight="610.0" vgrow="ALWAYS" />
+      <RowConstraints minHeight="400.0" prefHeight="400.0" vgrow="ALWAYS" />
    </rowConstraints>
 </fx:root>

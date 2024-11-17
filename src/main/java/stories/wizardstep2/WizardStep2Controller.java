@@ -8,8 +8,8 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.session.Session;
 import start.MainApplication;
-import stories.wizardstep1.WizardStep1Controller;
 import utils.Utils;
 
 import java.net.URL;
@@ -24,7 +24,7 @@ public class WizardStep2Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
+            Session.getInstance().setActualProfileName("Default");
     }
 
     @FXML
@@ -33,6 +33,8 @@ public class WizardStep2Controller implements Initializable {
             FXMLLoader wizardStepTemplate = new FXMLLoader(getClass().getResource("/views/wizard-step1.fxml"));
             Scene scene = new Scene(wizardStepTemplate.load());
             MainApplication.getPrimaryStage().setScene(scene);
+            MainApplication.setTemplate(wizardStepTemplate);
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
@@ -52,6 +54,7 @@ public class WizardStep2Controller implements Initializable {
             FXMLLoader content = new FXMLLoader(getClass().getResource("/views/installUpdateSteamServer.fxml"));
             content.setRoot(wizardStepTemplate.getNamespace().get("content"));
             content.load();
+            MainApplication.setTemplate(wizardStepTemplate);
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

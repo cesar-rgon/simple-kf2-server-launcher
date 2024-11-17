@@ -9,7 +9,6 @@ import javafx.scene.layout.GridPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import start.MainApplication;
-import stories.template.TemplateController;
 import utils.Utils;
 
 import java.net.URL;
@@ -39,6 +38,7 @@ public class WizardStep1Controller implements Initializable {
             FXMLLoader content = new FXMLLoader(getClass().getResource("/views/profilesEdition.fxml"));
             content.setRoot(wizardStepTemplate.getNamespace().get("content"));
             content.load();
+            MainApplication.setTemplate(wizardStepTemplate);
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

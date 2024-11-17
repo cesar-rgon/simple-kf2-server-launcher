@@ -289,8 +289,9 @@
     -fx-text-fill: white;
 }
 
-#previousStep, #nextStep, #finish {
+#previousStep, #nextStep, #switchSteamGamesServer, #switchEpicGamesServer, #finish {
     -fx-font-family: "Ubuntu";
     -fx-font-size: 14;
     -fx-text-fill: white;
 }
+

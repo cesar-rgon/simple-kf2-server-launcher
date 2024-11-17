@@ -5,7 +5,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="700.0" minWidth="1024.0" stylesheets="@../css/custom.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="700.0" minWidth="1024.0" stylesheets="@../css/custom.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.wizardstep3.WizardStep3Controller">
    <top>
        <VBox id="wizardTopPane" alignment="CENTER" prefWidth="800.0">
            <children>
@@ -57,12 +57,22 @@
     </center>
    <bottom>
        <HBox id="wizardBottomPane" alignment="CENTER_RIGHT" spacing="40">
-           <Button fx:id="previousStep" minWidth="80.0" mnemonicParsing="false" text="Previous step">
+           <Button fx:id="switchSteamGamesServer" minWidth="80.0" onAction="#switchSteamServerOnAction" mnemonicParsing="false" text="Switch to Steam's server" disable="true">
                <HBox.margin>
                    <Insets bottom="20"></Insets>
                </HBox.margin>
            </Button>
-           <Button fx:id="nextStep" minWidth="80.0" mnemonicParsing="false" text="Next step">
+           <Button fx:id="switchEpicGamesServer" minWidth="80.0" onAction="#switchEpicGamesServerOnAction" mnemonicParsing="false" text="Switch to Epic Game's server">
+               <HBox.margin>
+                   <Insets bottom="20"></Insets>
+               </HBox.margin>
+           </Button>
+           <Button fx:id="previousStep" minWidth="80.0" onAction="#previousStepOnAction" mnemonicParsing="false" text="Previous step">
+               <HBox.margin>
+                   <Insets bottom="20"></Insets>
+               </HBox.margin>
+           </Button>
+           <Button id="nextStep" fx:id="nextStep" minWidth="80.0" onAction="#nextStepOnAction" mnemonicParsing="false" text="Next step" disable="true">
                 <HBox.margin>
                     <Insets right="30" bottom="20"></Insets>
                 </HBox.margin>

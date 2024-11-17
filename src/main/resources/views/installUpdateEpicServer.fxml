@@ -9,7 +9,7 @@
 <fx:root fx:id="installUpdateServerContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.installupdateepicserver.InstallUpdateEpicServerController">
     <rowConstraints>
         <RowConstraints minHeight="20.0" prefHeight="20.0" />
-        <RowConstraints minHeight="470.0" prefHeight="470.0" />
+        <RowConstraints minHeight="160.0" prefHeight="160.0" />
         <RowConstraints minHeight="20.0" prefHeight="20.0" />
       <RowConstraints />
       <RowConstraints />

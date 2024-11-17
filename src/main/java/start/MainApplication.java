@@ -49,20 +49,19 @@ public class MainApplication extends Application {
         primaryStage.setTitle(applicationTitle + " " + applicationVersion);
         primaryStage.setMinWidth(1024);
         primaryStage.setMinHeight(750);
-        String[] resolution = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationResolution").split("x");
-        primaryStage.setWidth(Double.parseDouble(resolution[0]));
-        primaryStage.setHeight(Double.parseDouble(resolution[1]));
-        Boolean applicationMaximized = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationMaximized"));
-        primaryStage.setMaximized(applicationMaximized != null? applicationMaximized: false);
+        // Fix a problem with newest JDK and JavaFX WebView. http2 support need to be disabled
+        Properties systemProperties = System.getProperties();
+        systemProperties.setProperty("com.sun.webkit.useHTTP2Loader", "false");
 
         boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
         if (createDatabase) {
             startWizard();
-            propertyService.setProperty("properties/config.properties", "prop.config.createDatabase", "false");
         } else {
-            // Fix a problem with newest JDK and JavaFX WebView. http2 support need to be disabled
-            Properties systemProperties = System.getProperties();
-            systemProperties.setProperty("com.sun.webkit.useHTTP2Loader", "false");
+            String[] resolution = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationResolution").split("x");
+            primaryStage.setWidth(Double.parseDouble(resolution[0]));
+            primaryStage.setHeight(Double.parseDouble(resolution[1]));
+            Boolean applicationMaximized = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationMaximized"));
+            primaryStage.setMaximized(applicationMaximized != null? applicationMaximized: false);
             prepareUndertow();
             template = new FXMLLoader(getClass().getResource("/views/template.fxml"));
             Scene scene = new Scene(template.load());
@@ -162,10 +161,15 @@ public class MainApplication extends Application {
         embeddedWebServer.stop();
         PropertyService propertyService = new PropertyServiceImpl();
         propertyService.setProperty("properties/config.properties", "prop.config.applicationResolution", primaryStage.getWidth() + "x" + primaryStage.getHeight());
+        propertyService.setProperty("properties/config.properties", "prop.config.createDatabase", "false");
     }
 
     public static FXMLLoader getTemplate() {
         return template;
+    }
+
+    public static void setTemplate(FXMLLoader newTemplate) {
+        template = newTemplate;
     }
 
     public static Stage getPrimaryStage() {

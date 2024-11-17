@@ -78,7 +78,7 @@
                 <Insets right="10.0" />
             </GridPane.margin>
         </Label>
-        <TextField fx:id="installationFolder" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <TextField id="installationFolder" fx:id="installationFolder" opacity="0.75" GridPane.columnIndex="1" GridPane.rowIndex="1" />
         <Button fx:id="exploreFolder" maxWidth="200.0" mnemonicParsing="false" onAction="#exploreFolderOnAction" text="EXPLORE" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
             <GridPane.margin>
                 <Insets left="20.0" />
