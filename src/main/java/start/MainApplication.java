@@ -12,6 +12,7 @@ import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.listener.TimeListener;
+import pojos.session.Session;
 import services.ConsoleService;
 import services.ConsoleServiceImpl;
 import services.PropertyService;
@@ -56,8 +57,10 @@ public class MainApplication extends Application {
 
         boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
         if (createDatabase) {
+            Session.getInstance().setWizardMode(true);
             startWizard();
         } else {
+            Session.getInstance().setWizardMode(false);
             startLauncher();
         }
     }

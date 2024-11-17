@@ -11,6 +11,7 @@ import javafx.scene.layout.GridPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.listener.TimeListener;
+import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
@@ -72,6 +73,7 @@ public class WizardStep5Controller implements Initializable {
             mainContent.load();
             MainApplication.getPrimaryStage().setScene(scene);
             MainApplication.getPrimaryStage().show();
+            Session.getInstance().setWizardMode(false);
 
             TimerTask timeListener = new TimeListener();
             MainApplication.setTimer(new Timer());

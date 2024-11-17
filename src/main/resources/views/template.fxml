@@ -35,6 +35,7 @@
                 <MenuItem fx:id="tips" mnemonicParsing="false" onAction="#tipsMenuOnAction" text="Tips" />
                 <MenuItem fx:id="checkForUpdates" mnemonicParsing="false" onAction="#checkForUpdatesMenuOnAction" text="Check for updates" />
                 <MenuItem fx:id="wizard" mnemonicParsing="false" onAction="#wizardMenuOnAction" text="Wizard" />
+                <MenuItem fx:id="discord" mnemonicParsing="false" onAction="#joinToDiscordMenuOnAction" text="Join to Discord" />
                 <MenuItem fx:id="donation" mnemonicParsing="false" onAction="#donationMenuOnAction" text="Donation" />
             </items>
           </Menu>

@@ -55,6 +55,7 @@ public class TemplateController implements Initializable {
     @FXML private MenuItem tips;
     @FXML private MenuItem checkForUpdates;
     @FXML private MenuItem donation;
+    @FXML private MenuItem discord;
 
     public TemplateController() {
         super();
@@ -122,6 +123,10 @@ public class TemplateController implements Initializable {
 
             String donationTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.donation");
             donation.setText(donationTitle);
+
+            String discordTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.discord");
+            discord.setText(discordTitle);
+
         } catch (Exception e) {
             String message = "Error setting menu titles";
             logger.error(message, e);
@@ -379,6 +384,7 @@ public class TemplateController implements Initializable {
     @FXML
     private void wizardMenuOnAction() {
         try {
+            Session.getInstance().setWizardMode(true);
             MainApplication.setTemplate(new FXMLLoader(getClass().getResource("/views/wizard-step1.fxml")));
             Scene scene = new Scene(MainApplication.getTemplate().load());
             MainApplication.getPrimaryStage().setScene(scene);
@@ -406,6 +412,17 @@ public class TemplateController implements Initializable {
         try {
             String installUpdateTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.installUpdateServer");
             loadNewContent(installUpdateTitle, "/views/installUpdateSteamServer.fxml");
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void joinToDiscordMenuOnAction() {
+        try {
+            URI discordUrl = new URI("https://discord.gg/WdwRU522Fb");
+            Desktop.getDesktop().browse(discordUrl);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);

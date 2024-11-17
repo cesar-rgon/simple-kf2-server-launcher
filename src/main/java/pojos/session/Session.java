@@ -29,6 +29,7 @@ public class Session {
     private PlatformDto platform;
     private String url;
     private boolean firstBoot;
+    private boolean wizardMode;
 
     /**
      * Singleton constructor
@@ -150,5 +151,13 @@ public class Session {
 
     public void setFirstBoot(boolean firstBoot) {
         this.firstBoot = firstBoot;
+    }
+
+    public boolean isWizardMode() {
+        return wizardMode;
+    }
+
+    public void setWizardMode(boolean wizardMode) {
+        this.wizardMode = wizardMode;
     }
 }

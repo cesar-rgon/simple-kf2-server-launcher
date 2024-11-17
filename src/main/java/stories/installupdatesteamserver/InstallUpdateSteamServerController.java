@@ -19,6 +19,7 @@ import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
@@ -108,9 +109,7 @@ public class InstallUpdateSteamServerController implements Initializable {
 
             Platform.runLater(() -> {
                 try {
-                    PropertyService propertyService = new PropertyServiceImpl();
-                    boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
-                    if (createDatabase) {
+                    if (Session.getInstance().isWizardMode()) {
                         FXMLLoader wizardStepTemplate = MainApplication.getTemplate();
                         Button nextStep = (Button) wizardStepTemplate.getNamespace().get("nextStep");
                         if (StringUtils.isNotBlank(installationFolder.getText())) {
@@ -137,9 +136,7 @@ public class InstallUpdateSteamServerController implements Initializable {
                     if (!newValue.equals(oldValue)) {
                         try {
                             if (facade.updatePlatformInstallationFolder(installationFolder.getText())) {
-                                PropertyService propertyService = new PropertyServiceImpl();
-                                boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
-                                if (createDatabase) {
+                                if (Session.getInstance().isWizardMode()) {
                                     FXMLLoader wizardStepTemplate = MainApplication.getTemplate();
                                     Button nextStep = (Button) wizardStepTemplate.getNamespace().get("nextStep");
                                     if (StringUtils.isNotBlank(installationFolder.getText())) {
@@ -214,9 +211,7 @@ public class InstallUpdateSteamServerController implements Initializable {
             if (selectedDirectory != null) {
                 installationFolder.setText(selectedDirectory.getAbsolutePath());
                 if (facade.updatePlatformInstallationFolder(installationFolder.getText())) {
-                    PropertyService propertyService = new PropertyServiceImpl();
-                    boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
-                    if (createDatabase) {
+                    if (Session.getInstance().isWizardMode()) {
                         FXMLLoader wizardStepTemplate = MainApplication.getTemplate();
                         Button nextStep = (Button) wizardStepTemplate.getNamespace().get("nextStep");
                         if (StringUtils.isNotBlank(installationFolder.getText())) {

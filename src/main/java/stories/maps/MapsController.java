@@ -258,9 +258,7 @@ public class MapsController implements Initializable {
 
     private void checkIfHasMaps() {
         try {
-            PropertyService propertyService = new PropertyServiceImpl();
-            boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
-            if (createDatabase) {
+            if (Session.getInstance().isWizardMode()) {
                 FXMLLoader wizardStepTemplate = MainApplication.getTemplate();
                 Button nextStep = (Button) wizardStepTemplate.getNamespace().get("nextStep");
                 if (steamOfficialMapsFlowPane.getChildren().size() == 0 && steamCustomMapsFlowPane.getChildren().size() == 0 &&

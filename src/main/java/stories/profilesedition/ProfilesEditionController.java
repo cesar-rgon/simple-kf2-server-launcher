@@ -118,9 +118,7 @@ public class ProfilesEditionController implements Initializable {
                 @Override
                 public void onChanged(Change<? extends ProfileDto> change) {
                     try {
-                        PropertyService propertyService = new PropertyServiceImpl();
-                        boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
-                        if (createDatabase) {
+                        if (Session.getInstance().isWizardMode()) {
                             FXMLLoader wizardStepTemplate = MainApplication.getTemplate();
                             Button nextStep = (Button) wizardStepTemplate.getNamespace().get("nextStep");
                             if (profilesTable.getItems().size() == 0) {
