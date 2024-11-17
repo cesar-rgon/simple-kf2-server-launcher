@@ -5,7 +5,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="700.0" minWidth="1024.0" style="-fx-background-color: #414141;" stylesheets="@../css/custom.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="700.0" minWidth="1024.0" style="-fx-background-color: #414141;" stylesheets="@../css/custom.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.wizardstep4.WizardStep4Controller">
    <top>
        <VBox id="wizardTopPane" alignment="CENTER" prefWidth="800.0">
            <children>
@@ -32,21 +32,21 @@
                        <HBox.margin>
                            <Insets left="16.0" />
                        </HBox.margin></Label>
-                   <Label fx:id="step2TitleLabel" text="PROFILE">
+                   <Label fx:id="step2TitleLabel" text="KF2 SERVER">
                        <HBox.margin>
-                           <Insets left="11.0" />
+                           <Insets left="1.0" />
                        </HBox.margin></Label>
-                   <Label fx:id="step3TitleLabel" text="KF2 SERVER">
+                   <Label fx:id="step3TitleLabel" text="PROFILE">
                        <HBox.margin>
                            <Insets left="7.0" />
                        </HBox.margin></Label>
                    <Label fx:id="step4TitleLabel" text="MAPS">
                        <HBox.margin>
-                           <Insets left="22.0" />
+                           <Insets left="32.0" />
                        </HBox.margin></Label>
-                   <Label fx:id="step5TitleLabel" text="SUMMARY">
+                   <Label fx:id="step5TitleLabel" text="READY!">
                        <HBox.margin>
-                           <Insets left="22.0" />
+                           <Insets left="33.0" />
                        </HBox.margin></Label>
                </HBox>
            </children>
@@ -57,12 +57,12 @@
     </center>
    <bottom>
        <HBox id="wizardBottomPane" alignment="CENTER_RIGHT" spacing="40">
-           <Button fx:id="previousStep" minWidth="80.0" mnemonicParsing="false" text="Previous step">
+           <Button fx:id="previousStep" minWidth="80.0" onAction="#previousStepOnAction" mnemonicParsing="false" text="Previous step">
                <HBox.margin>
                    <Insets bottom="20" />
                </HBox.margin>
            </Button>
-           <Button fx:id="nextStep" minWidth="80.0" mnemonicParsing="false" text="Next step">
+           <Button fx:id="nextStep" minWidth="80.0" onAction="#nextStepOnAction" mnemonicParsing="false" text="Next step" disable="true">
                 <HBox.margin>
                     <Insets bottom="20" right="30" />
                 </HBox.margin>

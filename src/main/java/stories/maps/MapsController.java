@@ -1,11 +1,10 @@
 package stories.maps;
 
 import dtos.*;
-import entities.CustomMapMod;
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
@@ -38,10 +37,11 @@ import pojos.enums.EnumMapsTab;
 import pojos.enums.EnumPlatform;
 import pojos.enums.EnumSortedMapsCriteria;
 import pojos.session.Session;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import start.MainApplication;
 import stories.addcustommapstoprofile.AddCustomMapsToProfileFacadeResult;
 import stories.listplatformprofilemap.ListPlatformProfileMapFacadeResult;
-import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
 import stories.mapsinitialize.MapsInitializeFacadeResult;
 import stories.mapsinitialize.MapsInitializeModelContext;
 import stories.prepareimportmapsfromserver.PrepareImportMapsFromServerFacadeResult;
@@ -228,6 +228,52 @@ public class MapsController implements Initializable {
                     }
                 }
         );
+
+        steamOfficialMapsFlowPane.getChildren().addListener(new ListChangeListener<Node>() {
+            @Override
+            public void onChanged(Change<? extends Node> change) {
+                checkIfHasMaps();
+            }
+        });
+        steamCustomMapsFlowPane.getChildren().addListener(new ListChangeListener<Node>() {
+            @Override
+            public void onChanged(Change<? extends Node> change) {
+                checkIfHasMaps();
+            }
+        });
+        epicOfficialMapsFlowPane.getChildren().addListener(new ListChangeListener<Node>() {
+            @Override
+            public void onChanged(Change<? extends Node> change) {
+                checkIfHasMaps();
+            }
+        });
+        epicCustomMapsFlowPane.getChildren().addListener(new ListChangeListener<Node>() {
+            @Override
+            public void onChanged(Change<? extends Node> change) {
+                checkIfHasMaps();
+            }
+        });
+
+    }
+
+    private void checkIfHasMaps() {
+        try {
+            PropertyService propertyService = new PropertyServiceImpl();
+            boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
+            if (createDatabase) {
+                FXMLLoader wizardStepTemplate = MainApplication.getTemplate();
+                Button nextStep = (Button) wizardStepTemplate.getNamespace().get("nextStep");
+                if (steamOfficialMapsFlowPane.getChildren().size() == 0 && steamCustomMapsFlowPane.getChildren().size() == 0 &&
+                        epicOfficialMapsFlowPane.getChildren().size() == 0 && epicCustomMapsFlowPane.getChildren().size() == 0) {
+                    nextStep.setDisable(true);
+                } else {
+                    nextStep.setDisable(false);
+                }
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
     }
 
     private void setLabelText() throws Exception {

@@ -1,15 +1,20 @@
 package stories.installupdatesteamserver;
 
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
+import javafx.stage.WindowEvent;
 import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -101,52 +106,60 @@ public class InstallUpdateSteamServerController implements Initializable {
             installUpdateTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             installUpdate.setTooltip(installUpdateTooltip);
 
-            PropertyService propertyService = new PropertyServiceImpl();
-            boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
-            if (createDatabase) {
-                FXMLLoader wizardStepTemplate = MainApplication.getTemplate();
-                Button nextStep = (Button) wizardStepTemplate.getNamespace().get("nextStep");
-                if (StringUtils.isNotBlank(installationFolder.getText())) {
-                    nextStep.setDisable(false);
-                } else {
-                    nextStep.setDisable(true);
-                }
-            }
-
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), e);
-        }
-
-        installationFolder.focusedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
+            Platform.runLater(() -> {
                 try {
-                    if (!newPropertyValue) {
-                        if (facade.updatePlatformInstallationFolder(installationFolder.getText())) {
-                            PropertyService propertyService = new PropertyServiceImpl();
-                            boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
-                            if (createDatabase) {
-                                FXMLLoader wizardStepTemplate = MainApplication.getTemplate();
-                                Button nextStep = (Button) wizardStepTemplate.getNamespace().get("nextStep");
-                                if (StringUtils.isNotBlank(installationFolder.getText())) {
-                                    nextStep.setDisable(false);
-                                } else {
-                                    nextStep.setDisable(true);
-                                }
-                            }
+                    PropertyService propertyService = new PropertyServiceImpl();
+                    boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
+                    if (createDatabase) {
+                        FXMLLoader wizardStepTemplate = MainApplication.getTemplate();
+                        Button nextStep = (Button) wizardStepTemplate.getNamespace().get("nextStep");
+                        if (StringUtils.isNotBlank(installationFolder.getText())) {
+                            nextStep.setDisable(false);
                         } else {
-                            logger.warn("The installation folder value could not be saved!:" + installationFolder.getText());
-                            String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
-                            String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");
-                            Utils.warningDialog(headerText, contentText);
+                            nextStep.setDisable(true);
                         }
                     }
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
                     Utils.errorDialog(e.getMessage(), e);
                 }
-            }
+            });
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+
+
+        installationFolder.textProperty().addListener(new ChangeListener<String>() {
+              @Override
+              public void changed(ObservableValue<? extends String> observableValue, String oldValue, String newValue) {
+                    if (!newValue.equals(oldValue)) {
+                        try {
+                            if (facade.updatePlatformInstallationFolder(installationFolder.getText())) {
+                                PropertyService propertyService = new PropertyServiceImpl();
+                                boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
+                                if (createDatabase) {
+                                    FXMLLoader wizardStepTemplate = MainApplication.getTemplate();
+                                    Button nextStep = (Button) wizardStepTemplate.getNamespace().get("nextStep");
+                                    if (StringUtils.isNotBlank(installationFolder.getText())) {
+                                        nextStep.setDisable(false);
+                                    } else {
+                                        nextStep.setDisable(true);
+                                    }
+                                }
+                            } else {
+                                logger.warn("The installation folder value could not be saved!:" + installationFolder.getText());
+                                String headerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notOperationDone");
+                                String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");
+                                Utils.warningDialog(headerText, contentText);
+                            }
+                        } catch (Exception e) {
+                            logger.error(e.getMessage(), e);
+                            Utils.errorDialog(e.getMessage(), e);
+                        }
+                    }
+              }
         });
 
         betaBrunch.focusedProperty().addListener(new ChangeListener<Boolean>() {

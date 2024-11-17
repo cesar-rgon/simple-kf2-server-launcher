@@ -2,9 +2,11 @@ package stories.profilesedition;
 
 import dtos.ProfileDto;
 import entities.Profile;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
@@ -16,6 +18,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.ProfileToDisplay;
 import pojos.session.Session;
+import services.PropertyService;
+import services.PropertyServiceImpl;
 import start.MainApplication;
 import stories.listallprofiles.ListAllProfilesFacadeResult;
 import utils.Utils;
@@ -110,10 +114,34 @@ public class ProfilesEditionController implements Initializable {
             profileNameLabelTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             profileNameLabel.setTooltip(profileNameLabelTooltip);
 
+            result.getAllProfileList().addListener(new ListChangeListener<ProfileDto>() {
+                @Override
+                public void onChanged(Change<? extends ProfileDto> change) {
+                    try {
+                        PropertyService propertyService = new PropertyServiceImpl();
+                        boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
+                        if (createDatabase) {
+                            FXMLLoader wizardStepTemplate = MainApplication.getTemplate();
+                            Button nextStep = (Button) wizardStepTemplate.getNamespace().get("nextStep");
+                            if (profilesTable.getItems().size() == 0) {
+                                nextStep.setDisable(true);
+                            } else {
+                                nextStep.setDisable(false);
+                            }
+                        }
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                        Utils.errorDialog(e.getMessage(), e);
+                    }
+                }
+            });
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
         }
+
+
     }
 
     @FXML

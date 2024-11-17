@@ -52,30 +52,35 @@ public class MainApplication extends Application {
         // Fix a problem with newest JDK and JavaFX WebView. http2 support need to be disabled
         Properties systemProperties = System.getProperties();
         systemProperties.setProperty("com.sun.webkit.useHTTP2Loader", "false");
+        prepareUndertow();
 
         boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
         if (createDatabase) {
             startWizard();
         } else {
-            String[] resolution = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationResolution").split("x");
-            primaryStage.setWidth(Double.parseDouble(resolution[0]));
-            primaryStage.setHeight(Double.parseDouble(resolution[1]));
-            Boolean applicationMaximized = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationMaximized"));
-            primaryStage.setMaximized(applicationMaximized != null? applicationMaximized: false);
-            prepareUndertow();
-            template = new FXMLLoader(getClass().getResource("/views/template.fxml"));
-            Scene scene = new Scene(template.load());
-            FXMLLoader mainContent = new FXMLLoader(getClass().getResource("/views/mainContent.fxml"));
-            mainContent.setRoot(template.getNamespace().get("content"));
-            mainContent.load();
-            primaryStage.setScene(scene);
-            primaryStage.show();
-
-            TimerTask timeListener = new TimeListener();
-            timer = new Timer();
-            String checkDownloadedMapsEveryMilliseconds = propertyService.getPropertyValue("properties/config.properties", "prop.config.checkDownloadedMapsEveryMilliseconds");
-            timer.schedule(timeListener, 0, Long.parseLong(checkDownloadedMapsEveryMilliseconds));
+            startLauncher();
         }
+    }
+
+    public void startLauncher() throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+        String[] resolution = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationResolution").split("x");
+        primaryStage.setWidth(Double.parseDouble(resolution[0]));
+        primaryStage.setHeight(Double.parseDouble(resolution[1]));
+        Boolean applicationMaximized = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationMaximized"));
+        primaryStage.setMaximized(applicationMaximized != null? applicationMaximized: false);
+        template = new FXMLLoader(getClass().getResource("/views/template.fxml"));
+        Scene scene = new Scene(template.load());
+        FXMLLoader mainContent = new FXMLLoader(getClass().getResource("/views/mainContent.fxml"));
+        mainContent.setRoot(template.getNamespace().get("content"));
+        mainContent.load();
+        primaryStage.setScene(scene);
+        primaryStage.show();
+
+        TimerTask timeListener = new TimeListener();
+        timer = new Timer();
+        String checkDownloadedMapsEveryMilliseconds = propertyService.getPropertyValue("properties/config.properties", "prop.config.checkDownloadedMapsEveryMilliseconds");
+        timer.schedule(timeListener, 0, Long.parseLong(checkDownloadedMapsEveryMilliseconds));
 
         this.primaryStage.maximizedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
@@ -161,7 +166,6 @@ public class MainApplication extends Application {
         embeddedWebServer.stop();
         PropertyService propertyService = new PropertyServiceImpl();
         propertyService.setProperty("properties/config.properties", "prop.config.applicationResolution", primaryStage.getWidth() + "x" + primaryStage.getHeight());
-        propertyService.setProperty("properties/config.properties", "prop.config.createDatabase", "false");
     }
 
     public static FXMLLoader getTemplate() {
@@ -190,5 +194,13 @@ public class MainApplication extends Application {
 
     public static void setAppData(File appData) {
         MainApplication.appData = appData;
+    }
+
+    public static Timer getTimer() {
+        return timer;
+    }
+
+    public static void setTimer(Timer timer) {
+        MainApplication.timer = timer;
     }
 }

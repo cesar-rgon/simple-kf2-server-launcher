@@ -6,73 +6,83 @@
 <?import javafx.scene.layout.*?>
 
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="700.0" minWidth="1024.0" stylesheets="@../css/custom.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.wizardstep2.WizardStep2Controller">
-    <top>
-        <VBox id="wizardTopPane" alignment="CENTER" prefWidth="800.0">
-            <children>
-                <HBox alignment="CENTER" spacing="20">
-                    <children>
-                        <ImageView fx:id="kf2logo" fitHeight="94.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
-                            <image>
-                                <Image url="@../images/kf2logo.png" />
-                            </image>
-                        </ImageView>
-                        <Label fx:id="wizardTitleLabel" text="WIZARD" />
-                    </children>
-                    <VBox.margin>
-                        <Insets top="10.0" />
-                    </VBox.margin>
-                </HBox>
-                <ImageView fitWidth="800.0" pickOnBounds="true" preserveRatio="true">
-                    <image>
-                        <Image url="@../images/wizard-step2.png" />
-                    </image>
-                </ImageView>
-                <HBox maxWidth="800.0" spacing="110">
-                    <Label fx:id="step1TitleLabel" text="WELCOME!">
-                        <HBox.margin>
-                            <Insets left="16.0" />
-                        </HBox.margin></Label>
-                    <Label fx:id="step2TitleLabel" text="PROFILE">
-                        <HBox.margin>
-                            <Insets left="11.0" />
-                        </HBox.margin></Label>
-                    <Label fx:id="step3TitleLabel" text="KF2 SERVER">
-                        <HBox.margin>
-                            <Insets left="7.0" />
-                        </HBox.margin></Label>
-                    <Label fx:id="step4TitleLabel" text="MAPS">
-                        <HBox.margin>
-                            <Insets left="22.0" />
-                        </HBox.margin></Label>
-                    <Label fx:id="step5TitleLabel" text="SUMMARY">
-                        <HBox.margin>
-                            <Insets left="22.0" />
-                        </HBox.margin></Label>
-                </HBox>
-            </children>
-        </VBox>
-    </top>
+   <top>
+       <VBox id="wizardTopPane" alignment="CENTER" prefWidth="800.0">
+           <children>
+               <HBox alignment="CENTER" spacing="20">
+                   <children>
+                       <ImageView fx:id="kf2logo" fitHeight="94.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                               <Image url="@../images/kf2logo.png" />
+                           </image>
+                       </ImageView>
+                       <Label fx:id="wizardTitleLabel" text="WIZARD" />
+                   </children>
+                   <VBox.margin>
+                       <Insets top="10.0" />
+                   </VBox.margin>
+               </HBox>
+               <ImageView fitWidth="800.0" pickOnBounds="true" preserveRatio="true">
+                   <image>
+                       <Image url="@../images/wizard-step2.png" />
+                   </image>
+               </ImageView>
+               <HBox maxWidth="800.0" spacing="110">
+                   <Label fx:id="step1TitleLabel" text="WELCOME!">
+                       <HBox.margin>
+                           <Insets left="16.0" />
+                       </HBox.margin></Label>
+                   <Label fx:id="step2TitleLabel" text="KF2 SERVER">
+                       <HBox.margin>
+                           <Insets left="1.0" />
+                       </HBox.margin></Label>
+                   <Label fx:id="step3TitleLabel" text="PROFILE">
+                       <HBox.margin>
+                           <Insets left="7.0" />
+                       </HBox.margin></Label>
+                   <Label fx:id="step4TitleLabel" text="MAPS">
+                       <HBox.margin>
+                           <Insets left="32.0" />
+                       </HBox.margin></Label>
+                   <Label fx:id="step5TitleLabel" text="READY!">
+                       <HBox.margin>
+                           <Insets left="33.0" />
+                       </HBox.margin></Label>
+               </HBox>
+           </children>
+       </VBox>
+   </top>
     <center>
         <GridPane id="wizardCenterGridPane" fx:id="content" alignment="CENTER" BorderPane.alignment="CENTER" />
     </center>
-    <bottom>
-        <HBox id="wizardBottomPane" alignment="CENTER_RIGHT" spacing="40">
-            <Button fx:id="previousStep" minWidth="80.0" onAction="#previousStepOnAction" mnemonicParsing="false" text="Previous step">
-                <HBox.margin>
-                    <Insets bottom="20"></Insets>
-                </HBox.margin>
-            </Button>
-            <Button fx:id="nextStep" minWidth="80.0" onAction="#nextStepOnAction" mnemonicParsing="false" text="Next step">
+   <bottom>
+       <HBox id="wizardBottomPane" alignment="CENTER_RIGHT" spacing="40">
+           <Button fx:id="switchSteamGamesServer" minWidth="80.0" onAction="#switchSteamServerOnAction" mnemonicParsing="false" text="Switch to Steam's server" disable="true">
+               <HBox.margin>
+                   <Insets bottom="20"></Insets>
+               </HBox.margin>
+           </Button>
+           <Button fx:id="switchEpicGamesServer" minWidth="80.0" onAction="#switchEpicGamesServerOnAction" mnemonicParsing="false" text="Switch to Epic Game's server">
+               <HBox.margin>
+                   <Insets bottom="20"></Insets>
+               </HBox.margin>
+           </Button>
+           <Button fx:id="previousStep" minWidth="80.0" onAction="#previousStepOnAction" mnemonicParsing="false" text="Previous step">
+               <HBox.margin>
+                   <Insets bottom="20"></Insets>
+               </HBox.margin>
+           </Button>
+           <Button id="nextStep" fx:id="nextStep" minWidth="80.0" onAction="#nextStepOnAction" mnemonicParsing="false" text="Next step" disable="true">
                 <HBox.margin>
                     <Insets right="30" bottom="20"></Insets>
                 </HBox.margin>
-            </Button>
-        </HBox>
-    </bottom>
-    <right>
-        <Pane id="wizardRightPane" minWidth="10.0" prefWidth="10.0" BorderPane.alignment="CENTER" />
-    </right>
-    <left>
-        <Pane id="wizardLeftPane" minWidth="10.0" prefHeight="10.0" BorderPane.alignment="CENTER" />
-    </left>
+           </Button>
+       </HBox>
+   </bottom>
+   <right>
+      <Pane id="wizardRightPane" minWidth="10.0" prefWidth="10.0" BorderPane.alignment="CENTER" />
+   </right>
+   <left>
+      <Pane id="wizardLeftPane" minWidth="10.0" prefHeight="10.0" BorderPane.alignment="CENTER" />
+   </left>
 </BorderPane>

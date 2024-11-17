@@ -1,6 +1,6 @@
 package stories.installupdateepicserver;
 
-import entities.EpicPlatform;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.concurrent.Task;
@@ -14,9 +14,6 @@ import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.kf2factory.Kf2Common;
-import pojos.kf2factory.Kf2Epic;
-import pojos.kf2factory.Kf2Factory;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
@@ -25,7 +22,6 @@ import utils.Utils;
 
 import java.io.File;
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class InstallUpdateEpicServerController implements Initializable {
@@ -78,28 +74,35 @@ public class InstallUpdateEpicServerController implements Initializable {
             installUpdateTooltip.setShowDuration(Duration.seconds(tooltipDuration));
             installUpdate.setTooltip(installUpdateTooltip);
 
-            PropertyService propertyService = new PropertyServiceImpl();
-            boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
-            if (createDatabase) {
-                FXMLLoader wizardStepTemplate = MainApplication.getTemplate();
-                Button nextStep = (Button) wizardStepTemplate.getNamespace().get("nextStep");
-                if (StringUtils.isNotBlank(installationFolder.getText())) {
-                    nextStep.setDisable(false);
-                } else {
-                    nextStep.setDisable(true);
+            Platform.runLater(() -> {
+                try {
+                    PropertyService propertyService = new PropertyServiceImpl();
+                    boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
+                    if (createDatabase) {
+                        FXMLLoader wizardStepTemplate = MainApplication.getTemplate();
+                        Button nextStep = (Button) wizardStepTemplate.getNamespace().get("nextStep");
+                        if (StringUtils.isNotBlank(installationFolder.getText())) {
+                            nextStep.setDisable(false);
+                        } else {
+                            nextStep.setDisable(true);
+                        }
+                    }
+                } catch (Exception e) {
+                    logger.error(e.getMessage(), e);
+                    Utils.errorDialog(e.getMessage(), e);
                 }
-            }
+            });
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
         }
 
-        installationFolder.focusedProperty().addListener(new ChangeListener<Boolean>() {
+        installationFolder.textProperty().addListener(new ChangeListener<String>() {
             @Override
-            public void changed(ObservableValue<? extends Boolean> arg0, Boolean oldPropertyValue, Boolean newPropertyValue) {
-                try {
-                    if (!newPropertyValue) {
+            public void changed(ObservableValue<? extends String> observableValue, String oldValue, String newValue) {
+                if (!newValue.equals(oldValue)) {
+                    try {
                         if (facade.updatePlatformInstallationFolder(installationFolder.getText())) {
                             PropertyService propertyService = new PropertyServiceImpl();
                             boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
@@ -118,13 +121,14 @@ public class InstallUpdateEpicServerController implements Initializable {
                             String contentText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.installDirNotSaved");
                             Utils.warningDialog(headerText, contentText);
                         }
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                        Utils.errorDialog(e.getMessage(), e);
                     }
-                } catch (Exception e) {
-                    logger.error(e.getMessage(), e);
-                    Utils.errorDialog(e.getMessage(), e);
                 }
             }
         });
+
     }
 
     @FXML

@@ -283,7 +283,7 @@
     -fx-text-fill: #fba140;
 }
 
-#step1Description {
+#step1Description, #step5Description {
     -fx-font-family: "Ubuntu";
     -fx-font-size: 12;
     -fx-text-fill: white;

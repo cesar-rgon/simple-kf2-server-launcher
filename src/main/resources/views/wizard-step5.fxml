@@ -5,7 +5,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="700.0" minWidth="1024.0" stylesheets="@../css/custom.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="700.0" minWidth="1024.0" stylesheets="@../css/custom.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.wizardstep5.WizardStep5Controller">
    <top>
        <VBox id="wizardTopPane" alignment="CENTER" prefWidth="800.0">
            <children>
@@ -32,37 +32,50 @@
                        <HBox.margin>
                            <Insets left="16.0" />
                        </HBox.margin></Label>
-                   <Label fx:id="step2TitleLabel" text="PROFILE">
+                   <Label fx:id="step2TitleLabel" text="KF2 SERVER">
                        <HBox.margin>
-                           <Insets left="11.0" />
+                           <Insets left="1.0" />
                        </HBox.margin></Label>
-                   <Label fx:id="step3TitleLabel" text="KF2 SERVER">
+                   <Label fx:id="step3TitleLabel" text="PROFILE">
                        <HBox.margin>
                            <Insets left="7.0" />
                        </HBox.margin></Label>
                    <Label fx:id="step4TitleLabel" text="MAPS">
                        <HBox.margin>
-                           <Insets left="22.0" />
+                           <Insets left="32.0" />
                        </HBox.margin></Label>
-                   <Label fx:id="step5TitleLabel" text="SUMMARY">
+                   <Label fx:id="step5TitleLabel" text="READY!">
                        <HBox.margin>
-                           <Insets left="22.0" />
+                           <Insets left="33.0" />
                        </HBox.margin></Label>
                </HBox>
            </children>
        </VBox>
    </top>
     <center>
-        <GridPane id="wizardCenterGridPane" fx:id="content" alignment="CENTER" BorderPane.alignment="CENTER" />
+        <VBox id="wizardCenterGridPane" alignment="CENTER" spacing="20" BorderPane.alignment="CENTER">
+            <children>
+                <Label fx:id="step5Description" text="The server has been setup. You're ready to start the launcher. Press 'Finish' button right now." wrapText="true">
+                    <VBox.margin>
+                        <Insets top="20" />
+                    </VBox.margin>
+                </Label>
+                <ImageView fx:id="kf2screen" fitWidth="600.0" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/screenshot00.png" />
+                    </image>
+                </ImageView>
+            </children>
+        </VBox>
     </center>
    <bottom>
        <HBox id="wizardBottomPane" alignment="CENTER_RIGHT" spacing="40">
-           <Button fx:id="previousStep" minWidth="80.0" mnemonicParsing="false" text="Previous step">
+           <Button fx:id="previousStep" minWidth="80.0" onAction="#previousStepOnAction" mnemonicParsing="false" text="Previous step">
                <HBox.margin>
                    <Insets bottom="20"></Insets>
                </HBox.margin>
            </Button>
-           <Button fx:id="finish" minWidth="80.0" mnemonicParsing="false" text="Finish">
+           <Button fx:id="finish" minWidth="80.0" onAction="#finishOnAction" mnemonicParsing="false" text="Finish">
                 <HBox.margin>
                     <Insets right="30" bottom="20"></Insets>
                 </HBox.margin>
