@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
@@ -373,6 +374,19 @@ public class TemplateController implements Initializable {
     @FXML
     private void checkForUpdatesMenuOnAction() {
         Utils.checkApplicationUpgrade(languageCode, false);
+    }
+
+    @FXML
+    private void wizardMenuOnAction() {
+        try {
+            MainApplication.setTemplate(new FXMLLoader(getClass().getResource("/views/wizard-step1.fxml")));
+            Scene scene = new Scene(MainApplication.getTemplate().load());
+            MainApplication.getPrimaryStage().setScene(scene);
+            MainApplication.getPrimaryStage().show();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
     }
 
     @FXML
