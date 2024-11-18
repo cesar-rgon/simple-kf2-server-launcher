@@ -4,14 +4,11 @@ import dtos.factories.DifficultyDtoFactory;
 import dtos.factories.GameTypeDtoFactory;
 import dtos.factories.LengthDtoFactory;
 import entities.AbstractPlatform;
-import entities.GameType;
 import entities.Profile;
 import jakarta.persistence.EntityManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.hibernate.Hibernate;
 import pojos.enums.EnumPlatform;
-import pojos.listener.TimeListener;
 import services.ProfileService;
 import services.ProfileServiceImpl;
 

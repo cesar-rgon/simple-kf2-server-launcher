@@ -11,7 +11,6 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.listener.TimeListener;
 import pojos.session.Session;
 import services.ConsoleService;
 import services.ConsoleServiceImpl;
@@ -33,7 +32,6 @@ public class MainApplication extends Application {
 
     private static Stage primaryStage;
     private static FXMLLoader template;
-    private static Timer timer;
     private static Undertow embeddedWebServer;
     private static File appData;
 
@@ -79,11 +77,6 @@ public class MainApplication extends Application {
         mainContent.load();
         primaryStage.setScene(scene);
         primaryStage.show();
-
-        TimerTask timeListener = new TimeListener();
-        timer = new Timer();
-        String checkDownloadedMapsEveryMilliseconds = propertyService.getPropertyValue("properties/config.properties", "prop.config.checkDownloadedMapsEveryMilliseconds");
-        timer.schedule(timeListener, 0, Long.parseLong(checkDownloadedMapsEveryMilliseconds));
 
         this.primaryStage.maximizedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
@@ -164,11 +157,10 @@ public class MainApplication extends Application {
 
     @Override
     public void stop() throws Exception {
-        timer.cancel();
-        timer.purge();
         embeddedWebServer.stop();
         PropertyService propertyService = new PropertyServiceImpl();
         propertyService.setProperty("properties/config.properties", "prop.config.applicationResolution", primaryStage.getWidth() + "x" + primaryStage.getHeight());
+        primaryStage.close();
     }
 
     public static FXMLLoader getTemplate() {
@@ -199,11 +191,4 @@ public class MainApplication extends Application {
         MainApplication.appData = appData;
     }
 
-    public static Timer getTimer() {
-        return timer;
-    }
-
-    public static void setTimer(Timer timer) {
-        MainApplication.timer = timer;
-    }
 }

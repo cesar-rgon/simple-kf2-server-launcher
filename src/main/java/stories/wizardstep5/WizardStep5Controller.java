@@ -10,12 +10,10 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.listener.TimeListener;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
-import stories.wizardstep4.WizardStep4Controller;
 import utils.Utils;
 
 import java.net.URL;
@@ -74,11 +72,6 @@ public class WizardStep5Controller implements Initializable {
             MainApplication.getPrimaryStage().setScene(scene);
             MainApplication.getPrimaryStage().show();
             Session.getInstance().setWizardMode(false);
-
-            TimerTask timeListener = new TimeListener();
-            MainApplication.setTimer(new Timer());
-            String checkDownloadedMapsEveryMilliseconds = propertyService.getPropertyValue("properties/config.properties", "prop.config.checkDownloadedMapsEveryMilliseconds");
-            MainApplication.getTimer().schedule(timeListener, 0, Long.parseLong(checkDownloadedMapsEveryMilliseconds));
 
             MainApplication.getPrimaryStage().maximizedProperty().addListener(new ChangeListener<Boolean>() {
                 @Override
