@@ -1474,7 +1474,7 @@ public class MainContentController implements Initializable {
                 if (profileSelect.getValue() != null && StringUtils.isNotEmpty(profileSelect.getValue().getUrlImageServer())) {
                     runEmbeddedWebServer(listValuesMainContentFacadeResult.getProfileDtoList());
                     String webServerPort = facade.findPropertyValue("properties/config.properties", "prop.config.webServerPort");
-                    imageWebView.getEngine().load("http://" + Utils.getPublicIp() + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase() + ".png");
+                    imageWebView.getEngine().load("http://localhost:" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase() + ".png");
                 }
             }
             if (profileSelect.getValue() == null || StringUtils.isEmpty(profileSelect.getValue().getUrlImageServer())) {

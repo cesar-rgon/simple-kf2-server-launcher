@@ -23,8 +23,6 @@ import utils.Utils;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Properties;
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class MainApplication extends Application {
 
@@ -51,7 +49,6 @@ public class MainApplication extends Application {
         // Fix a problem with newest JDK and JavaFX WebView. http2 support need to be disabled
         Properties systemProperties = System.getProperties();
         systemProperties.setProperty("com.sun.webkit.useHTTP2Loader", "false");
-        prepareUndertow();
 
         boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
         if (createDatabase) {
@@ -93,7 +90,7 @@ public class MainApplication extends Application {
         });
     }
 
-    private void prepareUndertow() {
+    private static void prepareUndertow() {
         String os = System.getProperty("os.name");
         if (os.contains("Windows")) {
             String appDataPath = System.getenv("APPDATA");
@@ -114,6 +111,7 @@ public class MainApplication extends Application {
 
     public static void main(String[] args) {
         try {
+            prepareUndertow();
             PopulateDatabaseFacade populateDatabaseFacade = new PopulateDatabaseFacadeImpl();
             populateDatabaseFacade.execute();
         } catch (Exception e) {

@@ -2,10 +2,16 @@ package pojos;
 
 import entities.*;
 import jakarta.persistence.EntityManager;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import pojos.enums.EnumPlatform;
 import services.*;
+import start.MainApplication;
 
+import java.io.File;
+import java.net.URL;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -99,6 +105,17 @@ public abstract class AbstractPopulateDatabase {
                 netTickrateStr, lanTickrateStr, lanMaxClientRateStr, internetMaxClientRateStr);
 
         profileService.createItem(profile);
+
+        URL sourceUrl = getClass().getClassLoader().getResource("images/default-banner.png");
+        assert sourceUrl != null;
+        File undertowFolder = new File(MainApplication.getAppData().getAbsolutePath() + "/.undertow");
+        Date date = new Date();
+        Timestamp timestamp = new Timestamp(date.getTime());
+        String timestampStr = StringUtils.replace(timestamp.toString(), " ", "_");
+        timestampStr = StringUtils.replace(timestampStr, ":", "_");
+        timestampStr = StringUtils.replace(timestampStr, ".", "_");
+        File targetFile = new File(undertowFolder.getAbsolutePath() + "/" + name.toLowerCase() + "_" + timestampStr + ".png");
+        FileUtils.copyURLToFile(sourceUrl, targetFile);
     }
 
     protected void populateOfficialMap(String code, String urlInfo, String urlPhoto, Date releaseDate) throws Exception {
