@@ -39,15 +39,8 @@ public class TemplateController implements Initializable {
     @FXML private Menu mainPage;
     @FXML private Menu webAdmin;
     @FXML private Menu maps;
-    @FXML private Menu console;
     @FXML private Menu installUpdateServer;
-    @FXML private Menu configuration;
     @FXML private Menu help;
-    @FXML private MenuItem profiles;
-    @FXML private MenuItem gameTypes;
-    @FXML private MenuItem difficulties;
-    @FXML private MenuItem length;
-    @FXML private MenuItem maxPlayers;
     @FXML private MenuItem about;
     @FXML private MenuItem documentation;
     @FXML private MenuItem github;
@@ -76,29 +69,8 @@ public class TemplateController implements Initializable {
             String mapsTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.maps");
             maps.setGraphic(getLabelWithHandler(mapsTitle, "/views/maps.fxml"));
 
-            String consoleTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.console");
-            console.setGraphic(getLabelWithHandler(consoleTitle, "/views/console.fxml"));
-
             String installUpdateTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.installUpdateServer");
             installUpdateServer.setText(installUpdateTitle);
-
-            String configurationTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.configuration");
-            configuration.setText(configurationTitle);
-
-            String profilesTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.configuration.profiles");;
-            profiles.setText(profilesTitle);
-
-            String gameTypesTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.configuration.gameTypes");;
-            gameTypes.setText(gameTypesTitle);
-
-            String difficultiesTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.configuration.difficulties");;
-            difficulties.setText(difficultiesTitle);
-
-            String lengthTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.configuration.length");;
-            length.setText(lengthTitle);
-
-            String maxPlayersTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.configuration.maxPlayers");;
-            maxPlayers.setText(maxPlayersTitle);
 
             String helpTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help");
             help.setText(helpTitle);
@@ -161,9 +133,6 @@ public class TemplateController implements Initializable {
             String webAdminTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.webAdmin");
             webAdmin.setDisable(webAdminTitle.equals(title));
 
-            String consoleTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.console");
-            console.setDisable(consoleTitle.equals(title));
-
             String mapsTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.maps");
             maps.setDisable(mapsTitle.equals(title));
 
@@ -185,7 +154,6 @@ public class TemplateController implements Initializable {
 
             mainPage.setDisable(false);
             webAdmin.setDisable(false);
-            console.setDisable(false);
             maps.setDisable(false);
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

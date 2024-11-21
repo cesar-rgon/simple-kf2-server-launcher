@@ -134,10 +134,16 @@
     -fx-background-color: #201c1a;
 }
 
-#titleConfigLabel {
+#titleConfigLabel, #consoleLabel {
     -fx-font-family: "Ubuntu Bold";
     -fx-text-fill: #fba140;
     -fx-font-size: 11;
+}
+
+#consoleLabel {
+    -fx-font-family: "Ubuntu Bold";
+    -fx-text-fill: #fba140;
+    -fx-font-size: 14;
 }
 
 #alreadyInLauncher {
@@ -207,7 +213,7 @@
     -fx-max-width: 300px;
 }
 
-#runServer, #joinServer, #terminalButton {
+#runServer, #joinServer, #terminalButton, #profileSetup, #gameTypeSetup, #difficultySetup, #lengthSetup, #maxPlayersSetup, #platformProfileMapAdd, #platformProfileMapSetup {
     -fx-border-color: transparent;
     -fx-background-color: transparent;
 }

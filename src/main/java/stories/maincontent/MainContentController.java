@@ -13,6 +13,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
@@ -114,6 +115,13 @@ public class MainContentController implements Initializable {
     @FXML private Button runServer;
     @FXML private Button joinServer;
     @FXML private Button terminalButton;
+    @FXML private Button profileSetup;
+    @FXML private Button gameTypeSetup;
+    @FXML private Button difficultySetup;
+    @FXML private Button lengthSetup;
+    @FXML private Button maxPlayersSetup;
+    @FXML private Button platformProfileMapAdd;
+    @FXML private Button platformProfileMapSetup;
     @FXML private ImageView runServerImage;
     @FXML private ImageView joinServerImage;
     @FXML private ImageView profileImg;
@@ -712,6 +720,90 @@ public class MainContentController implements Initializable {
                 terminalButton.setStyle("-fx-effect: none;");
             }
         });
+        profileSetup.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                profileSetup.setStyle("-fx-effect: dropshadow(three-pass-box, #c15d11, 20, 0, 0, 0);");
+            }
+        });
+        profileSetup.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                profileSetup.setStyle("-fx-effect: none;");
+            }
+        });
+        gameTypeSetup.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                gameTypeSetup.setStyle("-fx-effect: dropshadow(three-pass-box, #c15d11, 20, 0, 0, 0);");
+            }
+        });
+        gameTypeSetup.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                gameTypeSetup.setStyle("-fx-effect: none;");
+            }
+        });
+        difficultySetup.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                difficultySetup.setStyle("-fx-effect: dropshadow(three-pass-box, #c15d11, 20, 0, 0, 0);");
+            }
+        });
+        difficultySetup.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                difficultySetup.setStyle("-fx-effect: none;");
+            }
+        });
+        lengthSetup.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                lengthSetup.setStyle("-fx-effect: dropshadow(three-pass-box, #c15d11, 20, 0, 0, 0);");
+            }
+        });
+        lengthSetup.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                lengthSetup.setStyle("-fx-effect: none;");
+            }
+        });
+        maxPlayersSetup.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                maxPlayersSetup.setStyle("-fx-effect: dropshadow(three-pass-box, #c15d11, 20, 0, 0, 0);");
+            }
+        });
+        maxPlayersSetup.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                maxPlayersSetup.setStyle("-fx-effect: none;");
+            }
+        });
+        platformProfileMapAdd.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                platformProfileMapAdd.setStyle("-fx-effect: dropshadow(three-pass-box, #c15d11, 20, 0, 0, 0);");
+            }
+        });
+        platformProfileMapAdd.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                platformProfileMapAdd.setStyle("-fx-effect: none;");
+            }
+        });
+        platformProfileMapSetup.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                platformProfileMapSetup.setStyle("-fx-effect: dropshadow(three-pass-box, #c15d11, 20, 0, 0, 0);");
+            }
+        });
+        platformProfileMapSetup.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                platformProfileMapSetup.setStyle("-fx-effect: none;");
+            }
+        });
 
         welcomeMessage.focusedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
@@ -1079,6 +1171,10 @@ public class MainContentController implements Initializable {
         joinServerTooltip.setShowDuration(Duration.seconds(tooltipDuration));
         joinServer.setTooltip(joinServerTooltip);
 
+        Tooltip terminalTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.console"));
+        terminalTooltip.setShowDuration(Duration.seconds(tooltipDuration));
+        terminalButton.setTooltip(terminalTooltip);
+
         Tooltip thumbnailTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.thumbnail"));
         thumbnailTooltip.setShowDuration(Duration.seconds(tooltipDuration));
         Tooltip.install(imageWebView,thumbnailTooltip);
@@ -1278,7 +1374,8 @@ public class MainContentController implements Initializable {
         takeover.setSelected(result.getProfileDto().getTakeover() != null ? result.getProfileDto().getTakeover(): false);
         try {
             if (StringUtils.isNotEmpty(result.getProfileDto().getUrlImageServer())) {
-                imageWebView.getEngine().load(result.getProfileDto().getUrlImageServer());
+                String webServerPort = facade.findPropertyValue("properties/config.properties", "prop.config.webServerPort");
+                imageWebView.getEngine().load("http://localhost:" + webServerPort + "/" + result.getProfileDto().getName().toLowerCase() + ".png");
                 labelWebView.setText(result.getProfileDto().getUrlImageServer());
             } else {
                 File file = new File(System.getProperty("user.dir") + "/external-images/no-server-photo.png");
@@ -1943,5 +2040,165 @@ public class MainContentController implements Initializable {
                         logger.error(e.getMessage(), e);
                     }
                 });
+    }
+
+    @FXML
+    private void terminalButtonOnAction() {
+        try {
+            GridPane templateContent = (GridPane) MainApplication.getTemplate().getNamespace().get("content");
+            templateContent.getColumnConstraints().clear();
+            templateContent.getRowConstraints().clear();
+            templateContent.getChildren().clear();
+            FXMLLoader content = new FXMLLoader(getClass().getResource("/views/console.fxml"));
+            content.setRoot(MainApplication.getTemplate().getNamespace().get("content"));
+            content.load();
+
+            Menu mainPage = (Menu) MainApplication.getTemplate().getNamespace().get("mainPage");
+            mainPage.setDisable(false);
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void profileSetupOnAction() {
+        try {
+            GridPane templateContent = (GridPane) MainApplication.getTemplate().getNamespace().get("content");
+            templateContent.getColumnConstraints().clear();
+            templateContent.getRowConstraints().clear();
+            templateContent.getChildren().clear();
+            FXMLLoader content = new FXMLLoader(getClass().getResource("/views/profilesEdition.fxml"));
+            content.setRoot(MainApplication.getTemplate().getNamespace().get("content"));
+            content.load();
+
+            Menu mainPage = (Menu) MainApplication.getTemplate().getNamespace().get("mainPage");
+            mainPage.setDisable(false);
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void platformProfileMapAddOnAction() {
+        try {
+            GridPane templateContent = (GridPane) MainApplication.getTemplate().getNamespace().get("content");
+            templateContent.getColumnConstraints().clear();
+            templateContent.getRowConstraints().clear();
+            templateContent.getChildren().clear();
+            FXMLLoader content = new FXMLLoader(getClass().getResource("/views/mapWebInfo.fxml"));
+            content.setRoot(MainApplication.getTemplate().getNamespace().get("content"));
+            content.load();
+
+            Menu mainPage = (Menu) MainApplication.getTemplate().getNamespace().get("mainPage");
+            mainPage.setDisable(false);
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void platformProfileMapSetupOnAction() {
+        try {
+            GridPane templateContent = (GridPane) MainApplication.getTemplate().getNamespace().get("content");
+            templateContent.getColumnConstraints().clear();
+            templateContent.getRowConstraints().clear();
+            templateContent.getChildren().clear();
+            FXMLLoader content = new FXMLLoader(getClass().getResource("/views/maps.fxml"));
+            content.setRoot(MainApplication.getTemplate().getNamespace().get("content"));
+            content.load();
+
+            Menu mainPage = (Menu) MainApplication.getTemplate().getNamespace().get("mainPage");
+            mainPage.setDisable(false);
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void gameTypeSetupOnAction() {
+        try {
+            GridPane templateContent = (GridPane) MainApplication.getTemplate().getNamespace().get("content");
+            templateContent.getColumnConstraints().clear();
+            templateContent.getRowConstraints().clear();
+            templateContent.getChildren().clear();
+            FXMLLoader content = new FXMLLoader(getClass().getResource("/views/gameTypesEdition.fxml"));
+            content.setRoot(MainApplication.getTemplate().getNamespace().get("content"));
+            content.load();
+
+            Menu mainPage = (Menu) MainApplication.getTemplate().getNamespace().get("mainPage");
+            mainPage.setDisable(false);
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void difficultySetupOnAction() {
+        try {
+            GridPane templateContent = (GridPane) MainApplication.getTemplate().getNamespace().get("content");
+            templateContent.getColumnConstraints().clear();
+            templateContent.getRowConstraints().clear();
+            templateContent.getChildren().clear();
+            FXMLLoader content = new FXMLLoader(getClass().getResource("/views/difficultiesEdition.fxml"));
+            content.setRoot(MainApplication.getTemplate().getNamespace().get("content"));
+            content.load();
+
+            Menu mainPage = (Menu) MainApplication.getTemplate().getNamespace().get("mainPage");
+            mainPage.setDisable(false);
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void lengthSetupOnAction() {
+        try {
+            GridPane templateContent = (GridPane) MainApplication.getTemplate().getNamespace().get("content");
+            templateContent.getColumnConstraints().clear();
+            templateContent.getRowConstraints().clear();
+            templateContent.getChildren().clear();
+            FXMLLoader content = new FXMLLoader(getClass().getResource("/views/lengthEdition.fxml"));
+            content.setRoot(MainApplication.getTemplate().getNamespace().get("content"));
+            content.load();
+
+            Menu mainPage = (Menu) MainApplication.getTemplate().getNamespace().get("mainPage");
+            mainPage.setDisable(false);
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void maxPlayersSetupOnAction() {
+        try {
+            GridPane templateContent = (GridPane) MainApplication.getTemplate().getNamespace().get("content");
+            templateContent.getColumnConstraints().clear();
+            templateContent.getRowConstraints().clear();
+            templateContent.getChildren().clear();
+            FXMLLoader content = new FXMLLoader(getClass().getResource("/views/maxPlayersEdition.fxml"));
+            content.setRoot(MainApplication.getTemplate().getNamespace().get("content"));
+            content.load();
+
+            Menu mainPage = (Menu) MainApplication.getTemplate().getNamespace().get("mainPage");
+            mainPage.setDisable(false);
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
     }
 }

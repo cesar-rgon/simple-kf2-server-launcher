@@ -68,14 +68,18 @@
                 <Insets right="20.0" />
             </GridPane.margin>
         </Label>
-        <ImageView fx:id="profileSetup" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
-            <image>
-                <Image url="@../images/wheel.png" />
-            </image>
-         <GridPane.margin>
-            <Insets right="16.0" />
-         </GridPane.margin>
-        </ImageView>
+        <Button fx:id="profileSetup" onAction="#profileSetupOnAction" pickOnBounds="true" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+            <graphic>
+                <ImageView fx:id="profileSetupImg" fitHeight="32.0" fitWidth="32.0" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/wheel.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+            <GridPane.margin>
+                <Insets right="10.0" />
+            </GridPane.margin>
+        </Button>
 
         <ImageView fx:id="kf2logo" fitHeight="152" fitWidth="500.0" pickOnBounds="true" preserveRatio="false" GridPane.columnIndex="3" GridPane.columnSpan="3" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.rowSpan="4" GridPane.valignment="TOP">
             <image>
@@ -134,18 +138,32 @@
                         </Label>
                         <ComboBox fx:id="languageSelect" onAction="#languageOnAction" onMouseReleased="#languageOnMouseReleased" prefHeight="31.0" prefWidth="240.0" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
                          <VBox alignment="CENTER_RIGHT" spacing="40" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="0" GridPane.rowSpan="2" GridPane.valignment="CENTER">
-                             <ImageView fx:id="platformProfileMapAdd" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                     <Image url="@../images/plus.png" />
-                                 </image>
-                             </ImageView>
-                             <ImageView fx:id="platformProfileMapSetup" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                     <Image url="@../images/wheel.png" />
-                                 </image>
-                             </ImageView>
+                             <Button fx:id="platformProfileMapAdd" onAction="#platformProfileMapAddOnAction" pickOnBounds="true">
+                                <graphic>
+                                    <ImageView fx:id="platformProfileMapAddImg" fitHeight="32.0" fitWidth="32.0" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../images/plus.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                                 <padding>
+                                     <Insets left="10.0" />
+                                 </padding>
+                             </Button>
+                             <Button fx:id="platformProfileMapSetup" onAction="#platformProfileMapSetupOnAction" pickOnBounds="true">
+                                <graphic>
+                                    <ImageView fx:id="platformProfileMapSetupImg" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true">
+                                        <image>
+                                            <Image url="@../images/wheel.png" />
+                                        </image>
+                                    </ImageView>
+                                </graphic>
+                                 <padding>
+                                     <Insets left="10.0" />
+                                 </padding>
+                             </Button>
                          </VBox>
-                        <ComboBox fx:id="platformProfileMapSelect" onAction="#mapOnAction" prefHeight="235.0" prefWidth="403.0" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowSpan="2" GridPane.valignment="TOP">
+                        <ComboBox fx:id="platformProfileMapSelect" onAction="#mapOnAction" prefHeight="235.0" prefWidth="401.0" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowSpan="2" GridPane.valignment="TOP">
                            <GridPane.margin>
                               <Insets left="6.0" top="5.0" />
                            </GridPane.margin></ComboBox>
@@ -168,11 +186,18 @@
                             </GridPane.margin>
                         </Label>
                         <ComboBox fx:id="gameTypeSelect" onAction="#gameTypeOnAction" prefWidth="240.0" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
-                         <ImageView fx:id="gameTypeSetup" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
-                             <image>
-                                 <Image url="@../images/wheel.png" />
-                             </image>
-                         </ImageView>
+                         <Button fx:id="gameTypeSetup" onAction="#gameTypeSetupOnAction" pickOnBounds="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                            <graphic>
+                                <ImageView fx:id="gameTypeSetupImg" fitHeight="32.0" fitWidth="32.0" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../images/wheel.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding>
+                         </Button>
 
                         <ImageView fx:id="difficultyImg" fitHeight="30.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
                             <image>
@@ -185,11 +210,18 @@
                             </GridPane.margin>
                         </Label>
                         <ComboBox fx:id="difficultySelect" onAction="#difficultyOnAction" prefWidth="240.0" GridPane.columnIndex="1" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
-                         <ImageView fx:id="difficultySetup" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
-                             <image>
-                                 <Image url="@../images/wheel.png" />
-                             </image>
-                         </ImageView>
+                         <Button fx:id="difficultySetup" onAction="#difficultySetupOnAction" pickOnBounds="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+                            <graphic>
+                                <ImageView fx:id="difficultySetupImg" fitHeight="32.0" fitWidth="32.0" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../images/wheel.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                             <padding>
+                                 <Insets left="10.0" />
+                             </padding>
+                         </Button>
 
                         <ImageView fx:id="lengthImg" fitHeight="30.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
                             <image>
@@ -202,11 +234,19 @@
                             </GridPane.margin>
                         </Label>
                         <ComboBox fx:id="lengthSelect" onAction="#lengthOnAction" prefWidth="240.0" GridPane.columnIndex="1" GridPane.rowIndex="5" GridPane.valignment="CENTER" />
-                         <ImageView fx:id="lengthSetup" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
-                             <image>
-                                 <Image url="@../images/wheel.png" />
-                             </image>
-                         </ImageView>
+
+                         <Button fx:id="lengthSetup" onAction="#lengthSetupOnAction" pickOnBounds="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="5" GridPane.valignment="CENTER">
+                            <graphic>
+                                <ImageView fx:id="lengthSetupImg" fitHeight="32.0" fitWidth="32.0" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../images/wheel.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                             <padding>
+                                 <Insets left="10.0" />
+                             </padding>
+                         </Button>
 
                         <ImageView fx:id="maxPlayersImg" fitHeight="30.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
                             <image>
@@ -219,11 +259,18 @@
                             </GridPane.margin>
                         </Label>
                         <ComboBox fx:id="maxPlayersSelect" onAction="#maxPlayersOnAction" prefWidth="240.0" GridPane.columnIndex="1" GridPane.rowIndex="6" GridPane.valignment="CENTER" />
-                         <ImageView fx:id="maxPlayersSetup" fitHeight="32.0" fitWidth="32.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
-                             <image>
-                                 <Image url="@../images/wheel.png" />
-                             </image>
-                         </ImageView>
+                         <Button fx:id="maxPlayersSetup" onAction="#maxPlayersSetupOnAction" pickOnBounds="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="6" GridPane.valignment="CENTER">
+                            <graphic>
+                                <ImageView fx:id="maxPlayersSetupImg" fitHeight="32.0" fitWidth="32.0" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../images/wheel.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                             <padding>
+                                 <Insets left="10.0" />
+                             </padding>
+                         </Button>
 
                         <ImageView fx:id="serverNameImg" fitHeight="30.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="RIGHT" GridPane.rowIndex="7" GridPane.valignment="CENTER">
                             <image>
@@ -277,7 +324,7 @@
                         </Label>
                         <CheckBox fx:id="takeover" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#takeoverOnAction" opacity="0.75" text="Enable takeover" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="8" GridPane.valignment="CENTER" />
 
-                         <WebView fx:id="imageWebView" maxHeight="300.0" maxWidth="460.0" prefHeight="300.0" prefWidth="460.0" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowSpan="2" GridPane.valignment="CENTER">
+                         <WebView fx:id="imageWebView" disable="true" maxHeight="300.0" maxWidth="460.0" prefHeight="300.0" prefWidth="460.0" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowSpan="2" GridPane.valignment="CENTER">
                              <GridPane.margin>
                                  <Insets bottom="7.0" right="10.0" top="7.0" />
                              </GridPane.margin>
@@ -727,7 +774,7 @@
          <GridPane.margin>
             <Insets right="10.0" top="85.0" />
          </GridPane.margin></Button>
-        <Button fx:id="terminalButton" pickOnBounds="true" GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+        <Button fx:id="terminalButton" onAction="#terminalButtonOnAction" pickOnBounds="true" GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
             <graphic>
                 <ImageView fx:id="terminalImg" fitHeight="64.0" fitWidth="64.0" preserveRatio="true">
                     <image>

@@ -6,16 +6,17 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<fx:root id="centerPane" fx:id="consoleContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.console.ConsoleController">
+<fx:root id="centerPane" fx:id="consoleContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.console.ConsoleController">
     <rowConstraints>
       <RowConstraints minHeight="10.0" prefHeight="10.0" />
-        <RowConstraints minHeight="10.0" prefHeight="650.0" />
+        <RowConstraints minHeight="50.0" prefHeight="50.0" />
+      <RowConstraints minHeight="600.0" prefHeight="600.0" />
     </rowConstraints>
     <columnConstraints>
         <ColumnConstraints minWidth="1004.0" prefWidth="1004.0" />
     </columnConstraints>
     <children>
-        <ImageView fitHeight="660.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowSpan="2" GridPane.valignment="CENTER">
+        <ImageView fitHeight="660.0" pickOnBounds="true" preserveRatio="true" GridPane.halignment="CENTER" GridPane.rowSpan="3" GridPane.valignment="CENTER">
             <image>
                 <Image url="@../images/radiation700.png" />
             </image>
@@ -23,10 +24,11 @@
                 <Insets />
             </GridPane.margin>
         </ImageView>
-      <TextArea fx:id="consoleArea" editable="false" opacity="0.75" wrapText="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
-         <font>
-            <Font name="Consolas" size="20.0" />
-         </font>
-      </TextArea>
+        <Label fx:id="consoleLabel" text="CONSOLE" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER" />
+        <TextArea fx:id="consoleArea" editable="false" opacity="0.75" wrapText="true" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
+            <font>
+                <Font name="Consolas" size="20.0" />
+            </font>
+        </TextArea>
     </children>
 </fx:root>
