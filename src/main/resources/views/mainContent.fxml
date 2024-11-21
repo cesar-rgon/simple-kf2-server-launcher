@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.*?>
 
-<fx:root id="centerPane" fx:id="mainContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maincontent.MainContentController">
+<fx:root id="centerPane" fx:id="mainContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maincontent.MainContentController">
     <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="20.0" />
         <ColumnConstraints minWidth="10.0" prefWidth="170.0" />
@@ -145,7 +145,7 @@
                                  </image>
                              </ImageView>
                          </VBox>
-                        <ComboBox fx:id="platformProfileMapSelect" onAction="#mapOnAction" prefHeight="235.0" prefWidth="404.0" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowSpan="2" GridPane.valignment="TOP">
+                        <ComboBox fx:id="platformProfileMapSelect" onAction="#mapOnAction" prefHeight="235.0" prefWidth="403.0" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowSpan="2" GridPane.valignment="TOP">
                            <GridPane.margin>
                               <Insets left="6.0" top="5.0" />
                            </GridPane.margin></ComboBox>
@@ -287,24 +287,24 @@
                                  <Insets bottom="-25.0" left="10.0" />
                              </GridPane.margin>
                          </Label>
-                         <Button fx:id="exploreFile" maxWidth="32.0" mnemonicParsing="false" onAction="#exploreFileOnAction" opacity="0.8" visible="false" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                         <Button fx:id="exploreFile" maxWidth="48.0" mnemonicParsing="false" onAction="#exploreFileOnAction" opacity="0.7" visible="false" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                              <graphic>
                                  <ImageView>
                                      <Image url="@../images/folder.png" />
                                  </ImageView>
                              </graphic>
                              <GridPane.margin>
-                                 <Insets bottom="36.0" right="76.0" />
+                                 <Insets bottom="50.0" left="10.0" />
                              </GridPane.margin>
                          </Button>
-                         <Button fx:id="trash" maxWidth="32.0" mnemonicParsing="false" onAction="#trashOnAction" opacity="0.8" visible="false" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+                         <Button fx:id="trash" maxWidth="48.0" mnemonicParsing="false" onAction="#trashOnAction" opacity="0.7" visible="false" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                              <graphic>
                                  <ImageView>
                                      <Image url="@../images/trash.png" />
                                  </ImageView>
                              </graphic>
                              <GridPane.margin>
-                                 <Insets bottom="36.0" right="20.0" />
+                                 <Insets bottom="50.0" right="20.0" />
                              </GridPane.margin>
                          </Button>
 
@@ -727,14 +727,18 @@
          <GridPane.margin>
             <Insets right="10.0" top="85.0" />
          </GridPane.margin></Button>
-        <ImageView fx:id="terminalImg" fitHeight="64.0" fitWidth="64.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
-            <image>
-                <Image url="@../images/terminal.png" />
-            </image>
-         <GridPane.margin>
-            <Insets right="10.0" top="5.0" />
-         </GridPane.margin>
-        </ImageView>
+        <Button fx:id="terminalButton" pickOnBounds="true" GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
+            <graphic>
+                <ImageView fx:id="terminalImg" fitHeight="64.0" fitWidth="64.0" preserveRatio="true">
+                    <image>
+                        <Image url="@../images/terminal.png" />
+                    </image>
+                </ImageView>
+            </graphic>
+            <GridPane.margin>
+                <Insets right="15.0" top="5.0" />
+            </GridPane.margin>
+        </Button>
         <ProgressIndicator fx:id="progressIndicator" maxHeight="150.0" maxWidth="150.0" visible="false" GridPane.columnSpan="7" GridPane.halignment="CENTER" GridPane.rowSpan="5" GridPane.valignment="CENTER" />
     </children>
 </fx:root>

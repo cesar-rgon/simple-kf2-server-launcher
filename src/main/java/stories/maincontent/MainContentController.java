@@ -113,6 +113,7 @@ public class MainContentController implements Initializable {
 
     @FXML private Button runServer;
     @FXML private Button joinServer;
+    @FXML private Button terminalButton;
     @FXML private ImageView runServerImage;
     @FXML private ImageView joinServerImage;
     @FXML private ImageView profileImg;
@@ -696,6 +697,19 @@ public class MainContentController implements Initializable {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 joinServerImage.setStyle("-fx-effect: none;");
+            }
+        });
+
+        terminalButton.setOnMouseEntered(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                terminalButton.setStyle("-fx-effect: dropshadow(three-pass-box, #c15d11, 20, 0, 0, 0);");
+            }
+        });
+        terminalButton.setOnMouseExited(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                terminalButton.setStyle("-fx-effect: none;");
             }
         });
 

@@ -207,7 +207,7 @@
     -fx-max-width: 300px;
 }
 
-#runServer, #joinServer {
+#runServer, #joinServer, #terminalButton {
     -fx-border-color: transparent;
     -fx-background-color: transparent;
 }
