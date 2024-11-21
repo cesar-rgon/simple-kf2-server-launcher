@@ -480,7 +480,7 @@ public class MainContentController implements Initializable {
                     }
                     mapPreview = new ImageView(image);
                     mapPreview.setPreserveRatio(false);
-                    mapPreview.setFitWidth(440);
+                    mapPreview.setFitWidth(375);
                     mapPreview.setFitHeight(220);
                 } catch (Exception e) {
                     logger.error(e.getMessage(), e);
@@ -508,7 +508,7 @@ public class MainContentController implements Initializable {
 
                 ImageView darkPanel = new ImageView(new Image("images/darkPanel.png"));
                 darkPanel.setPreserveRatio(false);
-                darkPanel.setFitWidth(440);
+                darkPanel.setFitWidth(375);
                 darkPanel.setFitHeight(40);
                 darkPanel.setOpacity(0.7);
 
