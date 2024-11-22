@@ -1,5 +1,6 @@
 package stories.template;
 
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -13,20 +14,31 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jsoup.Jsoup;
+import org.jsoup.select.Elements;
+import pojos.ProfileToDisplay;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
+import stories.profilesedition.ProfilesEditionManagerFacade;
+import stories.profilesedition.ProfilesEditionManagerFacadeImpl;
 import utils.Utils;
 
 import java.awt.*;
+import java.io.File;
 import java.io.InputStream;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -346,7 +358,51 @@ public class TemplateController implements Initializable {
 
     @FXML
     private void checkForUpdatesMenuOnAction() {
-        Utils.checkApplicationUpgrade(languageCode, false);
+        try {
+            if (Utils.upgradeLauncher(languageCode, false)) {
+                ProfilesEditionManagerFacade profilesEditionManagerFacade = new ProfilesEditionManagerFacadeImpl();
+                List<ProfileToDisplay> allProfiles = profilesEditionManagerFacade.selectProfilesToBeExported();
+
+                Date date = new Date();
+                Timestamp timestamp = new Timestamp(date.getTime());
+                String timestampStr = StringUtils.replace(timestamp.toString(), " ", "_");
+                timestampStr = StringUtils.replace(timestampStr, ":", "_");
+                timestampStr = StringUtils.replace(timestampStr, ".", "_");
+                String tempFolder = System.getProperty("java.io.tmpdir");
+                File temporalFile = new File(tempFolder + "exported_profiles_" + timestampStr + ".txt");
+
+                profilesEditionManagerFacade.exportProfilesToFile(allProfiles, temporalFile);
+
+                String latestReleaseUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.latestReleasePageGithubUrl");
+                String targetFolderStr = StringUtils.EMPTY;
+                File zipFile = Utils.downloadZipFileFromGithub(latestReleaseUrl);
+                if (zipFile != null && zipFile.exists() && zipFile.isFile()) {
+                    String parentFolderStr = System.getProperty("user.dir") + "/../";
+                    targetFolderStr = parentFolderStr + zipFile.getName().replace(".zip", "");
+                    File targetFolder = new File(targetFolderStr);
+                    if (targetFolder.exists()) {
+                        targetFolderStr = targetFolderStr + "_" + timestampStr;
+                        targetFolder = new File(targetFolderStr);
+                        targetFolder.mkdir();
+                    } else {
+                        targetFolder.mkdir();
+                    }
+                    Utils.uncompressZipFile(zipFile, targetFolder);
+                    zipFile.delete();
+                }
+
+                File fileToBeExecuted = new File(targetFolderStr + "/SimpleKF2ServerLauncher.jar");
+                StringBuffer command = new StringBuffer();
+                command.append("java -jar ").append(targetFolderStr).append("/").append(fileToBeExecuted.getName());
+                Runtime.getRuntime().exec(command.toString(),null, fileToBeExecuted.getParentFile());
+
+                Platform.exit();
+            }
+
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
     }
 
     @FXML

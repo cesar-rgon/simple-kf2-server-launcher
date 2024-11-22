@@ -25,7 +25,7 @@ public interface ProfilesEditionManagerFacade {
     ProfileDto cloneSelectedProfile(String profileName, String newProfileName) throws Exception;
     void deleteSelectedProfile(String profileName) throws Exception;
     ProfileDto updateChangedProfile(String oldProfileName, String newProfileName) throws Exception;
-    List<ProfileToDisplay> selectProfilesToBeExported(String message) throws Exception;
+    List<ProfileToDisplay> selectProfilesToBeExported() throws Exception;
     void exportProfilesToFile(List<ProfileToDisplay> profilesToExportDto, File file) throws Exception;
     Properties importEntitiesFromFile(File file) throws Exception;
     List<ProfileToDisplay> questionToImportProfilesFromFile(Properties properties) throws Exception;

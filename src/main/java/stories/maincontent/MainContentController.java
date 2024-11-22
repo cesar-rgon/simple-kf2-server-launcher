@@ -311,7 +311,7 @@ public class MainContentController implements Initializable {
                     String languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
                     Boolean checkForUpgrades = Boolean.parseBoolean(facade.findPropertyValue("properties/config.properties", "prop.config.checkForUpgrades"));
                     if (checkForUpgrades) {
-                        Utils.checkApplicationUpgrade(languageCode, true);
+                        Utils.upgradeLauncher(languageCode, true);
                     }
                     Utils.showTipsOnStasrtup();
                     Session.getInstance().setFirstBoot(false);

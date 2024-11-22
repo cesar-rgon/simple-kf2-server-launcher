@@ -10,21 +10,17 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -32,6 +28,7 @@ import javafx.scene.text.Text;
 import javafx.scene.web.WebView;
 import javafx.util.Callback;
 import javafx.util.Duration;
+import net.lingala.zip4j.ZipFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -41,6 +38,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 import pojos.*;
 import pojos.enums.EnumPlatform;
+import pojos.kf2factory.Kf2SteamLinuxImpl;
+import pojos.kf2factory.Kf2SteamWindowsImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 
@@ -50,13 +49,10 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.Key;
 import java.util.*;
 import java.util.List;
@@ -250,8 +246,8 @@ public class Utils {
         alert.showAndWait();
     }
 
-    public static Optional<Integer> infoDialog(String header, String content, String url) {
-        Dialog<Integer> dialog = new Dialog<Integer>();
+    public static Optional<UpdateLauncher> updateDialog(String header, String content) {
+        Dialog<UpdateLauncher> dialog = new Dialog<UpdateLauncher>();
         PropertyService propertyService = new PropertyServiceImpl();
         Boolean checkForUpgrades = null;
         try {
@@ -270,21 +266,8 @@ public class Utils {
         area.setPrefHeight(150);
         area.setEditable(false);
 
-        Hyperlink hyperlink = new Hyperlink(url);
-        hyperlink.setPadding(new Insets(10,0,0,0));
-        hyperlink.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent e) {
-                try {
-                    Desktop.getDesktop().browse(new URI(url));
-                } catch (Exception ex) {
-                    logger.error(ex.getMessage(), ex);
-                }
-            }
-        });
-
         VBox vBox = new VBox();
-        vBox.getChildren().addAll(headerText, area, hyperlink);
+        vBox.getChildren().addAll(headerText, area);
 
         CheckBox dontShowAtStartupCheckBox = new CheckBox();
         Boolean finalCheckForUpgrades = checkForUpgrades;
@@ -305,21 +288,19 @@ public class Utils {
         dialog.getDialogPane().setExpanded(false);
         dialog.getDialogPane().setContent(vBox);;
 
-        ButtonType closeButton = new ButtonType("Ok", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType updateButton = new ButtonType("Update", ButtonBar.ButtonData.OK_DONE);
+        ButtonType closeButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
 
-        dialog.getDialogPane().getButtonTypes().addAll(closeButton);
+        dialog.getDialogPane().getButtonTypes().addAll(updateButton, closeButton);
         dialog.setResizable(true);
 
-        dialog.setResultConverter(new Callback<ButtonType, Integer>() {
+        dialog.setResultConverter(new Callback<ButtonType, UpdateLauncher>() {
             @Override
-            public Integer call(ButtonType b) {
-                if (b.equals(closeButton)) {
-                    if (dontShowAtStartupCheckBox.isSelected()) {
-                        return -1;
-                    }
-                    return 0;
-                }
-                return null;
+            public UpdateLauncher call(ButtonType b) {
+                return new UpdateLauncher(
+                    b.equals(updateButton),
+                    dontShowAtStartupCheckBox.isSelected()
+                );
             }
         });
 
@@ -1360,11 +1341,10 @@ public class Utils {
         return dialog.showAndWait();
     }
 
-    public static void checkApplicationUpgrade(String languageCode, boolean isInStartup) {
+    public static boolean upgradeLauncher(String languageCode, boolean isInStartup) {
         try {
             PropertyService propertyService = new PropertyServiceImpl();
             String applicationVersion = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion");
-            String releasePageGithubUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.releasePageGithubUrl");
 
             String lastPublishedVersion = getLastPublishedVersion();
 
@@ -1373,7 +1353,7 @@ public class Utils {
                 newPublishedVersionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.newPublishedVersion");
             } else {
                 if (isInStartup) {
-                    return;
+                    return false;
                 }
                 newPublishedVersionText = "There is not a newer version of the application";
             }
@@ -1381,25 +1361,25 @@ public class Utils {
             String actualVersionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.actualVersion");
             String newestPublishedVersionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.publishedversion");
             String upgradeAppText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.upgradeApp");
-            String checkLinkText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.checkLink");
 
-            Optional<Integer> checkForUpgradeOptional = Utils.infoDialog(newPublishedVersionText,
+            Optional<UpdateLauncher> checkForUpgradeOptional = Utils.updateDialog(newPublishedVersionText,
                     actualVersionText + ": " + applicationVersion +
                             "\n" + newestPublishedVersionText + ": " + lastPublishedVersion +
-                            "\n\n" + upgradeAppText + "." +
-                            "\n" + checkLinkText + ".",
-                    releasePageGithubUrl
+                            "\n\n" + upgradeAppText + "."
             );
 
-            if (checkForUpgradeOptional.isPresent() && checkForUpgradeOptional.get() == 0) {
+            if (checkForUpgradeOptional.isPresent() && !checkForUpgradeOptional.get().isDontShowAtStartup()) {
                 propertyService.setProperty("properties/config.properties", "prop.config.checkForUpgrades", "true");
             }
-            if (checkForUpgradeOptional.isPresent() && checkForUpgradeOptional.get() == -1) {
+            if (checkForUpgradeOptional.isPresent() && checkForUpgradeOptional.get().isDontShowAtStartup()) {
                 propertyService.setProperty("properties/config.properties", "prop.config.checkForUpgrades", "false");
             }
 
+            return checkForUpgradeOptional.map(UpdateLauncher::isUpdate).orElse(false);
+
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
+            return false;
         }
     }
 
@@ -1413,7 +1393,7 @@ public class Utils {
 
         Elements linkList = doc.getElementsByTag("a");
         if (linkList != null && linkList.size() > 0) {
-            for (int i = 0; i <= linkList.size(); i++) {
+            for (int i = 0; i < linkList.size(); i++) {
                 org.jsoup.nodes.Element link = linkList.get(i);
                 if (link.hasText() && link.text().contains(applicationTitle + " v2.")) {
                     String nameAndVersion = link.text();
@@ -1681,5 +1661,63 @@ public class Utils {
         result.append(mapName.replaceAll(" ", "_"));
 
         return result.toString();
+    }
+
+    public static File downloadZipFileFromGithub(String url) throws Exception {
+        String tagStr = "https://github.com/cesar-rgon/simple-kf2-server-launcher/releases/tag/";
+        String assetsStr = "https://github.com/cesar-rgon/simple-kf2-server-launcher/releases/expanded_assets/";
+
+        org.jsoup.nodes.Document releasesDoc = Jsoup.connect(url).get();
+        Elements releasesLinkList = releasesDoc.getElementsByTag("a");
+        Optional<String> baseUriOptional = releasesLinkList.stream().filter(l -> l.baseUri().contains(tagStr)).map(l -> l.baseUri()).findFirst();
+        String assetsUri = StringUtils.EMPTY;
+        if (baseUriOptional.isPresent()) {
+            String tagVersion = baseUriOptional.get().substring(tagStr.length());
+            assetsUri = assetsStr + tagVersion;
+        }
+
+        String text = StringUtils.EMPTY;
+        String uri = StringUtils.EMPTY;
+        if (StringUtils.isNotBlank(assetsUri)) {
+            org.jsoup.nodes.Document doc = Jsoup.connect(assetsUri).get();
+            Elements linkList = doc.getElementsByTag("a");
+
+            String os = System.getProperty("os.name");
+            String osStr = StringUtils.EMPTY;
+            if (StringUtils.isNotEmpty(os) && os.contains("Linux")) {
+                osStr = "linux";
+            } else {
+                osStr = "windows";
+            }
+
+            String finalOsStr = osStr;
+            Optional<org.jsoup.nodes.Element> linkOptional = linkList.stream().filter(l -> l.attributes().get("href").contains(finalOsStr + ".zip")).findFirst();
+            if (linkOptional.isPresent()) {
+                text = linkOptional.get().text();
+                uri = "https://github.com" + linkOptional.get().attributes().get("href");
+            }
+        }
+
+        if (StringUtils.isNotBlank(text) && StringUtils.isNotBlank(uri)) {
+            String tempFolder = System.getProperty("java.io.tmpdir");
+            File tempZipFile = new File(tempFolder + "/" + text);
+            PropertyService propertyService = new PropertyServiceImpl();
+            String downloadConnectionTimeOut = propertyService.getPropertyValue("properties/config.properties", "prop.config.downloadConnectionTimeout");
+            String downloadReadTimeOut = propertyService.getPropertyValue("properties/config.properties", "prop.config.downloadReadTimeout");
+
+            FileUtils.copyURLToFile(
+                    new URL(uri),
+                    tempZipFile,
+                    Integer.parseInt(downloadConnectionTimeOut),
+                    Integer.parseInt(downloadReadTimeOut)
+            );
+            return tempZipFile;
+        }
+        return null;
+    }
+
+    public static void uncompressZipFile(File file, File targetFolder) throws Exception {
+        ZipFile zipFile = new ZipFile(file.getAbsolutePath());
+        zipFile.extractAll(targetFolder.getAbsolutePath());
     }
 }

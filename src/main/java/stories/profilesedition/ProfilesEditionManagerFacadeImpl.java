@@ -153,7 +153,7 @@ public class ProfilesEditionManagerFacadeImpl
     }
 
     @Override
-    public List<ProfileToDisplay> selectProfilesToBeExported(String message) throws Exception {
+    public List<ProfileToDisplay> selectProfilesToBeExported() throws Exception {
         SelectProfilesToBeExportedFacade selectProfilesToBeExportedFacade = new SelectProfilesToBeExportedFacadeImpl();
         SelectProfilesToBeExportedFacadeResult result = selectProfilesToBeExportedFacade.execute();
         return result.getProfileToDisplayList();

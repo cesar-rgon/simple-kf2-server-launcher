@@ -482,7 +482,7 @@ public class ProfilesEditionController implements Initializable {
     private void exportProfileOnAction() {
         try {
             String message = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfilesToExport");
-            List<ProfileToDisplay> allProfilesToDisplay = facade.selectProfilesToBeExported(message);
+            List<ProfileToDisplay> allProfilesToDisplay = facade.selectProfilesToBeExported();
             List<ProfileToDisplay> selectedProfiles = Utils.selectProfilesDialog(message + ":", allProfilesToDisplay);
 
             if (selectedProfiles != null && !selectedProfiles.isEmpty()) {
