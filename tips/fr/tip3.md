@@ -3,10 +3,10 @@
 Vous pouvez sélectionner des images personnalisées dans le lanceur pour qu'elles soient visibles dans le hall lorsque vous rejoignez votre serveur.
 
 *Un exemple*
-![Launcher screenshot](https://raw.githubusercontent.com/cesar-rgon/simple-kf2-server-launcher/master/doc/images/screenshot14.png)
+![Launcher screenshot](https://raw.githubusercontent.com/cesar-rgon/simple-kf2-server-launcher/master/doc/images/screenshot00.png)
 
 *Dans le lobby du jeu*
-![Launcher screenshot](https://raw.githubusercontent.com/cesar-rgon/simple-kf2-server-launcher/master/doc/images/screenshot-in-game2.jpg)
+![Launcher screenshot](https://raw.githubusercontent.com/cesar-rgon/simple-kf2-server-launcher/master/doc/images/screenshot-in-game.jpg)
 
 Afin de travailler des images personnalisées dans le lanceur et le serveur de KF2, vous devez ouvrir le port du serveur Web du lanceur dans votre routeur (par défaut : 14320).
 

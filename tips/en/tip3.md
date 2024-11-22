@@ -3,10 +3,10 @@
 You can select custom images in the launcher to be visible in the lobby when you join to your server.
 
 *An example*
-![Launcher screenshot](https://raw.githubusercontent.com/cesar-rgon/simple-kf2-server-launcher/master/doc/images/screenshot14.png)
+![Launcher screenshot](https://raw.githubusercontent.com/cesar-rgon/simple-kf2-server-launcher/master/doc/images/screenshot00.png)
 
 *In game lobby*
-![Launcher screenshot](https://raw.githubusercontent.com/cesar-rgon/simple-kf2-server-launcher/master/doc/images/screenshot-in-game2.jpg)
+![Launcher screenshot](https://raw.githubusercontent.com/cesar-rgon/simple-kf2-server-launcher/master/doc/images/screenshot-in-game.jpg)
 
 In order to work custom images in the launcher and KF2's server, you need to open the launcher's web server port in your router (default: 14320).
 

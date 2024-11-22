@@ -52,12 +52,6 @@ If more than one profile, you can select wich server you want to join (one per p
 You can upload a custom image to the embedded http web server to be visible in KF2's server.
 Not all the images are supported in the game. Only images that meet image resolution must be 512x256, format PNG and color in 16 bits depth.
 
-*An example*
-![Launcher screenshot](images/screenshot14.png)
-
-*In game lobby*
-![Launcher screenshot](images/screenshot-in-game2.jpg)
-
 
 #### Advanced parameters
 
@@ -113,7 +107,7 @@ Not all the images are supported in the game. Only images that meet image resolu
 
 #### Custom parameters
 
-![Launcher screenshot](images/screenshot15.png)
+![Launcher screenshot](images/screenshot14.png)
 
 * _Custom parameters_: This field is optional. It defines additional parameters. The format must be: [?]parameter1=value1?parameter2=value2?...?parameterN=valueN
 

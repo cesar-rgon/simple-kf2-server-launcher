@@ -52,12 +52,6 @@ Si hay más de un perfil definido, puedes seleccionar a qué servidor quieres un
 Puedes subir una imágen personalizada al servidor web http embebido para ser visible en el servidor de KF2.
 No todas las imágenes son soportadas por el juego. Sólanente las imágenes que cumplen tener resolución 512x256, formato PNG y profundidad de color en 16 bits.
 
-*Un ejemplo*
-![Launcher screenshot](../images/screenshot14.png)
-
-*En la sala de espera del juego*
-![Launcher screenshot](../images/screenshot-in-game2.jpg)
-
 
 #### Parámetros avanzados
 
@@ -113,7 +107,7 @@ No todas las imágenes son soportadas por el juego. Sólanente las imágenes que
 
 #### Parámetros personalizados
 
-![Launcher screenshot](../images/screenshot15.png)
+![Launcher screenshot](../images/screenshot14.png)
 
 * _Parámetros personalizados_: Este campo es opcional. Define parámetros adicionales. El formato debe ser: [?]parametro1=valor1?parametror2=valor2?...?parametroN=valorN
 
