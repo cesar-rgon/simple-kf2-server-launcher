@@ -6,7 +6,7 @@ _[Click here to open documentation in spanish | Pulse aquí para abrir documenta
 Application to easily customize and launch a Killing Floor 2 server through a visual interface instead of edditing batch files or server's config files. It has been developed with Java, so the interface is compatible on Windows and Linux OS.
 
 ```
-Version: 2.2.2 final
+Version: 2.2.3 alpha
 Supported OS: Microsoft Windows and Linux (Ubuntu/Debian)
 Supported platforms: Steam and Epic Games
 Developed by: César Rodríguez González
@@ -39,6 +39,7 @@ Translation to russian by: Dreadmor404
 - Import profiles from file to the launcher.
 - Export profiles from the launcher to file.
 - Launch the server through console with no need of interaction with the interface.
+- Wizard to easily setup the KF2's server.
 - All those features are available through the launcher's interface on Windows and Linux OS.
 
 ## Pre-requisites

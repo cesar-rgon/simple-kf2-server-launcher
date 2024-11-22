@@ -9,25 +9,41 @@
  
 * _Profile_: This combo is mandatory. It allows to customize filter values by profile name.
 
+* _Profile's wheel icon_: Link to the page where you can manage Profiles of the server.
+
 * _Run server_: Run a Killing Floor 2 server with the specified filters. All mandatory fields must be specified. Server config files are placed in folder: KFGame/Config/PROFILENAME. So, the original config files placed in folder: KFGame/Config are never modified.
 If more than one profile, you can launch multiple servers at once (one per profile).
 
 * _Join server_: Join to a Killing Floor 2 server game previously started. If the server has not been started, the operation will start the game but it will not join to any sever. Pre-requisites: Steam application and Killing Floor 2 game client must be installed.
 If more than one profile, you can select wich server you want to join (one per profile).
 
+* _Console_: Link to [console page](#console-page) where you can see executed commands by the launcher.
+
 #### Basic parameters
 
 * _Map_: This combo is mandatory. It allows you to select one specific official map or custom map. *NOTE: Custom maps are visible in this field only if they were already downloaded before*.
 
-* _Language_: This combo is mandatory. It allows to select a language for the launcher's interface. List of available languages are described in the [Features](#features) section of this document. 
+* _Map's plus icon_: Link to add maps to the launcher through Steam's workshop page.
+
+* _Map's wheel icon_: Link to Maps/Mods menu where you can manage maps and mods.
+
+* _Language_: This combo is mandatory. It allows to select a language for the launcher's interface. 
 
 * _Game Type_: This combo is mandatory. It allows you to select one specific game type.
 
+* _Game Type's wheel icon_: Link to the page where you can manage Game Types of the server.
+
 * _Difficulty_: This combo is mandatory. It allows you to select one specific difficulty level.
+
+* _Difficulty's wheel icon_: Link to the page where you can manage Difficulties of the server.
 
 * _Length_: This combo is mandatory. It allows you to select one specific number of waves.
 
+* _Length's wheel icon_: Link to the page where you can manage Lengths of the server.
+
 * _Max. players_: This field is mandatory. It allows you to select one specific maximum number of players in a match.
+
+* _Max. players wheel icon_: Link to the page where you can manage Max. Players of the server.
 
 * _Server name_: This field is mandatory. It must contain at least one character.
 

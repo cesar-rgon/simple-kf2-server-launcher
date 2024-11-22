@@ -10,25 +10,41 @@
 
 * _Perfil_: Este combo es obligatorio. Permite personalizar los valores de los filtros por nombre de perfil.
 
+* _Icono rueda de Perfil_: Enlace a la página donde puedes gestionar Perfiles del servidor.
+
 * _Ejecutar servidor_: Ejecuta un servidor Killing Floor 2 con los filtros especificados. Todos los filtros obligatorios deben ser especificados. Los ficheros de configuración del servidor están ubicados en la carpeta: KFGame/Config/NOMBREPERFIL. De esta manera, los ficheros de configuración originales localizados en la carpeta: KFGame/Config nunca son modificados.
 Si hay más de un perfil definido, puedes lanzar múltiples servidores a la vez (uno por perfil). 
 
 * _Unirse al servidor_: Unirse a un servidor de Killing Floor 2 previamente iniciado. Si el servidor no ha sido iniciado, la operación iniciará el juego pero no se unirá a ningún servidor. Pre-requisitos: Deben estar instaladas las aplicaciones: Steam y cliente (juego) Killing Floor 2. 
 Si hay más de un perfil definido, puedes seleccionar a qué servidor quieres unirte (uno por perfil).
 
+* _Consola_: Enlace a la [página de la consola](#página-de-la-consola) donde puedes ver los comandos ejecutados por el lanzador.
+
 #### Parametros basicos
 
 * _Mapa_: Este combo es obligatorio. Permite seleccionar un mapa oficial o personalizado específico. *NOTA: Los mapas personalizados son visibles en este campo sólamente si han sido descargados previamente.*
 
-* _Idioma_: Este combo es obligatorio. Permite seleccionar un idioma para la interfaz del lanzador. La lista de idiomas disponibles están en el apartado [Caracteristicas](#caracteristicas) de este documento.
+* _Icono más de Mapa_: Enlace para añadir mapas al lanzador a través de la página del workshop de Steam.
+
+* _Icono rueda de Mapa_: Enlace al menú Mapas/Mods donde puedes gestionar los mapas y mods.
+
+* _Idioma_: Este combo es obligatorio. Permite seleccionar un idioma para la interfaz del lanzador.
 
 * _Tipo de juego_: Este combo es obligatorio. Permite seleccionar un tipo de juego específico.
 
+* _Icono rueda de Tipo de juego_: Enlace a la página donde puedes gestionar Tipos de juegos del servidor.
+
 * _Dificultad_: Este combo es obligatorio. Permite seleccionar un nivel de dificultad específico.
+
+* _Icono rueda de Dificultad_: Enlace a la página donde puedes gestionar Dificultades del servidor.
 
 * _Longitud_: Este combo es obligatorio. Permite seleccionar un número específico de oleadas.
 
+* _Icono rueda de Longitud_: Enlace a la página donde puedes gestionar Longitudes del servidor.
+
 * _Máx. jugadores_: Este combo es obligatorio. Permite seleccionar un número máximo de jugadores específico en la partida.
+
+* _Icono rueda de Máx. jugadores_: Enlace a la página donde puedes gestionar Máx. jugadores del servidor.
 
 * _Nombre de servidor_: Este campo es obligatorio. Debe contener al menos un caracter. 
 
