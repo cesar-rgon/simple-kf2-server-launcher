@@ -1,6 +1,8 @@
 package stories.template;
 
+import dtos.PlatformDto;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -14,14 +16,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jsoup.Jsoup;
-import org.jsoup.select.Elements;
 import pojos.ProfileToDisplay;
+import pojos.enums.EnumPlatform;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
@@ -37,15 +37,15 @@ import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class TemplateController implements Initializable {
 
     private static final Logger logger = LogManager.getLogger(TemplateController.class);
     private final PropertyService propertyService;
+    private final TemplateManagerFacade facade;
+
     private String languageCode;
 
     @FXML private Menu mainPage;
@@ -64,6 +64,7 @@ public class TemplateController implements Initializable {
 
     public TemplateController() {
         super();
+        this.facade = new TemplateManagerFacadeImpl();
         propertyService = new PropertyServiceImpl();
     }
 
@@ -360,6 +361,16 @@ public class TemplateController implements Initializable {
     private void checkForUpdatesMenuOnAction() {
         try {
             if (Utils.upgradeLauncher(languageCode, false)) {
+
+                Properties upgradeProperties = new Properties();
+                ObservableList<PlatformDto> allPlatformList = facade.execute().getAllPlatformList();
+                Optional<String> steamInstallationFolderOptional = allPlatformList.stream().filter(p -> EnumPlatform.STEAM.getDescripcion().equals(p.getValue())).map(PlatformDto::getInstallationFolder).findFirst();
+                Optional<String> epicInstallationFolderOptional = allPlatformList.stream().filter(p -> EnumPlatform.EPIC.getDescripcion().equals(p.getValue())).map(PlatformDto::getInstallationFolder).findFirst();
+
+                upgradeProperties.setProperty("prop.upgrade.fromVersion", propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion"));
+                upgradeProperties.setProperty("prop.upgrade.steamInstallationFolder", steamInstallationFolderOptional.orElse(StringUtils.EMPTY));
+                upgradeProperties.setProperty("prop.upgrade.epicInstallationFolder", epicInstallationFolderOptional.orElse(StringUtils.EMPTY));
+
                 ProfilesEditionManagerFacade profilesEditionManagerFacade = new ProfilesEditionManagerFacadeImpl();
                 List<ProfileToDisplay> allProfiles = profilesEditionManagerFacade.selectProfilesToBeExported();
 
@@ -369,9 +380,10 @@ public class TemplateController implements Initializable {
                 timestampStr = StringUtils.replace(timestampStr, ":", "_");
                 timestampStr = StringUtils.replace(timestampStr, ".", "_");
                 String tempFolder = System.getProperty("java.io.tmpdir");
-                File temporalFile = new File(tempFolder + "exported_profiles_" + timestampStr + ".txt");
+                File profilesExportedTemporalFile = new File(tempFolder + "exported_profiles_" + timestampStr + ".properties");
 
-                profilesEditionManagerFacade.exportProfilesToFile(allProfiles, temporalFile);
+                profilesEditionManagerFacade.exportProfilesToFile(allProfiles, profilesExportedTemporalFile);
+                upgradeProperties.setProperty("prop.upgrade.profilesExportedFile", profilesExportedTemporalFile.getAbsolutePath());
 
                 String latestReleaseUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.latestReleasePageGithubUrl");
                 String targetFolderStr = StringUtils.EMPTY;
@@ -391,9 +403,12 @@ public class TemplateController implements Initializable {
                     zipFile.delete();
                 }
 
+                File upgradeTemporalFile = new File(tempFolder + "upgrade_launcher_" + timestampStr + ".properties");
+                propertyService.savePropertiesToFile(upgradeProperties, upgradeTemporalFile);
+
                 File fileToBeExecuted = new File(targetFolderStr + "/SimpleKF2ServerLauncher.jar");
                 StringBuffer command = new StringBuffer();
-                command.append("java -jar ").append(targetFolderStr).append("/").append(fileToBeExecuted.getName());
+                command.append("java -jar ").append(targetFolderStr).append("/").append(fileToBeExecuted.getName()).append(" --upgrade '").append(upgradeTemporalFile.getAbsolutePath()).append("'");
                 Runtime.getRuntime().exec(command.toString(),null, fileToBeExecuted.getParentFile());
 
                 Platform.exit();

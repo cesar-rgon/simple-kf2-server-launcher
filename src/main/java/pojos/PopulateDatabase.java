@@ -3,6 +3,7 @@ package pojos;
 import entities.*;
 import jakarta.persistence.EntityManager;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.enums.EnumLanguage;
@@ -35,9 +36,16 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
         populateGameTypes();
         populateLengths();
         polulateMaximunPlayersList();
-        populateProfiles();
-        populateOfficialMaps();
-        setDefaultMapInProfile();
+
+        PropertyService propertyService = new PropertyServiceImpl();
+        String upgradeTemporalFileStr = propertyService.getPropertyValue("properties/config.properties", "prop.config.upgradeTemporalFile");
+        if (StringUtils.isBlank(upgradeTemporalFileStr)) {
+            populateProfiles();
+            populateOfficialMaps();
+            setDefaultMapInProfile();
+        } else {
+            // TODO: Importar perfiles
+        }
     }
 
     @Override
