@@ -4,6 +4,7 @@ import dtos.ProfileDto;
 import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
 import stories.loadactualprofile.LoadActualProfileFacadeResult;
 
+import java.io.File;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -57,8 +58,11 @@ public interface MainContentManagerFacade {
     boolean isCorrectInstallationFolder(String platformName) throws Exception;
     ProfileDto findProfileDtoByName(String name) throws Exception;
     String findPropertyValue(String propertyFilePath, String key) throws Exception;
+    String findPropertyValue(File propertyFile, String key) throws Exception;
+    void removeProperty(String propertyFilePath, String propKey) throws Exception;
     void updateProfileSetNetTickrate(String profileName, Integer netTickrate) throws Exception;
     void updateProfileSetLanTickrate(String profileName, Integer lanTickrate) throws Exception;
     void updateProfileSetLanMaxClientRate(String profileName, Integer lanMaxClientRate) throws Exception;
     void updateProfileSetInternetMaxClientRate(String profileName, Integer internetMaxClientRate) throws Exception;
+
 }

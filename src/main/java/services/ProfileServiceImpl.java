@@ -15,6 +15,8 @@ import org.apache.logging.log4j.Logger;
 import org.hibernate.Hibernate;
 import pojos.CustomMapIndex;
 import pojos.MapToDisplay;
+import pojos.ProfileToDisplay;
+import pojos.enums.EnumLanguage;
 import pojos.enums.EnumPlatform;
 import pojos.kf2factory.Kf2Factory;
 import start.MainApplication;
@@ -426,8 +428,167 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
     }
 
     @Override
-    public List<Profile> importProfilesFromFile(List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage) {
-        List<Profile> savedProfileList = saveProfilesToDatabase(selectedProfileList, properties);
+    public List<Profile> prepareProfilesFromFile(Properties entitiesProperties) throws Exception {
+
+        PropertyService propertyService = new PropertyServiceImpl();
+        LanguageServiceImpl languageService = new LanguageServiceImpl(em);
+        GameTypeServiceImpl gameTypeService = new GameTypeServiceImpl(em);
+        DifficultyServiceImpl difficultyService = new DifficultyServiceImpl(em);
+        LengthServiceImpl lengthService = new LengthServiceImpl(em);
+        MaxPlayersServiceImpl maxPlayersService = new MaxPlayersServiceImpl(em);
+
+        int numberOfProfiles = Integer.parseInt(entitiesProperties.getProperty("exported.profiles.number"));
+        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+        List<ProfileToDisplay> profileToDisplayList = new ArrayList<ProfileToDisplay>();
+
+        for (int profileIndex = 1; profileIndex <= numberOfProfiles; profileIndex++) {
+            String profileName = entitiesProperties.getProperty("exported.profile" + profileIndex + ".name");
+            try {
+                String gameTypeCode = entitiesProperties.getProperty("exported.profile" + profileIndex + ".gameType");
+                String difficultyCode = entitiesProperties.getProperty("exported.profile" + profileIndex + ".difficulty");
+                String lengthCode = entitiesProperties.getProperty("exported.profile" + profileIndex + ".length");
+
+                Optional<GameType> gameTypeOptional = gameTypeService.findByCode(gameTypeCode);
+                String gameTypeDescription = gameTypeOptional.isPresent() ?
+                        EnumLanguage.en.name().equals(languageCode) ? gameTypeOptional.get().getDescription().getEnglishValue():
+                                EnumLanguage.es.name().equals(languageCode) ? gameTypeOptional.get().getDescription().getSpanishValue():
+                                        EnumLanguage.fr.name().equals(languageCode) ? gameTypeOptional.get().getDescription().getFrenchValue():
+                                                EnumLanguage.ru.name().equals(languageCode) ? gameTypeOptional.get().getDescription().getRussianValue():
+                                                        StringUtils.EMPTY:
+                        StringUtils.EMPTY;
+
+                Optional<Difficulty> difficultyOptional = difficultyService.findByCode(difficultyCode);
+                String difficultyDescription = difficultyOptional.isPresent() ?
+                        EnumLanguage.en.name().equals(languageCode) ? difficultyOptional.get().getDescription().getEnglishValue():
+                                EnumLanguage.es.name().equals(languageCode) ? difficultyOptional.get().getDescription().getSpanishValue():
+                                        EnumLanguage.fr.name().equals(languageCode) ? difficultyOptional.get().getDescription().getFrenchValue():
+                                                EnumLanguage.ru.name().equals(languageCode) ? difficultyOptional.get().getDescription().getRussianValue():
+                                                        StringUtils.EMPTY:
+                        StringUtils.EMPTY;
+
+                Optional<Length> lengthOptional = lengthService.findByCode(lengthCode);
+                String lengthDescription = lengthOptional.isPresent() ?
+                        EnumLanguage.en.name().equals(languageCode) ? lengthOptional.get().getDescription().getEnglishValue():
+                                EnumLanguage.es.name().equals(languageCode) ? lengthOptional.get().getDescription().getSpanishValue():
+                                        EnumLanguage.fr.name().equals(languageCode) ? lengthOptional.get().getDescription().getFrenchValue():
+                                                EnumLanguage.ru.name().equals(languageCode) ? lengthOptional.get().getDescription().getRussianValue():
+                                                        StringUtils.EMPTY:
+                        StringUtils.EMPTY;
+
+
+                String mapName = entitiesProperties.getProperty("exported.profile" + profileIndex + ".map");
+                ProfileToDisplay profileToDisplay = new ProfileToDisplay(profileIndex, profileName, gameTypeDescription, mapName, difficultyDescription, lengthDescription);
+                profileToDisplay.setSelected(true);
+                profileToDisplayList.add(profileToDisplay);
+
+            } catch (Exception e) {
+                logger.error("Error reading the profile " + profileName + " from exported file", e);
+            }
+        }
+
+        return profileToDisplayList
+                .stream()
+                .map(ptd -> {
+                    try {
+                        int profileIndex = ptd.getProfileFileIndex();
+                        String profileName = entitiesProperties.getProperty("exported.profile" + profileIndex + ".name");
+                        Optional<Language> languageOpt = languageService.findByCode(entitiesProperties.getProperty("exported.profile" + profileIndex + ".language"));
+                        Optional<GameType> gameTypeOpt = gameTypeService.findByCode(entitiesProperties.getProperty("exported.profile" + profileIndex + ".gameType"));
+                        Optional<Difficulty> difficultyOpt = difficultyService.findByCode(entitiesProperties.getProperty("exported.profile" + profileIndex + ".difficulty"));
+                        Optional<Length> lengthOpt = lengthService.findByCode(entitiesProperties.getProperty("exported.profile" + profileIndex + ".length"));
+                        Optional<MaxPlayers> maxPlayersOpt = maxPlayersService.findByCode(entitiesProperties.getProperty("exported.profile" + profileIndex + ".maxPlayers"));
+                        String webPortStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".webPort");
+                        String gamePortStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".gamePort");
+                        String queryPortStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".queryPort");
+                        String mapVotingTimeStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".mapVotingTime");
+                        String kickPercentageStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".kickPercentage");
+                        String timeBetweenKicksStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".timeBetweenKicks");
+                        String maxIdleTimeStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".maxIdleTime");
+                        String readyUpDelayStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".readyUpDelay");
+                        String gameStartDelayStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".gameStartDelay");
+                        String maxSpectatorsStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".maxSpectators");
+                        String friendlyFirePercentageStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".friendlyFirePercentage");
+                        String webPageStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".webPage");
+                        String takeoverStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".takeover");
+                        String teamCollisionStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".teamCollision");
+                        String adminPauseStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".adminPause");
+                        String adminLoginStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".adminLogin");
+                        String mapVotingStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".mapVoting");
+                        String kickVotingStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".kickVoting");
+                        String publicTextChatStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".publicTextChat");
+                        String spectatorsChatStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".spectatorsChat");
+                        String voipStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".voip");
+                        String chatLoggingStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".chatLogging");
+                        String chatLoggingFileTimestampStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".chatLoggingFileTimestamp");
+                        String deadPlayersCanTalkStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".deadPlayersCanTalk");
+                        String mapObjetivesStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".mapObjetives");
+                        String pickupItemsStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".pickupItems");
+                        String platformName = entitiesProperties.getProperty("exported.profile" + profileIndex + ".platform");
+                        String netTickrateStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".netTickrate");
+                        String lanTickrateStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".lanTickrate");
+                        String lanMaxClientRateStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".lanMaxClientRate");
+                        String internetMaxClientRateStr = entitiesProperties.getProperty("exported.profile" + profileIndex + ".internetMaxClientRate");
+
+                        Profile profileFromFile = new Profile(
+                                profileName,
+                                languageOpt.isPresent() ? languageOpt.get() : null,
+                                gameTypeOpt.isPresent() ? gameTypeOpt.get() : null,
+                                null,
+                                difficultyOpt.isPresent() ? difficultyOpt.get() : null,
+                                lengthOpt.isPresent() ? lengthOpt.get() : null,
+                                maxPlayersOpt.isPresent() ? maxPlayersOpt.get() : null,
+                                entitiesProperties.getProperty("exported.profile" + profileIndex + ".serverName"),
+                                entitiesProperties.getProperty("exported.profile" + profileIndex + ".serverPassword"),
+                                StringUtils.isNotBlank(webPageStr) ? Boolean.valueOf(webPageStr): true,
+                                entitiesProperties.getProperty("exported.profile" + profileIndex + ".webPassword"),
+                                StringUtils.isNotBlank(webPortStr) ? Integer.parseInt(webPortStr): 8080,
+                                StringUtils.isNotBlank(gamePortStr) ? Integer.parseInt(gamePortStr): 7777,
+                                StringUtils.isNotBlank(queryPortStr) ? Integer.parseInt(queryPortStr): 27015,
+                                entitiesProperties.getProperty("exported.profile" + profileIndex + ".yourClan"),
+                                entitiesProperties.getProperty("exported.profile" + profileIndex + ".yourWebLink"),
+                                entitiesProperties.getProperty("exported.profile" + profileIndex + ".urlImageServer"),
+                                entitiesProperties.getProperty("exported.profile" + profileIndex + ".welcomeMessage"),
+                                entitiesProperties.getProperty("exported.profile" + profileIndex + ".customParameters"),
+                                StringUtils.isNotBlank(takeoverStr) ? Boolean.valueOf(takeoverStr): false,
+                                StringUtils.isNotBlank(teamCollisionStr) ? Boolean.valueOf(teamCollisionStr): true,
+                                StringUtils.isNotBlank(adminPauseStr) ? Boolean.valueOf(adminPauseStr): false,
+                                StringUtils.isNotBlank(adminLoginStr) ? Boolean.valueOf(adminLoginStr): true,
+                                StringUtils.isNotBlank(mapVotingStr) ? Boolean.valueOf(mapVotingStr): true,
+                                StringUtils.isNotBlank(mapVotingTimeStr) ? Double.parseDouble(mapVotingTimeStr): 60,
+                                StringUtils.isNotBlank(kickVotingStr) ? Boolean.valueOf(kickVotingStr): true,
+                                StringUtils.isNotBlank(kickPercentageStr) ? Double.parseDouble(kickPercentageStr): 0.66,
+                                StringUtils.isNotBlank(publicTextChatStr) ? Boolean.valueOf(publicTextChatStr): true,
+                                StringUtils.isNotBlank(spectatorsChatStr) ? Boolean.valueOf(spectatorsChatStr): false,
+                                StringUtils.isNotBlank(voipStr) ? Boolean.valueOf(voipStr): true,
+                                StringUtils.isNotBlank(chatLoggingStr) ? Boolean.valueOf(chatLoggingStr): false,
+                                entitiesProperties.getProperty("exported.profile" + profileIndex + ".chatLoggingFile"),
+                                StringUtils.isNotBlank(chatLoggingFileTimestampStr) ? Boolean.valueOf(chatLoggingFileTimestampStr): true,
+                                StringUtils.isNotBlank(timeBetweenKicksStr) ? Double.parseDouble(timeBetweenKicksStr): 10,
+                                StringUtils.isNotBlank(maxIdleTimeStr) ? Double.parseDouble(maxIdleTimeStr): 0,
+                                StringUtils.isNotBlank(deadPlayersCanTalkStr) ? Boolean.valueOf(deadPlayersCanTalkStr): true,
+                                StringUtils.isNotBlank(readyUpDelayStr) ? Integer.parseInt(readyUpDelayStr): 90,
+                                StringUtils.isNotBlank(gameStartDelayStr) ? Integer.parseInt(gameStartDelayStr): 4,
+                                StringUtils.isNotBlank(maxSpectatorsStr) ? Integer.parseInt(maxSpectatorsStr): 2,
+                                StringUtils.isNotBlank(mapObjetivesStr) ? Boolean.valueOf(mapObjetivesStr): true,
+                                StringUtils.isNotBlank(pickupItemsStr) ? Boolean.valueOf(pickupItemsStr): true,
+                                StringUtils.isNotBlank(friendlyFirePercentageStr) ? Double.parseDouble(friendlyFirePercentageStr): 0,
+                                StringUtils.isNotBlank(netTickrateStr) ? Integer.parseInt(netTickrateStr): 30,
+                                StringUtils.isNotBlank(lanTickrateStr) ? Integer.parseInt(lanTickrateStr): 35,
+                                StringUtils.isNotBlank(lanMaxClientRateStr) ? Integer.parseInt(lanMaxClientRateStr): 15000,
+                                StringUtils.isNotBlank(internetMaxClientRateStr) ? Integer.parseInt(internetMaxClientRateStr): 10000
+                        );
+                        return profileFromFile;
+                    } catch (Exception e) {
+                        logger.error("Error getting the profile " + ptd.getProfileName() + " from file", e);
+                    }
+                    return null;
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Profile> importProfilesFromFile(List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage, boolean hasToSelectMaps) {
+        List<Profile> savedProfileList = saveProfilesToDatabase(selectedProfileList, properties, hasToSelectMaps);
 
         if (savedProfileList.size() < selectedProfileList.size()) {
             List<String> selectedProfileNameList = selectedProfileList.stream().map(p -> p.getCode()).collect(Collectors.toList());
@@ -582,7 +743,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
         }
     }
 
-    private List<Profile> saveProfilesToDatabase(List<Profile> selectedProfileList, Properties properties) {
+    private List<Profile> saveProfilesToDatabase(List<Profile> selectedProfileList, Properties properties, boolean hasToSelectMaps) {
         List<Profile> savedProfileList = new ArrayList<Profile>();
 
         int profileIndex = 1;
@@ -590,7 +751,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
             try {
                 Profile savedProfile = new ProfileDao(em).insert(profile);
 
-                List<AbstractMap> mapList = importPlatformProfileMapsFromFile(profileIndex, savedProfile, properties);
+                List<AbstractMap> mapList = importPlatformProfileMapsFromFile(profileIndex, savedProfile, properties, hasToSelectMaps);
 
                 String mapName = properties.getProperty("exported.profile" + profileIndex + ".map");
                 Optional<AbstractMap> mapOpt = mapList.stream().filter(m -> m.getCode().equalsIgnoreCase(mapName)).findFirst();
@@ -669,7 +830,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
         return (Boolean) (StringUtils.isNotBlank(strIsMap) ? Boolean.parseBoolean(strIsMap): null);
     }
 
-    private List<AbstractMap> importPlatformProfileMapsFromFile(int profileIndex, Profile profile, Properties properties) throws Exception {
+    private List<AbstractMap> importPlatformProfileMapsFromFile(int profileIndex, Profile profile, Properties properties, boolean hasToSelectMaps) throws Exception {
         OfficialMapServiceImpl officialMapService = new OfficialMapServiceImpl(em);
         CustomMapModServiceImpl customMapService = new CustomMapModServiceImpl(em);
         PropertyService propertyService = new PropertyServiceImpl();
@@ -723,9 +884,14 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
             }
         }
 
-        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectMapsModsForProfile");
-        List<MapToDisplay> selectedCustomMapList = Utils.selectMapsDialog(headerText + " " + profile.getCode(), customMapListToDisplay);
+        List<MapToDisplay> selectedCustomMapList = null;
+        if (hasToSelectMaps) {
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectMapsModsForProfile");
+            selectedCustomMapList = Utils.selectMapsDialog(headerText + " " + profile.getCode(), customMapListToDisplay);
+        } else {
+            selectedCustomMapList = customMapListToDisplay;
+        }
 
         for (java.util.Map.Entry<String, Integer> entry : steamOfficialMapsIndex.entrySet()) {
             String mapName = entry.getKey();

@@ -18,7 +18,7 @@ import java.util.Optional;
 
 public abstract class AbstractPopulateDatabase {
 
-    private final PlatformService platformService;
+    protected final PlatformService platformService;
     protected final DifficultyServiceImpl difficultyService;
     protected final GameTypeServiceImpl gameTypeService;
     protected final LanguageServiceImpl languageService;
@@ -27,9 +27,11 @@ public abstract class AbstractPopulateDatabase {
     protected final AbstractMapService officialMapService;
     protected final PlatformProfileMapService platformProfileMapService;
     protected final ProfileService profileService;
+    protected final EntityManager em;
 
     protected AbstractPopulateDatabase(EntityManager em) {
         super();
+        this.em = em;
         this.platformService = new PlatformServiceImpl(em);
         this.difficultyService = new DifficultyServiceImpl(em);
         this.gameTypeService = new GameTypeServiceImpl(em);

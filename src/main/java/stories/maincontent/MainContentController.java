@@ -308,9 +308,19 @@ public class MainContentController implements Initializable {
                 progressIndicator.setVisible(false);
 
                 if (Session.getInstance().isFirstBoot()) {
-                    String languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+                    String upgradeTemporalFileStr = facade.findPropertyValue("properties/config.properties", "prop.config.upgradeTemporalFile");
+                    if (StringUtils.isNotBlank(upgradeTemporalFileStr)) {
+                        File upgradeTemporalFile = new File(upgradeTemporalFileStr);
+                        if (upgradeTemporalFile.exists() && upgradeTemporalFile.isFile()) {
+                            String fromVersion = facade.findPropertyValue(upgradeTemporalFile, "prop.upgrade.fromVersion");
+                            String toVersion = facade.findPropertyValue("properties/config.properties", "prop.config.applicationVersion");
+                            Utils.infoDialog("Launcher upgraded!","The launcher has been upgraded from version " + fromVersion + "\nto Version " + toVersion);
+                            facade.removeProperty("properties/config.properties", "prop.config.upgradeTemporalFile");
+                        }
+                    }
                     Boolean checkForUpgrades = Boolean.parseBoolean(facade.findPropertyValue("properties/config.properties", "prop.config.checkForUpgrades"));
                     if (checkForUpgrades) {
+                        String languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
                         Utils.upgradeLauncher(languageCode, true);
                     }
                     Utils.showTipsOnStasrtup();
@@ -1872,8 +1882,8 @@ public class MainContentController implements Initializable {
         PathHandler pathHandler = Handlers.path();
         for (ProfileDto profileDto: profileDtoList) {
             try {
-                File undertowFolder = new File(MainApplication.getAppData().getAbsolutePath() + "/.undertow/" + lastTimeStamp(profileDto.getName().toLowerCase()));
-                InputStream undertowIS = Files.newInputStream(undertowFolder.toPath());
+                File undertowFile = new File(MainApplication.getAppData().getAbsolutePath() + "/.undertow/" + lastTimeStamp(profileDto.getName().toLowerCase()));
+                InputStream undertowIS = Files.newInputStream(undertowFile.toPath());
                 byte[] imageBytes = IOUtils.toByteArray(undertowIS);
                 pathHandler
                     .addExactPath("/" + profileDto.getName().toLowerCase() + ".png", exchange -> {
@@ -1947,7 +1957,7 @@ public class MainContentController implements Initializable {
                 runEmbeddedWebServer(profileSelect.getItems());
 
                 String webServerPort = facade.findPropertyValue("properties/config.properties", "prop.config.webServerPort");
-                String urlImageServer = "http://" + Utils.getPublicIp() + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase() + ".png";
+                String urlImageServer = "http://localhost:" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase() + ".png";
                 labelWebView.setText(urlImageServer);
                 imageWebView.getEngine().load(urlImageServer);
 

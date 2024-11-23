@@ -110,19 +110,22 @@ public class MainApplication extends Application {
     }
 
     public static void main(String[] args) {
+        PropertyService propertyService = new PropertyServiceImpl();
         try {
-            PropertyService propertyService = new PropertyServiceImpl();
             if (args != null && args.length > 0 && "--upgrade".equalsIgnoreCase(args[0])) {
-                propertyService.setProperty("properties/config.properties", "prop.config.upgradeTemporalFile", args[1]);
+                propertyService.setProperty("properties/config.properties", "prop.config.upgradeTemporalFile", args[1].replaceAll("'", ""));
             }
-
-            prepareUndertow();
             PopulateDatabaseFacade populateDatabaseFacade = new PopulateDatabaseFacadeImpl();
             populateDatabaseFacade.execute();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
 
+        try {
             if (args == null || args.length == 0 || "--upgrade".equalsIgnoreCase(args[0])) {
                 String applicationVersion = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion");
                 logger.info("----- Starting application Simple Killing Floor 2 Server Launcher v" + applicationVersion + " -----");
+                prepareUndertow();
                 launch(args);
                 logger.info("----- Ending application Simple Killing Floor 2 Server Launcher v" + applicationVersion + " -----");
             } else {

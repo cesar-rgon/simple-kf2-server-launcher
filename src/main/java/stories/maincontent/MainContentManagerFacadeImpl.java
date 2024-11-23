@@ -164,6 +164,8 @@ import stories.updateprofilesetyourweblink.UpdateProfileSetYourWebLinkFacade;
 import stories.updateprofilesetyourweblink.UpdateProfileSetYourWebLinkFacadeImpl;
 import stories.updateprofilesetyourweblink.UpdateProfileSetYourWebLinkModelContext;
 
+import java.io.File;
+
 public class MainContentManagerFacadeImpl
         extends AbstractManagerFacade<EmptyModelContext, ListValuesMainContentFacadeResult>
         implements MainContentManagerFacade {
@@ -664,6 +666,18 @@ public class MainContentManagerFacadeImpl
     public String findPropertyValue(String propertyFilePath, String key) throws Exception {
         PropertyService propertyService = new PropertyServiceImpl();
         return propertyService.getPropertyValue(propertyFilePath, key);
+    }
+
+    @Override
+    public String findPropertyValue(File propertyFile, String key) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+        return propertyService.getPropertyValue(propertyFile, key);
+    }
+
+    @Override
+    public void removeProperty(String propertyFilePath, String key) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+        propertyService.removeProperty(propertyFilePath, key);
     }
 
     @Override

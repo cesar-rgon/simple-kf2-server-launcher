@@ -70,7 +70,7 @@ public class ImportProfilesFromFileFacadeImpl
         ProfileService profileService = new ProfileServiceImpl(em);
         ProfileDtoFactory profileDtoFactory = new ProfileDtoFactory(em);
 
-        List<Profile> importedProfileList = profileService.importProfilesFromFile(facadeModelContext.getSelectedProfileList(), facadeModelContext.getProperties(), facadeModelContext.getErrorMessage());
+        List<Profile> importedProfileList = profileService.importProfilesFromFile(facadeModelContext.getSelectedProfileList(), facadeModelContext.getProperties(), facadeModelContext.getErrorMessage(), true);
 
         if (importedProfileList.isEmpty()) {
             return new ImportProfilesFromFileFacadeResult();

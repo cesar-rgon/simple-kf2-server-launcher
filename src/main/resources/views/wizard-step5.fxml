@@ -52,7 +52,7 @@
                         <Insets top="20" />
                     </VBox.margin>
                 </Label>
-                <ImageView fx:id="kf2screen" fitWidth="600.0" pickOnBounds="true" preserveRatio="true">
+                <ImageView fx:id="kf2screen" fitWidth="550.0" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image url="@../images/screenshot00.png" />
                     </image>

@@ -1,6 +1,7 @@
 package stories.profilesedition;
 
 import dtos.ProfileDto;
+import entities.Language;
 import entities.Profile;
 import jakarta.persistence.EntityManager;
 import javafx.collections.ObservableList;

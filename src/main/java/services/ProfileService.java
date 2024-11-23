@@ -20,6 +20,7 @@ public interface ProfileService extends IService<Profile> {
     void importDifficultiesFromFile(Properties properties, List<Language> languageList) throws Exception;
     void importLengthsFromFile(Properties properties, List<Language> languageList) throws Exception;
     void importMaxPlayersFromFile(Properties properties, List<Language> languageList) throws Exception;
-    List<Profile> importProfilesFromFile(List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage);
+    List<Profile> prepareProfilesFromFile(Properties entitiesProperties) throws Exception;
+    List<Profile> importProfilesFromFile(List<Profile> selectedProfileList, Properties properties, StringBuffer errorMessage, boolean hasToSelectMaps);
     List<Profile> getProfileListByNames(List<String> profileNameList, StringBuffer success, StringBuffer errors);
 }

@@ -6,6 +6,7 @@ import java.util.Properties;
 public interface PropertyService {
 
     String getPropertyValue(String propFileName, String propKey) throws Exception;
+    String getPropertyValue(File propFile, String propKey) throws Exception;
     void setProperty(String propFileName, String propKey, String propValue) throws Exception;
     void removeProperty(String propFileName, String propKey) throws Exception;
     void savePropertiesToFile(Properties prop, File file) throws Exception;

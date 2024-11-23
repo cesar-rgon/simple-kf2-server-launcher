@@ -8,7 +8,6 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.session.Session;
 import start.MainApplication;
 import utils.Utils;
 
@@ -24,7 +23,6 @@ public class WizardStep3Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        Session.getInstance().setActualProfileName("Default");
     }
 
     @FXML

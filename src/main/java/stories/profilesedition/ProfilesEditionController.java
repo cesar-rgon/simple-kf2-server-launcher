@@ -1,6 +1,7 @@
 package stories.profilesedition;
 
 import dtos.ProfileDto;
+import entities.Language;
 import entities.Profile;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -18,6 +19,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.ProfileToDisplay;
 import pojos.session.Session;
+import services.LanguageServiceImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
@@ -25,7 +27,12 @@ import stories.listallprofiles.ListAllProfilesFacadeResult;
 import utils.Utils;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -154,7 +161,7 @@ public class ProfilesEditionController implements Initializable {
                 Task<ProfileDto> task = new Task<ProfileDto>() {
                     @Override
                     protected ProfileDto call() throws Exception {
-                        String profileName = profileNameOpt.get().replaceAll(" ", "_");
+                        String profileName = Utils.removeSpacesAccents(profileNameOpt.get());
                         return facade.createNewProfile(profileName);
                     }
                 };
@@ -203,7 +210,7 @@ public class ProfilesEditionController implements Initializable {
                     Task<ProfileDto> task = new Task<ProfileDto>() {
                         @Override
                         protected ProfileDto call() throws Exception {
-                            String newProfileName = newProfileNameOpt.get().replaceAll(" ", "_");
+                            String newProfileName = Utils.removeSpacesAccents(newProfileNameOpt.get());
                             return facade.cloneSelectedProfile(selectedProfile.getName(), newProfileName);
                         }
                     };
@@ -316,7 +323,8 @@ public class ProfilesEditionController implements Initializable {
     private void profileNameColumnOnEditCommit(TableColumn.CellEditEvent<?,?> event) {
         int edittedRowIndex = event.getTablePosition().getRow();
         String oldProfileName = (String)event.getOldValue();
-        String newProfileName = ((String)event.getNewValue()).replaceAll(" ", "_");
+        String newProfileName = Utils.removeSpacesAccents((String)event.getNewValue());
+
         try {
             String steamInstallationFolder = facade.findConfigPropertyValue("prop.config.steamInstallationFolder");
             String epicInstallationFolder = facade.findConfigPropertyValue("prop.config.epicInstallationFolder");
@@ -346,6 +354,28 @@ public class ProfilesEditionController implements Initializable {
                 if (oldEpicProfileConfigFolder.exists() && oldEpicProfileConfigFolder.isDirectory() && !newEpicProfileConfigFolder.exists()) {
                     FileUtils.moveDirectory(oldEpicProfileConfigFolder, newEpicProfileConfigFolder);
                 }
+
+                if (MainApplication.getEmbeddedWebServer() != null) {
+                    MainApplication.getEmbeddedWebServer().stop();
+                    MainApplication.setEmbeddedWebServer(null);
+                }
+
+                String undertowFolderStr = MainApplication.getAppData().getAbsolutePath() + "/.undertow/";
+                List<File> sourceFileList = Files.walk(Paths.get(undertowFolderStr))
+                        .filter(Files::isRegularFile)
+                        .map(Path::toFile)
+                        .filter(f -> f.getName().startsWith(oldProfileName.toLowerCase()))
+                        .collect(Collectors.toList());
+
+
+                sourceFileList.forEach(f -> {
+                    try {
+                        FileUtils.moveFile(f, new File(f.getAbsolutePath().replace(oldProfileName.toLowerCase(), newProfileName.toLowerCase())));
+                    } catch (IOException e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                });
+
             } else {
                 profilesTable.refresh();
                 logger.warn("The profile can not be renamed in database: [old profile name = " + oldProfileName + ", new profile name = " + newProfileName + "]");

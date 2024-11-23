@@ -3,6 +3,8 @@ package services;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Map;
@@ -23,7 +25,18 @@ public class PropertyServiceImpl implements PropertyService {
         } catch (FileNotFoundException e) {
             inputStream = getClass().getClassLoader().getResourceAsStream(propFileRelativePath);
         }
-        Reader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+        assert inputStream != null;
+        Reader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+        prop.load(reader);
+        inputStream.close();
+        return prop.getProperty(propKey);
+    }
+
+    @Override
+    public String getPropertyValue(File propFile, String propKey) throws Exception {
+        Properties prop = new Properties();
+        InputStream inputStream = Files.newInputStream(propFile.toPath());
+        Reader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
         prop.load(reader);
         inputStream.close();
         return prop.getProperty(propKey);

@@ -8,6 +8,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.enums.EnumLanguage;
 import pojos.enums.EnumPlatform;
+import pojos.kf2factory.Kf2Common;
+import pojos.kf2factory.Kf2Factory;
+import pojos.session.Session;
+import services.PlatformService;
+import services.PlatformServiceImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import utils.Utils;
@@ -19,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Properties;
 
 public class PopulateDatabase extends AbstractPopulateDatabase {
 
@@ -32,20 +38,96 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
     public void start() throws Exception {
         populatePlatforms();
         populateLanguages();
+
+        PropertyService propertyService = new PropertyServiceImpl();
+        String upgradeTemporalFileStr = propertyService.getPropertyValue("properties/config.properties", "prop.config.upgradeTemporalFile");
+
+        if (StringUtils.isNotBlank(upgradeTemporalFileStr)) {
+            File upgradeTemporalFile = new File(upgradeTemporalFileStr);
+            if (upgradeTemporalFile.exists() && upgradeTemporalFile.isFile()) {
+                String steamInstallationFolder = propertyService.getPropertyValue(upgradeTemporalFile, "prop.upgrade.steamInstallationFolder");
+                String epicInstallationFolder = propertyService.getPropertyValue(upgradeTemporalFile, "prop.upgrade.epicInstallationFolder");
+
+                Optional<SteamPlatform> steamPlatformOptional = platformService.findSteamPlatform();
+                steamPlatformOptional.ifPresent(steamPlatform -> {
+                    steamPlatform.setInstallationFolder(steamInstallationFolder);
+                    try {
+                        platformService.updateSteamPlatform(steamPlatform);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                });
+                Optional<EpicPlatform> epicPlatformOptional = platformService.findEpicPlatform();
+                epicPlatformOptional.ifPresent(epicPlatform -> {
+                    epicPlatform.setInstallationFolder(epicInstallationFolder);
+                    try {
+                        platformService.updateEpicPlatform(epicPlatform);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage(), e);
+                    }
+                });
+
+                String importProfilesTemporalFileStr = propertyService.getPropertyValue(upgradeTemporalFile, "prop.upgrade.profilesExportedFile");
+                File importProfilesTemporalFile = new File(importProfilesTemporalFileStr);
+                if (importProfilesTemporalFile.exists() && importProfilesTemporalFile.isFile()) {
+                    StringBuffer errorMessage = new StringBuffer();
+
+                    Properties entitiesProperties = propertyService.loadPropertiesFromFile(importProfilesTemporalFile);
+                    List<Language> languageList = languageService.listAll();
+                    profileService.importGameTypesFromFile(entitiesProperties, languageList);
+                    profileService.importDifficultiesFromFile(entitiesProperties, languageList);
+                    profileService.importLengthsFromFile(entitiesProperties, languageList);
+                    profileService.importMaxPlayersFromFile(entitiesProperties, languageList);
+                    List<Profile> allProfileList = profileService.prepareProfilesFromFile(entitiesProperties);
+                    List<Profile> importedProfileList = profileService.importProfilesFromFile(allProfileList, entitiesProperties, errorMessage, false);
+
+                    if (!importedProfileList.isEmpty()) {
+                        for (Profile importedProfile: importedProfileList) {
+                            try {
+                                List<AbstractPlatform> validPlatformList = new ArrayList<AbstractPlatform>();
+                                if (steamPlatformOptional.isPresent()) {
+                                    if (Kf2Factory.getInstance(steamPlatformOptional.get(), em).isValidInstallationFolder()) {
+                                        validPlatformList.add(steamPlatformOptional.get());
+                                    }
+                                }
+                                if (epicPlatformOptional.isPresent()) {
+                                    if (Kf2Factory.getInstance(epicPlatformOptional.get(), em).isValidInstallationFolder()) {
+                                        validPlatformList.add(epicPlatformOptional.get());
+                                    }
+                                }
+
+                                for (AbstractPlatform platform: validPlatformList) {
+                                    Kf2Common kf2Common = Kf2Factory.getInstance(platform, em);
+                                    kf2Common.createConfigFolder(platform.getInstallationFolder(), importedProfile.getName());
+                                }
+                            } catch (Exception e) {
+                                logger.error(e.getMessage(), e);
+                            }
+                        }
+                    }
+
+                    if (allProfileList.size() > 0) {
+                        Session.getInstance().setActualProfileName(allProfileList.get(0).getName());
+                    }
+
+                    if (StringUtils.isNotBlank(errorMessage)) {
+                        String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+                        String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.profilesNotImported");
+                        String contentText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.seeLauncherLog");
+                        logger.error(headerText + ": " + errorMessage.toString() + " " + contentText);
+                    }
+                    return;
+                }
+            }
+        }
+
         populateDifficulties();
         populateGameTypes();
         populateLengths();
         polulateMaximunPlayersList();
-
-        PropertyService propertyService = new PropertyServiceImpl();
-        String upgradeTemporalFileStr = propertyService.getPropertyValue("properties/config.properties", "prop.config.upgradeTemporalFile");
-        if (StringUtils.isBlank(upgradeTemporalFileStr)) {
-            populateProfiles();
-            populateOfficialMaps();
-            setDefaultMapInProfile();
-        } else {
-            // TODO: Importar perfiles
-        }
+        populateProfiles();
+        populateOfficialMaps();
+        setDefaultMapInProfile();
     }
 
     @Override
