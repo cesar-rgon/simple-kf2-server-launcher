@@ -258,6 +258,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
         properties.setProperty("exported.profile" + profileIndex + ".platform" + ppm.getPlatform().getCode() + ".profilemap" + mapIndex + ".urlInfo", ppm.getUrlInfo());
         properties.setProperty("exported.profile" + profileIndex + ".platform" + ppm.getPlatform().getCode() + ".profilemap" + mapIndex + ".urlPhoto", ppm.getUrlPhoto());
         properties.setProperty("exported.profile" + profileIndex + ".platform" + ppm.getPlatform().getCode() + ".profilemap" + mapIndex + ".isInMapsCycle", String.valueOf(ppm.isInMapsCycle()));
+        properties.setProperty("exported.profile" + profileIndex + ".platform" + ppm.getPlatform().getCode() + ".profilemap" + mapIndex + ".isDownloaded", String.valueOf(ppm.isDownloaded()));
     }
 
     @Override
@@ -812,6 +813,11 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
         return Boolean.parseBoolean(StringUtils.isNotBlank(strIsInMapsCycle) ? strIsInMapsCycle: "true");
     }
 
+    private boolean isDownloaded(int profileIndex, EnumPlatform enumPlatform, int mapIndex, Properties properties) {
+        String strIsDownloaded = properties.getProperty("exported.profile" + profileIndex + ".platform" + enumPlatform.name() + ".profilemap" + mapIndex + ".isDownloaded");
+        return Boolean.parseBoolean(StringUtils.isNotBlank(strIsDownloaded) ? strIsDownloaded: "false");
+    }
+
     private Long getIdWorkShop(int profileIndex, EnumPlatform enumPlatform, int mapIndex, Properties properties) throws NumberFormatException {
         if (enumPlatform.equals(EnumPlatform.STEAM)) {
             // Retrocompatibility
@@ -929,7 +935,6 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
             EnumPlatform enumPlatform = null;
             Integer mapIndex = null;
             Boolean isMap = null;
-            boolean isInMapCycle = true;
             if (customMap.getPlatformDescription().equals(EnumPlatform.STEAM.getDescripcion())) {
                 enumPlatform = EnumPlatform.STEAM;
                 Optional<CustomMapIndex> steamCustomMapIndexOptional = steamCustomMapList.stream().filter(cm -> cm.getIdWorkShop().equals(customMap.getIdWorkShop())).findFirst();
@@ -955,8 +960,9 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                 AbstractMap map = getImportedMap(enumPlatform, mapInDataBaseOpt, profile, properties, profileIndex, mapIndex, customMap.getCommentary(), customMap.getIdWorkShop(), isMap, false);
                 if (map != null) {
                     mapList.add(map);
-                    isInMapCycle = isInMapCycle(profileIndex, enumPlatform, mapIndex, properties);
-                    importPlatformProfileMap(enumPlatform, profile, map, false, isInMapCycle, profileIndex, mapIndex,  properties);
+                    boolean isInMapCycle = isInMapCycle(profileIndex, enumPlatform, mapIndex, properties);
+                    boolean isDownloaded = isDownloaded(profileIndex, enumPlatform, mapIndex, properties);
+                    importPlatformProfileMap(enumPlatform, profile, map, isDownloaded, isInMapCycle, profileIndex, mapIndex,  properties);
                 }
             } catch (Exception e) {
                 logger.error("Error importing the official map " + customMap.getCommentary() + " of profile index " + profileIndex + " from file", e);

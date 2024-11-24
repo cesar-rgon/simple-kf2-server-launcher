@@ -128,6 +128,7 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
         populateProfiles();
         populateOfficialMaps();
         setDefaultMapInProfile();
+        Session.getInstance().setActualProfileName("Default");
     }
 
     @Override
