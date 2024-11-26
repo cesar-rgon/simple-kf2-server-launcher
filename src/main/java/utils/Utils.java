@@ -250,7 +250,9 @@ public class Utils {
         Dialog<UpdateLauncher> dialog = new Dialog<UpdateLauncher>();
         PropertyService propertyService = new PropertyServiceImpl();
         Boolean checkForUpgrades = null;
+        String languageCode = StringUtils.EMPTY;
         try {
+            languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
             checkForUpgrades = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.checkForUpgrades"));
             dialog.setTitle(applicationTitle);
@@ -271,10 +273,15 @@ public class Utils {
 
         CheckBox dontShowAtStartupCheckBox = new CheckBox();
         Boolean finalCheckForUpgrades = checkForUpgrades;
+        String finalLanguageCode = languageCode;
         dialog.setDialogPane(new DialogPane() {
             @Override
             protected Node createDetailsButton() {
-                dontShowAtStartupCheckBox.setText("Do not show at startup");
+                try {
+                    dontShowAtStartupCheckBox.setText(propertyService.getPropertyValue("properties/languages/" + finalLanguageCode + ".properties", "prop.message.notShowAtStartup"));
+                } catch (Exception e) {
+                    dontShowAtStartupCheckBox.setText("Do not show at startup");
+                }
                 if (finalCheckForUpgrades) {
                     dontShowAtStartupCheckBox.setSelected(false);
                 } else {
@@ -288,8 +295,18 @@ public class Utils {
         dialog.getDialogPane().setExpanded(false);
         dialog.getDialogPane().setContent(vBox);;
 
-        ButtonType updateButton = new ButtonType("Update", ButtonBar.ButtonData.OK_DONE);
-        ButtonType closeButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        String updateStr = StringUtils.EMPTY;
+        String cancelStr = StringUtils.EMPTY;
+        try {
+            updateStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.updateButton");
+            cancelStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.cancel");
+        } catch (Exception e) {
+            updateStr = "Update";
+            cancelStr = "Cancel";
+        }
+
+        ButtonType updateButton = new ButtonType(updateStr, ButtonBar.ButtonData.OK_DONE);
+        ButtonType closeButton = new ButtonType(cancelStr, ButtonBar.ButtonData.CANCEL_CLOSE);
 
         dialog.getDialogPane().getButtonTypes().addAll(updateButton, closeButton);
         dialog.setResizable(true);
@@ -1355,17 +1372,19 @@ public class Utils {
                 if (isInStartup) {
                     return false;
                 }
-                newPublishedVersionText = "There is not a newer version of the application";
+                newPublishedVersionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.notNewPublishedVersion");;
             }
 
             String actualVersionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.actualVersion");
             String newestPublishedVersionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.publishedversion");
             String upgradeAppText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.upgradeApp");
+            String updateButtonText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.updateButton");
 
             Optional<UpdateLauncher> checkForUpgradeOptional = Utils.updateDialog(newPublishedVersionText,
                     actualVersionText + ": " + applicationVersion +
                             "\n" + newestPublishedVersionText + ": " + lastPublishedVersion +
-                            "\n\n" + upgradeAppText + "."
+                            "\n\n" + upgradeAppText + ".\n\n" +
+                            updateButtonText + "."
             );
 
             if (checkForUpgradeOptional.isPresent() && !checkForUpgradeOptional.get().isDontShowAtStartup()) {
@@ -1436,7 +1455,11 @@ public class Utils {
             dialog.setDialogPane(new DialogPane() {
                 @Override
                 protected Node createDetailsButton() {
-                    showAtStartupCheckBox.setText("Do not show at startup");
+                    try {
+                        showAtStartupCheckBox.setText(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.notShowAtStartup"));
+                    } catch (Exception e) {
+                        showAtStartupCheckBox.setText("Do not show at startup");
+                    }
                     if (dontShowTipsOnStartup) {
                         showAtStartupCheckBox.setSelected(true);
                     } else {

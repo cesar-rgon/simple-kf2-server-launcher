@@ -175,61 +175,6 @@ public class TemplateController implements Initializable {
     }
 
     @FXML
-    private void profilesMenuOnAction() {
-        try {
-            String profilesTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.configuration.profiles");
-            loadNewContent(profilesTitle, "/views/profilesEdition.fxml");
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), e);
-        }
-    }
-
-    @FXML
-    private void gameTypesMenuOnAction() {
-        try {
-            String gameTypesTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.configuration.gameTypes");
-            loadNewContent(gameTypesTitle, "/views/gameTypesEdition.fxml");
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), e);
-        }
-    }
-
-    @FXML
-    private void difficultiesMenuOnAction() {
-        try {
-            String difficultiesTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.configuration.difficulties");
-            loadNewContent(difficultiesTitle, "/views/difficultiesEdition.fxml");
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), e);
-        }
-    }
-
-    @FXML
-    private void lengthMenuOnAction() {
-        try {
-            String lengthTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.configuration.length");
-            loadNewContent(lengthTitle, "/views/lengthEdition.fxml");
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), e);
-        }
-    }
-
-    @FXML
-    private void maxPlayersMenuOnAction() {
-        try {
-            String maxPlayersTitle = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.configuration.maxPlayers");
-            loadNewContent(maxPlayersTitle, "/views/maxPlayersEdition.fxml");
-        } catch (Exception e) {
-            logger.error(e.getMessage(), e);
-            Utils.errorDialog(e.getMessage(), e);
-        }
-    }
-
-    @FXML
     private void aboutMenuOnAction() {
         try {
             String versionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.about.version");

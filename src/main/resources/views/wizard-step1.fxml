@@ -5,7 +5,7 @@
 <?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="700.0" minWidth="1024.0" stylesheets="@../css/custom.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.wizardstep1.WizardStep1Controller">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="700.0" minWidth="1024.0" stylesheets="@../css/custom.css" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.wizardstep1.WizardStep1Controller">
    <top>
        <VBox id="wizardTopPane" alignment="CENTER" prefWidth="800.0">
            <children>
@@ -19,43 +19,66 @@
                        <Image url="@../images/wizard-step1.png" />
                    </image>
                </ImageView>
-               <HBox maxWidth="800.0" spacing="110">
-                   <Label fx:id="step1TitleLabel" text="WELCOME!">
+               <HBox maxWidth="800.0" spacing="43.0">
+                   <Label fx:id="step1TitleLabel" alignment="CENTER" minWidth="150.0" text="WELCOME!">
                   <HBox.margin>
-                     <Insets left="16.0" />
-                  </HBox.margin></Label>
-                   <Label fx:id="step2TitleLabel" text="KF2 SERVER">
+                     <Insets left="-14.0" />
+                  </HBox.margin>
+                  <padding>
+                     <Insets left="-4.0" />
+                  </padding></Label>
+                   <Label fx:id="step2TitleLabel" alignment="CENTER" minWidth="150.0" text="KF2 SERVER">
                   <HBox.margin>
-                     <Insets left="1.0" />
-                  </HBox.margin></Label>
-                   <Label fx:id="step3TitleLabel" text="PROFILE">
+                     <Insets left="-7.0" />
+                  </HBox.margin>
+                  <padding>
+                     <Insets left="-19.0" />
+                  </padding></Label>
+                   <Label fx:id="step3TitleLabel" alignment="CENTER" minWidth="150.0" text="PROFILE">
                   <HBox.margin>
-                     <Insets left="7.0" />
+                     <Insets left="-33.0" />
                   </HBox.margin></Label>
-                   <Label fx:id="step4TitleLabel" text="MAPS">
+                   <Label fx:id="step4TitleLabel" alignment="CENTER" minWidth="150.0" text="MAPS">
                   <HBox.margin>
-                     <Insets left="32.0" />
-                  </HBox.margin></Label>
-                   <Label fx:id="step5TitleLabel" text="READY!">
+                     <Insets />
+                  </HBox.margin>
+                  <padding>
+                     <Insets left="-19.0" />
+                  </padding></Label>
+                   <Label fx:id="step5TitleLabel" alignment="CENTER" minWidth="107.0" text="READY!">
                   <HBox.margin>
-                     <Insets left="33.0" />
-                  </HBox.margin></Label>
+                     <Insets />
+                  </HBox.margin>
+                  <padding>
+                     <Insets left="-6.0" />
+                  </padding></Label>
                </HBox>
            </children>
        </VBox>
    </top>
     <center>
-        <VBox id="wizardCenterGridPane" alignment="CENTER" spacing="20" BorderPane.alignment="CENTER">
+        <VBox id="wizardCenterGridPane" alignment="CENTER" spacing="30" BorderPane.alignment="CENTER">
             <children>
                 <Label fx:id="step1Description" text="Welcome to Simple Killing Floor 2 Server Launcher!. We are going to setup a basic KF2's server. Let's go ..." wrapText="true" />
                 <ImageView fx:id="kf2screen" fitWidth="800.0" pickOnBounds="true" preserveRatio="true">
                     <image>
                         <Image url="@../images/kf2logo.png" />
                     </image>
-                    <VBox.margin>
-                        <Insets top="20" />
-                    </VBox.margin>
                 </ImageView>
+                <HBox alignment="CENTER">
+                    <children>
+                        <Label fx:id="languageLabel" alignment="CENTER" contentDisplay="CENTER" text="LANGUAGE" textFill="WHITE">
+                            <graphic>
+                                <ImageView fx:id="languageImg" fitHeight="30.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true">
+                                    <image>
+                                        <Image url="@../images/label.png" />
+                                    </image>
+                                </ImageView>
+                            </graphic>
+                        </Label>
+                        <ComboBox fx:id="languageSelect" onAction="#languageOnAction" prefHeight="31.0" prefWidth="240.0" />
+                    </children>
+                </HBox>
             </children>
         </VBox>
     </center>
