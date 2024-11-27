@@ -14,6 +14,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
@@ -1553,6 +1554,17 @@ public class Utils {
             IOUtils.closeQuietly(maxNumberOfTipsIS);
         }
     }
+
+    public static void loadTooltip(String languageCode, String propKey, Button button) throws Exception {
+        PropertyService propertyService = new PropertyServiceImpl();
+        Double tooltipDuration = Double.parseDouble(
+                propertyService.getPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+        );
+        Tooltip tooltip = new Tooltip(propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties",propKey));
+        tooltip.setShowDuration(Duration.seconds(tooltipDuration));
+        button.setTooltip(tooltip);
+    }
+
 
     public static void loadTooltip(String languageCode, String propKey, ImageView img, Label label, ComboBox<?> combo) throws Exception {
         PropertyService propertyService = new PropertyServiceImpl();

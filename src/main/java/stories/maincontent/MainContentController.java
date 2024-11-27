@@ -115,13 +115,6 @@ public class MainContentController implements Initializable {
     @FXML private Button runServer;
     @FXML private Button joinServer;
     @FXML private Button terminalButton;
-    @FXML private Button profileSetup;
-    @FXML private Button gameTypeSetup;
-    @FXML private Button difficultySetup;
-    @FXML private Button lengthSetup;
-    @FXML private Button maxPlayersSetup;
-    @FXML private Button platformProfileMapAdd;
-    @FXML private Button platformProfileMapSetup;
     @FXML private ImageView runServerImage;
     @FXML private ImageView joinServerImage;
     @FXML private ImageView profileImg;
@@ -240,6 +233,14 @@ public class MainContentController implements Initializable {
     @FXML private Label labelWebView;
     @FXML private Button exploreFile;
     @FXML private Button trash;
+
+    @FXML private Button profileSetup;
+    @FXML private Button platformProfileMapAdd;
+    @FXML private Button platformProfileMapSetup;
+    @FXML private Button gameTypeSetup;
+    @FXML private Button difficultySetup;
+    @FXML private Button lengthSetup;
+    @FXML private Button maxPlayersSetup;
 
     public MainContentController() {
         facade = new MainContentManagerFacadeImpl();
@@ -1317,6 +1318,15 @@ public class MainContentController implements Initializable {
         friendlyFirePercentageLabel.setText(friendlyFirePercentageLabelText);
         Utils.loadTooltip(languageCode, "prop.tooltip.friendlyFirePercentage", friendlyFirePercentageImg, friendlyFirePercentageLabel, friendlyFirePercentage);
 
+        Utils.loadTooltip(languageCode, "prop.tooltip.manageProfiles", profileSetup);
+        Utils.loadTooltip(languageCode, "prop.tooltip.addMapFromWorkshop", platformProfileMapAdd);
+        Utils.loadTooltip(languageCode, "prop.tooltip.manageMaps", platformProfileMapSetup);
+        Utils.loadTooltip(languageCode, "prop.tooltip.manageGametypes", gameTypeSetup);
+        Utils.loadTooltip(languageCode, "prop.tooltip.manageDifficulties", difficultySetup);
+        Utils.loadTooltip(languageCode, "prop.tooltip.manageLengths", lengthSetup);
+        Utils.loadTooltip(languageCode, "prop.tooltip.manageMaxPlayers", maxPlayersSetup);
+        Utils.loadTooltip(languageCode, "prop.tooltip.exploreFile", exploreFile);
+        Utils.loadTooltip(languageCode, "prop.tooltip.trash", trash);
     }
 
     private void loadActualProfile(LoadActualProfileFacadeResult result) throws Exception {

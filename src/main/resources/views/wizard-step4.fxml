@@ -19,27 +19,39 @@
                        <Image url="@../images/wizard-step4.png" />
                    </image>
                </ImageView>
-               <HBox maxWidth="800.0" spacing="110">
-                   <Label fx:id="step1TitleLabel" text="WELCOME!">
+               <HBox maxWidth="800.0" spacing="43.0">
+                   <Label fx:id="step1TitleLabel" alignment="CENTER" minWidth="150.0" text="WELCOME!">
                        <HBox.margin>
-                           <Insets left="16.0" />
-                       </HBox.margin></Label>
-                   <Label fx:id="step2TitleLabel" text="KF2 SERVER">
+                           <Insets left="-14.0" />
+                       </HBox.margin>
+                       <padding>
+                           <Insets left="-4.0" />
+                       </padding></Label>
+                   <Label fx:id="step2TitleLabel" alignment="CENTER" minWidth="150.0" text="KF2 SERVER">
                        <HBox.margin>
-                           <Insets left="1.0" />
-                       </HBox.margin></Label>
-                   <Label fx:id="step3TitleLabel" text="PROFILE">
+                           <Insets left="-7.0" />
+                       </HBox.margin>
+                       <padding>
+                           <Insets left="-19.0" />
+                       </padding></Label>
+                   <Label fx:id="step3TitleLabel" alignment="CENTER" minWidth="150.0" text="PROFILE">
                        <HBox.margin>
-                           <Insets left="7.0" />
+                           <Insets left="-33.0" />
                        </HBox.margin></Label>
-                   <Label fx:id="step4TitleLabel" text="MAPS">
+                   <Label fx:id="step4TitleLabel" alignment="CENTER" minWidth="150.0" text="MAPS">
                        <HBox.margin>
-                           <Insets left="32.0" />
-                       </HBox.margin></Label>
-                   <Label fx:id="step5TitleLabel" text="READY!">
+                           <Insets />
+                       </HBox.margin>
+                       <padding>
+                           <Insets left="-19.0" />
+                       </padding></Label>
+                   <Label fx:id="step5TitleLabel" alignment="CENTER" minWidth="107.0" text="READY!">
                        <HBox.margin>
-                           <Insets left="33.0" />
-                       </HBox.margin></Label>
+                           <Insets />
+                       </HBox.margin>
+                       <padding>
+                           <Insets left="-6.0" />
+                       </padding></Label>
                </HBox>
            </children>
        </VBox>

@@ -62,7 +62,11 @@ public class ProfilesEditionController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            if (Session.getInstance().isWizardMode()) {
+                languageCode = Session.getInstance().getWizardLanguage().name();
+            } else {
+                languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            }
             profileNameColumn.setCellFactory(TextFieldTableCell.forTableColumn());
             profileNameColumn.setCellValueFactory(cellData -> cellData.getValue().getNameProperty());
 

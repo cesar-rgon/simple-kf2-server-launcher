@@ -23,15 +23,15 @@ public class WizardStep2Controller implements Initializable {
     private static final Logger logger = LogManager.getLogger(WizardStep2Controller.class);
     private WizardStepsManagerFacade facade;
 
-    @FXML private Button switchSteamGamesServer;
-    @FXML private Button switchEpicGamesServer;
-    @FXML private Button previousStep;
-    @FXML private Button nextStep;
     @FXML private Label step1TitleLabel;
     @FXML private Label step2TitleLabel;
     @FXML private Label step3TitleLabel;
     @FXML private Label step4TitleLabel;
     @FXML private Label step5TitleLabel;
+    @FXML private Button switchSteamGamesServer;
+    @FXML private Button switchEpicGamesServer;
+    @FXML private Button previousStep;
+    @FXML private Button nextStep;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -59,6 +59,18 @@ public class WizardStep2Controller implements Initializable {
 
         String step5TitleLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.wizard.step5Label");
         step5TitleLabel.setText(step5TitleLabelText);
+
+        String switchSteamGamesServerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.wizard.switchSteamServer");
+        switchSteamGamesServer.setText(switchSteamGamesServerText);
+
+        String switchEpicGamesServerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.wizard.switchEpicServer");
+        switchEpicGamesServer.setText(switchEpicGamesServerText);
+
+        String previousStepText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.wizard.previousStep");
+        previousStep.setText(previousStepText);
+
+        String nextStepText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.wizard.nextStep");
+        nextStep.setText(nextStepText);
     }
 
 

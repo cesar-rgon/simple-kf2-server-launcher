@@ -49,7 +49,6 @@ public class WizardStep1Controller implements Initializable {
             ListLanguagesWizardStep1FacadeResult result = facade.execute();
             languageSelect.setItems(result.getLanguageDtoList());
 
-            languageSelect.getSelectionModel().clearSelection();
             if (Session.getInstance().getWizardLanguage() != null) {
                 Optional<SelectDto> languageDto = languageSelect.getItems().stream().filter(l -> l.getKey().equals(Session.getInstance().getWizardLanguage().name())).findFirst();
                 if (languageDto.isPresent()) {
@@ -60,6 +59,7 @@ public class WizardStep1Controller implements Initializable {
             } else {
                 languageSelect.getSelectionModel().selectFirst();
             }
+            loadLanguageTexts(languageSelect.getValue().getKey());
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
