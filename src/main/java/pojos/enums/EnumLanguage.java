@@ -20,8 +20,8 @@ public enum EnumLanguage {
         return descripcion;
     }
 
-    public static EnumPlatform getByName(String name) {
-        return EnumPlatform.valueOf(name);
+    public static EnumLanguage getByName(String name) {
+        return EnumLanguage.valueOf(name);
     }
 
 }

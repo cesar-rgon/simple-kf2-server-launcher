@@ -7,6 +7,7 @@ import entities.PlatformProfileMap;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.enums.EnumLanguage;
 import pojos.enums.EnumMapsTab;
 import pojos.enums.EnumSortedMapsCriteria;
 
@@ -30,6 +31,7 @@ public class Session {
     private String url;
     private boolean firstBoot;
     private boolean wizardMode;
+    private EnumLanguage wizardLanguage;
 
     /**
      * Singleton constructor
@@ -44,6 +46,7 @@ public class Session {
         selectedMapTab = EnumMapsTab.STEAM_OFFICIAL_MAPS_TAB;
         platformProfileMapList = new ArrayList<PlatformProfileMapDto>();
         firstBoot = true;
+        wizardLanguage = EnumLanguage.en;
     }
 
     public static Session getInstance() {
@@ -159,5 +162,13 @@ public class Session {
 
     public void setWizardMode(boolean wizardMode) {
         this.wizardMode = wizardMode;
+    }
+
+    public EnumLanguage getWizardLanguage() {
+        return wizardLanguage;
+    }
+
+    public void setWizardLanguage(EnumLanguage wizardLanguage) {
+        this.wizardLanguage = wizardLanguage;
     }
 }

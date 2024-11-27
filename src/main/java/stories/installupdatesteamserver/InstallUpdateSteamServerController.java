@@ -62,7 +62,11 @@ public class InstallUpdateSteamServerController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         try {
-            languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            if (Session.getInstance().isWizardMode()) {
+                languageCode = Session.getInstance().getWizardLanguage().name();
+            } else {
+                languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            }
 
             String titleConfigLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.titleInstallSteamServer");
             titleConfigLabel.setText(titleConfigLabelText);

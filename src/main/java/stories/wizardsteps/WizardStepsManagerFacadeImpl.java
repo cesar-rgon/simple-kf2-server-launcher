@@ -1,4 +1,4 @@
-package stories.wizardstep1;
+package stories.wizardsteps;
 
 import framework.AbstractManagerFacade;
 import framework.EmptyModelContext;
@@ -8,12 +8,12 @@ import stories.listlanguageswizardstep1.ListLanguagesWizardStep1Facade;
 import stories.listlanguageswizardstep1.ListLanguagesWizardStep1FacadeImpl;
 import stories.listlanguageswizardstep1.ListLanguagesWizardStep1FacadeResult;
 
-public class WizardStep1ManagerFacadeImpl
+public class WizardStepsManagerFacadeImpl
         extends AbstractManagerFacade<EmptyModelContext, ListLanguagesWizardStep1FacadeResult>
-        implements WizardStep1ManagerFacade {
+        implements WizardStepsManagerFacade {
 
 
-    protected WizardStep1ManagerFacadeImpl() {
+    public WizardStepsManagerFacadeImpl() {
         super(new EmptyModelContext(), ListLanguagesWizardStep1FacadeResult.class);
     }
 
