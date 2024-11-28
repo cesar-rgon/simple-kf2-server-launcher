@@ -10,6 +10,8 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
@@ -48,6 +50,7 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URI;
@@ -252,10 +255,12 @@ public class Utils {
         PropertyService propertyService = new PropertyServiceImpl();
         Boolean checkForUpgrades = null;
         String languageCode = StringUtils.EMPTY;
+        String latestReleasePageGithubUrl = StringUtils.EMPTY;
         try {
             languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
             checkForUpgrades = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.checkForUpgrades"));
+            latestReleasePageGithubUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.latestReleasePageGithubUrl");
             dialog.setTitle(applicationTitle);
         } catch (Exception ex) {
             dialog.setTitle("");
@@ -266,11 +271,15 @@ public class Utils {
 
         TextArea area = new TextArea(content);
         area.setWrapText(true);
-        area.setPrefHeight(200);
+        area.setMinHeight(150);
         area.setEditable(false);
 
+        WebView webView = new WebView();
+        webView.getEngine().load(latestReleasePageGithubUrl);
+
         VBox vBox = new VBox();
-        vBox.getChildren().addAll(headerText, area);
+        vBox.setSpacing(20);
+        vBox.getChildren().addAll(headerText, area, webView);
 
         CheckBox dontShowAtStartupCheckBox = new CheckBox();
         Boolean finalCheckForUpgrades = checkForUpgrades;
@@ -321,9 +330,19 @@ public class Utils {
                 );
             }
         });
+        
+        dialog.addEventHandler(DialogEvent.DIALOG_SHOWING, new EventHandler<Event>() {
+            @Override
+            public void handle(Event event) {
+                if (dialog.getDialogPane().isExpanded()) {
+                    webView.setZoom(1);
+                } else {
+                    webView.setZoom(0.7);
+                }
+            }
+        });
 
-        dialog.setWidth(400);
-        dialog.setHeight(300);
+        dialog.setHeight(700);
         return dialog.showAndWait();
     }
 
