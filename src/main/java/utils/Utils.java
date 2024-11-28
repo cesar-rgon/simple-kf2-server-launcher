@@ -5,8 +5,10 @@ import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import dtos.ProfileDto;
 import dtos.SelectDto;
+import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -250,17 +252,20 @@ public class Utils {
         alert.showAndWait();
     }
 
-    public static Optional<UpdateLauncher> updateDialog(String header, String content) {
+
+    public static Optional<UpdateLauncher> updateDialog(String header, String content, String applicationVersion, String lastPublishedVersion) {
         Dialog<UpdateLauncher> dialog = new Dialog<UpdateLauncher>();
         PropertyService propertyService = new PropertyServiceImpl();
         Boolean checkForUpgrades = null;
         String languageCode = StringUtils.EMPTY;
         String latestReleasePageGithubUrl = StringUtils.EMPTY;
+        String newestPublishedVersion = StringUtils.EMPTY;
         try {
             languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
             checkForUpgrades = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.checkForUpgrades"));
             latestReleasePageGithubUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.latestReleasePageGithubUrl");
+            newestPublishedVersion = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.publishedversion");
             dialog.setTitle(applicationTitle);
         } catch (Exception ex) {
             dialog.setTitle("");
@@ -274,12 +279,15 @@ public class Utils {
         area.setMinHeight(150);
         area.setEditable(false);
 
+        Text newestPublishedVersionText = new Text(newestPublishedVersion);
+        newestPublishedVersionText.setStyle("-fx-font-weight: bold");
+
         WebView webView = new WebView();
         webView.getEngine().load(latestReleasePageGithubUrl);
 
         VBox vBox = new VBox();
         vBox.setSpacing(20);
-        vBox.getChildren().addAll(headerText, area, webView);
+        vBox.getChildren().addAll(headerText, area, newestPublishedVersionText, webView);
 
         CheckBox dontShowAtStartupCheckBox = new CheckBox();
         Boolean finalCheckForUpgrades = checkForUpgrades;
@@ -315,22 +323,25 @@ public class Utils {
             cancelStr = "Cancel";
         }
 
-        ButtonType updateButton = new ButtonType(updateStr, ButtonBar.ButtonData.OK_DONE);
         ButtonType closeButton = new ButtonType(cancelStr, ButtonBar.ButtonData.CANCEL_CLOSE);
+        if (lastPublishedVersion.compareTo(applicationVersion) > 0) {
+            ButtonType updateButton = new ButtonType(updateStr, ButtonBar.ButtonData.OK_DONE);
+            dialog.getDialogPane().getButtonTypes().addAll(updateButton, closeButton);
 
-        dialog.getDialogPane().getButtonTypes().addAll(updateButton, closeButton);
+            dialog.setResultConverter(new Callback<ButtonType, UpdateLauncher>() {
+                @Override
+                public UpdateLauncher call(ButtonType b) {
+                    return new UpdateLauncher(
+                            b.equals(updateButton),
+                            dontShowAtStartupCheckBox.isSelected()
+                    );
+                }
+            });
+        } else {
+            dialog.getDialogPane().getButtonTypes().addAll(closeButton);
+        }
         dialog.setResizable(true);
 
-        dialog.setResultConverter(new Callback<ButtonType, UpdateLauncher>() {
-            @Override
-            public UpdateLauncher call(ButtonType b) {
-                return new UpdateLauncher(
-                    b.equals(updateButton),
-                    dontShowAtStartupCheckBox.isSelected()
-                );
-            }
-        });
-        
         dialog.addEventHandler(DialogEvent.DIALOG_SHOWING, new EventHandler<Event>() {
             @Override
             public void handle(Event event) {
@@ -1404,7 +1415,9 @@ public class Utils {
                     actualVersionText + ": " + applicationVersion +
                             "\n" + newestPublishedVersionText + ": " + lastPublishedVersion +
                             "\n\n" + upgradeAppText + ".\n\n" +
-                            updateButtonText + "."
+                            updateButtonText + ".",
+                            applicationVersion,
+                            lastPublishedVersion
             );
 
             if (checkForUpgradeOptional.isPresent() && !checkForUpgradeOptional.get().isDontShowAtStartup()) {
