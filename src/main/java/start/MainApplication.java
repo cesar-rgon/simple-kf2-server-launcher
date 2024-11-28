@@ -46,9 +46,6 @@ public class MainApplication extends Application {
         primaryStage.setTitle(applicationTitle + " " + applicationVersion);
         primaryStage.setMinWidth(1024);
         primaryStage.setMinHeight(750);
-        // Fix a problem with newest JDK and JavaFX WebView. http2 support need to be disabled
-        Properties systemProperties = System.getProperties();
-        systemProperties.setProperty("com.sun.webkit.useHTTP2Loader", "false");
 
         boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
         if (createDatabase) {

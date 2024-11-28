@@ -5,9 +5,12 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.*?>
 
-<fx:root fx:id="mapWebInfo" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapwebinfo.MapWebInfoController">
+<fx:root fx:id="mapWebInfo" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.mapwebinfo.MapWebInfoController">
    <children>
-      <Label id="titleConfigLabel" fx:id="mapIdWorkshop" alignment="CENTER" text="id WorkShop" GridPane.halignment="LEFT" GridPane.valignment="CENTER" />
+      <Label id="titleConfigLabel" fx:id="mapIdWorkshop" alignment="CENTER" text="id WorkShop" GridPane.halignment="LEFT" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets left="20.0" />
+         </GridPane.margin></Label>
       <Label fx:id="alreadyInLauncher" text="It is already in the launcher" visible="false" GridPane.halignment="RIGHT">
          <GridPane.margin>
             <Insets right="220.0" />
@@ -15,10 +18,13 @@
       </Label>
       <Button fx:id="addMap" mnemonicParsing="false" onAction="#addMapOnAction" prefWidth="200.0" text="Add map/mod" visible="false" GridPane.halignment="RIGHT">
          <GridPane.margin>
-            <Insets right="220.0" />
+            <Insets right="240.0" />
          </GridPane.margin>
       </Button>
-      <Button fx:id="backButton" alignment="CENTER" mnemonicParsing="false" onAction="#backButtonOnAction" prefWidth="200.0" text="Back to map list" GridPane.halignment="RIGHT" GridPane.valignment="CENTER" />
+      <Button fx:id="backButton" alignment="CENTER" mnemonicParsing="false" onAction="#backButtonOnAction" prefWidth="200.0" text="Back to map list" GridPane.halignment="RIGHT" GridPane.valignment="CENTER">
+         <GridPane.margin>
+            <Insets right="20.0" />
+         </GridPane.margin></Button>
       <WebView fx:id="mapInfoWebView" prefHeight="-1.0" prefWidth="-1.0" GridPane.rowIndex="1" />
       <ProgressIndicator fx:id="progressIndicator" maxHeight="150.0" maxWidth="150.0" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
    </children>

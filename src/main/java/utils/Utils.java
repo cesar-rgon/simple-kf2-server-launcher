@@ -266,7 +266,7 @@ public class Utils {
 
         TextArea area = new TextArea(content);
         area.setWrapText(true);
-        area.setPrefHeight(150);
+        area.setPrefHeight(200);
         area.setEditable(false);
 
         VBox vBox = new VBox();
