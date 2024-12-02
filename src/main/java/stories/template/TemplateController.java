@@ -3,6 +3,7 @@ package stories.template;
 import dtos.PlatformDto;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,6 +13,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -21,11 +23,15 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.ProfileToDisplay;
+import pojos.UpgradeData;
 import pojos.enums.EnumPlatform;
+import pojos.kf2factory.Kf2SteamLinuxImpl;
+import pojos.kf2factory.Kf2SteamWindowsImpl;
 import pojos.session.Session;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
+import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
 import stories.profilesedition.ProfilesEditionManagerFacade;
 import stories.profilesedition.ProfilesEditionManagerFacadeImpl;
 import utils.Utils;
@@ -33,6 +39,7 @@ import utils.Utils;
 import java.awt.*;
 import java.io.File;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -61,6 +68,7 @@ public class TemplateController implements Initializable {
     @FXML private MenuItem checkForUpdates;
     @FXML private MenuItem donation;
     @FXML private MenuItem discord;
+    @FXML private ProgressIndicator progressIndicator;
 
     public TemplateController() {
         super();
@@ -303,60 +311,150 @@ public class TemplateController implements Initializable {
     }
 
     @FXML
-    private void checkForUpdatesMenuOnAction() {
+    public void checkForUpdatesMenuOnAction() {
         try {
-            if (Utils.upgradeLauncher(languageCode, false)) {
+            if (Utils.upgradeLauncher(languageCode)) {
+                progressIndicator.setVisible(true);
 
-                Properties upgradeProperties = new Properties();
-                ObservableList<PlatformDto> allPlatformList = facade.execute().getAllPlatformList();
-                Optional<String> steamInstallationFolderOptional = allPlatformList.stream().filter(p -> EnumPlatform.STEAM.getDescripcion().equals(p.getValue())).map(PlatformDto::getInstallationFolder).findFirst();
-                Optional<String> epicInstallationFolderOptional = allPlatformList.stream().filter(p -> EnumPlatform.EPIC.getDescripcion().equals(p.getValue())).map(PlatformDto::getInstallationFolder).findFirst();
+                Task<UpgradeData> task = new Task<UpgradeData>() {
+                    @Override
+                    protected UpgradeData call() throws Exception {
+                        Properties upgradeProperties = new Properties();
+                        ObservableList<PlatformDto> allPlatformList = facade.execute().getAllPlatformList();
+                        Optional<String> steamInstallationFolderOptional = allPlatformList.stream().filter(p -> EnumPlatform.STEAM.getDescripcion().equals(p.getValue())).map(PlatformDto::getInstallationFolder).findFirst();
+                        Optional<String> epicInstallationFolderOptional = allPlatformList.stream().filter(p -> EnumPlatform.EPIC.getDescripcion().equals(p.getValue())).map(PlatformDto::getInstallationFolder).findFirst();
 
-                upgradeProperties.setProperty("prop.upgrade.fromVersion", propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion"));
-                upgradeProperties.setProperty("prop.upgrade.steamInstallationFolder", steamInstallationFolderOptional.orElse(StringUtils.EMPTY));
-                upgradeProperties.setProperty("prop.upgrade.epicInstallationFolder", epicInstallationFolderOptional.orElse(StringUtils.EMPTY));
+                        upgradeProperties.setProperty("prop.upgrade.fromVersion", propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion"));
+                        upgradeProperties.setProperty("prop.upgrade.steamInstallationFolder", steamInstallationFolderOptional.orElse(StringUtils.EMPTY));
+                        upgradeProperties.setProperty("prop.upgrade.epicInstallationFolder", epicInstallationFolderOptional.orElse(StringUtils.EMPTY));
 
-                ProfilesEditionManagerFacade profilesEditionManagerFacade = new ProfilesEditionManagerFacadeImpl();
-                List<ProfileToDisplay> allProfiles = profilesEditionManagerFacade.selectProfilesToBeExported();
+                        ProfilesEditionManagerFacade profilesEditionManagerFacade = new ProfilesEditionManagerFacadeImpl();
+                        List<ProfileToDisplay> allProfiles = profilesEditionManagerFacade.selectProfilesToBeExported();
 
-                Date date = new Date();
-                Timestamp timestamp = new Timestamp(date.getTime());
-                String timestampStr = StringUtils.replace(timestamp.toString(), " ", "_");
-                timestampStr = StringUtils.replace(timestampStr, ":", "_");
-                timestampStr = StringUtils.replace(timestampStr, ".", "_");
-                String tempFolder = System.getProperty("java.io.tmpdir");
-                File profilesExportedTemporalFile = new File(tempFolder + "exported_profiles_" + timestampStr + ".properties");
+                        Date date = new Date();
+                        Timestamp timestamp = new Timestamp(date.getTime());
+                        String timestampStr = StringUtils.replace(timestamp.toString(), " ", "_");
+                        timestampStr = StringUtils.replace(timestampStr, ":", "_");
+                        timestampStr = StringUtils.replace(timestampStr, ".", "_");
+                        String tempFolder = System.getProperty("java.io.tmpdir");
+                        if (tempFolder.endsWith("/") || tempFolder.endsWith("\\")) {
+                            tempFolder = tempFolder.substring(0, tempFolder.length() - 1);
+                        }
+                        File profilesExportedTemporalFile = new File(tempFolder + "/exported_profiles_" + timestampStr + ".properties");
 
-                profilesEditionManagerFacade.exportProfilesToFile(allProfiles, profilesExportedTemporalFile);
-                upgradeProperties.setProperty("prop.upgrade.profilesExportedFile", profilesExportedTemporalFile.getAbsolutePath());
+                        profilesEditionManagerFacade.exportProfilesToFile(allProfiles, profilesExportedTemporalFile);
+                        upgradeProperties.setProperty("prop.upgrade.profilesExportedFile", profilesExportedTemporalFile.getAbsolutePath());
 
-                String latestReleaseUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.latestReleasePageGithubUrl");
-                String targetFolderStr = StringUtils.EMPTY;
-                File zipFile = Utils.downloadZipFileFromGithub(latestReleaseUrl);
-                if (zipFile != null && zipFile.exists() && zipFile.isFile()) {
-                    String parentFolderStr = System.getProperty("user.dir") + "/../";
-                    targetFolderStr = parentFolderStr + zipFile.getName().replace(".zip", "");
-                    File targetFolder = new File(targetFolderStr);
-                    if (targetFolder.exists()) {
-                        targetFolderStr = targetFolderStr + "_" + timestampStr;
-                        targetFolder = new File(targetFolderStr);
-                        targetFolder.mkdir();
-                    } else {
-                        targetFolder.mkdir();
+                        String latestReleaseUrl = propertyService.getPropertyValue("properties/config.properties", "prop.config.latestReleasePageGithubUrl");
+                        String targetFolderStr = StringUtils.EMPTY;
+                        File zipFile = Utils.downloadZipFileFromGithub(latestReleaseUrl);
+
+                        if (zipFile == null || !zipFile.exists() || !zipFile.isFile()) {
+                            String errorMessage = "Zip file could not be downloaded";
+                            logger.error(errorMessage);
+                            Utils.errorDialog(errorMessage);
+                            return null;
+                        }
+
+                        String os = System.getProperty("os.name");
+                        if (StringUtils.isEmpty(os)) {
+                            logger.error("Operating System not detected");
+                            return null;
+                        }
+                        if (os.contains("Windows")) {
+                            String appFolder = System.getProperty("user.dir");
+                            String parentFolderStr = appFolder + "\\..\\";
+                            targetFolderStr = parentFolderStr + zipFile.getName().replace(".zip", "");
+                        } else {
+                            if (os.contains("Linux")) {
+                                String homeFolder = System.getProperty("user.home");
+                                targetFolderStr = homeFolder + "/" + zipFile.getName().replace(".zip", "");
+                            }
+                        }
+
+                        File targetFolder = new File(targetFolderStr);
+                        if (targetFolder.exists()) {
+                            targetFolderStr = targetFolderStr + "_" + timestampStr;
+                            targetFolder = new File(targetFolderStr);
+                            targetFolder.mkdir();
+                        } else {
+                            targetFolder.mkdir();
+                        }
+                        Utils.uncompressZipFile(zipFile, targetFolder);
+                        zipFile.delete();
+
+                        File upgradeTemporalFile = new File(tempFolder + "/upgrade_launcher_" + timestampStr + ".properties");
+                        propertyService.savePropertiesToFile(upgradeProperties, upgradeTemporalFile);
+
+                        return new UpgradeData(targetFolder, upgradeTemporalFile);
                     }
-                    Utils.uncompressZipFile(zipFile, targetFolder);
-                    zipFile.delete();
-                }
+                };
 
-                File upgradeTemporalFile = new File(tempFolder + "upgrade_launcher_" + timestampStr + ".properties");
-                propertyService.savePropertiesToFile(upgradeProperties, upgradeTemporalFile);
+                task.setOnSucceeded(wse -> {
+                    try {
+                        String targetFolderStr = task.getValue().getTargetFolder().getAbsolutePath();
+                        File upgradeTemporalFile = task.getValue().getUpgradeTemporalFile();
 
-                File fileToBeExecuted = new File(targetFolderStr + "/SimpleKF2ServerLauncher.jar");
-                StringBuffer command = new StringBuffer();
-                command.append("java -jar ").append(targetFolderStr).append("/").append(fileToBeExecuted.getName()).append(" --upgrade '").append(upgradeTemporalFile.getAbsolutePath()).append("'");
-                Runtime.getRuntime().exec(command.toString(),null, fileToBeExecuted.getParentFile());
+                        File fileToBeExecuted = new File(targetFolderStr + "/SimpleKF2ServerLauncher.jar");
+                        String os = System.getProperty("os.name");
+                        if (StringUtils.isEmpty(os)) {
+                            logger.error("Operating System not detected");
+                            return;
+                        }
 
-                Platform.exit();
+                        StringBuffer command = new StringBuffer();
+                        command.append("java -jar \"").
+                                append(targetFolderStr).
+                                append("/").
+                                append(fileToBeExecuted.getName()).
+                                append("\" --upgrade \"").
+                                append(upgradeTemporalFile.getAbsolutePath()).
+                                append("\"");
+
+                        if (os.contains("Windows")) {
+                            Runtime.getRuntime().exec(command.toString(), null, fileToBeExecuted.getParentFile());
+                        } else {
+                            if (os.contains("Linux")) {
+                                String tempFolderStr = System.getProperty("java.io.tmpdir");
+                                File tempFolder = new File(tempFolderStr);
+
+                                File script = new File(tempFolderStr + "/skf2sl-script.sh");
+                                PrintWriter writer = new PrintWriter(script.getAbsolutePath(), "UTF-8");
+                                writer.println("#!/bin/bash");
+                                writer.println("cd \"" + targetFolderStr + "\"");
+                                writer.println(command.toString());
+                                writer.close();
+
+                                if (script.setExecutable(true)) {
+                                    Runtime.getRuntime().exec(new String[]{
+                                            "xterm",
+                                            "-T", "Running the launcher",
+                                            "-fa", "DejaVu Sans Mono",
+                                            "-fs", "11",
+                                            "-geometry", "120x25+0-0",
+                                            "-xrm", "XTerm.vt100.allowTitleOps: false",
+                                            "-e", script.getAbsolutePath()
+                                    }, null, tempFolder);
+                                }
+                            }
+                        }
+
+                        progressIndicator.setVisible(false);
+                        Platform.exit();
+
+                    } catch (Exception e) {
+                        progressIndicator.setVisible(false);
+                        logger.error(e.getMessage(), e);
+                        Utils.errorDialog(e.getMessage(), e);
+                    }
+                });
+
+                task.setOnFailed(wse -> {
+                    progressIndicator.setVisible(false);
+                });
+
+                Thread thread = new Thread(task);
+                thread.start();
             }
 
         } catch (Exception e) {

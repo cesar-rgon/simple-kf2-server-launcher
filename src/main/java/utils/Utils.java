@@ -98,6 +98,23 @@ public class Utils {
         alert.showAndWait();
     }
 
+    public static void errorDialog(String headerText) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        try {
+            PropertyService propertyService = new PropertyServiceImpl();
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
+            alert.setTitle(applicationTitle);
+        } catch (Exception ex) {
+            alert.setTitle("");
+        }
+        alert.setHeaderText(headerText);
+
+        alert.setWidth(400);
+        alert.setHeight(500);
+        alert.setResizable(true);
+        alert.showAndWait();
+    }
+
 
     public static Optional<String> OneTextInputDialog(String header, String content) {
         TextInputDialog dialog = new TextInputDialog();
@@ -1389,7 +1406,7 @@ public class Utils {
         return dialog.showAndWait();
     }
 
-    public static boolean upgradeLauncher(String languageCode, boolean isInStartup) {
+    public static boolean upgradeLauncher(String languageCode) {
         try {
             PropertyService propertyService = new PropertyServiceImpl();
             String applicationVersion = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion");
@@ -1400,9 +1417,6 @@ public class Utils {
             if (applicationVersion.compareTo(lastPublishedVersion) < 0) {
                 newPublishedVersionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.newPublishedVersion");
             } else {
-                if (isInStartup) {
-                    return false;
-                }
                 newPublishedVersionText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties","prop.message.notNewPublishedVersion");;
             }
 
@@ -1767,6 +1781,9 @@ public class Utils {
 
         if (StringUtils.isNotBlank(text) && StringUtils.isNotBlank(uri)) {
             String tempFolder = System.getProperty("java.io.tmpdir");
+            if (tempFolder.endsWith("/") || tempFolder.endsWith("\\")) {
+                tempFolder = tempFolder.substring(0, tempFolder.length() - 1);
+            }
             File tempZipFile = new File(tempFolder + "/" + text);
             PropertyService propertyService = new PropertyServiceImpl();
             String downloadConnectionTimeOut = propertyService.getPropertyValue("properties/config.properties", "prop.config.downloadConnectionTimeout");

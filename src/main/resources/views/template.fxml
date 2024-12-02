@@ -33,7 +33,10 @@
       </MenuBar>
    </top>
     <center>
-        <GridPane id="centerGridPane" fx:id="content" alignment="CENTER" BorderPane.alignment="CENTER" />
+        <StackPane id="centerPane" alignment="CENTER">
+            <GridPane id="centerGridPane" fx:id="content" alignment="CENTER" BorderPane.alignment="CENTER" />
+            <ProgressIndicator fx:id="progressIndicator" maxHeight="150.0" maxWidth="150.0" visible="false" />
+        </StackPane >
     </center>
    <bottom>
       <Pane id="bottomPane" minHeight="10.0" prefHeight="10.0" BorderPane.alignment="CENTER" />

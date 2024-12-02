@@ -40,6 +40,7 @@ import pojos.session.Session;
 import start.MainApplication;
 import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
 import stories.loadactualprofile.LoadActualProfileFacadeResult;
+import stories.template.TemplateController;
 import utils.Utils;
 
 import java.io.File;
@@ -321,8 +322,8 @@ public class MainContentController implements Initializable {
                     }
                     Boolean checkForUpgrades = Boolean.parseBoolean(facade.findPropertyValue("properties/config.properties", "prop.config.checkForUpgrades"));
                     if (checkForUpgrades) {
-                        String languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
-                        Utils.upgradeLauncher(languageCode, true);
+                        TemplateController templateController = MainApplication.getTemplate().getController();
+                        templateController.checkForUpdatesMenuOnAction();
                     }
                     Utils.showTipsOnStasrtup();
                     Session.getInstance().setFirstBoot(false);
