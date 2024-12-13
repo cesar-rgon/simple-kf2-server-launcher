@@ -436,7 +436,7 @@ public class MapsController implements Initializable {
         return urlPhoto;
     }
 
-    private ImageView createMapPreview(String urlPhoto) {
+    private ImageView createMapPreview(PlatformProfileMapDto platformProfileMapDto, String urlPhoto, Double widthNodeByNumberOfColums) {
 
         ImageView mapPreview = new ImageView();
         try {
@@ -454,6 +454,15 @@ public class MapsController implements Initializable {
                 image = new Image(inputStream);
             }
             mapPreview = new ImageView(image);
+
+            if (platformProfileMapDto.getMapDto().isOfficial()) {
+                mapPreview.setPreserveRatio(true);
+                mapPreview.setFitWidth(widthNodeByNumberOfColums);
+            } else {
+                mapPreview.setPreserveRatio(false);
+                mapPreview.setFitWidth(widthNodeByNumberOfColums);
+                mapPreview.setFitHeight(mapPreview.getFitWidth());
+            }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
         }
@@ -697,7 +706,7 @@ public class MapsController implements Initializable {
         return isInMapsCyclePane;
     }
 
-    private VBox initializeNodeCardDown(PlatformProfileMapDto platformProfileMapDto) {
+    private VBox initializeVerticalNode(PlatformProfileMapDto platformProfileMapDto) {
 
         VBox vBox = new VBox();
         vBox.setPrefWidth(getWidthNodeByNumberOfColums());
@@ -773,12 +782,7 @@ public class MapsController implements Initializable {
         return vBox;
     }
 
-    private VBox createMapNodeCardDown(PlatformProfileMapDto platformProfileMapDto) {
-
-        VBox vBox = initializeNodeCardDown(platformProfileMapDto);
-
-        String urlPhoto = getUrlPhoto(platformProfileMapDto);
-        ImageView mapPreview = createMapPreview(urlPhoto);
+    private void createMapNodeVerticalCard(PlatformProfileMapDto platformProfileMapDto, VBox vBox) {
 
         CheckBox checkBox = createCheckBox();
 
@@ -794,22 +798,58 @@ public class MapsController implements Initializable {
         Label importedDateText = createImportedDateLabel(platformProfileMapDto);
         importedDateText.setAlignment(Pos.BOTTOM_CENTER);
 
+        vBox.getChildren().addAll(aliasLabel, checkBox, mapNameLabel, releaseDateLabel, importedDateText);
+
         if (platformProfileMapDto.getMapDto().isOfficial()) {
-            mapPreview.setPreserveRatio(true);
-            mapPreview.setFitWidth(vBox.getPrefWidth());
-        } else {
-            mapPreview.setPreserveRatio(false);
-            mapPreview.setFitWidth(vBox.getPrefWidth());
-            mapPreview.setFitHeight(mapPreview.getFitWidth());
+            importedDateText.setPadding(new Insets(0,0,10,0));
+        }
+    }
+
+
+    private VBox createMapNodeCardUp(PlatformProfileMapDto platformProfileMapDto) {
+        VBox vBox = initializeVerticalNode(platformProfileMapDto);
+        createMapNodeVerticalCard(platformProfileMapDto, vBox);
+        Label aliasLabel = (Label) vBox.getChildren().get(0);
+        VBox.setMargin(aliasLabel, new Insets(-21,0,0,0));
+
+        CustomMapModDto customMapMod = null;
+        if (!platformProfileMapDto.getMapDto().isOfficial()) {
+            customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
+            HBox mapModPane = createMapModPane(customMapMod);
+            HBox downloadedStatePane = createDownloadedPane(platformProfileMapDto);
+            vBox.getChildren().addAll(mapModPane, downloadedStatePane);
+
+            if (!platformProfileMapDto.isDownloaded()) {
+                Hyperlink clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto);
+                vBox.getChildren().add(clickToDownloadMapLink);
+            }
         }
 
-        vBox.getChildren().addAll(mapPreview, aliasLabel, checkBox, mapNameLabel, releaseDateLabel, importedDateText);
+        if (customMapMod == null || platformProfileMapDto.isDownloaded() && customMapMod.isMap()) {
+            HBox isInMapsCyclePane = createIsInMapsCyclePane(platformProfileMapDto);
+            vBox.getChildren().add(isInMapsCyclePane);
+        }
+
+        String urlPhoto = getUrlPhoto(platformProfileMapDto);
+        ImageView mapPreview = createMapPreview(platformProfileMapDto, urlPhoto, getWidthNodeByNumberOfColums());
+        vBox.getChildren().add(mapPreview);
+        VBox.setMargin(mapPreview, new Insets(3,3,3,3));
+
+        return vBox;
+    }
+
+    private VBox createMapNodeCardDown(PlatformProfileMapDto platformProfileMapDto) {
+
+        VBox vBox = initializeVerticalNode(platformProfileMapDto);
+        String urlPhoto = getUrlPhoto(platformProfileMapDto);
+        ImageView mapPreview = createMapPreview(platformProfileMapDto, urlPhoto, getWidthNodeByNumberOfColums());
+
+        vBox.getChildren().add(mapPreview);
+        createMapNodeVerticalCard(platformProfileMapDto, vBox);
         VBox.setMargin(mapPreview, new Insets(-21,3,3,3));
 
         CustomMapModDto customMapMod = null;
-        if (platformProfileMapDto.getMapDto().isOfficial()) {
-            importedDateText.setPadding(new Insets(0,0,10,0));
-        } else {
+        if (!platformProfileMapDto.getMapDto().isOfficial()) {
             customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
             HBox mapModPane = createMapModPane(customMapMod);
             HBox downloadedStatePane = createDownloadedPane(platformProfileMapDto);
@@ -829,24 +869,7 @@ public class MapsController implements Initializable {
         return vBox;
     }
 
-    private HBox initializeNodeCardRight(PlatformProfileMapDto platformProfileMapDto) {
-
-        HBox hBox = new HBox();
-        hBox.setPrefWidth(getWidthNodeByNumberOfColums()+10);
-        hBox.getStyleClass().add("mapCard");
-        hBox.setAlignment(Pos.CENTER_LEFT);
-        hBox.setSpacing(5);
-
-        String urlPhoto = getUrlPhoto(platformProfileMapDto);
-        ImageView mapPreview = createMapPreview(urlPhoto);
-        if (platformProfileMapDto.getMapDto().isOfficial()) {
-            mapPreview.setPreserveRatio(true);
-            mapPreview.setFitWidth(Math.floor((hBox.getPrefWidth() - 11) / 2));
-        } else {
-            mapPreview.setPreserveRatio(false);
-            mapPreview.setFitWidth(Math.floor((hBox.getPrefWidth() - 11) / 2));
-            mapPreview.setFitHeight(mapPreview.getFitWidth());
-        }
+    private VBox initializeVerticalDescriptions(PlatformProfileMapDto platformProfileMapDto) {
 
         Label platformNameText = new Label(platformProfileMapDto.getPlatformDto().getKey());
         platformNameText.setVisible(false);
@@ -856,12 +879,19 @@ public class MapsController implements Initializable {
 
         VBox vBox = new VBox();
         vBox.setAlignment(Pos.CENTER);
-        vBox.setPrefWidth(Math.floor((hBox.getPrefWidth() - 11) / 2));
+        vBox.setPrefWidth(Math.floor((getWidthNodeByNumberOfColums()-1) / 2));
         vBox.getChildren().addAll(platformNameText, isOfficialText);
 
-        hBox.getChildren().addAll(mapPreview, vBox);
-        HBox.setMargin(mapPreview, new Insets(3,0,3,3));
-        HBox.setMargin(vBox, new Insets(-21,3,3,0));
+        return vBox;
+    }
+
+    private HBox initializeHorizontalNodeCard(PlatformProfileMapDto platformProfileMapDto, String urlPhoto) {
+
+        HBox hBox = new HBox();
+        hBox.setPrefWidth(getWidthNodeByNumberOfColums()+10);
+        hBox.getStyleClass().add("mapCard");
+        hBox.setAlignment(Pos.CENTER_LEFT);
+        hBox.setSpacing(2);
 
         StringBuffer tooltipText = new StringBuffer();
         if (!platformProfileMapDto.getMapDto().isOfficial()) {
@@ -923,9 +953,16 @@ public class MapsController implements Initializable {
         return hBox;
     }
 
-    private Node createMapNodeCardRight(PlatformProfileMapDto platformProfileMapDto) {
+    private Node createMapNodeCardLeft(PlatformProfileMapDto platformProfileMapDto) {
+        String urlPhoto = getUrlPhoto(platformProfileMapDto);
+        ImageView mapPreview = createMapPreview(platformProfileMapDto, urlPhoto, Math.floor((getWidthNodeByNumberOfColums()-1) / 2));
 
-        HBox hBox = initializeNodeCardRight(platformProfileMapDto);
+        HBox hBox = initializeHorizontalNodeCard(platformProfileMapDto, urlPhoto);
+        VBox vBox = initializeVerticalDescriptions(platformProfileMapDto);
+        HBox.setMargin(vBox, new Insets(-21,3,3,3));
+
+        hBox.getChildren().addAll(vBox, mapPreview);
+        HBox.setMargin(mapPreview, new Insets(3,0,3,3));
 
         CheckBox checkBox = createCheckBox();
 
@@ -941,7 +978,58 @@ public class MapsController implements Initializable {
         Label importedDateText = createImportedDateLabel(platformProfileMapDto);
         importedDateText.setAlignment(Pos.CENTER);
 
-        VBox vBox = (VBox) hBox.getChildren().get(1);
+        vBox.getChildren().addAll(aliasLabel, checkBox, mapNameLabel, releaseDateLabel, importedDateText);
+
+        CustomMapModDto customMapMod = null;
+        if (platformProfileMapDto.getMapDto().isOfficial()) {
+            importedDateText.setPadding(new Insets(0,0,10,0));
+        } else {
+            customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
+            HBox mapModPane = createMapModPane(customMapMod);
+            HBox downloadedStatePane = createDownloadedPane(platformProfileMapDto);
+            vBox.getChildren().addAll(mapModPane, downloadedStatePane);
+
+            if (!platformProfileMapDto.isDownloaded()) {
+                Hyperlink clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto);
+                vBox.getChildren().add(clickToDownloadMapLink);
+            }
+        }
+
+        if (customMapMod == null || platformProfileMapDto.isDownloaded() && customMapMod.isMap()) {
+            HBox isInMapsCyclePane = createIsInMapsCyclePane(platformProfileMapDto);
+            vBox.getChildren().add(isInMapsCyclePane);
+        }
+
+        return hBox;
+    }
+
+
+    private Node createMapNodeCardRight(PlatformProfileMapDto platformProfileMapDto) {
+
+        String urlPhoto = getUrlPhoto(platformProfileMapDto);
+        ImageView mapPreview = createMapPreview(platformProfileMapDto, urlPhoto, Math.floor((getWidthNodeByNumberOfColums()-1) / 2));
+
+        HBox hBox = initializeHorizontalNodeCard(platformProfileMapDto, urlPhoto);
+        VBox vBox = initializeVerticalDescriptions(platformProfileMapDto);
+        HBox.setMargin(vBox, new Insets(-21,3,3,3));
+
+        hBox.getChildren().addAll(mapPreview, vBox);
+        HBox.setMargin(mapPreview, new Insets(3,0,3,3));
+
+        CheckBox checkBox = createCheckBox();
+
+        Label aliasLabel = createAliasLabel(platformProfileMapDto);
+        aliasLabel.setAlignment(Pos.CENTER);
+
+        Label mapNameLabel = createMapNameLabel(platformProfileMapDto);
+        mapNameLabel.setAlignment(Pos.CENTER);
+
+        Label releaseDateLabel = createReleaseDateLabel(platformProfileMapDto);
+        releaseDateLabel.setAlignment(Pos.CENTER);
+
+        Label importedDateText = createImportedDateLabel(platformProfileMapDto);
+        importedDateText.setAlignment(Pos.CENTER);
+
         vBox.getChildren().addAll(aliasLabel, checkBox, mapNameLabel, releaseDateLabel, importedDateText);
 
         CustomMapModDto customMapMod = null;
@@ -1040,8 +1128,10 @@ public class MapsController implements Initializable {
 
     private Node createMapNode(PlatformProfileMapDto platformProfileMapDto) {
         switch (cardOrientation) {
-            case DOWN: return createMapNodeCardDown(platformProfileMapDto);
             case RIGHT: return createMapNodeCardRight(platformProfileMapDto);
+            case UP: return createMapNodeCardUp(platformProfileMapDto);
+            case LEFT: return createMapNodeCardLeft(platformProfileMapDto);
+            case DETAILED: return null;
             default: return createMapNodeCardDown(platformProfileMapDto);
         }
     }
@@ -2602,6 +2692,22 @@ public class MapsController implements Initializable {
     @FXML
     private void cardRightOnAction() {
         cardOrientation = EnumCardOrientation.RIGHT;
+        if (!profileSelect.getItems().isEmpty()) {
+            orderMapsByNameOnAction();
+        }
+    }
+
+    @FXML
+    private void cardUpOnAction() {
+        cardOrientation = EnumCardOrientation.UP;
+        if (!profileSelect.getItems().isEmpty()) {
+            orderMapsByNameOnAction();
+        }
+    }
+
+    @FXML
+    private void cardLeftOnAction() {
+        cardOrientation = EnumCardOrientation.LEFT;
         if (!profileSelect.getItems().isEmpty()) {
             orderMapsByNameOnAction();
         }

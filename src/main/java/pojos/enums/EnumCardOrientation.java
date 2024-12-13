@@ -2,7 +2,10 @@ package pojos.enums;
 
 public enum EnumCardOrientation {
     DOWN ("Card down"),
-    RIGHT ("Card right");
+    RIGHT ("Card right"),
+    UP ("Card up"),
+    LEFT ("Card left"),
+    DETAILED ("Detailed card");
 
     private String descripcion;
 
