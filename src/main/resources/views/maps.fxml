@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
 
-<fx:root fx:id="mapsEditionGridPane" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maps.MapsController">
+<fx:root fx:id="mapsEditionGridPane" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maps.MapsController">
    <children>
       <ImageView fx:id="profileImg" fitHeight="30.0" fitWidth="110.0" pickOnBounds="true" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.valignment="TOP">
          <image>
@@ -25,7 +40,7 @@
             <Insets right="10.0" top="20.0" />
          </GridPane.margin></ComboBox>
 
-      <TabPane fx:id="mapsTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnSpan="5" GridPane.rowIndex="1">
+      <TabPane fx:id="mapsTabPane" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" GridPane.columnSpan="5" GridPane.rowIndex="2">
         <tabs>
            <Tab id="titleConfigLabel" fx:id="steamOfficialMapsTab" text="Steam. Official Maps">
               <content>
@@ -81,7 +96,7 @@
            </Tab>
         </tabs>
       </TabPane>
-      <ProgressIndicator fx:id="progressIndicator" maxHeight="150.0" maxWidth="150.0" visible="false" GridPane.columnSpan="6" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+      <ProgressIndicator fx:id="progressIndicator" maxHeight="150.0" maxWidth="150.0" visible="false" GridPane.columnSpan="6" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
       <Slider fx:id="mapsSlider" blockIncrement="1.0" majorTickUnit="1.0" max="10.0" maxWidth="280.0" min="2.0" minorTickCount="0" onMouseClicked="#mapsSliderOnMouseClicked" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="5.0" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER" GridPane.valignment="TOP">
          <GridPane.margin>
             <Insets right="10.0" top="22.0" />
@@ -153,6 +168,35 @@
             <Insets right="112.0" top="20.0" />
          </GridPane.margin>
       </MenuBar>
+
+      <ImageView fx:id="viewImg" fitHeight="30.0" fitWidth="110.0" pickOnBounds="true" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+         <image>
+            <Image url="@../images/label-inverted.png" />
+         </image>
+         <GridPane.margin>
+            <Insets top="10.0" />
+         </GridPane.margin>
+      </ImageView>
+      <Label fx:id="viewLabel" text="VIEWS" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+         <GridPane.margin>
+            <Insets right="40.0" top="18.0" />
+         </GridPane.margin>
+      </Label>
+
+      <MenuBar id="viewsMenuBar" fx:id="viewsMenuBar" maxHeight="29.0" maxWidth="40.0" minHeight="29.0" minWidth="40.0" BorderPane.alignment="CENTER" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+         <menus>
+            <Menu fx:id="views" mnemonicParsing="false" text="V">
+               <items>
+                  <MenuItem fx:id="cardDown" mnemonicParsing="false" onAction="#cardDownOnAction" text="Cards down" />
+                  <MenuItem fx:id="cardRight" mnemonicParsing="false" onAction="#cardRightOnAction" text="Cards right" />
+               </items>
+            </Menu>
+         </menus>
+         <GridPane.margin>
+            <Insets right="112.0" top="10.0" />
+         </GridPane.margin>
+      </MenuBar>
+
    </children>
    <columnConstraints>
       <ColumnConstraints maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
@@ -163,6 +207,7 @@
       <ColumnConstraints hgrow="ALWAYS" maxWidth="10.0" minWidth="10.0" prefWidth="10.0" />
    </columnConstraints>
    <rowConstraints>
+      <RowConstraints minHeight="60.0" prefHeight="60.0" vgrow="NEVER" />
       <RowConstraints minHeight="60.0" prefHeight="60.0" vgrow="NEVER" />
       <RowConstraints minHeight="350.0" prefHeight="350.0" vgrow="ALWAYS" />
    </rowConstraints>

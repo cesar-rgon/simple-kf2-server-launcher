@@ -6,7 +6,7 @@
     -fx-border-color: #333333;
 }
 
-.menu-button:hover, .menu-item:hover, #actionsMenuBar {
+.menu-button:hover, .menu-item:hover, #actionsMenuBar, #viewsMenuBar {
     -fx-background-color: #c15d11;
     -fx-cursor: hand;
 }
@@ -195,13 +195,13 @@
     -fx-focus-color: #c15d11;
 }
 
-.gridPane {
+.gridPane, .mapCard {
     -fx-border-color: #c15d11;
     -fx-border-width:3px;
     -fx-border-radius: 10px;
 }
 
-.gridPane:hover {
+.gridPane:hover, #mapCard:hover {
     -fx-effect: dropshadow(three-pass-box, red, 20, 0, 0, 0);
 }
 

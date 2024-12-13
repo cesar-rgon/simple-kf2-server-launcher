@@ -13,7 +13,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
@@ -33,12 +32,11 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.*;
+import pojos.enums.EnumCardOrientation;
 import pojos.enums.EnumMapsTab;
 import pojos.enums.EnumPlatform;
 import pojos.enums.EnumSortedMapsCriteria;
 import pojos.session.Session;
-import services.PropertyService;
-import services.PropertyServiceImpl;
 import start.MainApplication;
 import stories.addcustommapstoprofile.AddCustomMapsToProfileFacadeResult;
 import stories.listplatformprofilemap.ListPlatformProfileMapFacadeResult;
@@ -67,6 +65,7 @@ public class MapsController implements Initializable {
     protected String languageCode;
     private List<PlatformProfileMapDto> steamPlatformProfileMapDtoList;
     private List<PlatformProfileMapDto> epicPlatformProfileMapDtoList;
+    private EnumCardOrientation cardOrientation;
 
     @FXML private Slider mapsSlider;
     @FXML private FlowPane steamOfficialMapsFlowPane;
@@ -98,10 +97,12 @@ public class MapsController implements Initializable {
     @FXML private MenuItem orderMapsByDownload;
     @FXML private MenuItem orderMapsByMapsCycle;
     @FXML private MenuItem editMaps;
-    @FXML ProgressIndicator progressIndicator;
+    @FXML private ProgressIndicator progressIndicator;
     @FXML private MenuItem addToMapsCycle;
     @FXML private MenuItem removeFromMapsCycle;
     @FXML private MenuItem downloadMaps;
+    @FXML private MenuItem cardDown;
+    @FXML private MenuItem cardRight;
 
     public MapsController() {
         super();
@@ -111,6 +112,7 @@ public class MapsController implements Initializable {
         facade = new MapsManagerFacadeImpl(mapsInitializeModelContext);
         steamPlatformProfileMapDtoList = new ArrayList<PlatformProfileMapDto>();
         epicPlatformProfileMapDtoList = new ArrayList<>();
+        cardOrientation = EnumCardOrientation.DOWN;
     }
 
     @Override
@@ -420,8 +422,7 @@ public class MapsController implements Initializable {
         return contentPane;
     }
 
-    private GridPane createMapGridPane(PlatformProfileMapDto platformProfileMapDto) {
-
+    private String getUrlPhoto(PlatformProfileMapDto platformProfileMapDto) {
         String urlPhoto = StringUtils.EMPTY;
         if (StringUtils.isNotBlank(platformProfileMapDto.getUrlPhoto())) {
             if (platformProfileMapDto.getUrlPhoto().startsWith("http") || platformProfileMapDto.getUrlPhoto().startsWith("file:")) {
@@ -432,6 +433,10 @@ public class MapsController implements Initializable {
                 urlPhoto = "file:" + platformProfileMapDto.getUrlPhoto();
             }
         }
+        return urlPhoto;
+    }
+
+    private ImageView createMapPreview(String urlPhoto) {
 
         ImageView mapPreview = new ImageView();
         try {
@@ -453,22 +458,11 @@ public class MapsController implements Initializable {
             logger.error(e.getMessage(), e);
         }
 
-        GridPane gridpane = new GridPane();
-        gridpane.setPrefWidth(getWidthGridPaneByNumberOfColums());
-        gridpane.getStyleClass().add("gridPane");
-        gridpane.setAlignment(Pos.CENTER);
+        return mapPreview;
+    }
 
-        if (platformProfileMapDto.getMapDto().isOfficial()) {
-            mapPreview.setPreserveRatio(true);
-            mapPreview.setFitWidth(gridpane.getPrefWidth());
-        } else {
-            mapPreview.setPreserveRatio(false);
-            mapPreview.setFitWidth(gridpane.getPrefWidth());
-            mapPreview.setFitHeight(mapPreview.getFitWidth());
-        }
-        gridpane.add(mapPreview, 1, 1);
-        GridPane.setMargin(mapPreview, new Insets(3,3,0,3));
-        GridPane.setHalignment(mapPreview, HPos.CENTER);
+
+    private CheckBox createCheckBox() {
         CheckBox checkbox = new CheckBox();
         checkbox.setOpacity(0.5);
         checkbox.setOnAction(e -> {
@@ -478,222 +472,396 @@ public class MapsController implements Initializable {
                 checkbox.setOpacity(0.5);
             }
         });
+        checkbox.setPadding(new Insets(0,0,10,0));
 
-        Label aliasLabel = new Label(platformProfileMapDto.getAlias(), checkbox);
+        return checkbox;
+    }
+
+    private Label createAliasLabel(PlatformProfileMapDto platformProfileMapDto) {
+
+        Label aliasLabel = new Label(platformProfileMapDto.getAlias());
         aliasLabel.setMinHeight(20);
-        aliasLabel.setMaxWidth(Double.MAX_VALUE);
-        aliasLabel.setAlignment(Pos.BOTTOM_CENTER);
-        aliasLabel.setPadding(new Insets(10,0,0,0));
-        gridpane.add(aliasLabel, 1, 2);
+        aliasLabel.setPadding(new Insets(0,0,5,0));
+
+        return aliasLabel;
+    }
+
+    private Label createMapNameLabel(PlatformProfileMapDto platformProfileMapDto) {
+        String mapNameText;
+        try {
+            mapNameText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.name");
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            mapNameText = "Name";
+        }
+
+        Label mapNameLabel = new Label(mapNameText + ": " + platformProfileMapDto.getMapDto().getKey());
+        mapNameLabel.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
+
+        return mapNameLabel;
+    }
+
+    private Label createReleaseDateLabel(PlatformProfileMapDto platformProfileMapDto) {
 
         String datePattern;
         String unknownStr;
         String releaseStr;
-        String importedStr;
-        String mapNameText;
-        String dateHourPattern;
-        Double tooltipDuration = 30.0;
         try {
             datePattern = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.code.datePattern");
-            dateHourPattern = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.code.dateHourPattern");
             unknownStr = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unknown");
             releaseStr = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.release");
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            datePattern = "yyyy/MM/dd";
+            unknownStr = "Unknown";
+            releaseStr = "Release";
+        }
+
+        String releaseDateStr = platformProfileMapDto.getReleaseDate() != null ? platformProfileMapDto.getReleaseDate().format(DateTimeFormatter.ofPattern(datePattern)): unknownStr;
+        Label releaseDateLabel = new Label(releaseStr + ": " + releaseDateStr);
+        releaseDateLabel.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
+
+        return releaseDateLabel;
+    }
+
+    private Label createImportedDateLabel(PlatformProfileMapDto platformProfileMapDto) {
+
+        String importedStr;
+        String dateHourPattern;
+        try {
+            dateHourPattern = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.code.dateHourPattern");
             importedStr = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.imported");
-            mapNameText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.name");
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            dateHourPattern = "yyyy/MM/dd HH:mm";
+            importedStr = "Imported";
+        }
+
+        Label importedDateText = new Label(importedStr + ": " + platformProfileMapDto.getImportedDate().format(DateTimeFormatter.ofPattern(dateHourPattern)));
+        importedDateText.setMaxWidth(Double.MAX_VALUE);
+        importedDateText.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
+
+        return importedDateText;
+    }
+
+    private HBox createMapModPane(CustomMapModDto customMapMod) {
+        Label mapModLabel;
+        String isMapModLabelText;
+
+        if (customMapMod.isMap() == null) {
+            try {
+                isMapModLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unknownType");
+            } catch (Exception e) {
+                isMapModLabelText = "UNKOWN TYPE";
+            }
+        } else {
+            if (customMapMod.isMap()) {
+                try {
+                    isMapModLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.isMap");
+                } catch (Exception e) {
+                    isMapModLabelText = "MAP";
+                }
+            } else {
+                try {
+                    isMapModLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.isMod");
+                } catch (Exception e) {
+                    isMapModLabelText = "MOD / MUTATOR";
+                }
+            }
+        }
+        mapModLabel = new Label(isMapModLabelText);
+        mapModLabel.setStyle("-fx-text-fill: #5fbb3d; -fx-font-weight: bold;");
+        HBox mapModPane = new HBox();
+        mapModPane.getChildren().addAll(mapModLabel);
+        mapModPane.setAlignment(Pos.CENTER);
+        mapModPane.setPadding(new Insets(10,0,0,0));
+
+        return mapModPane;
+    }
+
+    private Hyperlink createClickToDownloadMapLink(PlatformProfileMapDto platformProfileMapDto) {
+
+        String downloadedLabelText = "";
+        Label downloadedLabel = new Label();
+
+        try {
+            downloadedLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.clickToDownloadMap");
+        } catch (Exception e) {
+            downloadedLabelText = "Click to download it!";
+        }
+
+        Hyperlink clickToDownloadMapLink = new Hyperlink(downloadedLabelText);
+        clickToDownloadMapLink.setStyle("-fx-text-fill: #f03830; -fx-underline: true;");
+        clickToDownloadMapLink.setMaxWidth(Double.MAX_VALUE);
+        clickToDownloadMapLink.setAlignment(Pos.CENTER);
+        clickToDownloadMapLink.setPadding(new Insets(10,0,10,0));
+
+        clickToDownloadMapLink.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent e) {
+                try {
+                    List<String> platformNameList = new ArrayList<String>();
+                    platformNameList.add(platformProfileMapDto.getPlatformDto().getKey());
+                    List<String> mapNameList = new ArrayList<String>();
+                    mapNameList.add(platformProfileMapDto.getMapDto().getKey());
+
+                    progressIndicator.setVisible(true);
+                    Task<Void> task = new Task<Void>() {
+                        @Override
+                        protected Void call() throws Exception {
+                            facade.downloadMapListFromSteamCmd(platformNameList, mapNameList);
+                            return null;
+                        }
+                    };
+                    task.setOnSucceeded(wse -> {
+                        progressIndicator.setVisible(false);
+                        if (EnumPlatform.STEAM.name().equals(platformProfileMapDto.getPlatformDto().getKey())) {
+                            String downloadedLabelText = StringUtils.EMPTY;
+                            try {
+                                downloadedLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.downloaded");
+                            } catch (Exception ex) {
+                                downloadedLabelText = "DOWNLOADED";
+                            }
+                            downloadedLabel.setText(downloadedLabelText);
+                            downloadedLabel.setStyle("-fx-text-fill: gold; -fx-padding: 3; -fx-border-color: gold; -fx-border-radius: 5;");
+                            clickToDownloadMapLink.setVisible(false);
+                        }
+                    });
+                    task.setOnFailed(wse -> {
+                        progressIndicator.setVisible(false);
+                    });
+                    Thread thread = new Thread(task);
+                    thread.start();
+
+                } catch (Exception ex) {
+                    logger.error(ex.getMessage(), ex);
+                    Utils.errorDialog(ex.getMessage(), ex);
+                }
+            }
+        });
+
+        return clickToDownloadMapLink;
+    }
+
+
+    private HBox createDownloadedPane(PlatformProfileMapDto platformProfileMapDto) {
+
+        String downloadedLabelText = "";
+        Label downloadedLabel = new Label();
+
+        if (platformProfileMapDto.isDownloaded()) {
+            try {
+                downloadedLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.downloaded");
+            } catch (Exception e) {
+                downloadedLabelText = "DOWNLOADED";
+            }
+            downloadedLabel.setText(downloadedLabelText);
+            downloadedLabel.setStyle("-fx-text-fill: gold; -fx-padding: 3; -fx-border-color: gold; -fx-border-radius: 5;");
+        }
+
+        HBox downloadedStatePane = new HBox();
+        downloadedStatePane.getChildren().addAll(downloadedLabel);
+        downloadedStatePane.setMaxWidth(Double.MAX_VALUE);
+        downloadedStatePane.setAlignment(Pos.CENTER);
+        downloadedStatePane.setPadding(new Insets(10,0,10,0));
+
+        return downloadedStatePane;
+    }
+
+    private HBox createIsInMapsCyclePane(PlatformProfileMapDto platformProfileMapDto) {
+
+        Label isInMapsCycleLabel = new Label();
+        String isInMapsCycleText;
+        if (platformProfileMapDto.isInMapsCycle()) {
+            try {
+                isInMapsCycleText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.inMapsCycle");
+            } catch (Exception e) {
+                isInMapsCycleText = "IN MAPS CYCLE";
+            }
+            isInMapsCycleLabel.setStyle("-fx-text-fill: #ef2828; -fx-font-weight: bold; -fx-padding: 3; -fx-border-color: #ef2828; -fx-border-radius: 5;");
+        } else {
+            try {
+                isInMapsCycleText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.notInMapsCycle");
+            } catch (Exception e) {
+                isInMapsCycleText = "NOT IN MAPS CYCLE";
+            }
+            isInMapsCycleLabel.setStyle("-fx-text-fill: grey; -fx-font-weight: bold; -fx-padding: 3; -fx-border-color: grey; -fx-border-radius: 5;");
+        }
+        isInMapsCycleLabel.setText(isInMapsCycleText);
+        HBox isInMapsCyclePane = new HBox();
+        isInMapsCyclePane.getChildren().addAll(isInMapsCycleLabel);
+        isInMapsCyclePane.setMaxWidth(Double.MAX_VALUE);
+        isInMapsCyclePane.setAlignment(Pos.CENTER);
+        isInMapsCyclePane.setPadding(new Insets(0,0,10,0));
+
+        return isInMapsCyclePane;
+    }
+
+    private VBox initializeNodeCardDown(PlatformProfileMapDto platformProfileMapDto) {
+
+        VBox vBox = new VBox();
+        vBox.setPrefWidth(getWidthNodeByNumberOfColums());
+        vBox.getStyleClass().add("mapCard");
+        vBox.setAlignment(Pos.CENTER);
+
+        Label platformNameText = new Label(platformProfileMapDto.getPlatformDto().getKey());
+        platformNameText.setVisible(false);
+
+        Label isOfficialText = new Label(String.valueOf(platformProfileMapDto.getMapDto().isOfficial()));
+        isOfficialText.setVisible(false);
+        vBox.getChildren().addAll(platformNameText, isOfficialText);
+
+        StringBuffer tooltipText = new StringBuffer();
+        if (!platformProfileMapDto.getMapDto().isOfficial()) {
+            tooltipText.append("id WorkShop: ").append(((CustomMapModDto) platformProfileMapDto.getMapDto()).getIdWorkShop());
+        }
+
+        String urlPhoto = getUrlPhoto(platformProfileMapDto);
+
+        if (StringUtils.isNotBlank(urlPhoto)) {
+            if (StringUtils.isNotBlank(tooltipText)) {
+                tooltipText.append("\n");
+            }
+            String message = "";
+            try {
+                message = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.urlInfo");
+            } catch (Exception e) {
+                message = "Url info";
+            }
+            tooltipText.append(message).append(": ").append(platformProfileMapDto.getUrlInfo());
+        }
+        if (platformProfileMapDto.getMapDto().isOfficial() || platformProfileMapDto.isDownloaded()) {
+            if (StringUtils.isNotBlank(tooltipText)) {
+                tooltipText.append("\n");
+            }
+            String message = "";
+            try {
+                message = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.photoLocation");
+            } catch (Exception e) {
+                message = "Photo location";
+            }
+            tooltipText.append(message).append(": ").append(urlPhoto);
+        }
+
+        Double tooltipDuration = 30.0;
+        try {
             tooltipDuration = Double.parseDouble(
                     facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
             );
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
-            datePattern = "yyyy/MM/dd";
-            dateHourPattern = "yyyy/MM/dd HH:mm";
-            unknownStr = "Unknown";
-            releaseStr = "Release";
-            importedStr = "Imported";
-            mapNameText = "Name";
         }
 
-        Text mapNameGraphic = new Text(mapNameText + ": ");
-        mapNameGraphic.setFill(Color.GRAY);
-        Label mapNameLabel = new Label(platformProfileMapDto.getMapDto().getKey(), mapNameGraphic);
-        mapNameLabel.setMaxWidth(Double.MAX_VALUE);
+        if (StringUtils.isNotBlank(tooltipText)) {
+            Tooltip tooltip = new Tooltip(tooltipText.toString());
+            tooltip.setShowDuration(Duration.seconds(tooltipDuration));
+            Tooltip.install(vBox, tooltip);
+        }
+
+        if (StringUtils.isNotBlank(platformProfileMapDto.getUrlInfo())) {
+            vBox.setCursor(Cursor.HAND);
+            vBox.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    Session.getInstance().setPpm(platformProfileMapDto);
+                    loadNewContent("/views/mapWebInfo.fxml");
+                    event.consume();
+                }
+            });
+        }
+
+        return vBox;
+    }
+
+    private VBox createMapNodeCardDown(PlatformProfileMapDto platformProfileMapDto) {
+
+        VBox vBox = initializeNodeCardDown(platformProfileMapDto);
+
+        String urlPhoto = getUrlPhoto(platformProfileMapDto);
+        ImageView mapPreview = createMapPreview(urlPhoto);
+
+        CheckBox checkBox = createCheckBox();
+
+        Label aliasLabel = createAliasLabel(platformProfileMapDto);
+        aliasLabel.setAlignment(Pos.BOTTOM_CENTER);
+
+        Label mapNameLabel = createMapNameLabel(platformProfileMapDto);
         mapNameLabel.setAlignment(Pos.BOTTOM_CENTER);
-        mapNameLabel.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
-        mapNameLabel.setPadding(new Insets(10,0,0,0));
-        gridpane.add(mapNameLabel, 1, 3);
 
-
-        Text releaseDateGraphic = new Text(releaseStr + ": ");
-        releaseDateGraphic.setFill(Color.GRAY);
-        String releaseDateStr = platformProfileMapDto.getReleaseDate() != null ? platformProfileMapDto.getReleaseDate().format(DateTimeFormatter.ofPattern(datePattern)): unknownStr;
-        Label releaseDateLabel = new Label(releaseDateStr, releaseDateGraphic);
-        releaseDateLabel.setMaxWidth(Double.MAX_VALUE);
+        Label releaseDateLabel = createReleaseDateLabel(platformProfileMapDto);
         releaseDateLabel.setAlignment(Pos.BOTTOM_CENTER);
-        releaseDateLabel.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
-        gridpane.add(releaseDateLabel, 1, 4);
 
-        Text importedDateGraphic = new Text(importedStr + ": ");
-        importedDateGraphic.setFill(Color.GRAY);
-
-        Label importedDateText = new Label(platformProfileMapDto.getImportedDate().format(DateTimeFormatter.ofPattern(dateHourPattern)), importedDateGraphic);
-        importedDateText.setMaxWidth(Double.MAX_VALUE);
+        Label importedDateText = createImportedDateLabel(platformProfileMapDto);
         importedDateText.setAlignment(Pos.BOTTOM_CENTER);
-        importedDateText.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
-        gridpane.add(importedDateText, 1, 5);
 
-        Label platformNameText = new Label(platformProfileMapDto.getPlatformDto().getKey());
-        platformNameText.setVisible(false);
-        gridpane.add(platformNameText, 1, 1);
+        if (platformProfileMapDto.getMapDto().isOfficial()) {
+            mapPreview.setPreserveRatio(true);
+            mapPreview.setFitWidth(vBox.getPrefWidth());
+        } else {
+            mapPreview.setPreserveRatio(false);
+            mapPreview.setFitWidth(vBox.getPrefWidth());
+            mapPreview.setFitHeight(mapPreview.getFitWidth());
+        }
 
-        Label isOfficialText = new Label(String.valueOf(platformProfileMapDto.getMapDto().isOfficial()));
-        isOfficialText.setVisible(false);
-        gridpane.add(isOfficialText, 1, 1);
+        vBox.getChildren().addAll(mapPreview, aliasLabel, checkBox, mapNameLabel, releaseDateLabel, importedDateText);
+        VBox.setMargin(mapPreview, new Insets(-21,3,3,3));
 
-        int rowIndex = 6;
         CustomMapModDto customMapMod = null;
         if (platformProfileMapDto.getMapDto().isOfficial()) {
             importedDateText.setPadding(new Insets(0,0,10,0));
         } else {
             customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
-            Label isMapModLabel;
-            String isMapModLabelText;
+            HBox mapModPane = createMapModPane(customMapMod);
+            HBox downloadedStatePane = createDownloadedPane(platformProfileMapDto);
+            vBox.getChildren().addAll(mapModPane, downloadedStatePane);
 
-            if (customMapMod.isMap() == null) {
-                try {
-                    isMapModLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.unknownType");
-                } catch (Exception e) {
-                    isMapModLabelText = "UNKOWN TYPE";
-                }
-            } else {
-                if (customMapMod.isMap()) {
-                    try {
-                        isMapModLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.isMap");
-                    } catch (Exception e) {
-                        isMapModLabelText = "MAP";
-                    }
-                } else {
-                    try {
-                        isMapModLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.isMod");
-                    } catch (Exception e) {
-                        isMapModLabelText = "MOD / MUTATOR";
-                    }
-                }
+            if (!platformProfileMapDto.isDownloaded()) {
+                Hyperlink clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto);
+                vBox.getChildren().add(clickToDownloadMapLink);
             }
-            isMapModLabel = new Label(isMapModLabelText);
-            isMapModLabel.setStyle("-fx-text-fill: #5fbb3d; -fx-font-weight: bold;");
-            HBox statePane = new HBox();
-            statePane.getChildren().addAll(isMapModLabel);
-            statePane.setMaxWidth(Double.MAX_VALUE);
-            statePane.setAlignment(Pos.CENTER);
-            statePane.setPadding(new Insets(10,0,0,0));
-            gridpane.add(statePane,1, rowIndex);
-            rowIndex++;
-
-            Label stateLabel = new Label();
-            String downloadedLabelText = "";
-            HBox downloadedStatePane = new HBox();
-            downloadedStatePane.getChildren().addAll(stateLabel);
-            downloadedStatePane.setMaxWidth(Double.MAX_VALUE);
-            downloadedStatePane.setAlignment(Pos.CENTER);
-            downloadedStatePane.setPadding(new Insets(10,0,10,0));
-            gridpane.add(downloadedStatePane,1, rowIndex);
-
-            if (platformProfileMapDto.isDownloaded()) {
-                try {
-                    downloadedLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.downloaded");
-                } catch (Exception e) {
-                    downloadedLabelText = "DOWNLOADED";
-                }
-                stateLabel.setText(downloadedLabelText);
-                stateLabel.setStyle("-fx-text-fill: gold; -fx-padding: 3; -fx-border-color: gold; -fx-border-radius: 5;");
-
-            } else {
-                try {
-                    downloadedLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.clickToDownloadMap");
-                } catch (Exception e) {
-                    downloadedLabelText = "Click to download it!";
-                }
-
-                Hyperlink clickToDownloadMapLink = new Hyperlink(downloadedLabelText);
-                clickToDownloadMapLink.setStyle("-fx-text-fill: #f03830; -fx-underline: true;");
-                clickToDownloadMapLink.setMaxWidth(Double.MAX_VALUE);
-                clickToDownloadMapLink.setAlignment(Pos.CENTER);
-                clickToDownloadMapLink.setPadding(new Insets(10,0,10,0));
-
-                clickToDownloadMapLink.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent e) {
-                        try {
-                            List<String> platformNameList = new ArrayList<String>();
-                            platformNameList.add(platformProfileMapDto.getPlatformDto().getKey());
-                            List<String> mapNameList = new ArrayList<String>();
-                            mapNameList.add(platformProfileMapDto.getMapDto().getKey());
-
-                            progressIndicator.setVisible(true);
-                            Task<Void> task = new Task<Void>() {
-                                @Override
-                                protected Void call() throws Exception {
-                                    facade.downloadMapListFromSteamCmd(platformNameList, mapNameList);
-                                    return null;
-                                }
-                            };
-                            task.setOnSucceeded(wse -> {
-                                progressIndicator.setVisible(false);
-                                if (EnumPlatform.STEAM.name().equals(platformProfileMapDto.getPlatformDto().getKey())) {
-                                    String downloadedLabelText = StringUtils.EMPTY;
-                                    try {
-                                        downloadedLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.downloaded");
-                                    } catch (Exception ex) {
-                                        downloadedLabelText = "DOWNLOADED";
-                                    }
-                                    stateLabel.setText(downloadedLabelText);
-                                    stateLabel.setStyle("-fx-text-fill: gold; -fx-padding: 3; -fx-border-color: gold; -fx-border-radius: 5;");
-                                    clickToDownloadMapLink.setVisible(false);
-                                }
-                            });
-                            task.setOnFailed(wse -> {
-                                progressIndicator.setVisible(false);
-                            });
-                            Thread thread = new Thread(task);
-                            thread.start();
-
-                        } catch (Exception ex) {
-                            logger.error(ex.getMessage(), ex);
-                            Utils.errorDialog(ex.getMessage(), ex);
-                        }
-                    }
-                });
-                gridpane.add(clickToDownloadMapLink,1, rowIndex);
-            }
-            rowIndex++;
         }
 
         if (customMapMod == null || platformProfileMapDto.isDownloaded() && customMapMod.isMap()) {
-            Label isInMapsCycleLabel = new Label();
-            String isInMapsCycleText;
-            if (platformProfileMapDto.isInMapsCycle()) {
-                try {
-                    isInMapsCycleText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.inMapsCycle");
-                } catch (Exception e) {
-                    isInMapsCycleText = "IN MAPS CYCLE";
-                }
-                isInMapsCycleLabel.setStyle("-fx-text-fill: #ef2828; -fx-font-weight: bold; -fx-padding: 3; -fx-border-color: #ef2828; -fx-border-radius: 5;");
-            } else {
-                try {
-                    isInMapsCycleText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.notInMapsCycle");
-                } catch (Exception e) {
-                    isInMapsCycleText = "NOT IN MAPS CYCLE";
-                }
-                isInMapsCycleLabel.setStyle("-fx-text-fill: grey; -fx-font-weight: bold; -fx-padding: 3; -fx-border-color: grey; -fx-border-radius: 5;");
-            }
-            isInMapsCycleLabel.setText(isInMapsCycleText);
-            HBox isInMapsCyclePane = new HBox();
-            isInMapsCyclePane.getChildren().addAll(isInMapsCycleLabel);
-            isInMapsCyclePane.setMaxWidth(Double.MAX_VALUE);
-            isInMapsCyclePane.setAlignment(Pos.CENTER);
-            isInMapsCyclePane.setPadding(new Insets(0,0,10,0));
-            gridpane.add(isInMapsCyclePane,1, rowIndex);
+            HBox isInMapsCyclePane = createIsInMapsCyclePane(platformProfileMapDto);
+            vBox.getChildren().add(isInMapsCyclePane);
         }
+
+        return vBox;
+    }
+
+    private HBox initializeNodeCardRight(PlatformProfileMapDto platformProfileMapDto) {
+
+        HBox hBox = new HBox();
+        hBox.setPrefWidth(getWidthNodeByNumberOfColums()+10);
+        hBox.getStyleClass().add("mapCard");
+        hBox.setAlignment(Pos.CENTER_LEFT);
+        hBox.setSpacing(5);
+
+        String urlPhoto = getUrlPhoto(platformProfileMapDto);
+        ImageView mapPreview = createMapPreview(urlPhoto);
+        if (platformProfileMapDto.getMapDto().isOfficial()) {
+            mapPreview.setPreserveRatio(true);
+            mapPreview.setFitWidth(Math.floor((hBox.getPrefWidth() - 11) / 2));
+        } else {
+            mapPreview.setPreserveRatio(false);
+            mapPreview.setFitWidth(Math.floor((hBox.getPrefWidth() - 11) / 2));
+            mapPreview.setFitHeight(mapPreview.getFitWidth());
+        }
+
+        Label platformNameText = new Label(platformProfileMapDto.getPlatformDto().getKey());
+        platformNameText.setVisible(false);
+
+        Label isOfficialText = new Label(String.valueOf(platformProfileMapDto.getMapDto().isOfficial()));
+        isOfficialText.setVisible(false);
+
+        VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER);
+        vBox.setPrefWidth(Math.floor((hBox.getPrefWidth() - 11) / 2));
+        vBox.getChildren().addAll(platformNameText, isOfficialText);
+
+        hBox.getChildren().addAll(mapPreview, vBox);
+        HBox.setMargin(mapPreview, new Insets(3,0,3,3));
+        HBox.setMargin(vBox, new Insets(-21,3,3,0));
 
         StringBuffer tooltipText = new StringBuffer();
         if (!platformProfileMapDto.getMapDto().isOfficial()) {
@@ -725,15 +893,24 @@ public class MapsController implements Initializable {
             tooltipText.append(message).append(": ").append(urlPhoto);
         }
 
+        Double tooltipDuration = 30.0;
+        try {
+            tooltipDuration = Double.parseDouble(
+                    facade.findPropertyValue("properties/config.properties", "prop.config.tooltipDuration")
+            );
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+        }
+
         if (StringUtils.isNotBlank(tooltipText)) {
             Tooltip tooltip = new Tooltip(tooltipText.toString());
             tooltip.setShowDuration(Duration.seconds(tooltipDuration));
-            Tooltip.install(gridpane, tooltip);
+            Tooltip.install(hBox, tooltip);
         }
 
         if (StringUtils.isNotBlank(platformProfileMapDto.getUrlInfo())) {
-            gridpane.setCursor(Cursor.HAND);
-            gridpane.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+            hBox.setCursor(Cursor.HAND);
+            hBox.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
                     Session.getInstance().setPpm(platformProfileMapDto);
@@ -743,7 +920,130 @@ public class MapsController implements Initializable {
             });
         }
 
+        return hBox;
+    }
+
+    private Node createMapNodeCardRight(PlatformProfileMapDto platformProfileMapDto) {
+
+        HBox hBox = initializeNodeCardRight(platformProfileMapDto);
+
+        CheckBox checkBox = createCheckBox();
+
+        Label aliasLabel = createAliasLabel(platformProfileMapDto);
+        aliasLabel.setAlignment(Pos.CENTER);
+
+        Label mapNameLabel = createMapNameLabel(platformProfileMapDto);
+        mapNameLabel.setAlignment(Pos.CENTER);
+
+        Label releaseDateLabel = createReleaseDateLabel(platformProfileMapDto);
+        releaseDateLabel.setAlignment(Pos.CENTER);
+
+        Label importedDateText = createImportedDateLabel(platformProfileMapDto);
+        importedDateText.setAlignment(Pos.CENTER);
+
+        VBox vBox = (VBox) hBox.getChildren().get(1);
+        vBox.getChildren().addAll(aliasLabel, checkBox, mapNameLabel, releaseDateLabel, importedDateText);
+
+        CustomMapModDto customMapMod = null;
+        if (platformProfileMapDto.getMapDto().isOfficial()) {
+            importedDateText.setPadding(new Insets(0,0,10,0));
+        } else {
+            customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
+            HBox mapModPane = createMapModPane(customMapMod);
+            HBox downloadedStatePane = createDownloadedPane(platformProfileMapDto);
+            vBox.getChildren().addAll(mapModPane, downloadedStatePane);
+
+            if (!platformProfileMapDto.isDownloaded()) {
+                Hyperlink clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto);
+                vBox.getChildren().add(clickToDownloadMapLink);
+            }
+        }
+
+        if (customMapMod == null || platformProfileMapDto.isDownloaded() && customMapMod.isMap()) {
+            HBox isInMapsCyclePane = createIsInMapsCyclePane(platformProfileMapDto);
+            vBox.getChildren().add(isInMapsCyclePane);
+        }
+
+        return hBox;
+    }
+
+    private GridPane createMapGridPaneCardRight(PlatformProfileMapDto platformProfileMapDto) {
+
+        // GridPane gridpane = initializeGridPane(platformProfileMapDto);
+        // String urlPhoto = getUrlPhoto(platformProfileMapDto);
+        // ImageView mapPreview = createMapPreview(urlPhoto);
+
+        /*
+        Label aliasLabel = createAliasLabel(platformProfileMapDto);
+        aliasLabel.setAlignment(Pos.CENTER_LEFT);
+
+        Label mapNameLabel = createMapNameLabel(platformProfileMapDto);
+        mapNameLabel.setAlignment(Pos.CENTER_LEFT);
+
+        Label releaseDateLabel = createReleaseDateLabel(platformProfileMapDto);
+        releaseDateLabel.setAlignment(Pos.CENTER_LEFT);
+
+        Label importedDateText = createImportedDateLabel(platformProfileMapDto);
+        importedDateText.setAlignment(Pos.CENTER_LEFT);
+
+        if (platformProfileMapDto.getMapDto().isOfficial()) {
+            mapPreview.setPreserveRatio(true);
+            mapPreview.setFitWidth(gridpane.getPrefWidth() / 2);
+        } else {
+            mapPreview.setPreserveRatio(false);
+            mapPreview.setFitWidth(gridpane.getPrefWidth() / 2);
+            mapPreview.setFitHeight(mapPreview.getFitWidth());
+        }
+
+        gridpane.setAlignment(Pos.CENTER_LEFT);
+        gridpane.add(mapPreview, 1, 1);
+        GridPane.setMargin(mapPreview, new Insets(3,10,3,3));
+        gridpane.add(aliasLabel, 2, 1);
+        gridpane.add(mapNameLabel, 2, 2);
+        gridpane.add(releaseDateLabel, 2, 3);
+        gridpane.add(importedDateText, 2, 4);
+        */
+
+        /*
+        int rowIndex = 5;
+        CustomMapModDto customMapMod = null;
+        if (platformProfileMapDto.getMapDto().isOfficial()) {
+            importedDateText.setPadding(new Insets(0,0,10,0));
+        } else {
+            customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
+            HBox mapModPane = createMapModPane(customMapMod);
+            gridpane.add(mapModPane,2, rowIndex);
+            rowIndex++;
+
+            HBox downloadedStatePane = createDownloadedPane(platformProfileMapDto);
+            gridpane.add(downloadedStatePane,2, rowIndex);
+
+            if (!platformProfileMapDto.isDownloaded()) {
+                Hyperlink clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto);
+                gridpane.add(clickToDownloadMapLink,2, rowIndex);
+            }
+            rowIndex++;
+        }
+
+        if (customMapMod == null || platformProfileMapDto.isDownloaded() && customMapMod.isMap()) {
+            HBox isInMapsCyclePane = createIsInMapsCyclePane(platformProfileMapDto);
+            gridpane.add(isInMapsCyclePane,2, rowIndex);
+        }
+
+        GridPane.setRowSpan(mapPreview, rowIndex);
+
         return gridpane;
+         */
+
+        return null;
+    }
+
+    private Node createMapNode(PlatformProfileMapDto platformProfileMapDto) {
+        switch (cardOrientation) {
+            case DOWN: return createMapNodeCardDown(platformProfileMapDto);
+            case RIGHT: return createMapNodeCardRight(platformProfileMapDto);
+            default: return createMapNodeCardDown(platformProfileMapDto);
+        }
     }
 
 
@@ -762,38 +1062,66 @@ public class MapsController implements Initializable {
         }
     }
 
-    private Double getWidthGridPaneByNumberOfColums() {
+    private Double getWidthNodeByNumberOfColums() {
         return (MainApplication.getPrimaryStage().getWidth() - (50 * mapsSlider.getValue()) - 180) / mapsSlider.getValue();
     }
 
-    private void resizeGridPane(GridPane gridPane) {
-        gridPane.setPrefWidth(getWidthGridPaneByNumberOfColums());
-        ImageView mapPreview = (ImageView) gridPane.getChildren().get(0);
-        mapPreview.setFitWidth(gridPane.getPrefWidth());
-        if (!mapPreview.isPreserveRatio()) {
-            mapPreview.setFitHeight(mapPreview.getFitWidth());
+    private void resizeNode(Node node) {
+        ImageView mapPreview = null;
+        Label mapNameLabel = null;
+        switch (cardOrientation) {
+            case DOWN:
+                ((VBox) node).setPrefWidth(getWidthNodeByNumberOfColums());
+                mapPreview = (ImageView) ((VBox) node).getChildren().get(2);
+                mapNameLabel = (Label) ((VBox) node).getChildren().get(5);
+
+                mapPreview.setFitWidth(getWidthNodeByNumberOfColums());
+                if (!mapPreview.isPreserveRatio()) {
+                    mapPreview.setFitHeight(mapPreview.getFitWidth());
+                }
+                break;
+            case RIGHT:
+                ((HBox) node).setPrefWidth(getWidthNodeByNumberOfColums());
+                mapPreview = (ImageView) ((StackPane) ((HBox) node).getChildren().get(0)).getChildren().get(2);
+                mapNameLabel = (Label) ((VBox) ((HBox) node).getChildren().get(1)).getChildren().get(2);
+
+                mapPreview.setFitWidth(getWidthNodeByNumberOfColums() / 2);
+                if (!mapPreview.isPreserveRatio()) {
+                    mapPreview.setFitHeight(mapPreview.getFitWidth());
+                }
+                break;
+            default:
+                ((VBox) node).setPrefWidth(getWidthNodeByNumberOfColums());
+                mapPreview = (ImageView) ((VBox) node).getChildren().get(2);
+                mapNameLabel = (Label) ((VBox) node).getChildren().get(5);
+
+                mapPreview.setFitWidth(getWidthNodeByNumberOfColums());
+                if (!mapPreview.isPreserveRatio()) {
+                    mapPreview.setFitHeight(mapPreview.getFitWidth());
+                }
+                break;
         }
-        Label mapNameLabel = (Label) gridPane.getChildren().get(2);
+
         mapNameLabel.setMaxWidth(mapPreview.getFitWidth() - 25);
     }
 
     @FXML
     private void mapsSliderOnMouseClicked() {
         for (int index = 0; index < steamOfficialMapsFlowPane.getChildren().size(); index++) {
-            GridPane gridPane = (GridPane) steamOfficialMapsFlowPane.getChildren().get(index);
-            resizeGridPane(gridPane);
+            Node node = steamOfficialMapsFlowPane.getChildren().get(index);
+            resizeNode(node);
         }
         for (int index = 0; index < steamCustomMapsFlowPane.getChildren().size(); index++) {
-            GridPane gridPane = (GridPane) steamCustomMapsFlowPane.getChildren().get(index);
-            resizeGridPane(gridPane);
+            Node node = steamCustomMapsFlowPane.getChildren().get(index);
+            resizeNode(node);
         }
         for (int index = 0; index < epicOfficialMapsFlowPane.getChildren().size(); index++) {
-            GridPane gridPane = (GridPane) epicOfficialMapsFlowPane.getChildren().get(index);
-            resizeGridPane(gridPane);
+            Node node = epicOfficialMapsFlowPane.getChildren().get(index);
+            resizeNode(node);
         }
         for (int index = 0; index < epicCustomMapsFlowPane.getChildren().size(); index++) {
-            GridPane gridPane = (GridPane) epicCustomMapsFlowPane.getChildren().get(index);
-            resizeGridPane(gridPane);
+            Node node = epicCustomMapsFlowPane.getChildren().get(index);
+            resizeNode(node);
         }
         try {
             facade.setConfigPropertyValue("prop.config.mapSliderValue", String.valueOf(mapsSlider.getValue()));
@@ -815,11 +1143,11 @@ public class MapsController implements Initializable {
             String mapName = StringUtils.upperCase(platformProfileMapDto.getMapDto().getKey());
             String alias = StringUtils.upperCase(platformProfileMapDto.getAlias());
             if (mapName.contains(StringUtils.upperCase(searchMaps.getText())) || alias.contains(StringUtils.upperCase(searchMaps.getText()))) {
-                GridPane gridpane = createMapGridPane(platformProfileMapDto);
+                Node node = createMapNode(platformProfileMapDto);
                 if (platformProfileMapDto.getMapDto().isOfficial()) {
-                    steamOfficialMapsFlowPane.getChildren().add(gridpane);
+                    steamOfficialMapsFlowPane.getChildren().add(node);
                 } else {
-                    steamCustomMapsFlowPane.getChildren().add(gridpane);
+                    steamCustomMapsFlowPane.getChildren().add(node);
                 }
             }
         }
@@ -828,11 +1156,11 @@ public class MapsController implements Initializable {
             String mapName = StringUtils.upperCase(platformProfileMapDto.getMapDto().getKey());
             String alias = StringUtils.upperCase(platformProfileMapDto.getAlias());
             if (mapName.contains(StringUtils.upperCase(searchMaps.getText())) || alias.contains(StringUtils.upperCase(searchMaps.getText()))) {
-                GridPane gridpane = createMapGridPane(platformProfileMapDto);
+                Node node = createMapNode(platformProfileMapDto);
                 if (platformProfileMapDto.getMapDto().isOfficial()) {
-                    epicOfficialMapsFlowPane.getChildren().add(gridpane);
+                    epicOfficialMapsFlowPane.getChildren().add(node);
                 } else {
-                    epicCustomMapsFlowPane.getChildren().add(gridpane);
+                    epicCustomMapsFlowPane.getChildren().add(node);
                 }
             }
         }
@@ -979,8 +1307,8 @@ public class MapsController implements Initializable {
                                 Optional<PlatformProfileMapDto> platformProfileMapDtoOptional = facade.findPlatformProfileMapDtoByName(EnumPlatform.STEAM.name(), profileSelect.getValue().getName(), platformProfileMap.getMapDto().getKey());
                                 if (platformProfileMapDtoOptional.isPresent()) {
                                     steamPlatformProfileMapDtoList.add(platformProfileMapDtoOptional.get());
-                                    GridPane gridpane = createMapGridPane(platformProfileMapDtoOptional.get());
-                                    steamCustomMapsFlowPane.getChildren().add(gridpane);
+                                    Node node = createMapNode(platformProfileMapDtoOptional.get());
+                                    steamCustomMapsFlowPane.getChildren().add(node);
                                 }
                             } catch (Exception e) {
                                 logger.error(e.getMessage(), e);
@@ -998,8 +1326,8 @@ public class MapsController implements Initializable {
                                 Optional<PlatformProfileMapDto> platformProfileMapDtoOptional = facade.findPlatformProfileMapDtoByName(EnumPlatform.EPIC.name(), profileSelect.getValue().getName(), platformProfileMap.getMapDto().getKey());
                                 if (platformProfileMapDtoOptional.isPresent()) {
                                     epicPlatformProfileMapDtoList.add(platformProfileMapDtoOptional.get());
-                                    GridPane gridpane = createMapGridPane(platformProfileMapDtoOptional.get());
-                                    epicCustomMapsFlowPane.getChildren().add(gridpane);
+                                    Node node = createMapNode(platformProfileMapDtoOptional.get());
+                                    epicCustomMapsFlowPane.getChildren().add(node);
                                 }
                             } catch (Exception e) {
                                 logger.error(e.getMessage(), e);
@@ -1297,20 +1625,20 @@ public class MapsController implements Initializable {
                         epicCustomMapsFlowPane.getChildren().clear();
 
                         steamPlatformProfileMapDtoList.stream().forEach(profileMapDto -> {
-                            GridPane gridpane = createMapGridPane(profileMapDto);
+                            Node node = createMapNode(profileMapDto);
                             if (profileMapDto.getMapDto().isOfficial()) {
-                                steamOfficialMapsFlowPane.getChildren().add(gridpane);
+                                steamOfficialMapsFlowPane.getChildren().add(node);
                             } else {
-                                steamCustomMapsFlowPane.getChildren().add(gridpane);
+                                steamCustomMapsFlowPane.getChildren().add(node);
                             }
                         });
 
                         epicPlatformProfileMapDtoList.stream().forEach(profileMapDto -> {
-                            GridPane gridpane = createMapGridPane(profileMapDto);
+                            Node node = createMapNode(profileMapDto);
                             if (profileMapDto.getMapDto().isOfficial()) {
-                                epicOfficialMapsFlowPane.getChildren().add(gridpane);
+                                epicOfficialMapsFlowPane.getChildren().add(node);
                             } else {
-                                epicCustomMapsFlowPane.getChildren().add(gridpane);
+                                epicCustomMapsFlowPane.getChildren().add(node);
                             }
                         });
 
@@ -1534,20 +1862,20 @@ public class MapsController implements Initializable {
             epicPlatformProfileMapDtoList = listPlatformProfileMapFacadeResult.getEpicPlatformProfileMapDtoList();
 
             for (PlatformProfileMapDto platformProfileMapDto : steamPlatformProfileMapDtoList) {
-                GridPane gridpane = createMapGridPane(platformProfileMapDto);
+                Node node = createMapNode(platformProfileMapDto);
                 if (platformProfileMapDto.getMapDto().isOfficial()) {
-                    steamOfficialMapsFlowPane.getChildren().add(gridpane);
+                    steamOfficialMapsFlowPane.getChildren().add(node);
                 } else {
-                    steamCustomMapsFlowPane.getChildren().add(gridpane);
+                    steamCustomMapsFlowPane.getChildren().add(node);
                 }
             }
 
             for (PlatformProfileMapDto platformProfileMapDto : epicPlatformProfileMapDtoList) {
-                GridPane gridpane = createMapGridPane(platformProfileMapDto);
+                Node node = createMapNode(platformProfileMapDto);
                 if (platformProfileMapDto.getMapDto().isOfficial()) {
-                    epicOfficialMapsFlowPane.getChildren().add(gridpane);
+                    epicOfficialMapsFlowPane.getChildren().add(node);
                 } else {
-                    epicCustomMapsFlowPane.getChildren().add(gridpane);
+                    epicCustomMapsFlowPane.getChildren().add(node);
                 }
             }
 
@@ -1583,20 +1911,20 @@ public class MapsController implements Initializable {
         }
 
         for (PlatformProfileMapDto platformProfileMapDto : steamPlatformProfileMapDtoList) {
-            GridPane gridpane = createMapGridPane(platformProfileMapDto);
+            Node node = createMapNode(platformProfileMapDto);
             if (platformProfileMapDto.getMapDto().isOfficial()) {
-                steamOfficialMapsFlowPane.getChildren().add(gridpane);
+                steamOfficialMapsFlowPane.getChildren().add(node);
             } else {
-                steamCustomMapsFlowPane.getChildren().add(gridpane);
+                steamCustomMapsFlowPane.getChildren().add(node);
             }
         }
 
         for (PlatformProfileMapDto platformProfileMapDto : epicPlatformProfileMapDtoList) {
-            GridPane gridpane = createMapGridPane(platformProfileMapDto);
+            Node node = createMapNode(platformProfileMapDto);
             if (platformProfileMapDto.getMapDto().isOfficial()) {
-                epicOfficialMapsFlowPane.getChildren().add(gridpane);
+                epicOfficialMapsFlowPane.getChildren().add(node);
             } else {
-                epicCustomMapsFlowPane.getChildren().add(gridpane);
+                epicCustomMapsFlowPane.getChildren().add(node);
             }
         }
     }
@@ -1619,20 +1947,20 @@ public class MapsController implements Initializable {
         }
 
         for (PlatformProfileMapDto platformProfileMapDto : steamPlatformProfileMapDtoList) {
-            GridPane gridpane = createMapGridPane(platformProfileMapDto);
+            Node node = createMapNode(platformProfileMapDto);
                                          if (platformProfileMapDto.getMapDto().isOfficial()) {
-                steamOfficialMapsFlowPane.getChildren().add(gridpane);
+                steamOfficialMapsFlowPane.getChildren().add(node);
             } else {
-                steamCustomMapsFlowPane.getChildren().add(gridpane);
+                steamCustomMapsFlowPane.getChildren().add(node);
             }
         }
 
         for (PlatformProfileMapDto platformProfileMapDto : epicPlatformProfileMapDtoList) {
-            GridPane gridpane = createMapGridPane(platformProfileMapDto);
+            Node node = createMapNode(platformProfileMapDto);
             if (platformProfileMapDto.getMapDto().isOfficial()) {
-                epicOfficialMapsFlowPane.getChildren().add(gridpane);
+                epicOfficialMapsFlowPane.getChildren().add(node);
             } else {
-                epicCustomMapsFlowPane.getChildren().add(gridpane);
+                epicCustomMapsFlowPane.getChildren().add(node);
             }
         }
     }
@@ -1711,20 +2039,20 @@ public class MapsController implements Initializable {
         }
 
         for (PlatformProfileMapDto platformProfileMapDto : steamPlatformProfileMapDtoList) {
-            GridPane gridpane = createMapGridPane(platformProfileMapDto);
+            Node node = createMapNode(platformProfileMapDto);
             if (platformProfileMapDto.getMapDto().isOfficial()) {
-                steamOfficialMapsFlowPane.getChildren().add(gridpane);
+                steamOfficialMapsFlowPane.getChildren().add(node);
             } else {
-                steamCustomMapsFlowPane.getChildren().add(gridpane);
+                steamCustomMapsFlowPane.getChildren().add(node);
             }
         }
 
          for (PlatformProfileMapDto platformProfileMapDto : epicPlatformProfileMapDtoList) {
-             GridPane gridpane = createMapGridPane(platformProfileMapDto);
+             Node node = createMapNode(platformProfileMapDto);
              if (platformProfileMapDto.getMapDto().isOfficial()) {
-                 epicOfficialMapsFlowPane.getChildren().add(gridpane);
+                 epicOfficialMapsFlowPane.getChildren().add(node);
              } else {
-                 epicCustomMapsFlowPane.getChildren().add(gridpane);
+                 epicCustomMapsFlowPane.getChildren().add(node);
              }
          }
     }
@@ -1747,20 +2075,20 @@ public class MapsController implements Initializable {
         }
 
         for (PlatformProfileMapDto platformProfileMapDto : steamPlatformProfileMapDtoList) {
-            GridPane gridpane = createMapGridPane(platformProfileMapDto);
+            Node node = createMapNode(platformProfileMapDto);
             if (platformProfileMapDto.getMapDto().isOfficial()) {
-                steamOfficialMapsFlowPane.getChildren().add(gridpane);
+                steamOfficialMapsFlowPane.getChildren().add(node);
             } else {
-                steamCustomMapsFlowPane.getChildren().add(gridpane);
+                steamCustomMapsFlowPane.getChildren().add(node);
             }
         }
 
         for (PlatformProfileMapDto platformProfileMapDto : epicPlatformProfileMapDtoList) {
-            GridPane gridpane = createMapGridPane(platformProfileMapDto);
+            Node node = createMapNode(platformProfileMapDto);
             if (platformProfileMapDto.getMapDto().isOfficial()) {
-                epicOfficialMapsFlowPane.getChildren().add(gridpane);
+                epicOfficialMapsFlowPane.getChildren().add(node);
             } else {
-                epicCustomMapsFlowPane.getChildren().add(gridpane);
+                epicCustomMapsFlowPane.getChildren().add(node);
             }
         }
     }
@@ -1804,12 +2132,12 @@ public class MapsController implements Initializable {
         }
 
         for (PlatformProfileMapDto platformProfileMapDto : steamPlatformProfileMapDtoList) {
-            GridPane gridpane = createMapGridPane(platformProfileMapDto);
-            steamCustomMapsFlowPane.getChildren().add(gridpane);
+            Node node = createMapNode(platformProfileMapDto);
+            steamCustomMapsFlowPane.getChildren().add(node);
         }
         for (PlatformProfileMapDto platformProfileMapDto : epicPlatformProfileMapDtoList) {
-            GridPane gridpane = createMapGridPane(platformProfileMapDto);
-            epicCustomMapsFlowPane.getChildren().add(gridpane);
+            Node node = createMapNode(platformProfileMapDto);
+            epicCustomMapsFlowPane.getChildren().add(node);
         }
     }
 
@@ -2175,20 +2503,20 @@ public class MapsController implements Initializable {
         }
 
         for (PlatformProfileMapDto platformProfileMapDto : steamPlatformProfileMapDtoList) {
-            GridPane gridpane = createMapGridPane(platformProfileMapDto);
+            Node node = createMapNode(platformProfileMapDto);
             if (platformProfileMapDto.getMapDto().isOfficial()) {
-                steamOfficialMapsFlowPane.getChildren().add(gridpane);
+                steamOfficialMapsFlowPane.getChildren().add(node);
             } else {
-                steamCustomMapsFlowPane.getChildren().add(gridpane);
+                steamCustomMapsFlowPane.getChildren().add(node);
             }
         }
 
         for (PlatformProfileMapDto platformProfileMapDto : epicPlatformProfileMapDtoList) {
-            GridPane gridpane = createMapGridPane(platformProfileMapDto);
+            Node node = createMapNode(platformProfileMapDto);
             if (platformProfileMapDto.getMapDto().isOfficial()) {
-                epicOfficialMapsFlowPane.getChildren().add(gridpane);
+                epicOfficialMapsFlowPane.getChildren().add(node);
             } else {
-                epicCustomMapsFlowPane.getChildren().add(gridpane);
+                epicCustomMapsFlowPane.getChildren().add(node);
             }
         }
     }
@@ -2260,6 +2588,22 @@ public class MapsController implements Initializable {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void cardDownOnAction() {
+        cardOrientation = EnumCardOrientation.DOWN;
+        if (!profileSelect.getItems().isEmpty()) {
+            orderMapsByNameOnAction();
+        }
+    }
+
+    @FXML
+    private void cardRightOnAction() {
+        cardOrientation = EnumCardOrientation.RIGHT;
+        if (!profileSelect.getItems().isEmpty()) {
+            orderMapsByNameOnAction();
         }
     }
 }
