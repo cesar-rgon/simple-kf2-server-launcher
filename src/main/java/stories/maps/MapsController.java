@@ -101,8 +101,12 @@ public class MapsController implements Initializable {
     @FXML private MenuItem addToMapsCycle;
     @FXML private MenuItem removeFromMapsCycle;
     @FXML private MenuItem downloadMaps;
+    @FXML private Label viewLabel;
     @FXML private MenuItem cardDown;
     @FXML private MenuItem cardRight;
+    @FXML private MenuItem cardUp;
+    @FXML private MenuItem cardLeft;
+    @FXML private MenuItem detailedCard;
 
     public MapsController() {
         super();
@@ -347,6 +351,24 @@ public class MapsController implements Initializable {
         String downloadMapsText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.downloadMaps");
         downloadMaps.setText(downloadMapsText);
 
+        String viewLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.views.menu.label");
+        viewLabel.setText(viewLabelText);
+
+        String cardDownText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.views.cardsDown");
+        cardDown.setText(cardDownText);
+
+        String cardRightText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.views.cardsRight");
+        cardRight.setText(cardRightText);
+
+        String cardUpText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.views.cardsUp");
+        cardUp.setText(cardUpText);
+
+        String cardLeftText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.views.cardsLeft");
+        cardLeft.setText(cardLeftText);
+
+        String detailedCardText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.views.detailedCards");
+        detailedCard.setText(detailedCardText);
+
         String sliderLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.slider");
         sliderLabel.setText(sliderLabelText);
         Tooltip sliderTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.slide"));
@@ -398,15 +420,34 @@ public class MapsController implements Initializable {
                 }
             }
 
+            Label aliasLabel = null;
+            CheckBox checkBox = null;
+
             for (Node node: nodes) {
-                GridPane gridpane = (GridPane) node;
-                Label aliasLabel = (Label) gridpane.getChildren().get(1);
-                CheckBox checkbox = (CheckBox) aliasLabel.getGraphic();
-                checkbox.setSelected(tabCheckbox.isSelected());
-                if (checkbox.isSelected()) {
-                    checkbox.setOpacity(1);
+                switch (cardOrientation) {
+                    case RIGHT:
+                        checkBox = (CheckBox) ((VBox) ((HBox) node).getChildren().get(1)).getChildren().get(3);
+                        break;
+                    case UP:
+                        checkBox = (CheckBox) ((VBox) node).getChildren().get(3);
+                        break;
+                    case LEFT:
+                        checkBox = (CheckBox) ((VBox) ((HBox) node).getChildren().get(0)).getChildren().get(3);
+                        break;
+                    case DETAILED:
+                        aliasLabel = (Label) ((HBox) node).getChildren().get(1);
+                        checkBox = (CheckBox) aliasLabel.getGraphic();
+                        break;
+                    default:
+                        checkBox = (CheckBox) ((VBox) node).getChildren().get(4);
+                        break;
+                }
+
+                checkBox.setSelected(tabCheckbox.isSelected());
+                if (checkBox.isSelected()) {
+                    checkBox.setOpacity(1);
                 } else {
-                    checkbox.setOpacity(0.5);
+                    checkBox.setOpacity(0.5);
                 }
             }
         });
@@ -559,7 +600,7 @@ public class MapsController implements Initializable {
         return importedDateText;
     }
 
-    private HBox createMapModPane(CustomMapModDto customMapMod) {
+    private Label createMapModLabel(CustomMapModDto customMapMod) {
         Label mapModLabel;
         String isMapModLabelText;
 
@@ -586,26 +627,21 @@ public class MapsController implements Initializable {
         }
         mapModLabel = new Label(isMapModLabelText);
         mapModLabel.setStyle("-fx-text-fill: #5fbb3d; -fx-font-weight: bold;");
-        HBox mapModPane = new HBox();
-        mapModPane.getChildren().addAll(mapModLabel);
-        mapModPane.setAlignment(Pos.CENTER);
-        mapModPane.setPadding(new Insets(10,0,0,0));
+        mapModLabel.setAlignment(Pos.CENTER);
 
-        return mapModPane;
+        return mapModLabel;
     }
 
-    private Hyperlink createClickToDownloadMapLink(PlatformProfileMapDto platformProfileMapDto) {
+    private Hyperlink createClickToDownloadMapLink(PlatformProfileMapDto platformProfileMapDto, Label downloadedStateLabel, Label isInMapsCycleLabel) {
 
-        String downloadedLabelText = "";
-        Label downloadedLabel = new Label();
-
+        String clickToDownloadMapText = "";
         try {
-            downloadedLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.clickToDownloadMap");
+            clickToDownloadMapText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.clickToDownloadMap");
         } catch (Exception e) {
-            downloadedLabelText = "Click to download it!";
+            clickToDownloadMapText = "Click to download it!";
         }
 
-        Hyperlink clickToDownloadMapLink = new Hyperlink(downloadedLabelText);
+        Hyperlink clickToDownloadMapLink = new Hyperlink(clickToDownloadMapText);
         clickToDownloadMapLink.setStyle("-fx-text-fill: #f03830; -fx-underline: true;");
         clickToDownloadMapLink.setMaxWidth(Double.MAX_VALUE);
         clickToDownloadMapLink.setAlignment(Pos.CENTER);
@@ -629,18 +665,11 @@ public class MapsController implements Initializable {
                         }
                     };
                     task.setOnSucceeded(wse -> {
+                        CustomMapModDto customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
                         progressIndicator.setVisible(false);
-                        if (EnumPlatform.STEAM.name().equals(platformProfileMapDto.getPlatformDto().getKey())) {
-                            String downloadedLabelText = StringUtils.EMPTY;
-                            try {
-                                downloadedLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.downloaded");
-                            } catch (Exception ex) {
-                                downloadedLabelText = "DOWNLOADED";
-                            }
-                            downloadedLabel.setText(downloadedLabelText);
-                            downloadedLabel.setStyle("-fx-text-fill: gold; -fx-padding: 3; -fx-border-color: gold; -fx-border-radius: 5;");
-                            clickToDownloadMapLink.setVisible(false);
-                        }
+                        clickToDownloadMapLink.setVisible(false);
+                        downloadedStateLabel.setVisible(true);
+                        isInMapsCycleLabel.setVisible(customMapMod.isMap());
                     });
                     task.setOnFailed(wse -> {
                         progressIndicator.setVisible(false);
@@ -659,31 +688,25 @@ public class MapsController implements Initializable {
     }
 
 
-    private HBox createDownloadedPane(PlatformProfileMapDto platformProfileMapDto) {
+    private Label createDownloadedLabel(PlatformProfileMapDto platformProfileMapDto) {
 
         String downloadedLabelText = "";
         Label downloadedLabel = new Label();
-
-        if (platformProfileMapDto.isDownloaded()) {
-            try {
-                downloadedLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.downloaded");
-            } catch (Exception e) {
-                downloadedLabelText = "DOWNLOADED";
-            }
-            downloadedLabel.setText(downloadedLabelText);
-            downloadedLabel.setStyle("-fx-text-fill: gold; -fx-padding: 3; -fx-border-color: gold; -fx-border-radius: 5;");
+        try {
+            downloadedLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.downloaded");
+        } catch (Exception e) {
+            downloadedLabelText = "DOWNLOADED";
         }
 
-        HBox downloadedStatePane = new HBox();
-        downloadedStatePane.getChildren().addAll(downloadedLabel);
-        downloadedStatePane.setMaxWidth(Double.MAX_VALUE);
-        downloadedStatePane.setAlignment(Pos.CENTER);
-        downloadedStatePane.setPadding(new Insets(10,0,10,0));
+        downloadedLabel.setText(downloadedLabelText);
+        downloadedLabel.setStyle("-fx-text-fill: gold; -fx-padding: 3; -fx-border-color: gold; -fx-border-radius: 5;");
+        downloadedLabel.setAlignment(Pos.CENTER);
+        downloadedLabel.setVisible(platformProfileMapDto.isDownloaded());
 
-        return downloadedStatePane;
+        return downloadedLabel;
     }
 
-    private HBox createIsInMapsCyclePane(PlatformProfileMapDto platformProfileMapDto) {
+    private Label createIsInMapsCycleLabel(PlatformProfileMapDto platformProfileMapDto) {
 
         Label isInMapsCycleLabel = new Label();
         String isInMapsCycleText;
@@ -703,13 +726,13 @@ public class MapsController implements Initializable {
             isInMapsCycleLabel.setStyle("-fx-text-fill: grey; -fx-font-weight: bold; -fx-padding: 3; -fx-border-color: grey; -fx-border-radius: 5;");
         }
         isInMapsCycleLabel.setText(isInMapsCycleText);
-        HBox isInMapsCyclePane = new HBox();
-        isInMapsCyclePane.getChildren().addAll(isInMapsCycleLabel);
-        isInMapsCyclePane.setMaxWidth(Double.MAX_VALUE);
-        isInMapsCyclePane.setAlignment(Pos.CENTER);
-        isInMapsCyclePane.setPadding(new Insets(0,0,10,0));
+        isInMapsCycleLabel.setAlignment(Pos.CENTER);
+        isInMapsCycleLabel.setVisible(
+                platformProfileMapDto.getMapDto().isOfficial() ||
+                ((CustomMapModDto) platformProfileMapDto.getMapDto()).isMap()
+        );
 
-        return isInMapsCyclePane;
+        return isInMapsCycleLabel;
     }
 
     private VBox initializeVerticalNode(PlatformProfileMapDto platformProfileMapDto) {
@@ -819,21 +842,25 @@ public class MapsController implements Initializable {
         VBox.setMargin(aliasLabel, new Insets(-21,0,0,0));
 
         CustomMapModDto customMapMod = null;
-        if (!platformProfileMapDto.getMapDto().isOfficial()) {
+        if (platformProfileMapDto.getMapDto().isOfficial()) {
+            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
+            VBox.setMargin(isInMapsCycleLabel, new Insets(0,0,10,0));
+            vBox.getChildren().add(isInMapsCycleLabel);
+
+        } else {
             customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
-            HBox mapModPane = createMapModPane(customMapMod);
-            HBox downloadedStatePane = createDownloadedPane(platformProfileMapDto);
-            vBox.getChildren().addAll(mapModPane, downloadedStatePane);
+            Label mapModLabel = createMapModLabel(customMapMod);
+            VBox.setMargin(mapModLabel, new Insets(10,0,0,0));
+            Label downloadedStateLabel = createDownloadedLabel(platformProfileMapDto);
+            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
+            VBox.setMargin(isInMapsCycleLabel, new Insets(0,0,10,0));
+            VBox.setMargin(downloadedStateLabel, new Insets(10,0,10,0));
+            vBox.getChildren().addAll(mapModLabel, downloadedStateLabel, isInMapsCycleLabel);
 
             if (!platformProfileMapDto.isDownloaded()) {
-                Hyperlink clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto);
+                Hyperlink clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel);
                 vBox.getChildren().add(clickToDownloadMapLink);
             }
-        }
-
-        if (customMapMod == null || platformProfileMapDto.isDownloaded() && customMapMod.isMap()) {
-            HBox isInMapsCyclePane = createIsInMapsCyclePane(platformProfileMapDto);
-            vBox.getChildren().add(isInMapsCyclePane);
         }
 
         String urlPhoto = getUrlPhoto(platformProfileMapDto);
@@ -855,21 +882,29 @@ public class MapsController implements Initializable {
         VBox.setMargin(mapPreview, new Insets(-21,3,3,3));
 
         CustomMapModDto customMapMod = null;
-        if (!platformProfileMapDto.getMapDto().isOfficial()) {
+        if (platformProfileMapDto.getMapDto().isOfficial()) {
+            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
+            VBox.setMargin(isInMapsCycleLabel, new Insets(0,0,10,0));
+            vBox.getChildren().add(isInMapsCycleLabel);
+
+        } else {
             customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
-            HBox mapModPane = createMapModPane(customMapMod);
-            HBox downloadedStatePane = createDownloadedPane(platformProfileMapDto);
-            vBox.getChildren().addAll(mapModPane, downloadedStatePane);
+            Label mapModLabel = createMapModLabel(customMapMod);
+            VBox.setMargin(mapModLabel, new Insets(10,0,0,0));
+            Label downloadedStateLabel = createDownloadedLabel(platformProfileMapDto);
+            VBox.setMargin(downloadedStateLabel, new Insets(10,0,10,0));
+            vBox.getChildren().addAll(mapModLabel, downloadedStateLabel);
+
+            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
+            VBox.setMargin(isInMapsCycleLabel, new Insets(0,0,10,0));
+            if (platformProfileMapDto.isDownloaded() && customMapMod.isMap()) {
+                vBox.getChildren().add(isInMapsCycleLabel);
+            }
 
             if (!platformProfileMapDto.isDownloaded()) {
-                Hyperlink clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto);
+                Hyperlink clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel);
                 vBox.getChildren().add(clickToDownloadMapLink);
             }
-        }
-
-        if (customMapMod == null || platformProfileMapDto.isDownloaded() && customMapMod.isMap()) {
-            HBox isInMapsCyclePane = createIsInMapsCyclePane(platformProfileMapDto);
-            vBox.getChildren().add(isInMapsCyclePane);
         }
 
         return vBox;
@@ -989,21 +1024,28 @@ public class MapsController implements Initializable {
         CustomMapModDto customMapMod = null;
         if (platformProfileMapDto.getMapDto().isOfficial()) {
             importedDateText.setPadding(new Insets(0,0,10,0));
+            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
+            VBox.setMargin(isInMapsCycleLabel, new Insets(0,0,10,0));
+            vBox.getChildren().add(isInMapsCycleLabel);
+
         } else {
             customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
-            HBox mapModPane = createMapModPane(customMapMod);
-            HBox downloadedStatePane = createDownloadedPane(platformProfileMapDto);
-            vBox.getChildren().addAll(mapModPane, downloadedStatePane);
+            Label mapModLabel = createMapModLabel(customMapMod);
+            VBox.setMargin(mapModLabel, new Insets(10,0,0,0));
+            Label downloadedStateLabel = createDownloadedLabel(platformProfileMapDto);
+            VBox.setMargin(downloadedStateLabel, new Insets(10,0,10,0));
+            vBox.getChildren().addAll(mapModLabel, downloadedStateLabel);
+
+            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
+            VBox.setMargin(isInMapsCycleLabel, new Insets(0,0,10,0));
+            if (platformProfileMapDto.isDownloaded() && customMapMod.isMap()) {
+                vBox.getChildren().add(isInMapsCycleLabel);
+            }
 
             if (!platformProfileMapDto.isDownloaded()) {
-                Hyperlink clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto);
+                Hyperlink clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel);
                 vBox.getChildren().add(clickToDownloadMapLink);
             }
-        }
-
-        if (customMapMod == null || platformProfileMapDto.isDownloaded() && customMapMod.isMap()) {
-            HBox isInMapsCyclePane = createIsInMapsCyclePane(platformProfileMapDto);
-            vBox.getChildren().add(isInMapsCyclePane);
         }
 
         return hBox;
@@ -1042,21 +1084,28 @@ public class MapsController implements Initializable {
         CustomMapModDto customMapMod = null;
         if (platformProfileMapDto.getMapDto().isOfficial()) {
             importedDateText.setPadding(new Insets(0,0,10,0));
+            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
+            VBox.setMargin(isInMapsCycleLabel, new Insets(0,0,10,0));
+            vBox.getChildren().add(isInMapsCycleLabel);
+
         } else {
             customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
-            HBox mapModPane = createMapModPane(customMapMod);
-            HBox downloadedStatePane = createDownloadedPane(platformProfileMapDto);
-            vBox.getChildren().addAll(mapModPane, downloadedStatePane);
+            Label mapModLabel = createMapModLabel(customMapMod);
+            VBox.setMargin(mapModLabel, new Insets(10,0,0,0));
+            Label downloadedStateLabel = createDownloadedLabel(platformProfileMapDto);
+            VBox.setMargin(downloadedStateLabel, new Insets(10,0,10,0));
+            vBox.getChildren().addAll(mapModLabel, downloadedStateLabel);
+
+            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
+            VBox.setMargin(isInMapsCycleLabel, new Insets(0,0,10,0));
+            if (platformProfileMapDto.isDownloaded() && customMapMod.isMap()) {
+                vBox.getChildren().add(isInMapsCycleLabel);
+            }
 
             if (!platformProfileMapDto.isDownloaded()) {
-                Hyperlink clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto);
+                Hyperlink clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel);
                 vBox.getChildren().add(clickToDownloadMapLink);
             }
-        }
-
-        if (customMapMod == null || platformProfileMapDto.isDownloaded() && customMapMod.isMap()) {
-            HBox isInMapsCyclePane = createIsInMapsCyclePane(platformProfileMapDto);
-            vBox.getChildren().add(isInMapsCyclePane);
         }
 
         return hBox;
@@ -1078,6 +1127,7 @@ public class MapsController implements Initializable {
         HBox.setMargin(mapPreview, new Insets(3,0,3,3));
 
         CheckBox checkBox = createCheckBox();
+        checkBox.setPadding(new Insets(2,0,0,0));
 
         Label aliasLabel = createAliasLabel(platformProfileMapDto);
         aliasLabel.setGraphic(checkBox);
@@ -1232,7 +1282,12 @@ public class MapsController implements Initializable {
 
             case UP:
                 ((VBox) node).setPrefWidth(getWidthNodeByNumberOfColums());
-                mapPreview = (ImageView) ((VBox) node).getChildren().get(8);
+                Label isOfficialText = (Label) ((VBox) node).getChildren().get(1);
+                if ("true".equals(isOfficialText.getText())) {
+                    mapPreview = (ImageView) ((VBox) node).getChildren().get(8);
+                } else {
+                    mapPreview = (ImageView) ((VBox) node).getChildren().get(10);
+                }
 
                 mapPreview.setFitWidth(getWidthNodeByNumberOfColums());
                 if (!mapPreview.isPreserveRatio()) {

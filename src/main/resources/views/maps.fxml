@@ -188,10 +188,10 @@
             <Menu fx:id="views" mnemonicParsing="false" text="V">
                <items>
                   <MenuItem fx:id="cardDown" mnemonicParsing="false" onAction="#cardDownOnAction" text="Cards down" />
-                  <MenuItem fx:id="cardRight" mnemonicParsing="false" onAction="#cardRightOnAction" text="Cards right" />
+                  <MenuItem fx:id="cardRight" mnemonicParsing="false" onAction="#cardRightOnAction" text="Cards to the right" />
                   <MenuItem fx:id="cardUp" mnemonicParsing="false" onAction="#cardUpOnAction" text="Cards up" />
-                  <MenuItem fx:id="cardLeft" mnemonicParsing="false" onAction="#cardLeftOnAction" text="Cards left" />
-                  <MenuItem fx:id="detailedCard" mnemonicParsing="false" onAction="#detailedCardOnAction" text="Detailed Cards" />
+                  <MenuItem fx:id="cardLeft" mnemonicParsing="false" onAction="#cardLeftOnAction" text="Cards to the left" />
+                  <MenuItem fx:id="detailedCard" mnemonicParsing="false" onAction="#detailedCardOnAction" text="Detailed cards" />
                </items>
             </Menu>
          </menus>
