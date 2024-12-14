@@ -729,7 +729,7 @@ public class MapsController implements Initializable {
         isInMapsCycleLabel.setAlignment(Pos.CENTER);
         isInMapsCycleLabel.setVisible(
                 platformProfileMapDto.getMapDto().isOfficial() ||
-                ((CustomMapModDto) platformProfileMapDto.getMapDto()).isMap()
+                (((CustomMapModDto) platformProfileMapDto.getMapDto()).isMap() && platformProfileMapDto.isDownloaded())
         );
 
         return isInMapsCycleLabel;
@@ -853,14 +853,19 @@ public class MapsController implements Initializable {
             VBox.setMargin(mapModLabel, new Insets(10,0,0,0));
             Label downloadedStateLabel = createDownloadedLabel(platformProfileMapDto);
             Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
-            VBox.setMargin(isInMapsCycleLabel, new Insets(0,0,10,0));
-            VBox.setMargin(downloadedStateLabel, new Insets(10,0,10,0));
-            vBox.getChildren().addAll(mapModLabel, downloadedStateLabel, isInMapsCycleLabel);
 
+            Hyperlink clickToDownloadMapLink = new Hyperlink();
             if (!platformProfileMapDto.isDownloaded()) {
-                Hyperlink clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel);
-                vBox.getChildren().add(clickToDownloadMapLink);
+                clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel);
             }
+
+            StackPane stackPane = new StackPane();
+            stackPane.setAlignment(Pos.TOP_CENTER);
+            stackPane.getChildren().addAll(downloadedStateLabel, isInMapsCycleLabel, clickToDownloadMapLink);
+            StackPane.setMargin(isInMapsCycleLabel, new Insets(30,0,0,0));
+            VBox.setMargin(stackPane, new Insets(10,0,10,0));
+
+            vBox.getChildren().addAll(mapModLabel, stackPane);
         }
 
         String urlPhoto = getUrlPhoto(platformProfileMapDto);
@@ -893,18 +898,21 @@ public class MapsController implements Initializable {
             VBox.setMargin(mapModLabel, new Insets(10,0,0,0));
             Label downloadedStateLabel = createDownloadedLabel(platformProfileMapDto);
             VBox.setMargin(downloadedStateLabel, new Insets(10,0,10,0));
-            vBox.getChildren().addAll(mapModLabel, downloadedStateLabel);
-
             Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
             VBox.setMargin(isInMapsCycleLabel, new Insets(0,0,10,0));
-            if (platformProfileMapDto.isDownloaded() && customMapMod.isMap()) {
-                vBox.getChildren().add(isInMapsCycleLabel);
+
+            Hyperlink clickToDownloadMapLink = new Hyperlink();
+            if (!platformProfileMapDto.isDownloaded()) {
+                clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel);
             }
 
-            if (!platformProfileMapDto.isDownloaded()) {
-                Hyperlink clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel);
-                vBox.getChildren().add(clickToDownloadMapLink);
-            }
+            StackPane stackPane = new StackPane();
+            stackPane.setAlignment(Pos.TOP_CENTER);
+            stackPane.getChildren().addAll(downloadedStateLabel, isInMapsCycleLabel, clickToDownloadMapLink);
+            StackPane.setMargin(isInMapsCycleLabel, new Insets(30,0,0,0));
+            VBox.setMargin(stackPane, new Insets(10,0,10,0));
+
+            vBox.getChildren().addAll(mapModLabel, stackPane);
         }
 
         return vBox;
@@ -1034,18 +1042,21 @@ public class MapsController implements Initializable {
             VBox.setMargin(mapModLabel, new Insets(10,0,0,0));
             Label downloadedStateLabel = createDownloadedLabel(platformProfileMapDto);
             VBox.setMargin(downloadedStateLabel, new Insets(10,0,10,0));
-            vBox.getChildren().addAll(mapModLabel, downloadedStateLabel);
-
             Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
             VBox.setMargin(isInMapsCycleLabel, new Insets(0,0,10,0));
-            if (platformProfileMapDto.isDownloaded() && customMapMod.isMap()) {
-                vBox.getChildren().add(isInMapsCycleLabel);
+
+            Hyperlink clickToDownloadMapLink = new Hyperlink();
+            if (!platformProfileMapDto.isDownloaded()) {
+                clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel);
             }
 
-            if (!platformProfileMapDto.isDownloaded()) {
-                Hyperlink clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel);
-                vBox.getChildren().add(clickToDownloadMapLink);
-            }
+            StackPane stackPane = new StackPane();
+            stackPane.setAlignment(Pos.TOP_CENTER);
+            stackPane.getChildren().addAll(downloadedStateLabel, isInMapsCycleLabel, clickToDownloadMapLink);
+            StackPane.setMargin(isInMapsCycleLabel, new Insets(30,0,0,0));
+            VBox.setMargin(stackPane, new Insets(10,0,10,0));
+
+            vBox.getChildren().addAll(mapModLabel, stackPane);
         }
 
         return hBox;
@@ -1094,18 +1105,21 @@ public class MapsController implements Initializable {
             VBox.setMargin(mapModLabel, new Insets(10,0,0,0));
             Label downloadedStateLabel = createDownloadedLabel(platformProfileMapDto);
             VBox.setMargin(downloadedStateLabel, new Insets(10,0,10,0));
-            vBox.getChildren().addAll(mapModLabel, downloadedStateLabel);
-
             Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
             VBox.setMargin(isInMapsCycleLabel, new Insets(0,0,10,0));
-            if (platformProfileMapDto.isDownloaded() && customMapMod.isMap()) {
-                vBox.getChildren().add(isInMapsCycleLabel);
+
+            Hyperlink clickToDownloadMapLink = new Hyperlink();
+            if (!platformProfileMapDto.isDownloaded()) {
+                clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel);
             }
 
-            if (!platformProfileMapDto.isDownloaded()) {
-                Hyperlink clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel);
-                vBox.getChildren().add(clickToDownloadMapLink);
-            }
+            StackPane stackPane = new StackPane();
+            stackPane.setAlignment(Pos.TOP_CENTER);
+            stackPane.getChildren().addAll(downloadedStateLabel, isInMapsCycleLabel, clickToDownloadMapLink);
+            StackPane.setMargin(isInMapsCycleLabel, new Insets(30,0,0,0));
+            VBox.setMargin(stackPane, new Insets(10,0,10,0));
+
+            vBox.getChildren().addAll(mapModLabel, stackPane);
         }
 
         return hBox;
@@ -1122,17 +1136,32 @@ public class MapsController implements Initializable {
 
         ImageView mapPreview = createMapPreview(platformProfileMapDto, urlPhoto, Math.floor(getWidthNodeDetailedCard()));
 
-        VBox vBox = initializeVerticalDescriptions(platformProfileMapDto);
-        HBox.setMargin(vBox, new Insets(-21,3,3,3));
-        HBox.setMargin(mapPreview, new Insets(3,0,3,3));
-
         CheckBox checkBox = createCheckBox();
-        checkBox.setPadding(new Insets(2,0,0,0));
+        checkBox.setPadding(new Insets(1,0,0,0));
 
         Label aliasLabel = createAliasLabel(platformProfileMapDto);
         aliasLabel.setGraphic(checkBox);
         aliasLabel.setAlignment(Pos.CENTER);
         aliasLabel.setMinWidth(Region.USE_PREF_SIZE);
+
+        Label downloadedStateLabel = createDownloadedLabel(platformProfileMapDto);
+        Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
+        Hyperlink clickToDownloadMapLink = new Hyperlink();
+        if (!platformProfileMapDto.isDownloaded()) {
+            clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel);
+        }
+
+        StackPane stackPane = new StackPane();
+        stackPane.setAlignment(Pos.TOP_CENTER);
+        stackPane.getChildren().addAll(downloadedStateLabel, isInMapsCycleLabel, clickToDownloadMapLink);
+        StackPane.setMargin(isInMapsCycleLabel, new Insets(30,0,0,0));
+        VBox vBox = new VBox();
+        vBox.setAlignment(Pos.CENTER);
+        vBox.getChildren().addAll(aliasLabel, stackPane);
+
+        VBox vBox2 = initializeVerticalDescriptions(platformProfileMapDto);
+        HBox.setMargin(vBox2, new Insets(-21,3,3,3));
+        HBox.setMargin(mapPreview, new Insets(3,0,3,3));
 
         Label mapNameLabel = createMapNameLabel(platformProfileMapDto);
         mapNameLabel.setAlignment(Pos.CENTER);
@@ -1143,15 +1172,15 @@ public class MapsController implements Initializable {
         Label importedDateText = createImportedDateLabel(platformProfileMapDto);
         importedDateText.setAlignment(Pos.CENTER);
 
-        vBox.getChildren().addAll(checkBox, mapNameLabel, releaseDateLabel, importedDateText);
+        vBox2.getChildren().addAll(checkBox, mapNameLabel, releaseDateLabel, importedDateText);
 
-        VBox vBox2 = new VBox();
-        vBox2.setAlignment(Pos.CENTER);
+        VBox vBox3 = new VBox();
+        vBox3.setAlignment(Pos.CENTER);
 
         if (!platformProfileMapDto.getMapDto().isOfficial()) {
             Label idWorkShopLabel = new Label("id WorkShop: " + ((CustomMapModDto) platformProfileMapDto.getMapDto()).getIdWorkShop());
             idWorkShopLabel.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
-            vBox2.getChildren().add(idWorkShopLabel);
+            vBox3.getChildren().add(idWorkShopLabel);
         }
 
         if (StringUtils.isNotBlank(urlPhoto)) {
@@ -1163,7 +1192,7 @@ public class MapsController implements Initializable {
             }
             Label urlInfoLabel = new Label(message + ": " + platformProfileMapDto.getUrlInfo());
             urlInfoLabel.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
-            vBox2.getChildren().add(urlInfoLabel);
+            vBox3.getChildren().add(urlInfoLabel);
         }
 
         if (platformProfileMapDto.getMapDto().isOfficial() || platformProfileMapDto.isDownloaded()) {
@@ -1175,10 +1204,10 @@ public class MapsController implements Initializable {
             }
             Label urlPhotoLabel = new Label(message + ": " + urlPhoto);
             urlPhotoLabel.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
-            vBox2.getChildren().add(urlPhotoLabel);
+            vBox3.getChildren().add(urlPhotoLabel);
         }
 
-        hBox.getChildren().addAll(mapPreview, aliasLabel, vBox, vBox2);
+        hBox.getChildren().addAll(mapPreview, vBox, vBox2, vBox3);
 
         if (StringUtils.isNotBlank(platformProfileMapDto.getUrlInfo())) {
             hBox.setCursor(Cursor.HAND);
@@ -1286,7 +1315,7 @@ public class MapsController implements Initializable {
                 if ("true".equals(isOfficialText.getText())) {
                     mapPreview = (ImageView) ((VBox) node).getChildren().get(8);
                 } else {
-                    mapPreview = (ImageView) ((VBox) node).getChildren().get(10);
+                    mapPreview = (ImageView) ((VBox) node).getChildren().get(9);
                 }
 
                 mapPreview.setFitWidth(getWidthNodeByNumberOfColums());
@@ -1307,7 +1336,7 @@ public class MapsController implements Initializable {
 
             case DETAILED:
                 ((HBox) node).setPrefWidth(getWidthNodeByNumberOfColums()+10);
-                Label aliasLabel = (Label) ((HBox) node).getChildren().get(1);
+                Label aliasLabel = (Label) ((VBox) ((HBox) node).getChildren().get(1)).getChildren().get(0);
                 aliasLabel.setMinWidth(Region.USE_PREF_SIZE);
                 mapPreview = (ImageView) ((HBox) node).getChildren().get(0);
 
