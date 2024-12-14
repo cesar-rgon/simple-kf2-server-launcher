@@ -331,32 +331,31 @@ public class Utils {
         dialog.getDialogPane().setContent(vBox);;
 
         String updateStr = StringUtils.EMPTY;
-        String cancelStr = StringUtils.EMPTY;
+        String okStr = StringUtils.EMPTY;
         try {
             updateStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.updateButton");
-            cancelStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.cancel");
+            okStr = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.ok");
         } catch (Exception e) {
             updateStr = "Update";
-            cancelStr = "Cancel";
+            okStr = "Okay";
         }
 
-        ButtonType closeButton = new ButtonType(cancelStr, ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType okButton = new ButtonType(okStr, ButtonBar.ButtonData.APPLY);
+        ButtonType updateButton = new ButtonType(updateStr, ButtonBar.ButtonData.OK_DONE);
         if (lastPublishedVersion.compareTo(applicationVersion) > 0) {
-            ButtonType updateButton = new ButtonType(updateStr, ButtonBar.ButtonData.OK_DONE);
-            dialog.getDialogPane().getButtonTypes().addAll(updateButton, closeButton);
-
-            dialog.setResultConverter(new Callback<ButtonType, UpdateLauncher>() {
-                @Override
-                public UpdateLauncher call(ButtonType b) {
-                    return new UpdateLauncher(
-                            b.equals(updateButton),
-                            dontShowAtStartupCheckBox.isSelected()
-                    );
-                }
-            });
+            dialog.getDialogPane().getButtonTypes().addAll(updateButton, okButton);
         } else {
-            dialog.getDialogPane().getButtonTypes().addAll(closeButton);
+            dialog.getDialogPane().getButtonTypes().addAll(okButton);
         }
+        dialog.setResultConverter(new Callback<ButtonType, UpdateLauncher>() {
+            @Override
+            public UpdateLauncher call(ButtonType b) {
+                return new UpdateLauncher(
+                        b.equals(updateButton),
+                        dontShowAtStartupCheckBox.isSelected()
+                );
+            }
+        });
         dialog.setResizable(true);
 
         dialog.addEventHandler(DialogEvent.DIALOG_SHOWING, new EventHandler<Event>() {

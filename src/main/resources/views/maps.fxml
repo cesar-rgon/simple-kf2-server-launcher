@@ -191,6 +191,7 @@
                   <MenuItem fx:id="cardRight" mnemonicParsing="false" onAction="#cardRightOnAction" text="Cards right" />
                   <MenuItem fx:id="cardUp" mnemonicParsing="false" onAction="#cardUpOnAction" text="Cards up" />
                   <MenuItem fx:id="cardLeft" mnemonicParsing="false" onAction="#cardLeftOnAction" text="Cards left" />
+                  <MenuItem fx:id="detailedCard" mnemonicParsing="false" onAction="#detailedCardOnAction" text="Detailed Cards" />
                </items>
             </Menu>
          </menus>

@@ -112,7 +112,6 @@ public class MapsController implements Initializable {
         facade = new MapsManagerFacadeImpl(mapsInitializeModelContext);
         steamPlatformProfileMapDtoList = new ArrayList<PlatformProfileMapDto>();
         epicPlatformProfileMapDtoList = new ArrayList<>();
-        cardOrientation = EnumCardOrientation.DOWN;
     }
 
     @Override
@@ -120,6 +119,8 @@ public class MapsController implements Initializable {
 
         progressIndicator.setVisible(true);
         try {
+            String lastUsedViewName = facade.findPropertyValue("properties/config.properties", "prop.config.lastUsedView");
+            cardOrientation = EnumCardOrientation.getByName(lastUsedViewName);
             setLabelText();
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -351,8 +352,13 @@ public class MapsController implements Initializable {
         Tooltip sliderTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.slide"));
         sliderTooltip.setShowDuration(Duration.seconds(tooltipDuration));
         sliderLabel.setTooltip(sliderTooltip);
-        double sliderColumns = Double.parseDouble(facade.findPropertyValue("properties/config.properties", "prop.config.mapSliderValue"));
-        mapsSlider.setValue(sliderColumns);
+        if (!EnumCardOrientation.DETAILED.equals(cardOrientation)) {
+            double sliderColumns = Double.parseDouble(facade.findPropertyValue("properties/config.properties", "prop.config.mapSliderValue"));
+            mapsSlider.setValue(sliderColumns);
+        } else {
+            double sliderColumns = Double.parseDouble(facade.findPropertyValue("properties/config.properties", "prop.config.mapSliderDetailedCardValue"));
+            mapsSlider.setValue(sliderColumns);
+        }
         mapsSlider.setTooltip(sliderTooltip);
 
         String officialMapsTabText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.officialMaps");
@@ -879,7 +885,6 @@ public class MapsController implements Initializable {
 
         VBox vBox = new VBox();
         vBox.setAlignment(Pos.CENTER);
-        vBox.setPrefWidth(Math.floor((getWidthNodeByNumberOfColums()-1) / 2));
         vBox.getChildren().addAll(platformNameText, isOfficialText);
 
         return vBox;
@@ -959,6 +964,7 @@ public class MapsController implements Initializable {
 
         HBox hBox = initializeHorizontalNodeCard(platformProfileMapDto, urlPhoto);
         VBox vBox = initializeVerticalDescriptions(platformProfileMapDto);
+        vBox.setPrefWidth(Math.floor((getWidthNodeByNumberOfColums()-1) / 2));
         HBox.setMargin(vBox, new Insets(-21,3,3,3));
 
         hBox.getChildren().addAll(vBox, mapPreview);
@@ -1011,6 +1017,7 @@ public class MapsController implements Initializable {
 
         HBox hBox = initializeHorizontalNodeCard(platformProfileMapDto, urlPhoto);
         VBox vBox = initializeVerticalDescriptions(platformProfileMapDto);
+        vBox.setPrefWidth(Math.floor((getWidthNodeByNumberOfColums()-1) / 2));
         HBox.setMargin(vBox, new Insets(-21,3,3,3));
 
         hBox.getChildren().addAll(mapPreview, vBox);
@@ -1055,85 +1062,135 @@ public class MapsController implements Initializable {
         return hBox;
     }
 
-    private GridPane createMapGridPaneCardRight(PlatformProfileMapDto platformProfileMapDto) {
+    private Node createMapNodeDetailedCard(PlatformProfileMapDto platformProfileMapDto) {
 
-        // GridPane gridpane = initializeGridPane(platformProfileMapDto);
-        // String urlPhoto = getUrlPhoto(platformProfileMapDto);
-        // ImageView mapPreview = createMapPreview(urlPhoto);
+        String urlPhoto = getUrlPhoto(platformProfileMapDto);
+        HBox hBox = new HBox();
+        hBox.setPrefWidth(getWidthNodeByNumberOfColums()+10);
+        hBox.setAlignment(Pos.CENTER_LEFT);
+        hBox.setSpacing(50);
+        hBox.getStyleClass().add("detailedCard");
 
-        /*
+        ImageView mapPreview = createMapPreview(platformProfileMapDto, urlPhoto, Math.floor(getWidthNodeDetailedCard()));
+
+        VBox vBox = initializeVerticalDescriptions(platformProfileMapDto);
+        HBox.setMargin(vBox, new Insets(-21,3,3,3));
+        HBox.setMargin(mapPreview, new Insets(3,0,3,3));
+
+        CheckBox checkBox = createCheckBox();
+
         Label aliasLabel = createAliasLabel(platformProfileMapDto);
-        aliasLabel.setAlignment(Pos.CENTER_LEFT);
+        aliasLabel.setGraphic(checkBox);
+        aliasLabel.setAlignment(Pos.CENTER);
+        aliasLabel.setMinWidth(Region.USE_PREF_SIZE);
 
         Label mapNameLabel = createMapNameLabel(platformProfileMapDto);
-        mapNameLabel.setAlignment(Pos.CENTER_LEFT);
+        mapNameLabel.setAlignment(Pos.CENTER);
 
         Label releaseDateLabel = createReleaseDateLabel(platformProfileMapDto);
-        releaseDateLabel.setAlignment(Pos.CENTER_LEFT);
+        releaseDateLabel.setAlignment(Pos.CENTER);
 
         Label importedDateText = createImportedDateLabel(platformProfileMapDto);
-        importedDateText.setAlignment(Pos.CENTER_LEFT);
+        importedDateText.setAlignment(Pos.CENTER);
 
-        if (platformProfileMapDto.getMapDto().isOfficial()) {
-            mapPreview.setPreserveRatio(true);
-            mapPreview.setFitWidth(gridpane.getPrefWidth() / 2);
-        } else {
-            mapPreview.setPreserveRatio(false);
-            mapPreview.setFitWidth(gridpane.getPrefWidth() / 2);
-            mapPreview.setFitHeight(mapPreview.getFitWidth());
+        vBox.getChildren().addAll(checkBox, mapNameLabel, releaseDateLabel, importedDateText);
+
+        VBox vBox2 = new VBox();
+        vBox2.setAlignment(Pos.CENTER);
+
+        if (!platformProfileMapDto.getMapDto().isOfficial()) {
+            Label idWorkShopLabel = new Label("id WorkShop: " + ((CustomMapModDto) platformProfileMapDto.getMapDto()).getIdWorkShop());
+            idWorkShopLabel.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
+            vBox2.getChildren().add(idWorkShopLabel);
         }
 
-        gridpane.setAlignment(Pos.CENTER_LEFT);
-        gridpane.add(mapPreview, 1, 1);
-        GridPane.setMargin(mapPreview, new Insets(3,10,3,3));
-        gridpane.add(aliasLabel, 2, 1);
-        gridpane.add(mapNameLabel, 2, 2);
-        gridpane.add(releaseDateLabel, 2, 3);
-        gridpane.add(importedDateText, 2, 4);
-        */
-
-        /*
-        int rowIndex = 5;
-        CustomMapModDto customMapMod = null;
-        if (platformProfileMapDto.getMapDto().isOfficial()) {
-            importedDateText.setPadding(new Insets(0,0,10,0));
-        } else {
-            customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
-            HBox mapModPane = createMapModPane(customMapMod);
-            gridpane.add(mapModPane,2, rowIndex);
-            rowIndex++;
-
-            HBox downloadedStatePane = createDownloadedPane(platformProfileMapDto);
-            gridpane.add(downloadedStatePane,2, rowIndex);
-
-            if (!platformProfileMapDto.isDownloaded()) {
-                Hyperlink clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto);
-                gridpane.add(clickToDownloadMapLink,2, rowIndex);
+        if (StringUtils.isNotBlank(urlPhoto)) {
+            String message = StringUtils.EMPTY;
+            try {
+                message = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.urlInfo");
+            } catch (Exception e) {
+                message = "Url info";
             }
-            rowIndex++;
+            Label urlInfoLabel = new Label(message + ": " + platformProfileMapDto.getUrlInfo());
+            urlInfoLabel.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
+            vBox2.getChildren().add(urlInfoLabel);
         }
 
-        if (customMapMod == null || platformProfileMapDto.isDownloaded() && customMapMod.isMap()) {
-            HBox isInMapsCyclePane = createIsInMapsCyclePane(platformProfileMapDto);
-            gridpane.add(isInMapsCyclePane,2, rowIndex);
+        if (platformProfileMapDto.getMapDto().isOfficial() || platformProfileMapDto.isDownloaded()) {
+            String message = "";
+            try {
+                message = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.photoLocation");
+            } catch (Exception e) {
+                message = "Photo location";
+            }
+            Label urlPhotoLabel = new Label(message + ": " + urlPhoto);
+            urlPhotoLabel.setStyle("-fx-text-fill: gray; -fx-font-size: 11;");
+            vBox2.getChildren().add(urlPhotoLabel);
         }
 
-        GridPane.setRowSpan(mapPreview, rowIndex);
+        hBox.getChildren().addAll(mapPreview, aliasLabel, vBox, vBox2);
 
-        return gridpane;
-         */
+        if (StringUtils.isNotBlank(platformProfileMapDto.getUrlInfo())) {
+            hBox.setCursor(Cursor.HAND);
+            hBox.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    Session.getInstance().setPpm(platformProfileMapDto);
+                    loadNewContent("/views/mapWebInfo.fxml");
+                    event.consume();
+                }
+            });
+        }
 
-        return null;
+        return hBox;
     }
 
     private Node createMapNode(PlatformProfileMapDto platformProfileMapDto) {
-        switch (cardOrientation) {
-            case RIGHT: return createMapNodeCardRight(platformProfileMapDto);
-            case UP: return createMapNodeCardUp(platformProfileMapDto);
-            case LEFT: return createMapNodeCardLeft(platformProfileMapDto);
-            case DETAILED: return null;
-            default: return createMapNodeCardDown(platformProfileMapDto);
+        try {
+            double sliderColumns = Double.parseDouble(facade.findPropertyValue("properties/config.properties", "prop.config.mapSliderValue"));
+            double detailedCardSliderColumns = Double.parseDouble(facade.findPropertyValue("properties/config.properties", "prop.config.mapSliderDetailedCardValue"));
+
+            steamOfficialMapsFlowPane.setVgap(50);
+            epicOfficialMapsFlowPane.setVgap(50);
+
+            switch (cardOrientation) {
+                case RIGHT:
+                    mapsSlider.setMin(2);
+                    mapsSlider.setMax(10);
+                    mapsSlider.setValue(sliderColumns);
+                    return createMapNodeCardRight(platformProfileMapDto);
+
+                case UP:
+                    mapsSlider.setMin(2);
+                    mapsSlider.setMax(10);
+                    mapsSlider.setValue(sliderColumns);
+                    return createMapNodeCardUp(platformProfileMapDto);
+
+                case LEFT:
+                    mapsSlider.setMin(2);
+                    mapsSlider.setMax(10);
+                    mapsSlider.setValue(sliderColumns);
+                    return createMapNodeCardLeft(platformProfileMapDto);
+
+                case DETAILED:
+                    mapsSlider.setMin(1);
+                    mapsSlider.setMax(2);
+                    mapsSlider.setValue(detailedCardSliderColumns);
+                    steamOfficialMapsFlowPane.setVgap(10);
+                    epicOfficialMapsFlowPane.setVgap(10);
+                    return createMapNodeDetailedCard(platformProfileMapDto);
+
+                default:
+                    mapsSlider.setMin(2);
+                    mapsSlider.setMax(10);
+                    mapsSlider.setValue(sliderColumns);
+                    return createMapNodeCardDown(platformProfileMapDto);
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
         }
+        return null;
     }
 
 
@@ -1156,34 +1213,58 @@ public class MapsController implements Initializable {
         return (MainApplication.getPrimaryStage().getWidth() - (50 * mapsSlider.getValue()) - 180) / mapsSlider.getValue();
     }
 
+    private Double getWidthNodeDetailedCard() {
+        return MainApplication.getPrimaryStage().getWidth() / 10;
+    }
+
     private void resizeNode(Node node) {
         ImageView mapPreview = null;
-        Label mapNameLabel = null;
         switch (cardOrientation) {
-            case DOWN:
+            case RIGHT:
+                ((HBox) node).setPrefWidth(getWidthNodeByNumberOfColums()+10);
+                mapPreview = (ImageView) ((HBox) node).getChildren().get(0);
+
+                mapPreview.setFitWidth(Math.floor((getWidthNodeByNumberOfColums()-1) / 2));
+                if (!mapPreview.isPreserveRatio()) {
+                    mapPreview.setFitHeight(mapPreview.getFitWidth());
+                }
+                break;
+
+            case UP:
                 ((VBox) node).setPrefWidth(getWidthNodeByNumberOfColums());
-                mapPreview = (ImageView) ((VBox) node).getChildren().get(2);
-                mapNameLabel = (Label) ((VBox) node).getChildren().get(5);
+                mapPreview = (ImageView) ((VBox) node).getChildren().get(8);
 
                 mapPreview.setFitWidth(getWidthNodeByNumberOfColums());
                 if (!mapPreview.isPreserveRatio()) {
                     mapPreview.setFitHeight(mapPreview.getFitWidth());
                 }
                 break;
-            case RIGHT:
-                ((HBox) node).setPrefWidth(getWidthNodeByNumberOfColums());
-                mapPreview = (ImageView) ((StackPane) ((HBox) node).getChildren().get(0)).getChildren().get(2);
-                mapNameLabel = (Label) ((VBox) ((HBox) node).getChildren().get(1)).getChildren().get(2);
 
-                mapPreview.setFitWidth(getWidthNodeByNumberOfColums() / 2);
+            case LEFT:
+                ((HBox) node).setPrefWidth(getWidthNodeByNumberOfColums()+10);
+                mapPreview = (ImageView) ((HBox) node).getChildren().get(1);
+
+                mapPreview.setFitWidth(Math.floor((getWidthNodeByNumberOfColums()-1) / 2));
                 if (!mapPreview.isPreserveRatio()) {
                     mapPreview.setFitHeight(mapPreview.getFitWidth());
                 }
                 break;
+
+            case DETAILED:
+                ((HBox) node).setPrefWidth(getWidthNodeByNumberOfColums()+10);
+                Label aliasLabel = (Label) ((HBox) node).getChildren().get(1);
+                aliasLabel.setMinWidth(Region.USE_PREF_SIZE);
+                mapPreview = (ImageView) ((HBox) node).getChildren().get(0);
+
+                mapPreview.setFitWidth(Math.floor(getWidthNodeDetailedCard()));
+                if (!mapPreview.isPreserveRatio()) {
+                    mapPreview.setFitHeight(mapPreview.getFitWidth());
+                }
+                break;
+
             default:
                 ((VBox) node).setPrefWidth(getWidthNodeByNumberOfColums());
                 mapPreview = (ImageView) ((VBox) node).getChildren().get(2);
-                mapNameLabel = (Label) ((VBox) node).getChildren().get(5);
 
                 mapPreview.setFitWidth(getWidthNodeByNumberOfColums());
                 if (!mapPreview.isPreserveRatio()) {
@@ -1191,8 +1272,6 @@ public class MapsController implements Initializable {
                 }
                 break;
         }
-
-        mapNameLabel.setMaxWidth(mapPreview.getFitWidth() - 25);
     }
 
     @FXML
@@ -1214,7 +1293,12 @@ public class MapsController implements Initializable {
             resizeNode(node);
         }
         try {
-            facade.setConfigPropertyValue("prop.config.mapSliderValue", String.valueOf(mapsSlider.getValue()));
+            if (!EnumCardOrientation.DETAILED.equals(cardOrientation)) {
+                facade.setConfigPropertyValue("prop.config.mapSliderValue", String.valueOf(mapsSlider.getValue()));
+            } else {
+                facade.setConfigPropertyValue("prop.config.mapSliderDetailedCardValue", String.valueOf(mapsSlider.getValue()));
+            }
+
         } catch (Exception e) {
             String message = "Error setting maps slider value in config.properties file";
             logger.error(message, e);
@@ -2683,33 +2767,71 @@ public class MapsController implements Initializable {
 
     @FXML
     private void cardDownOnAction() {
-        cardOrientation = EnumCardOrientation.DOWN;
-        if (!profileSelect.getItems().isEmpty()) {
-            orderMapsByNameOnAction();
+        try {
+            cardOrientation = EnumCardOrientation.DOWN;
+            facade.setConfigPropertyValue("prop.config.lastUsedView", cardOrientation.name());
+            if (!profileSelect.getItems().isEmpty()) {
+                orderMapsByNameOnAction();
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 
     @FXML
     private void cardRightOnAction() {
-        cardOrientation = EnumCardOrientation.RIGHT;
-        if (!profileSelect.getItems().isEmpty()) {
-            orderMapsByNameOnAction();
+        try {
+            cardOrientation = EnumCardOrientation.RIGHT;
+            facade.setConfigPropertyValue("prop.config.lastUsedView", cardOrientation.name());
+            if (!profileSelect.getItems().isEmpty()) {
+                orderMapsByNameOnAction();
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 
     @FXML
     private void cardUpOnAction() {
-        cardOrientation = EnumCardOrientation.UP;
-        if (!profileSelect.getItems().isEmpty()) {
-            orderMapsByNameOnAction();
+        try {
+            cardOrientation = EnumCardOrientation.UP;
+            facade.setConfigPropertyValue("prop.config.lastUsedView", cardOrientation.name());
+            if (!profileSelect.getItems().isEmpty()) {
+                orderMapsByNameOnAction();
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 
     @FXML
     private void cardLeftOnAction() {
-        cardOrientation = EnumCardOrientation.LEFT;
-        if (!profileSelect.getItems().isEmpty()) {
-            orderMapsByNameOnAction();
+        try {
+            cardOrientation = EnumCardOrientation.LEFT;
+            facade.setConfigPropertyValue("prop.config.lastUsedView", cardOrientation.name());
+            if (!profileSelect.getItems().isEmpty()) {
+                orderMapsByNameOnAction();
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void detailedCardOnAction() {
+        try {
+            cardOrientation = EnumCardOrientation.DETAILED;
+            facade.setConfigPropertyValue("prop.config.lastUsedView", cardOrientation.name());
+            if (!profileSelect.getItems().isEmpty()) {
+                orderMapsByNameOnAction();
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 }

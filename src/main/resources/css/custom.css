@@ -201,7 +201,18 @@
     -fx-border-radius: 10px;
 }
 
-.gridPane:hover, #mapCard:hover {
+.gridPane:hover, .mapCard:hover {
+    -fx-effect: dropshadow(three-pass-box, red, 20, 0, 0, 0);
+}
+
+.detailedCard {
+    -fx-border-color: black;
+    -fx-border-width:3px;
+    -fx-border-radius: 10px;
+}
+
+.detailedCard:hover {
+    -fx-border-color: #c15d11;
     -fx-effect: dropshadow(three-pass-box, red, 20, 0, 0, 0);
 }
 
