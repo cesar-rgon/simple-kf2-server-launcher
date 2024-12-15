@@ -32,7 +32,7 @@ public class Kf2Utils {
 
     protected String languageCode;
     protected boolean byConsole;
-    private final AbstractMapService customMapService;
+    private final CustomMapModServiceImpl customMapService;
     private final AbstractMapService officialMapService;
     private final PlatformProfileMapService platformProfileMapService;
 
@@ -250,14 +250,13 @@ public class Kf2Utils {
 
             List<AbstractMap> allCustomMapModList = customMapService.listAllMaps();
             List<AbstractMap> downloadedCustomMapsInMapsCycle = platformProfileMapService.listPlatformProfileMaps(platform, profile).stream()
-                    .filter(ppm -> allCustomMapModList.contains(ppm.getMap()))
-                    .filter(ppm -> ((CustomMapMod)ppm.getMap()).getMap() != null ? ((CustomMapMod)ppm.getMap()).getMap(): false)
                     .filter(PlatformProfileMap::isDownloaded)
                     .filter(PlatformProfileMap::isInMapsCycle)
-                    .sorted((ppm1, ppm2) -> ppm1.getMap().getCode().compareTo(ppm2.getMap().getCode()))
                     .map(PlatformProfileMap::getMap)
+                    .filter(allCustomMapModList::contains)
+                    .filter(m -> ((CustomMapMod) Hibernate.unproxy(m)).getMap() != null ? ((CustomMapMod) Hibernate.unproxy(m)).getMap(): false)
+                    .sorted((m1, m2) -> m1.getCode().compareTo(m2.getCode()))
                     .collect(Collectors.toList());
-
 
             if (downloadedCustomMapsInMapsCycle != null && !downloadedCustomMapsInMapsCycle.isEmpty()) {
                 pw.println("[OnlineSubsystemSteamworks.KFWorkshopSteamworks]");
@@ -423,7 +422,7 @@ public class Kf2Utils {
                                     throw new RuntimeException(e.getMessage(), e);
                                 }
                             }).
-                            filter(m -> ((CustomMapMod)m).getMap() != null ? ((CustomMapMod)m).getMap(): false).
+                            filter(m -> ((CustomMapMod)Hibernate.unproxy(m)).getMap() != null ? ((CustomMapMod)Hibernate.unproxy(m)).getMap(): false).
                             sorted((o1, o2) -> o1.getCode().compareTo(o2.getCode())).
                             collect(Collectors.toList());
 
