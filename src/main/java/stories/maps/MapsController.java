@@ -420,34 +420,14 @@ public class MapsController implements Initializable {
                 }
             }
 
-            Label aliasLabel = null;
-            CheckBox checkBox = null;
-
             for (Node node: nodes) {
-                switch (cardOrientation) {
-                    case RIGHT:
-                        checkBox = (CheckBox) ((VBox) ((HBox) node).getChildren().get(1)).getChildren().get(3);
-                        break;
-                    case UP:
-                        checkBox = (CheckBox) ((VBox) node).getChildren().get(3);
-                        break;
-                    case LEFT:
-                        checkBox = (CheckBox) ((VBox) ((HBox) node).getChildren().get(0)).getChildren().get(3);
-                        break;
-                    case DETAILED:
-                        aliasLabel = (Label) ((HBox) node).getChildren().get(1);
-                        checkBox = (CheckBox) aliasLabel.getGraphic();
-                        break;
-                    default:
-                        checkBox = (CheckBox) ((VBox) node).getChildren().get(4);
-                        break;
-                }
+                CardNode cardNode = new CardNode(cardOrientation, node);
 
-                checkBox.setSelected(tabCheckbox.isSelected());
-                if (checkBox.isSelected()) {
-                    checkBox.setOpacity(1);
+                cardNode.getCheckbox().setSelected(tabCheckbox.isSelected());
+                if (cardNode.getCheckbox().isSelected()) {
+                    cardNode.getCheckbox().setOpacity(1);
                 } else {
-                    checkBox.setOpacity(0.5);
+                    cardNode.getCheckbox().setOpacity(0.5);
                 }
             }
         });
@@ -701,7 +681,7 @@ public class MapsController implements Initializable {
         downloadedLabel.setText(downloadedLabelText);
         downloadedLabel.setStyle("-fx-text-fill: gold; -fx-padding: 3; -fx-border-color: gold; -fx-border-radius: 5;");
         downloadedLabel.setAlignment(Pos.CENTER);
-        downloadedLabel.setVisible(platformProfileMapDto.isDownloaded());
+        downloadedLabel.setVisible(!platformProfileMapDto.getMapDto().isOfficial() && platformProfileMapDto.isDownloaded());
 
         return downloadedLabel;
     }
@@ -1230,7 +1210,9 @@ public class MapsController implements Initializable {
             double detailedCardSliderColumns = Double.parseDouble(facade.findPropertyValue("properties/config.properties", "prop.config.mapSliderDetailedCardValue"));
 
             steamOfficialMapsFlowPane.setVgap(50);
+            steamCustomMapsFlowPane.setVgap(50);
             epicOfficialMapsFlowPane.setVgap(50);
+            epicCustomMapsFlowPane.setVgap(50);
 
             switch (cardOrientation) {
                 case RIGHT:
@@ -1256,7 +1238,9 @@ public class MapsController implements Initializable {
                     mapsSlider.setMax(2);
                     mapsSlider.setValue(detailedCardSliderColumns);
                     steamOfficialMapsFlowPane.setVgap(10);
+                    steamCustomMapsFlowPane.setVgap(10);
                     epicOfficialMapsFlowPane.setVgap(10);
+                    epicCustomMapsFlowPane.setVgap(10);
                     return createMapNodeDetailedCard(platformProfileMapDto);
 
                 default:
@@ -1626,16 +1610,13 @@ public class MapsController implements Initializable {
     }
 
     private Node getNodeIfSelected(Node node, StringBuffer message) {
-        GridPane gridpane = (GridPane) node;
-        Label aliasLabel = (Label) gridpane.getChildren().get(1);
-        CheckBox checkbox = (CheckBox) aliasLabel.getGraphic();
-        Label mapNameLabel = (Label) gridpane.getChildren().get(2);
-        Label platformNameLabel = (Label) gridpane.getChildren().get(5);
 
-        if (checkbox.isSelected()) {
-            String platformDescription = EnumPlatform.getByName(platformNameLabel.getText()).getDescripcion();
-            message.append("[" + platformDescription + "] " + mapNameLabel.getText()).append("\n");
-            return gridpane;
+        CardNode cardNode = new CardNode(cardOrientation, node);
+
+        if (cardNode.getCheckbox().isSelected()) {
+            String platformDescription = EnumPlatform.getByName(cardNode.getPlatformNameLabel().getText()).getDescripcion();
+            message.append("[").append(platformDescription).append("] ").append(cardNode.getMapNameLabel().getText()).append("\n");
+            return node;
         }
         return null;
     }
@@ -2811,24 +2792,20 @@ public class MapsController implements Initializable {
                     @Override
                     protected Void call() throws Exception {
                         steamCustomMapToDownloadList.stream().forEach(node ->{
-                            GridPane gridpane = (GridPane) node;
-                            Hyperlink clickToDownloadMapLink = (Hyperlink) gridpane.getChildren().get(9);
-                            Event.fireEvent(clickToDownloadMapLink, new MouseEvent(MouseEvent.MOUSE_CLICKED,
-                                    clickToDownloadMapLink.getLayoutX(), clickToDownloadMapLink.getLayoutY(), clickToDownloadMapLink.getLayoutX(), clickToDownloadMapLink.getLayoutY(), MouseButton.PRIMARY, 1,
+                            CardNode cardNode = new CardNode(cardOrientation, node);
+                            Event.fireEvent(cardNode.getClickToDownloadMapLink(), new MouseEvent(MouseEvent.MOUSE_CLICKED,
+                                    cardNode.getClickToDownloadMapLink().getLayoutX(), cardNode.getClickToDownloadMapLink().getLayoutY(), cardNode.getClickToDownloadMapLink().getLayoutX(), cardNode.getClickToDownloadMapLink().getLayoutY(), MouseButton.PRIMARY, 1,
                                     true, true, true, true, true, true, true, true, true, true, null));
-                            Label aliasLabel = (Label) gridpane.getChildren().get(1);
-                            CheckBox selectedMap = (CheckBox) aliasLabel.getGraphic();
-                            selectedMap.setSelected(false);
+
+                            cardNode.getCheckbox().setSelected(false);
                         });
                         epicCustomMapToDownloadList.stream().forEach(node ->{
-                            GridPane gridpane = (GridPane) node;
-                            Hyperlink clickToDownloadMapLink = (Hyperlink) gridpane.getChildren().get(9);
-                            Event.fireEvent(clickToDownloadMapLink, new MouseEvent(MouseEvent.MOUSE_CLICKED,
-                                    clickToDownloadMapLink.getLayoutX(), clickToDownloadMapLink.getLayoutY(), clickToDownloadMapLink.getLayoutX(), clickToDownloadMapLink.getLayoutY(), MouseButton.PRIMARY, 1,
+                            CardNode cardNode = new CardNode(cardOrientation, node);
+                            Event.fireEvent(cardNode.getClickToDownloadMapLink(), new MouseEvent(MouseEvent.MOUSE_CLICKED,
+                                    cardNode.getClickToDownloadMapLink().getLayoutX(), cardNode.getClickToDownloadMapLink().getLayoutY(), cardNode.getClickToDownloadMapLink().getLayoutX(), cardNode.getClickToDownloadMapLink().getLayoutY(), MouseButton.PRIMARY, 1,
                                     true, true, true, true, true, true, true, true, true, true, null));
-                            Label aliasLabel = (Label) gridpane.getChildren().get(1);
-                            CheckBox selectedMap = (CheckBox) aliasLabel.getGraphic();
-                            selectedMap.setSelected(false);
+
+                            cardNode.getCheckbox().setSelected(false);
                         });
                         return null;
                     }
