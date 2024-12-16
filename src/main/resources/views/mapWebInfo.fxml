@@ -13,7 +13,7 @@
          </GridPane.margin></Label>
       <Label fx:id="alreadyInLauncher" text="It is already in the launcher" visible="false" GridPane.halignment="RIGHT">
          <GridPane.margin>
-            <Insets right="220.0" />
+            <Insets right="250.0" />
          </GridPane.margin>
       </Label>
       <Button fx:id="addMap" mnemonicParsing="false" onAction="#addMapOnAction" prefWidth="200.0" text="Add map/mod" visible="false" GridPane.halignment="RIGHT">

@@ -32,10 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.*;
-import pojos.enums.EnumCardOrientation;
-import pojos.enums.EnumMapsTab;
-import pojos.enums.EnumPlatform;
-import pojos.enums.EnumSortedMapsCriteria;
+import pojos.enums.*;
 import pojos.session.Session;
 import start.MainApplication;
 import stories.addcustommapstoprofile.AddCustomMapsToProfileFacadeResult;
@@ -66,6 +63,7 @@ public class MapsController implements Initializable {
     private List<PlatformProfileMapDto> steamPlatformProfileMapDtoList;
     private List<PlatformProfileMapDto> epicPlatformProfileMapDtoList;
     private EnumCardOrientation cardOrientation;
+    private EnumCardOrderType orderType;
 
     @FXML private Slider mapsSlider;
     @FXML private FlowPane steamOfficialMapsFlowPane;
@@ -516,7 +514,6 @@ public class MapsController implements Initializable {
     private Label createAliasLabel(PlatformProfileMapDto platformProfileMapDto) {
 
         Label aliasLabel = new Label(platformProfileMapDto.getAlias());
-        aliasLabel.setMinHeight(20);
         aliasLabel.setPadding(new Insets(0,0,5,0));
 
         return aliasLabel;
@@ -612,7 +609,7 @@ public class MapsController implements Initializable {
         return mapModLabel;
     }
 
-    private Hyperlink createClickToDownloadMapLink(PlatformProfileMapDto platformProfileMapDto, Label downloadedStateLabel, Label isInMapsCycleLabel) {
+    private Hyperlink createClickToDownloadMapLink(PlatformProfileMapDto platformProfileMapDto, Label downloadedStateLabel, Label isInMapsCycleLabel, Pos pos) {
 
         String clickToDownloadMapText = "";
         try {
@@ -624,7 +621,7 @@ public class MapsController implements Initializable {
         Hyperlink clickToDownloadMapLink = new Hyperlink(clickToDownloadMapText);
         clickToDownloadMapLink.setStyle("-fx-text-fill: #f03830; -fx-underline: true;");
         clickToDownloadMapLink.setMaxWidth(Double.MAX_VALUE);
-        clickToDownloadMapLink.setAlignment(Pos.CENTER);
+        clickToDownloadMapLink.setAlignment(pos);
         clickToDownloadMapLink.setPadding(new Insets(10,0,10,0));
 
         clickToDownloadMapLink.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -668,7 +665,7 @@ public class MapsController implements Initializable {
     }
 
 
-    private Label createDownloadedLabel(PlatformProfileMapDto platformProfileMapDto) {
+    private Label createDownloadedLabel(PlatformProfileMapDto platformProfileMapDto, Pos pos) {
 
         String downloadedLabelText = "";
         Label downloadedLabel = new Label();
@@ -680,13 +677,13 @@ public class MapsController implements Initializable {
 
         downloadedLabel.setText(downloadedLabelText);
         downloadedLabel.setStyle("-fx-text-fill: gold; -fx-padding: 3; -fx-border-color: gold; -fx-border-radius: 5;");
-        downloadedLabel.setAlignment(Pos.CENTER);
+        downloadedLabel.setAlignment(pos);
         downloadedLabel.setVisible(!platformProfileMapDto.getMapDto().isOfficial() && platformProfileMapDto.isDownloaded());
 
         return downloadedLabel;
     }
 
-    private Label createIsInMapsCycleLabel(PlatformProfileMapDto platformProfileMapDto) {
+    private Label createIsInMapsCycleLabel(PlatformProfileMapDto platformProfileMapDto, Pos pos) {
 
         Label isInMapsCycleLabel = new Label();
         String isInMapsCycleText;
@@ -706,7 +703,7 @@ public class MapsController implements Initializable {
             isInMapsCycleLabel.setStyle("-fx-text-fill: grey; -fx-font-weight: bold; -fx-padding: 3; -fx-border-color: grey; -fx-border-radius: 5;");
         }
         isInMapsCycleLabel.setText(isInMapsCycleText);
-        isInMapsCycleLabel.setAlignment(Pos.CENTER);
+        isInMapsCycleLabel.setAlignment(pos);
         isInMapsCycleLabel.setVisible(
                 platformProfileMapDto.getMapDto().isOfficial() ||
                 (((CustomMapModDto) platformProfileMapDto.getMapDto()).isMap() && platformProfileMapDto.isDownloaded())
@@ -823,7 +820,7 @@ public class MapsController implements Initializable {
 
         CustomMapModDto customMapMod = null;
         if (platformProfileMapDto.getMapDto().isOfficial()) {
-            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
+            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto, Pos.CENTER);
             VBox.setMargin(isInMapsCycleLabel, new Insets(0,0,10,0));
             vBox.getChildren().add(isInMapsCycleLabel);
 
@@ -831,12 +828,12 @@ public class MapsController implements Initializable {
             customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
             Label mapModLabel = createMapModLabel(customMapMod);
             VBox.setMargin(mapModLabel, new Insets(10,0,0,0));
-            Label downloadedStateLabel = createDownloadedLabel(platformProfileMapDto);
-            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
+            Label downloadedStateLabel = createDownloadedLabel(platformProfileMapDto, Pos.CENTER);
+            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto, Pos.CENTER);
 
             Hyperlink clickToDownloadMapLink = new Hyperlink();
             if (!platformProfileMapDto.isDownloaded()) {
-                clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel);
+                clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel, Pos.CENTER);
             }
 
             StackPane stackPane = new StackPane();
@@ -868,7 +865,7 @@ public class MapsController implements Initializable {
 
         CustomMapModDto customMapMod = null;
         if (platformProfileMapDto.getMapDto().isOfficial()) {
-            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
+            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto, Pos.CENTER);
             VBox.setMargin(isInMapsCycleLabel, new Insets(0,0,10,0));
             vBox.getChildren().add(isInMapsCycleLabel);
 
@@ -876,14 +873,14 @@ public class MapsController implements Initializable {
             customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
             Label mapModLabel = createMapModLabel(customMapMod);
             VBox.setMargin(mapModLabel, new Insets(10,0,0,0));
-            Label downloadedStateLabel = createDownloadedLabel(platformProfileMapDto);
+            Label downloadedStateLabel = createDownloadedLabel(platformProfileMapDto, Pos.CENTER);
             VBox.setMargin(downloadedStateLabel, new Insets(10,0,10,0));
-            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
+            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto, Pos.CENTER);
             VBox.setMargin(isInMapsCycleLabel, new Insets(0,0,10,0));
 
             Hyperlink clickToDownloadMapLink = new Hyperlink();
             if (!platformProfileMapDto.isDownloaded()) {
-                clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel);
+                clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel, Pos.CENTER);
             }
 
             StackPane stackPane = new StackPane();
@@ -898,7 +895,7 @@ public class MapsController implements Initializable {
         return vBox;
     }
 
-    private VBox initializeVerticalDescriptions(PlatformProfileMapDto platformProfileMapDto) {
+    private VBox initializeVerticalDescriptions(PlatformProfileMapDto platformProfileMapDto, Pos pos) {
 
         Label platformNameText = new Label(platformProfileMapDto.getPlatformDto().getKey());
         platformNameText.setVisible(false);
@@ -907,7 +904,7 @@ public class MapsController implements Initializable {
         isOfficialText.setVisible(false);
 
         VBox vBox = new VBox();
-        vBox.setAlignment(Pos.CENTER);
+        vBox.setAlignment(pos);
         vBox.getChildren().addAll(platformNameText, isOfficialText);
 
         return vBox;
@@ -986,7 +983,7 @@ public class MapsController implements Initializable {
         ImageView mapPreview = createMapPreview(platformProfileMapDto, urlPhoto, Math.floor((getWidthNodeByNumberOfColums()-1) / 2));
 
         HBox hBox = initializeHorizontalNodeCard(platformProfileMapDto, urlPhoto);
-        VBox vBox = initializeVerticalDescriptions(platformProfileMapDto);
+        VBox vBox = initializeVerticalDescriptions(platformProfileMapDto, Pos.CENTER);
         vBox.setPrefWidth(Math.floor((getWidthNodeByNumberOfColums()-1) / 2));
         HBox.setMargin(vBox, new Insets(-21,3,3,3));
 
@@ -1012,7 +1009,7 @@ public class MapsController implements Initializable {
         CustomMapModDto customMapMod = null;
         if (platformProfileMapDto.getMapDto().isOfficial()) {
             importedDateText.setPadding(new Insets(0,0,10,0));
-            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
+            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto, Pos.CENTER);
             VBox.setMargin(isInMapsCycleLabel, new Insets(0,0,10,0));
             vBox.getChildren().add(isInMapsCycleLabel);
 
@@ -1020,14 +1017,14 @@ public class MapsController implements Initializable {
             customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
             Label mapModLabel = createMapModLabel(customMapMod);
             VBox.setMargin(mapModLabel, new Insets(10,0,0,0));
-            Label downloadedStateLabel = createDownloadedLabel(platformProfileMapDto);
+            Label downloadedStateLabel = createDownloadedLabel(platformProfileMapDto, Pos.CENTER);
             VBox.setMargin(downloadedStateLabel, new Insets(10,0,10,0));
-            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
+            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto, Pos.CENTER);
             VBox.setMargin(isInMapsCycleLabel, new Insets(0,0,10,0));
 
             Hyperlink clickToDownloadMapLink = new Hyperlink();
             if (!platformProfileMapDto.isDownloaded()) {
-                clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel);
+                clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel, Pos.CENTER);
             }
 
             StackPane stackPane = new StackPane();
@@ -1049,7 +1046,7 @@ public class MapsController implements Initializable {
         ImageView mapPreview = createMapPreview(platformProfileMapDto, urlPhoto, Math.floor((getWidthNodeByNumberOfColums()-1) / 2));
 
         HBox hBox = initializeHorizontalNodeCard(platformProfileMapDto, urlPhoto);
-        VBox vBox = initializeVerticalDescriptions(platformProfileMapDto);
+        VBox vBox = initializeVerticalDescriptions(platformProfileMapDto, Pos.CENTER);
         vBox.setPrefWidth(Math.floor((getWidthNodeByNumberOfColums()-1) / 2));
         HBox.setMargin(vBox, new Insets(-21,3,3,3));
 
@@ -1075,7 +1072,7 @@ public class MapsController implements Initializable {
         CustomMapModDto customMapMod = null;
         if (platformProfileMapDto.getMapDto().isOfficial()) {
             importedDateText.setPadding(new Insets(0,0,10,0));
-            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
+            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto, Pos.CENTER);
             VBox.setMargin(isInMapsCycleLabel, new Insets(0,0,10,0));
             vBox.getChildren().add(isInMapsCycleLabel);
 
@@ -1083,14 +1080,14 @@ public class MapsController implements Initializable {
             customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
             Label mapModLabel = createMapModLabel(customMapMod);
             VBox.setMargin(mapModLabel, new Insets(10,0,0,0));
-            Label downloadedStateLabel = createDownloadedLabel(platformProfileMapDto);
+            Label downloadedStateLabel = createDownloadedLabel(platformProfileMapDto, Pos.CENTER);
             VBox.setMargin(downloadedStateLabel, new Insets(10,0,10,0));
-            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
+            Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto, Pos.CENTER);
             VBox.setMargin(isInMapsCycleLabel, new Insets(0,0,10,0));
 
             Hyperlink clickToDownloadMapLink = new Hyperlink();
             if (!platformProfileMapDto.isDownloaded()) {
-                clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel);
+                clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel, Pos.CENTER);
             }
 
             StackPane stackPane = new StackPane();
@@ -1109,53 +1106,66 @@ public class MapsController implements Initializable {
 
         String urlPhoto = getUrlPhoto(platformProfileMapDto);
         HBox hBox = new HBox();
-        hBox.setPrefWidth(getWidthNodeByNumberOfColums()+10);
+        hBox.setPrefWidth(getWidthNodeByNumberOfColums()+70);
         hBox.setAlignment(Pos.CENTER_LEFT);
         hBox.setSpacing(50);
         hBox.getStyleClass().add("detailedCard");
 
-        ImageView mapPreview = createMapPreview(platformProfileMapDto, urlPhoto, Math.floor(getWidthNodeDetailedCard()));
+        ImageView mapPreview = createMapPreview(platformProfileMapDto, urlPhoto, Math.floor(getWidthNodeDetailedCard(platformProfileMapDto.getMapDto().isOfficial())));
 
         CheckBox checkBox = createCheckBox();
         checkBox.setPadding(new Insets(1,0,0,0));
 
         Label aliasLabel = createAliasLabel(platformProfileMapDto);
         aliasLabel.setGraphic(checkBox);
-        aliasLabel.setAlignment(Pos.CENTER);
-        aliasLabel.setMinWidth(Region.USE_PREF_SIZE);
+        aliasLabel.setAlignment(Pos.CENTER_LEFT);
 
-        Label downloadedStateLabel = createDownloadedLabel(platformProfileMapDto);
-        Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto);
+        Label downloadedStateLabel = createDownloadedLabel(platformProfileMapDto, Pos.CENTER_LEFT);
+        Label isInMapsCycleLabel = createIsInMapsCycleLabel(platformProfileMapDto, Pos.CENTER_LEFT);
         Hyperlink clickToDownloadMapLink = new Hyperlink();
         if (!platformProfileMapDto.isDownloaded()) {
-            clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel);
+            clickToDownloadMapLink = createClickToDownloadMapLink(platformProfileMapDto, downloadedStateLabel, isInMapsCycleLabel, Pos.CENTER_LEFT);
         }
 
         StackPane stackPane = new StackPane();
-        stackPane.setAlignment(Pos.TOP_CENTER);
+        stackPane.setAlignment(Pos.TOP_LEFT);
         stackPane.getChildren().addAll(downloadedStateLabel, isInMapsCycleLabel, clickToDownloadMapLink);
         StackPane.setMargin(isInMapsCycleLabel, new Insets(30,0,0,0));
         VBox vBox = new VBox();
-        vBox.setAlignment(Pos.CENTER);
-        vBox.getChildren().addAll(aliasLabel, stackPane);
+        vBox.setAlignment(Pos.CENTER_LEFT);
 
-        VBox vBox2 = initializeVerticalDescriptions(platformProfileMapDto);
+        CustomMapModDto customMapMod = null;
+        if (platformProfileMapDto.getMapDto().isOfficial()) {
+            vBox.getChildren().addAll(aliasLabel, stackPane);
+        } else {
+            customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
+            Label mapModLabel = createMapModLabel(customMapMod);
+            VBox.setMargin(mapModLabel, new Insets(5,0,5,0));
+            vBox.getChildren().addAll(aliasLabel, mapModLabel, stackPane);
+        }
+
+        VBox vBox2 = initializeVerticalDescriptions(platformProfileMapDto, Pos.CENTER_LEFT);
         HBox.setMargin(vBox2, new Insets(-21,3,3,3));
         HBox.setMargin(mapPreview, new Insets(3,0,3,3));
 
         Label mapNameLabel = createMapNameLabel(platformProfileMapDto);
-        mapNameLabel.setAlignment(Pos.CENTER);
+        mapNameLabel.setAlignment(Pos.CENTER_LEFT);
 
         Label releaseDateLabel = createReleaseDateLabel(platformProfileMapDto);
-        releaseDateLabel.setAlignment(Pos.CENTER);
+        releaseDateLabel.setAlignment(Pos.CENTER_LEFT);
 
         Label importedDateText = createImportedDateLabel(platformProfileMapDto);
-        importedDateText.setAlignment(Pos.CENTER);
+        importedDateText.setAlignment(Pos.CENTER_LEFT);
 
         vBox2.getChildren().addAll(checkBox, mapNameLabel, releaseDateLabel, importedDateText);
 
         VBox vBox3 = new VBox();
-        vBox3.setAlignment(Pos.CENTER);
+        vBox3.setAlignment(Pos.CENTER_LEFT);
+
+        vBox.setMinWidth(150);
+        vBox.setMaxWidth(150);
+        vBox2.setMinWidth(150);
+        vBox2.setMaxWidth(150);
 
         if (!platformProfileMapDto.getMapDto().isOfficial()) {
             Label idWorkShopLabel = new Label("id WorkShop: " + ((CustomMapModDto) platformProfileMapDto.getMapDto()).getIdWorkShop());
@@ -1209,6 +1219,10 @@ public class MapsController implements Initializable {
             double sliderColumns = Double.parseDouble(facade.findPropertyValue("properties/config.properties", "prop.config.mapSliderValue"));
             double detailedCardSliderColumns = Double.parseDouble(facade.findPropertyValue("properties/config.properties", "prop.config.mapSliderDetailedCardValue"));
 
+            steamOfficialMapsFlowPane.setAlignment(Pos.TOP_CENTER);
+            steamCustomMapsFlowPane.setAlignment(Pos.TOP_CENTER);
+            epicOfficialMapsFlowPane.setAlignment(Pos.TOP_CENTER);
+            epicCustomMapsFlowPane.setAlignment(Pos.TOP_CENTER);
             steamOfficialMapsFlowPane.setVgap(50);
             steamCustomMapsFlowPane.setVgap(50);
             epicOfficialMapsFlowPane.setVgap(50);
@@ -1237,9 +1251,13 @@ public class MapsController implements Initializable {
                     mapsSlider.setMin(1);
                     mapsSlider.setMax(2);
                     mapsSlider.setValue(detailedCardSliderColumns);
+                    steamOfficialMapsFlowPane.setAlignment(Pos.TOP_LEFT);
                     steamOfficialMapsFlowPane.setVgap(10);
+                    steamCustomMapsFlowPane.setAlignment(Pos.TOP_LEFT);
                     steamCustomMapsFlowPane.setVgap(10);
+                    epicOfficialMapsFlowPane.setAlignment(Pos.TOP_LEFT);
                     epicOfficialMapsFlowPane.setVgap(10);
+                    epicCustomMapsFlowPane.setAlignment(Pos.TOP_LEFT);
                     epicCustomMapsFlowPane.setVgap(10);
                     return createMapNodeDetailedCard(platformProfileMapDto);
 
@@ -1276,15 +1294,22 @@ public class MapsController implements Initializable {
         return (MainApplication.getPrimaryStage().getWidth() - (50 * mapsSlider.getValue()) - 180) / mapsSlider.getValue();
     }
 
-    private Double getWidthNodeDetailedCard() {
-        return MainApplication.getPrimaryStage().getWidth() / 10;
+    private Double getWidthNodeDetailedCard(boolean isOfficial) {
+        if (isOfficial) {
+            return MainApplication.getPrimaryStage().getWidth() / 10;
+        } else {
+            return MainApplication.getPrimaryStage().getWidth() / 20;
+        }
     }
 
     private void resizeNode(Node node) {
         ImageView mapPreview = null;
+        VBox vBox = null;
         switch (cardOrientation) {
             case RIGHT:
                 ((HBox) node).setPrefWidth(getWidthNodeByNumberOfColums()+10);
+                vBox = (VBox) ((HBox) node).getChildren().get(1);
+                vBox.setPrefWidth(Math.floor((getWidthNodeByNumberOfColums()-1) / 2));
                 mapPreview = (ImageView) ((HBox) node).getChildren().get(0);
 
                 mapPreview.setFitWidth(Math.floor((getWidthNodeByNumberOfColums()-1) / 2));
@@ -1310,6 +1335,8 @@ public class MapsController implements Initializable {
 
             case LEFT:
                 ((HBox) node).setPrefWidth(getWidthNodeByNumberOfColums()+10);
+                vBox = (VBox) ((HBox) node).getChildren().get(0);
+                vBox.setPrefWidth(Math.floor((getWidthNodeByNumberOfColums()-1) / 2));
                 mapPreview = (ImageView) ((HBox) node).getChildren().get(1);
 
                 mapPreview.setFitWidth(Math.floor((getWidthNodeByNumberOfColums()-1) / 2));
@@ -1319,12 +1346,10 @@ public class MapsController implements Initializable {
                 break;
 
             case DETAILED:
-                ((HBox) node).setPrefWidth(getWidthNodeByNumberOfColums()+10);
-                Label aliasLabel = (Label) ((VBox) ((HBox) node).getChildren().get(1)).getChildren().get(0);
-                aliasLabel.setMinWidth(Region.USE_PREF_SIZE);
+                ((HBox) node).setPrefWidth(getWidthNodeByNumberOfColums()+70);
                 mapPreview = (ImageView) ((HBox) node).getChildren().get(0);
-
-                mapPreview.setFitWidth(Math.floor(getWidthNodeDetailedCard()));
+                Label isOfficialLabel = (Label) ((VBox) ((HBox) node).getChildren().get(2)).getChildren().get(1);
+                mapPreview.setFitWidth(Math.floor(getWidthNodeDetailedCard("true".equals(isOfficialLabel.getText()))));
                 if (!mapPreview.isPreserveRatio()) {
                     mapPreview.setFitHeight(mapPreview.getFitWidth());
                 }
@@ -1646,53 +1671,50 @@ public class MapsController implements Initializable {
                 Optional<ButtonType> result = Utils.questionDialog(question, message.toString());
                 if (result.isPresent() && result.get().equals(ButtonType.OK)) {
                     progressIndicator.setVisible(true);
+                    String mapNameText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.name");
 
                     final StringBuffer[] errors = {new StringBuffer()};
-                    Task<List<GridPane>> task = new Task<List<GridPane>>() {
+                    Task<List<Node>> task = new Task<List<Node>>() {
                         @Override
-                        protected List<GridPane> call() throws Exception {
-                            List<GridPane> gridpaneToRemoveList = new ArrayList<GridPane>();
+                        protected List<Node> call() throws Exception {
+                            List<Node> nodeToRemoveList = new ArrayList<Node>();
                             errors[0] = new StringBuffer();
                             for (Node node : removeList) {
                                 try {
-                                    GridPane gridpane = (GridPane) node;
-                                    Label mapNameLabel = (Label) gridpane.getChildren().get(2);
-                                    Label platformNameLabel = (Label) gridpane.getChildren().get(5);
-
-                                    AbstractMapDto map = facade.deleteMapFromPlatformProfile(platformNameLabel.getText(), mapNameLabel.getText(), profileSelect.getValue().getName());
+                                    CardNode cardNode = new CardNode(cardOrientation, node);
+                                    String mapName = cardNode.getMapNameLabel().getText().replace(mapNameText + ": ", "");
+                                    AbstractMapDto map = facade.deleteMapFromPlatformProfile(cardNode.getPlatformNameLabel().getText(), mapName, profileSelect.getValue().getName());
                                     if (map != null) {
-                                        gridpaneToRemoveList.add(gridpane);
+                                        nodeToRemoveList.add(node);
                                     } else {
-                                        errors[0].append(mapNameLabel.getText()).append("\n");
+                                        errors[0].append(mapName).append("\n");
                                     }
                                 } catch (Exception e) {
                                     logger.error(e.getMessage(), e);
                                     Utils.errorDialog(e.getMessage(), e);
                                 }
                             }
-                            return gridpaneToRemoveList;
+                            return nodeToRemoveList;
                         }
                     };
 
                     task.setOnSucceeded(wse -> {
-                        List<GridPane> gridpaneToRemoveList = task.getValue();
+                        List<Node> nodeToRemoveList = task.getValue();
                         try {
-                            if (!gridpaneToRemoveList.isEmpty()) {
+                            if (!nodeToRemoveList.isEmpty()) {
 
-                                for (Node node : gridpaneToRemoveList) {
-                                    GridPane gridpane = (GridPane) node;
-                                    Label platformNameLabel = (Label) gridpane.getChildren().get(5);
-                                    Label isOfficialMapLabel = (Label) gridpane.getChildren().get(6);
+                                for (Node node : nodeToRemoveList) {
+                                    CardNode cardNode = new CardNode(cardOrientation, node);
 
-                                    if (EnumPlatform.STEAM.name().equals(platformNameLabel.getText())) {
-                                        if (Boolean.parseBoolean(isOfficialMapLabel.getText())) {
+                                    if (EnumPlatform.STEAM.name().equals(cardNode.getPlatformNameLabel().getText())) {
+                                        if (Boolean.parseBoolean(cardNode.getIsOfficialLabel().getText())) {
                                             steamOfficialMapsFlowPane.getChildren().remove(node);
                                         } else {
                                             steamCustomMapsFlowPane.getChildren().remove(node);
                                         }
                                     }
-                                    if (EnumPlatform.EPIC.name().equals(platformNameLabel.getText())) {
-                                        if (Boolean.parseBoolean(isOfficialMapLabel.getText())) {
+                                    if (EnumPlatform.EPIC.name().equals(cardNode.getPlatformNameLabel().getText())) {
+                                        if (Boolean.parseBoolean(cardNode.getIsOfficialLabel().getText())) {
                                             epicOfficialMapsFlowPane.getChildren().remove(node);
                                         } else {
                                             epicCustomMapsFlowPane.getChildren().remove(node);
@@ -2170,6 +2192,7 @@ public class MapsController implements Initializable {
 
     @FXML
     private void orderMapsByNameOnAction() {
+        orderType = EnumCardOrderType.BY_NAME;
         steamOfficialMapsFlowPane.getChildren().clear();
         steamCustomMapsFlowPane.getChildren().clear();
         epicOfficialMapsFlowPane.getChildren().clear();
@@ -2206,6 +2229,7 @@ public class MapsController implements Initializable {
 
      @FXML
     private void orderMapsByReleaseDateOnAction() {
+        orderType = EnumCardOrderType.BY_RELEASE_DATE;
         steamCustomMapsFlowPane.getChildren().clear();
         steamOfficialMapsFlowPane.getChildren().clear();
         epicOfficialMapsFlowPane.getChildren().clear();
@@ -2298,6 +2322,7 @@ public class MapsController implements Initializable {
 
     @FXML
     private void orderMapsByImportedDateOnAction() {
+        orderType = EnumCardOrderType.BY_IMPORTED_DATE;
         steamCustomMapsFlowPane.getChildren().clear();
         steamOfficialMapsFlowPane.getChildren().clear();
         epicCustomMapsFlowPane.getChildren().clear();
@@ -2334,6 +2359,7 @@ public class MapsController implements Initializable {
 
     @FXML
     private void orderMapsByDownloadOnAction() {
+        orderType = EnumCardOrderType.BY_DOWNLOAD;
         if (steamOfficialMapsTab.isSelected() || epicOfficialMapsTab.isSelected()) {
             return;
         }
@@ -2384,16 +2410,14 @@ public class MapsController implements Initializable {
 
         List<PlatformProfileMapDto> editList = new ArrayList<PlatformProfileMapDto>();
         ObservableList<Node> nodeList = FXCollections.concat(steamOfficialMapsFlowPane.getChildren(), steamCustomMapsFlowPane.getChildren());
+        String mapNameText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.name");
 
         if (nodeList != null && !nodeList.isEmpty()) {
             for (Node node : nodeList) {
-                GridPane gridpane = (GridPane) node;
-                Label aliasLabel = (Label) gridpane.getChildren().get(1);
-                Label mapNameLabel = (Label) gridpane.getChildren().get(2);
-                CheckBox checkbox = (CheckBox) aliasLabel.getGraphic();
+                CardNode cardNode = new CardNode(cardOrientation, node);
 
-                if (checkbox.isSelected()) {
-                    String mapName = mapNameLabel.getText();
+                if (cardNode.getCheckbox().isSelected()) {
+                    String mapName = cardNode.getMapNameLabel().getText().replace(mapNameText + ": ", "");
                     Optional<PlatformProfileMapDto> profileMapOptional = facade.findPlatformProfileMapDtoByName(
                             EnumPlatform.STEAM.name(),
                             profileSelect.getValue().getName(),
@@ -2418,16 +2442,15 @@ public class MapsController implements Initializable {
 
         List<PlatformProfileMapDto> editList = new ArrayList<PlatformProfileMapDto>();
         ObservableList<Node> nodeList = FXCollections.concat(epicOfficialMapsFlowPane.getChildren(), epicCustomMapsFlowPane.getChildren());
+        String mapNameText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.name");
 
         if (nodeList != null && !nodeList.isEmpty()) {
             for (Node node : nodeList) {
-                GridPane gridpane = (GridPane) node;
-                Label aliasLabel = (Label) gridpane.getChildren().get(1);
-                Label mapNameLabel = (Label) gridpane.getChildren().get(2);
-                CheckBox checkbox = (CheckBox) aliasLabel.getGraphic();
+                CardNode cardNode = new CardNode(cardOrientation, node);
 
-                if (checkbox.isSelected()) {
-                    String mapName = mapNameLabel.getText();
+                if (cardNode.getCheckbox().isSelected()) {
+                    String mapName = cardNode.getMapNameLabel().getText().replace(mapNameText + ": ", "");
+
                     Optional<PlatformProfileMapDto> profileMapOptional = facade.findPlatformProfileMapDtoByName(
                             EnumPlatform.EPIC.name(),
                             profileSelect.getValue().getName(),
@@ -2513,36 +2536,33 @@ public class MapsController implements Initializable {
                 Utils.warningDialog(headerText, contentText);
 
             } else {
+                String mapNameText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.name");
 
                 List<String> steamOfficialMapNameListToAddFromMapsCycle = steamOfficialAddMapsCycleList.stream().
                         map(node -> {
-                            GridPane gridpane = (GridPane) node;
-                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
-                            return mapNameLabel.getText();
+                            CardNode cardNode = new CardNode(cardOrientation, node);
+                            return cardNode.getMapNameLabel().getText().replace(mapNameText + ": ", "");
                         }).
                         collect(Collectors.toList());
 
                 List<String> steamCustomMapNameListToAddFromMapsCycle = steamCustomAddMapsCycleList.stream().
                         map(node -> {
-                            GridPane gridpane = (GridPane) node;
-                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
-                            return mapNameLabel.getText();
+                            CardNode cardNode = new CardNode(cardOrientation, node);
+                            return cardNode.getMapNameLabel().getText().replace(mapNameText + ": ", "");
                         }).
                         collect(Collectors.toList());
 
                 List<String> epicOfficialMapNameListToAddFromMapsCycle = epicOfficialAddMapsCycleList.stream().
                         map(node -> {
-                            GridPane gridpane = (GridPane) node;
-                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
-                            return mapNameLabel.getText();
+                            CardNode cardNode = new CardNode(cardOrientation, node);
+                            return cardNode.getMapNameLabel().getText().replace(mapNameText + ": ", "");
                         }).
                         collect(Collectors.toList());
 
                 List<String> epicCustomMapNameListToAddFromMapsCycle = epicCustomAddMapsCycleList.stream().
                         map(node -> {
-                            GridPane gridpane = (GridPane) node;
-                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
-                            return mapNameLabel.getText();
+                            CardNode cardNode = new CardNode(cardOrientation, node);
+                            return cardNode.getMapNameLabel().getText().replace(mapNameText + ": ", "");
                         }).
                         collect(Collectors.toList());
 
@@ -2623,35 +2643,33 @@ public class MapsController implements Initializable {
                 Utils.warningDialog(headerText, contentText);
 
             } else {
+                String mapNameText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.name");
+
                 List<String> steamOfficialMapNameListToRemoveFromMapsCycle = steamOfficialRemoveMapsCycleList.stream().
                         map(node -> {
-                            GridPane gridpane = (GridPane) node;
-                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
-                            return mapNameLabel.getText();
+                            CardNode cardNode = new CardNode(cardOrientation, node);
+                            return cardNode.getMapNameLabel().getText().replace(mapNameText + ": ", "");
                         }).
                         collect(Collectors.toList());
 
                 List<String> steamCustomMapNameListToRemoveFromMapsCycle = steamCustomRemoveMapsCycleList.stream().
                         map(node -> {
-                            GridPane gridpane = (GridPane) node;
-                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
-                            return mapNameLabel.getText();
+                            CardNode cardNode = new CardNode(cardOrientation, node);
+                            return cardNode.getMapNameLabel().getText().replace(mapNameText + ": ", "");
                         }).
                         collect(Collectors.toList());
 
                 List<String> epicOfficialMapNameListToRemoveFromMapsCycle = epicOfficialRemoveMapsCycleList.stream().
                         map(node -> {
-                            GridPane gridpane = (GridPane) node;
-                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
-                            return mapNameLabel.getText();
+                            CardNode cardNode = new CardNode(cardOrientation, node);
+                            return cardNode.getMapNameLabel().getText().replace(mapNameText + ": ", "");
                         }).
                         collect(Collectors.toList());
 
                 List<String> epicCustomMapNameListToRemoveFromMapsCycle = epicCustomRemoveMapsCycleList.stream().
                         map(node -> {
-                            GridPane gridpane = (GridPane) node;
-                            Label mapNameLabel = (Label) gridpane.getChildren().get(2);
-                            return mapNameLabel.getText();
+                            CardNode cardNode = new CardNode(cardOrientation, node);
+                            return cardNode.getMapNameLabel().getText().replace(mapNameText + ": ", "");
                         }).
                         collect(Collectors.toList());
 
@@ -2691,10 +2709,9 @@ public class MapsController implements Initializable {
 
 
     private void setMapInMapsCycle(Node node, boolean inMapCycle, int row) throws Exception {
-        GridPane gridpane = (GridPane) node;
-        Label aliasLabel = (Label) gridpane.getChildren().get(1);
-        CheckBox checkbox = (CheckBox) aliasLabel.getGraphic();
-        checkbox.setSelected(false);
+
+        CardNode cardNode = new CardNode(cardOrientation, node);
+        cardNode.getCheckbox().setSelected(false);
 
         try {
             String isInMapsCycleText = StringUtils.EMPTY;
@@ -2715,7 +2732,7 @@ public class MapsController implements Initializable {
                 color = "grey";
             }
 
-            Label isInMapsCycleLabel = (Label) ((HBox) gridpane.getChildren().get(row)).getChildren().get(0);
+            Label isInMapsCycleLabel = cardNode.getIsInMapsCycleLabel();
             isInMapsCycleLabel.setText(isInMapsCycleText);
             isInMapsCycleLabel.setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold; -fx-padding: 3; -fx-border-color: " + color + "; -fx-border-radius: 5;");
 
@@ -2726,6 +2743,7 @@ public class MapsController implements Initializable {
 
     @FXML
     private void orderMapsByMapsCycleOnAction() {
+        orderType = EnumCardOrderType.BY_MAPS_CYCLE;
         steamCustomMapsFlowPane.getChildren().clear();
         steamOfficialMapsFlowPane.getChildren().clear();
         epicCustomMapsFlowPane.getChildren().clear();
@@ -2832,7 +2850,14 @@ public class MapsController implements Initializable {
             cardOrientation = EnumCardOrientation.DOWN;
             facade.setConfigPropertyValue("prop.config.lastUsedView", cardOrientation.name());
             if (!profileSelect.getItems().isEmpty()) {
-                orderMapsByNameOnAction();
+                switch (orderType) {
+                    case BY_ALIAS: orderMapsByAliasOnAction(); break;
+                    case BY_RELEASE_DATE: orderMapsByReleaseDateOnAction(); break;
+                    case BY_IMPORTED_DATE: orderMapsByImportedDateOnAction(); break;
+                    case BY_DOWNLOAD: orderMapsByDownloadOnAction(); break;
+                    case BY_MAPS_CYCLE: orderMapsByMapsCycleOnAction(); break;
+                    default: orderMapsByNameOnAction(); break;
+                }
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -2846,7 +2871,14 @@ public class MapsController implements Initializable {
             cardOrientation = EnumCardOrientation.RIGHT;
             facade.setConfigPropertyValue("prop.config.lastUsedView", cardOrientation.name());
             if (!profileSelect.getItems().isEmpty()) {
-                orderMapsByNameOnAction();
+                switch (orderType) {
+                    case BY_ALIAS: orderMapsByAliasOnAction(); break;
+                    case BY_RELEASE_DATE: orderMapsByReleaseDateOnAction(); break;
+                    case BY_IMPORTED_DATE: orderMapsByImportedDateOnAction(); break;
+                    case BY_DOWNLOAD: orderMapsByDownloadOnAction(); break;
+                    case BY_MAPS_CYCLE: orderMapsByMapsCycleOnAction(); break;
+                    default: orderMapsByNameOnAction(); break;
+                }
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -2860,7 +2892,14 @@ public class MapsController implements Initializable {
             cardOrientation = EnumCardOrientation.UP;
             facade.setConfigPropertyValue("prop.config.lastUsedView", cardOrientation.name());
             if (!profileSelect.getItems().isEmpty()) {
-                orderMapsByNameOnAction();
+                switch (orderType) {
+                    case BY_ALIAS: orderMapsByAliasOnAction(); break;
+                    case BY_RELEASE_DATE: orderMapsByReleaseDateOnAction(); break;
+                    case BY_IMPORTED_DATE: orderMapsByImportedDateOnAction(); break;
+                    case BY_DOWNLOAD: orderMapsByDownloadOnAction(); break;
+                    case BY_MAPS_CYCLE: orderMapsByMapsCycleOnAction(); break;
+                    default: orderMapsByNameOnAction(); break;
+                }
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -2874,7 +2913,14 @@ public class MapsController implements Initializable {
             cardOrientation = EnumCardOrientation.LEFT;
             facade.setConfigPropertyValue("prop.config.lastUsedView", cardOrientation.name());
             if (!profileSelect.getItems().isEmpty()) {
-                orderMapsByNameOnAction();
+                switch (orderType) {
+                    case BY_ALIAS: orderMapsByAliasOnAction(); break;
+                    case BY_RELEASE_DATE: orderMapsByReleaseDateOnAction(); break;
+                    case BY_IMPORTED_DATE: orderMapsByImportedDateOnAction(); break;
+                    case BY_DOWNLOAD: orderMapsByDownloadOnAction(); break;
+                    case BY_MAPS_CYCLE: orderMapsByMapsCycleOnAction(); break;
+                    default: orderMapsByNameOnAction(); break;
+                }
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -2888,7 +2934,14 @@ public class MapsController implements Initializable {
             cardOrientation = EnumCardOrientation.DETAILED;
             facade.setConfigPropertyValue("prop.config.lastUsedView", cardOrientation.name());
             if (!profileSelect.getItems().isEmpty()) {
-                orderMapsByNameOnAction();
+                switch (orderType) {
+                    case BY_ALIAS: orderMapsByAliasOnAction(); break;
+                    case BY_RELEASE_DATE: orderMapsByReleaseDateOnAction(); break;
+                    case BY_IMPORTED_DATE: orderMapsByImportedDateOnAction(); break;
+                    case BY_DOWNLOAD: orderMapsByDownloadOnAction(); break;
+                    case BY_MAPS_CYCLE: orderMapsByMapsCycleOnAction(); break;
+                    default: orderMapsByNameOnAction(); break;
+                }
             }
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
