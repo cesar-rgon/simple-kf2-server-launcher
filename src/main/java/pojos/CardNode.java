@@ -14,13 +14,13 @@ import services.PropertyServiceImpl;
 
 public class CardNode {
 
-    private final Label platformNameLabel;
-    private final Label isOfficialLabel;
-    private final Label mapNameLabel;
-    private final CheckBox checkbox;
+    private Label platformNameLabel;
+    private Label isOfficialLabel;
+    private Label mapNameLabel;
+    private CheckBox checkbox;
     private Hyperlink clickToDownloadMapLink;
-    private final Label isInMapsCycleLabel;
-    private final Label isMapLabel;
+    private Label isInMapsCycleLabel;
+    private Label isMapLabel;
 
     public CardNode(EnumCardOrientation cardOrientation, Node node) {
         super();
@@ -49,7 +49,9 @@ public class CardNode {
                     clickToDownloadMapLink = null;
                 }
                 isMapLabel = "false".equals(isOfficialLabel.getText()) ? (Label) ((VBox) hBox.getChildren().get(1)).getChildren().get(7): null;
-                isInMapsCycleLabel = isMapLabel != null && isMapModLabelText.equals(isMapLabel.getText()) ? (Label) ((StackPane) ((VBox) hBox.getChildren().get(1)).getChildren().get(8)).getChildren().get(1): null;
+                isInMapsCycleLabel = "true".equals(isOfficialLabel.getText()) ?
+                        (Label) ((VBox) hBox.getChildren().get(1)).getChildren().get(7) :
+                        isMapLabel != null && isMapModLabelText.equals(isMapLabel.getText()) ? (Label) ((StackPane) ((VBox) hBox.getChildren().get(1)).getChildren().get(8)).getChildren().get(1): null;
                 break;
 
             case UP:
@@ -64,7 +66,9 @@ public class CardNode {
                     clickToDownloadMapLink = null;
                 }
                 isMapLabel = "false".equals(isOfficialLabel.getText()) ? (Label) vBox.getChildren().get(7): null;
-                isInMapsCycleLabel = isMapLabel != null &&  isMapModLabelText.equals(isMapLabel.getText()) ? (Label) ((StackPane) vBox.getChildren().get(8)).getChildren().get(1): null;
+                isInMapsCycleLabel = "true".equals(isOfficialLabel.getText()) ?
+                        (Label) vBox.getChildren().get(7) :
+                        isMapLabel != null &&  isMapModLabelText.equals(isMapLabel.getText()) ? (Label) ((StackPane) vBox.getChildren().get(8)).getChildren().get(1): null;
                 break;
 
             case LEFT:
@@ -79,7 +83,9 @@ public class CardNode {
                     clickToDownloadMapLink = null;
                 }
                 isMapLabel = "false".equals(isOfficialLabel.getText()) ? (Label) ((VBox) hBox.getChildren().get(0)).getChildren().get(7): null;
-                isInMapsCycleLabel = isMapLabel != null &&  isMapModLabelText.equals(isMapLabel.getText()) ? (Label) ((StackPane) ((VBox) hBox.getChildren().get(0)).getChildren().get(8)).getChildren().get(1): null;
+                isInMapsCycleLabel = "true".equals(isOfficialLabel.getText()) ?
+                        (Label) ((VBox) hBox.getChildren().get(0)).getChildren().get(7) :
+                        isMapLabel != null &&  isMapModLabelText.equals(isMapLabel.getText()) ? (Label) ((StackPane) ((VBox) hBox.getChildren().get(0)).getChildren().get(8)).getChildren().get(1): null;
                 break;
 
             case DETAILED:
@@ -94,11 +100,9 @@ public class CardNode {
                     clickToDownloadMapLink = null;
                 }
                 isMapLabel = "false".equals(isOfficialLabel.getText()) ? (Label) ((VBox) hBox.getChildren().get(1)).getChildren().get(1): null;
-                if ("true".equals(isOfficialLabel.getText())) {
-                    isInMapsCycleLabel = (Label) ((StackPane) ((VBox) hBox.getChildren().get(1)).getChildren().get(1)).getChildren().get(1);
-                } else {
-                    isInMapsCycleLabel = isMapLabel != null && isMapModLabelText.equals(isMapLabel.getText()) ? (Label) ((StackPane) ((VBox) hBox.getChildren().get(1)).getChildren().get(2)).getChildren().get(1): null;
-                }
+                isInMapsCycleLabel = "true".equals(isOfficialLabel.getText()) ?
+                        (Label) ((StackPane) ((VBox) hBox.getChildren().get(1)).getChildren().get(1)).getChildren().get(1) :
+                        isMapLabel != null && isMapModLabelText.equals(isMapLabel.getText()) ? (Label) ((StackPane) ((VBox) hBox.getChildren().get(1)).getChildren().get(2)).getChildren().get(1): null;
                 break;
 
             default:
@@ -113,7 +117,9 @@ public class CardNode {
                     clickToDownloadMapLink = null;
                 }
                 isMapLabel = "false".equals(isOfficialLabel.getText()) ? (Label) vBox.getChildren().get(8): null;
-                isInMapsCycleLabel = isMapLabel != null && isMapModLabelText.equals(isMapLabel.getText()) ? (Label) ((StackPane) vBox.getChildren().get(9)).getChildren().get(1): null;
+                isInMapsCycleLabel = "true".equals(isOfficialLabel.getText()) ?
+                        (Label) vBox.getChildren().get(8) :
+                        isMapLabel != null && isMapModLabelText.equals(isMapLabel.getText()) ? (Label) ((StackPane) vBox.getChildren().get(9)).getChildren().get(1): null;
                 break;
         }
     }

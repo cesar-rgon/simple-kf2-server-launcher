@@ -632,18 +632,24 @@ public class MapsController implements Initializable {
                     platformNameList.add(platformProfileMapDto.getPlatformDto().getKey());
                     List<String> mapNameList = new ArrayList<String>();
                     mapNameList.add(platformProfileMapDto.getMapDto().getKey());
-
                     progressIndicator.setVisible(true);
+
+
                     Task<Void> task = new Task<Void>() {
                         @Override
                         protected Void call() throws Exception {
                             facade.downloadMapListFromSteamCmd(platformNameList, mapNameList);
+
+                            ListPlatformProfileMapFacadeResult listPlatformProfileMapFacadeResult = facade.getPlatformProfileMapList(profileSelect.getValue().getName());
+                            steamPlatformProfileMapDtoList = listPlatformProfileMapFacadeResult.getSteamPlatformProfileMapDtoList();
+                            epicPlatformProfileMapDtoList = listPlatformProfileMapFacadeResult.getEpicPlatformProfileMapDtoList();
+
                             return null;
                         }
                     };
                     task.setOnSucceeded(wse -> {
-                        CustomMapModDto customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
                         progressIndicator.setVisible(false);
+                        CustomMapModDto customMapMod = (CustomMapModDto) platformProfileMapDto.getMapDto();
                         clickToDownloadMapLink.setVisible(false);
                         downloadedStateLabel.setVisible(true);
                         isInMapsCycleLabel.setVisible(customMapMod.isMap());
@@ -2156,6 +2162,17 @@ public class MapsController implements Initializable {
 
     @FXML
     private void orderMapsByAliasOnAction() {
+        orderType = EnumCardOrderType.BY_ALIAS;
+
+        CheckBox steamOfficialTabCheckbox = (CheckBox) ((HBox) steamOfficialMapsTab.getGraphic()).getChildren().get(0);
+        steamOfficialTabCheckbox.setSelected(false);
+        CheckBox steamCustomTabCheckbox = (CheckBox) ((HBox) steamCustomMapsTab.getGraphic()).getChildren().get(0);
+        steamCustomTabCheckbox.setSelected(false);
+        CheckBox epicOfficialTabCheckbox = (CheckBox) ((HBox) epicOfficialMapsTab.getGraphic()).getChildren().get(0);
+        epicOfficialTabCheckbox.setSelected(false);
+        CheckBox epicCustomTabCheckbox = (CheckBox) ((HBox) epicCustomMapsTab.getGraphic()).getChildren().get(0);
+        epicCustomTabCheckbox.setSelected(false);
+
         steamCustomMapsFlowPane.getChildren().clear();
         steamOfficialMapsFlowPane.getChildren().clear();
         epicOfficialMapsFlowPane.getChildren().clear();
@@ -2193,6 +2210,16 @@ public class MapsController implements Initializable {
     @FXML
     private void orderMapsByNameOnAction() {
         orderType = EnumCardOrderType.BY_NAME;
+
+        CheckBox steamOfficialTabCheckbox = (CheckBox) ((HBox) steamOfficialMapsTab.getGraphic()).getChildren().get(0);
+        steamOfficialTabCheckbox.setSelected(false);
+        CheckBox steamCustomTabCheckbox = (CheckBox) ((HBox) steamCustomMapsTab.getGraphic()).getChildren().get(0);
+        steamCustomTabCheckbox.setSelected(false);
+        CheckBox epicOfficialTabCheckbox = (CheckBox) ((HBox) epicOfficialMapsTab.getGraphic()).getChildren().get(0);
+        epicOfficialTabCheckbox.setSelected(false);
+        CheckBox epicCustomTabCheckbox = (CheckBox) ((HBox) epicCustomMapsTab.getGraphic()).getChildren().get(0);
+        epicCustomTabCheckbox.setSelected(false);
+
         steamOfficialMapsFlowPane.getChildren().clear();
         steamCustomMapsFlowPane.getChildren().clear();
         epicOfficialMapsFlowPane.getChildren().clear();
@@ -2230,6 +2257,16 @@ public class MapsController implements Initializable {
      @FXML
     private void orderMapsByReleaseDateOnAction() {
         orderType = EnumCardOrderType.BY_RELEASE_DATE;
+
+         CheckBox steamOfficialTabCheckbox = (CheckBox) ((HBox) steamOfficialMapsTab.getGraphic()).getChildren().get(0);
+         steamOfficialTabCheckbox.setSelected(false);
+         CheckBox steamCustomTabCheckbox = (CheckBox) ((HBox) steamCustomMapsTab.getGraphic()).getChildren().get(0);
+         steamCustomTabCheckbox.setSelected(false);
+         CheckBox epicOfficialTabCheckbox = (CheckBox) ((HBox) epicOfficialMapsTab.getGraphic()).getChildren().get(0);
+         epicOfficialTabCheckbox.setSelected(false);
+         CheckBox epicCustomTabCheckbox = (CheckBox) ((HBox) epicCustomMapsTab.getGraphic()).getChildren().get(0);
+         epicCustomTabCheckbox.setSelected(false);
+
         steamCustomMapsFlowPane.getChildren().clear();
         steamOfficialMapsFlowPane.getChildren().clear();
         epicOfficialMapsFlowPane.getChildren().clear();
@@ -2323,6 +2360,16 @@ public class MapsController implements Initializable {
     @FXML
     private void orderMapsByImportedDateOnAction() {
         orderType = EnumCardOrderType.BY_IMPORTED_DATE;
+
+        CheckBox steamOfficialTabCheckbox = (CheckBox) ((HBox) steamOfficialMapsTab.getGraphic()).getChildren().get(0);
+        steamOfficialTabCheckbox.setSelected(false);
+        CheckBox steamCustomTabCheckbox = (CheckBox) ((HBox) steamCustomMapsTab.getGraphic()).getChildren().get(0);
+        steamCustomTabCheckbox.setSelected(false);
+        CheckBox epicOfficialTabCheckbox = (CheckBox) ((HBox) epicOfficialMapsTab.getGraphic()).getChildren().get(0);
+        epicOfficialTabCheckbox.setSelected(false);
+        CheckBox epicCustomTabCheckbox = (CheckBox) ((HBox) epicCustomMapsTab.getGraphic()).getChildren().get(0);
+        epicCustomTabCheckbox.setSelected(false);
+
         steamCustomMapsFlowPane.getChildren().clear();
         steamOfficialMapsFlowPane.getChildren().clear();
         epicCustomMapsFlowPane.getChildren().clear();
@@ -2360,19 +2407,38 @@ public class MapsController implements Initializable {
     @FXML
     private void orderMapsByDownloadOnAction() {
         orderType = EnumCardOrderType.BY_DOWNLOAD;
-        if (steamOfficialMapsTab.isSelected() || epicOfficialMapsTab.isSelected()) {
-            return;
-        }
+
+        CheckBox steamOfficialTabCheckbox = (CheckBox) ((HBox) steamOfficialMapsTab.getGraphic()).getChildren().get(0);
+        steamOfficialTabCheckbox.setSelected(false);
+        CheckBox steamCustomTabCheckbox = (CheckBox) ((HBox) steamCustomMapsTab.getGraphic()).getChildren().get(0);
+        steamCustomTabCheckbox.setSelected(false);
+        CheckBox epicOfficialTabCheckbox = (CheckBox) ((HBox) epicOfficialMapsTab.getGraphic()).getChildren().get(0);
+        epicOfficialTabCheckbox.setSelected(false);
+        CheckBox epicCustomTabCheckbox = (CheckBox) ((HBox) epicCustomMapsTab.getGraphic()).getChildren().get(0);
+        epicCustomTabCheckbox.setSelected(false);
+
+        steamOfficialMapsFlowPane.getChildren().clear();
+        epicOfficialMapsFlowPane.getChildren().clear();
         steamCustomMapsFlowPane.getChildren().clear();
         epicCustomMapsFlowPane.getChildren().clear();
 
+        List<PlatformProfileMapDto> steamOfficialPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().
+                filter(ppm -> ppm.getMapDto().isOfficial()).
+                collect(Collectors.toList());
+        List<PlatformProfileMapDto> epicOfficialPlatformProfileMapDtoList = epicPlatformProfileMapDtoList.stream().
+                filter(ppm -> ppm.getMapDto().isOfficial()).
+                collect(Collectors.toList());
+
+        List<PlatformProfileMapDto> steamCustomPlatformProfileMapDtoList = new ArrayList<PlatformProfileMapDto>();
+        List<PlatformProfileMapDto> epicCustomPlatformProfileMapDtoList = new ArrayList<PlatformProfileMapDto>();
+
         if (EnumSortedMapsCriteria.DOWNLOAD_DESC.equals(Session.getInstance().getSortedMapsCriteria())) {
-            steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().
+            steamCustomPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().
                     filter(ppm -> !ppm.getMapDto().isOfficial()).
                     sorted((ppm1, ppm2) -> {
                 return ppm1.isDownloaded().compareTo(ppm2.isDownloaded());
             }).collect(Collectors.toList());
-            epicPlatformProfileMapDtoList = epicPlatformProfileMapDtoList.stream().
+            epicCustomPlatformProfileMapDtoList = epicPlatformProfileMapDtoList.stream().
                     filter(ppm -> !ppm.getMapDto().isOfficial()).
                     sorted((ppm1, ppm2) -> {
                         return ppm1.isDownloaded().compareTo(ppm2.isDownloaded());
@@ -2380,12 +2446,12 @@ public class MapsController implements Initializable {
 
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.DOWNLOAD_ASC);
         } else {
-            steamPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().
+            steamCustomPlatformProfileMapDtoList = steamPlatformProfileMapDtoList.stream().
                     filter(ppm -> !ppm.getMapDto().isOfficial()).
                     sorted((ppm1, ppm2) -> {
                     return ppm2.isDownloaded().compareTo(ppm1.isDownloaded());
             }).collect(Collectors.toList());
-            epicPlatformProfileMapDtoList = epicPlatformProfileMapDtoList.stream().
+            epicCustomPlatformProfileMapDtoList = epicPlatformProfileMapDtoList.stream().
                     filter(ppm -> !ppm.getMapDto().isOfficial()).
                     sorted((ppm1, ppm2) -> {
                         Boolean map1Downloaded = ppm1.isDownloaded();
@@ -2396,11 +2462,19 @@ public class MapsController implements Initializable {
             Session.getInstance().setSortedMapsCriteria(EnumSortedMapsCriteria.DOWNLOAD_DESC);
         }
 
-        for (PlatformProfileMapDto platformProfileMapDto : steamPlatformProfileMapDtoList) {
+        for (PlatformProfileMapDto platformProfileMapDto : steamOfficialPlatformProfileMapDtoList) {
+            Node node = createMapNode(platformProfileMapDto);
+            steamOfficialMapsFlowPane.getChildren().add(node);
+        }
+        for (PlatformProfileMapDto platformProfileMapDto : epicOfficialPlatformProfileMapDtoList) {
+            Node node = createMapNode(platformProfileMapDto);
+            epicOfficialMapsFlowPane.getChildren().add(node);
+        }
+        for (PlatformProfileMapDto platformProfileMapDto : steamCustomPlatformProfileMapDtoList) {
             Node node = createMapNode(platformProfileMapDto);
             steamCustomMapsFlowPane.getChildren().add(node);
         }
-        for (PlatformProfileMapDto platformProfileMapDto : epicPlatformProfileMapDtoList) {
+        for (PlatformProfileMapDto platformProfileMapDto : epicCustomPlatformProfileMapDtoList) {
             Node node = createMapNode(platformProfileMapDto);
             epicCustomMapsFlowPane.getChildren().add(node);
         }
@@ -2496,6 +2570,8 @@ public class MapsController implements Initializable {
     @FXML
     private void addToMapsCycleOnAction() {
         try {
+            CheckBox steamOfficialTabCheckbox = (CheckBox) ((HBox) steamOfficialMapsTab.getGraphic()).getChildren().get(0);
+            steamOfficialTabCheckbox.setSelected(false);
             StringBuffer message = new StringBuffer();
             List<Node> steamOfficialAddMapsCycleList = new ArrayList<Node>();
             for (Node node : steamOfficialMapsFlowPane.getChildren()) {
@@ -2505,6 +2581,8 @@ public class MapsController implements Initializable {
                 }
             }
 
+            CheckBox steamCustomTabCheckbox = (CheckBox) ((HBox) steamCustomMapsTab.getGraphic()).getChildren().get(0);
+            steamCustomTabCheckbox.setSelected(false);
             List<Node> steamCustomAddMapsCycleList = new ArrayList<Node>();
             for (Node node : steamCustomMapsFlowPane.getChildren()) {
                 Node selectedNode = getNodeIfSelected(node, message);
@@ -2513,6 +2591,8 @@ public class MapsController implements Initializable {
                 }
             }
 
+            CheckBox epicOfficialTabCheckbox = (CheckBox) ((HBox) epicOfficialMapsTab.getGraphic()).getChildren().get(0);
+            epicOfficialTabCheckbox.setSelected(false);
             List<Node> epicOfficialAddMapsCycleList = new ArrayList<Node>();
             for (Node node : epicOfficialMapsFlowPane.getChildren()) {
                 Node selectedNode = getNodeIfSelected(node, message);
@@ -2521,6 +2601,8 @@ public class MapsController implements Initializable {
                 }
             }
 
+            CheckBox epicCustomTabCheckbox = (CheckBox) ((HBox) epicCustomMapsTab.getGraphic()).getChildren().get(0);
+            epicCustomTabCheckbox.setSelected(false);
             List<Node> epicCustomAddMapsCycleList = new ArrayList<Node>();
             for (Node node : epicCustomMapsFlowPane.getChildren()) {
                 Node selectedNode = getNodeIfSelected(node, message);
@@ -2576,16 +2658,16 @@ public class MapsController implements Initializable {
                 );
 
                 for (Node node : steamOfficialAddMapsCycleList) {
-                    setMapInMapsCycle(node, true, 7);
+                    setMapInMapsCycle(node, true);
                 }
                 for (Node node : steamCustomAddMapsCycleList) {
-                    setMapInMapsCycle(node, true, 9);
+                    setMapInMapsCycle(node, true);
                 }
                 for (Node node : epicOfficialAddMapsCycleList) {
-                    setMapInMapsCycle(node, true, 7);
+                    setMapInMapsCycle(node, true);
                 }
                 for (Node node : epicCustomAddMapsCycleList) {
-                    setMapInMapsCycle(node, true, 9);
+                    setMapInMapsCycle(node, true);
                 }
 
                 ListPlatformProfileMapFacadeResult listPlatformProfileMapFacadeResult = facade.getPlatformProfileMapList(profileSelect.getValue().getName());
@@ -2603,6 +2685,8 @@ public class MapsController implements Initializable {
     @FXML
     private void removeFromMapsCycleOnAction() {
         try {
+            CheckBox steamOfficialTabCheckbox = (CheckBox) ((HBox) steamOfficialMapsTab.getGraphic()).getChildren().get(0);
+            steamOfficialTabCheckbox.setSelected(false);
             StringBuffer message = new StringBuffer();
             List<Node> steamOfficialRemoveMapsCycleList = new ArrayList<Node>();
             for (Node node : steamOfficialMapsFlowPane.getChildren()) {
@@ -2612,6 +2696,8 @@ public class MapsController implements Initializable {
                 }
             }
 
+            CheckBox steamCustomTabCheckbox = (CheckBox) ((HBox) steamCustomMapsTab.getGraphic()).getChildren().get(0);
+            steamCustomTabCheckbox.setSelected(false);
             List<Node> steamCustomRemoveMapsCycleList = new ArrayList<Node>();
             for (Node node : steamCustomMapsFlowPane.getChildren()) {
                 Node selectedNode = getNodeIfSelected(node, message);
@@ -2620,6 +2706,8 @@ public class MapsController implements Initializable {
                 }
             }
 
+            CheckBox epicOfficialTabCheckbox = (CheckBox) ((HBox) epicOfficialMapsTab.getGraphic()).getChildren().get(0);
+            epicOfficialTabCheckbox.setSelected(false);
             List<Node> epicOfficialRemoveMapsCycleList = new ArrayList<Node>();
             for (Node node : epicOfficialMapsFlowPane.getChildren()) {
                 Node selectedNode = getNodeIfSelected(node, message);
@@ -2628,6 +2716,8 @@ public class MapsController implements Initializable {
                 }
             }
 
+            CheckBox epicCustomTabCheckbox = (CheckBox) ((HBox) epicCustomMapsTab.getGraphic()).getChildren().get(0);
+            epicCustomTabCheckbox.setSelected(false);
             List<Node> epicCustomRemoveMapsCycleList = new ArrayList<Node>();
             for (Node node : epicCustomMapsFlowPane.getChildren()) {
                 Node selectedNode = getNodeIfSelected(node, message);
@@ -2683,16 +2773,16 @@ public class MapsController implements Initializable {
                 );
 
                 for (Node node : steamOfficialRemoveMapsCycleList) {
-                    setMapInMapsCycle(node, false, 7);
+                    setMapInMapsCycle(node, false);
                 }
                 for (Node node : steamCustomRemoveMapsCycleList) {
-                    setMapInMapsCycle(node, false, 9);
+                    setMapInMapsCycle(node, false);
                 }
                 for (Node node : epicOfficialRemoveMapsCycleList) {
-                    setMapInMapsCycle(node, false, 7);
+                    setMapInMapsCycle(node, false);
                 }
                 for (Node node : epicCustomRemoveMapsCycleList) {
-                    setMapInMapsCycle(node, false, 9);
+                    setMapInMapsCycle(node, false);
                 }
 
                 ListPlatformProfileMapFacadeResult listPlatformProfileMapFacadeResult = facade.getPlatformProfileMapList(profileSelect.getValue().getName());
@@ -2708,7 +2798,7 @@ public class MapsController implements Initializable {
     }
 
 
-    private void setMapInMapsCycle(Node node, boolean inMapCycle, int row) throws Exception {
+    private void setMapInMapsCycle(Node node, boolean inMapCycle) throws Exception {
 
         CardNode cardNode = new CardNode(cardOrientation, node);
         cardNode.getCheckbox().setSelected(false);
@@ -2732,9 +2822,8 @@ public class MapsController implements Initializable {
                 color = "grey";
             }
 
-            Label isInMapsCycleLabel = cardNode.getIsInMapsCycleLabel();
-            isInMapsCycleLabel.setText(isInMapsCycleText);
-            isInMapsCycleLabel.setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold; -fx-padding: 3; -fx-border-color: " + color + "; -fx-border-radius: 5;");
+            cardNode.getIsInMapsCycleLabel().setText(isInMapsCycleText);
+            cardNode.getIsInMapsCycleLabel().setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold; -fx-padding: 3; -fx-border-color: " + color + "; -fx-border-radius: 5;");
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
@@ -2744,6 +2833,16 @@ public class MapsController implements Initializable {
     @FXML
     private void orderMapsByMapsCycleOnAction() {
         orderType = EnumCardOrderType.BY_MAPS_CYCLE;
+
+        CheckBox steamOfficialTabCheckbox = (CheckBox) ((HBox) steamOfficialMapsTab.getGraphic()).getChildren().get(0);
+        steamOfficialTabCheckbox.setSelected(false);
+        CheckBox steamCustomTabCheckbox = (CheckBox) ((HBox) steamCustomMapsTab.getGraphic()).getChildren().get(0);
+        steamCustomTabCheckbox.setSelected(false);
+        CheckBox epicOfficialTabCheckbox = (CheckBox) ((HBox) epicOfficialMapsTab.getGraphic()).getChildren().get(0);
+        epicOfficialTabCheckbox.setSelected(false);
+        CheckBox epicCustomTabCheckbox = (CheckBox) ((HBox) epicCustomMapsTab.getGraphic()).getChildren().get(0);
+        epicCustomTabCheckbox.setSelected(false);
+
         steamCustomMapsFlowPane.getChildren().clear();
         steamOfficialMapsFlowPane.getChildren().clear();
         epicCustomMapsFlowPane.getChildren().clear();
@@ -2781,6 +2880,8 @@ public class MapsController implements Initializable {
     @FXML
     private void downloadMapsOnAction() {
         try {
+            CheckBox steamCustomTabCheckbox = (CheckBox) ((HBox) steamCustomMapsTab.getGraphic()).getChildren().get(0);
+            steamCustomTabCheckbox.setSelected(false);
             StringBuffer message = new StringBuffer();
             List<Node> steamCustomMapToDownloadList = new ArrayList<Node>();
             for (Node node : steamCustomMapsFlowPane.getChildren()) {
@@ -2790,6 +2891,8 @@ public class MapsController implements Initializable {
                 }
             }
 
+            CheckBox epicCustomTabCheckbox = (CheckBox) ((HBox) epicCustomMapsTab.getGraphic()).getChildren().get(0);
+            epicCustomTabCheckbox.setSelected(false);
             List<Node> epicCustomMapToDownloadList = new ArrayList<Node>();
             for (Node node : epicCustomMapsFlowPane.getChildren()) {
                 Node selectedNode = getNodeIfSelected(node, message);
