@@ -24,6 +24,13 @@ Under Maps/Mods page you can manage custom maps, mods and official maps present 
   * _Order maps by download_: It allows to sort the maps by download state (ascendent or descendent).
   * _Order maps by maps cycle_: It allows to sort the maps by in maps cycle state (ascendent or descendent).
 
+* _Views menu_: It has several options to select a predefined view.
+  * _Cards down_: Default view (classic view) of the maps. Image at the top, descriptions at the bottom.
+  * _Cards right_: New view of the maps. Image at the left, descriptions at the right.
+  * _Cards up_: New view of the maps. Image at the bottom, descriptions at the top.
+  * _Cards left_: New view of the maps. Image at the right, descriptions at the left.
+  * _Detailed cards_: New view of the maps. Image at the left, detailed descriptions at the right.
+  
 * _Search filter_: It allows to filter maps and mods by name while you are writing the text.
 
 * _Select all per tab_: It allows to select all maps to perform an action over them. Furthermore it allows to unselect them.

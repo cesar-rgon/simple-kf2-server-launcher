@@ -24,6 +24,13 @@ En la página Mapas/Mods puedes gestionar mapas personalizados, mods y mapas ofi
   * _Ordenar mapas por descarga_: Permite ordenar los mapas por estado de descarga (ascendente or descendente).
   * _Ordenar mapas por ciclo de mapas_: Permite ordenar los mapas por estado "en ciclo de mapas" (ascendente or descendente).
 
+* _Menú de vistas_: Tiene varias opciones para seleccionar vista predefinida.
+  * _Tarjetas hacia abajo_: Vista por defecto (vista clásica) de mapas. Imágen arriba, descripciones abajo.
+  * _Tarjetas a la derecha_: Nueva vista de mapas. Imágen a la izquierda, descripciones a la derecha.
+  * _Tarjetas hacia arriba_: Nueva vista de mapas. Imágen hacia abajo, descripciones hacia arriba.
+  * _Tarjetas a la izquierda_: Nueva vista de mapas. Imágen a la derecha, descripciones a la izquierda.
+  * _Tarjetas detalladas_: Nueva vista de mapas. Imágen a la izquierda, descripciones detalladas a la derecha.
+
 * _Filtro buscador_: Permite filtrar mapas y mods por nombre mientras vas escribiendo el texto. 
 
 * _Selecciona todos por pestaña_: Permite seleccionar todos los mapas para realizar una acción sobre ellos. Además permite deseleccionarlos.
