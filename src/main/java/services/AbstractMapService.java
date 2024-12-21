@@ -31,7 +31,7 @@ public abstract class AbstractMapService extends AbstractService<AbstractMap> {
     public abstract AbstractMap createItem(AbstractMap map) throws Exception;
     public abstract boolean deleteItem(AbstractMap map) throws Exception;
     public abstract boolean updateItem(AbstractMap map) throws SQLException;
-    protected abstract boolean idDownloadedMap();
+    public abstract boolean isDownloadedMap(AbstractPlatform platform, AbstractMap map) throws SQLException;
 
     public Optional<AbstractMap> findMapByCode(String mapName) throws Exception {
         return findByCode(mapName);
@@ -43,7 +43,6 @@ public abstract class AbstractMapService extends AbstractService<AbstractMap> {
 
     public AbstractMap createMap(List<AbstractPlatform> platformList, AbstractMap map, List<Profile> profileList, StringBuffer success, StringBuffer errors) {
         AbstractMap insertedMap = null;
-        boolean downloaded = false;
         try {
             insertedMap = createItem(map);
             if (insertedMap == null) {
@@ -52,7 +51,6 @@ public abstract class AbstractMapService extends AbstractService<AbstractMap> {
                 logger.error(errorMessage);
                 return null;
             }
-            downloaded = idDownloadedMap();
         } catch (Exception e) {
             String errorMessage = "Error creating the map: " + map.getCode();
             errors.append(errorMessage + "\n");
@@ -61,11 +59,10 @@ public abstract class AbstractMapService extends AbstractService<AbstractMap> {
         }
 
         AbstractMap finalInsertedMap = insertedMap;
-        boolean finalDownloaded = downloaded;
         profileList.stream().forEach(profile -> {
             platformList.stream().forEach(platform -> {
                 try {
-                    PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(platform, profile, finalInsertedMap, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), finalDownloaded, true);
+                    PlatformProfileMap newPlatformProfileMap = new PlatformProfileMap(platform, profile, finalInsertedMap, map.getReleaseDate(), map.getUrlInfo(), map.getUrlPhoto(), isDownloadedMap(platform, finalInsertedMap), true);
                     platformProfileMapService.createItem(newPlatformProfileMap);
 
                     String successMessage = "The relation between the map " + map.getCode() + ", the profile " + profile.getCode() + " and the platform " + platform.getDescription() + " has been created";

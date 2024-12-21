@@ -53,7 +53,7 @@ public class OfficialMapServiceImpl extends AbstractMapService {
     }
 
     @Override
-    protected boolean idDownloadedMap() {
+    public boolean isDownloadedMap(AbstractPlatform platform, AbstractMap map) throws SQLException {
         return true;
     }
 

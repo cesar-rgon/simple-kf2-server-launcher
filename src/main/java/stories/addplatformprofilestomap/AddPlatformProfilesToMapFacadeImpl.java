@@ -31,7 +31,7 @@ public class AddPlatformProfilesToMapFacadeImpl
         ProfileService profileService = new ProfileServiceImpl(em);
         PlatformService platformService = new PlatformServiceImpl(em);
         AbstractMapService officialMapService = new OfficialMapServiceImpl(em);
-        CustomMapModServiceImpl customMapModService = new CustomMapModServiceImpl(em);
+        AbstractMapService customMapModService = new CustomMapModServiceImpl(em);
         StringBuffer success = new StringBuffer();
         StringBuffer errors = new StringBuffer();
 
@@ -52,14 +52,15 @@ public class AddPlatformProfilesToMapFacadeImpl
         List<PlatformProfileMap> platformProfileMapListToAdd = new ArrayList<PlatformProfileMap>();
         for (Profile profile: profileList) {
             for (AbstractPlatform platform: platformList) {
-                platformProfileMapListToAdd.add(new PlatformProfileMap(platform,
+                platformProfileMapListToAdd.add(new PlatformProfileMap(
+                        platform,
                         profile,
                         map,
                         map.getReleaseDate(),
                         map.getUrlInfo(),
                         map.getUrlPhoto(),
-                        officialMapOptional.isPresent(),
-                        officialMapOptional.isPresent()
+                        officialMapOptional.isPresent() || customMapModService.isDownloadedMap(platform, map),
+                        officialMapOptional.isPresent() || (((CustomMapMod) map).getMap() != null && ((CustomMapMod) map).getMap())
                 ));
             }
         }

@@ -72,8 +72,10 @@ public class CustomMapModServiceImpl extends AbstractMapService {
     }
 
     @Override
-    protected boolean idDownloadedMap() {
-        return false;
+    public boolean isDownloadedMap(AbstractPlatform platform, AbstractMap map) throws SQLException {
+        List<PlatformProfileMap> ppmListForPlatformMap = platformProfileMapService.listPlatformProfileMaps(platform, map);
+        Optional<PlatformProfileMap> platformProfileMapOptional = ppmListForPlatformMap.stream().filter(PlatformProfileMap::isDownloaded).findFirst();
+        return platformProfileMapOptional.isPresent();
     }
 
     public CustomMapMod deleteMap(AbstractPlatform platform, CustomMapMod map, Profile profile) throws Exception {
@@ -157,7 +159,7 @@ public class CustomMapModServiceImpl extends AbstractMapService {
             try {
                 List<PlatformProfileMap> ppmList = platformProfileMapService.listPlatformProfileMaps(platform, customMap);
                 Optional<PlatformProfileMap> downloadedPpm = ppmList.stream()
-                        .filter(ppm -> ppm.isDownloaded())
+                        .filter(PlatformProfileMap::isDownloaded)
                         .findFirst();
                 if (downloadedPpm.isPresent()) {
                     for (PlatformProfileMap ppm: ppmList){
