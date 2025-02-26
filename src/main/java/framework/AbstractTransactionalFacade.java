@@ -5,7 +5,9 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import services.PropertyService;
 import services.PropertyServiceImpl;
+import start.MainApplication;
 
+import java.io.File;
 import java.util.Properties;
 
 public abstract class AbstractTransactionalFacade<M extends ModelContext, R extends FacadeResult> extends AbstractFacade<M,R> {
@@ -34,14 +36,23 @@ public abstract class AbstractTransactionalFacade<M extends ModelContext, R exte
 
     protected EntityManager beginTransaction() throws Exception {
         if (emf == null) {
-            PropertyService propertyService = new PropertyServiceImpl();
-            boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
             Properties properties = new Properties();
-            if (createDatabase) {
-                properties.setProperty("hibernate.hbm2ddl.auto", "create");
+
+            String databasePath;
+            File file = new File(System.getProperty("user.dir") + "/kf2database.mv.db");
+            if (file.exists()) {
+                databasePath = System.getProperty("user.dir") + "/kf2database.mv.db";
             } else {
-                properties.setProperty("hibernate.hbm2ddl.auto", "none");
+                databasePath = "kf2database.mv.db";
             }
+            File databaseFile = new File(databasePath);
+            MainApplication.setCreateDatabase(!databaseFile.exists());
+            if (databaseFile.exists()) {
+                properties.setProperty("hibernate.hbm2ddl.auto", "none");
+            } else {
+                properties.setProperty("hibernate.hbm2ddl.auto", "create");
+            }
+
             emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT, properties);
         }
         EntityManager em = emf.createEntityManager();

@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import pojos.PopulateDatabase;
 import services.PropertyService;
 import services.PropertyServiceImpl;
+import start.MainApplication;
 
 import java.io.File;
 import java.util.List;
@@ -30,8 +31,7 @@ public class PopulateDatabaseFacadeImpl
 
     @Override
     protected boolean assertPreconditions(EmptyModelContext facadeModelContext, EntityManager em) throws Exception {
-        PropertyService propertyService = new PropertyServiceImpl();
-        return Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
+        return MainApplication.isCreateDatabase();
     }
 
     @Override

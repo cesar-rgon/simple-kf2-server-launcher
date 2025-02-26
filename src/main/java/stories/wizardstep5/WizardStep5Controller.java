@@ -101,7 +101,6 @@ public class WizardStep5Controller implements Initializable {
     private void finishOnAction() {
         try {
             PropertyService propertyService = new PropertyServiceImpl();
-            propertyService.setProperty("properties/config.properties", "prop.config.createDatabase", "false");
             String[] resolution = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationResolution").split("x");
             MainApplication.getPrimaryStage().setWidth(Double.parseDouble(resolution[0]));
             MainApplication.getPrimaryStage().setHeight(Double.parseDouble(resolution[1]));

@@ -22,7 +22,9 @@ import services.ProfileService;
 import services.ProfileServiceImpl;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -106,13 +108,14 @@ public class PrepareImportMapsFromServerFacadeImpl
                         String[] array = filenameWithExtension.split("\\.");
                         String mapName = array[0];
                         Long idWorkShop = steamKf2Common.getIdWorkShopFromPath(path.getParent());
-                        return new MapToDisplay(idWorkShop, mapName);
+                        return new MapToDisplay(idWorkShop, mapName, true);
                     })
                     .collect(Collectors.toList());
 
             File[] steamCacheFolderList = new File(steamPlatform.getInstallationFolder() + "/KFGame/Cache").listFiles();
             if (steamCacheFolderList != null && steamCacheFolderList.length > 0) {
                 List<Long> idWorkShopCustomMapList = steamCustomMapModList.stream().map(MapToDisplay::getIdWorkShop).collect(Collectors.toList());
+
                 steamCustomMapModList.addAll(
                         Arrays.stream(steamCacheFolderList)
                                 .filter(file -> file.isDirectory())
@@ -120,7 +123,25 @@ public class PrepareImportMapsFromServerFacadeImpl
                                 .filter(path -> !idWorkShopCustomMapList.contains(steamKf2Common.getIdWorkShopFromPath(path)))
                                 .map(path -> {
                                     Long idWorkShop = Long.parseLong(path.getFileName().toString());
-                                    return new MapToDisplay(idWorkShop, "MOD [" + idWorkShop + "]");
+
+                                    Optional<Path> steamModOptional;
+                                    try {
+                                        steamModOptional = Files.walk(Paths.get(steamPlatform.getInstallationFolder() + "/KFGame/Cache/" + idWorkShop))
+                                                .filter(Files::isRegularFile)
+                                                .filter(modPath -> modPath.getFileName().toString().toUpperCase().endsWith(".U") || modPath.getFileName().toString().toUpperCase().endsWith(".UPK"))
+                                                .findFirst();
+                                    } catch (Exception e) {
+                                        steamModOptional = Optional.empty();
+                                    }
+
+                                    if (steamModOptional.isPresent()) {
+                                        String filenameWithExtension = steamModOptional.get().getFileName().toString();
+                                        String[] array = filenameWithExtension.split("\\.");
+                                        String modName = array[0];
+                                        return new MapToDisplay(idWorkShop, modName, false);
+                                    } else {
+                                        return new MapToDisplay(idWorkShop, "MOD [" + idWorkShop + "]", false);
+                                    }
                                 })
                                 .collect(Collectors.toList())
                 );
@@ -154,7 +175,7 @@ public class PrepareImportMapsFromServerFacadeImpl
                         String[] array = filenameWithExtension.split("\\.");
                         String mapName = array[0];
                         Long idWorkShop = epicKf2Common.getIdWorkShopFromPath(path.getParent());
-                        return new MapToDisplay(idWorkShop, mapName);
+                        return new MapToDisplay(idWorkShop, mapName, true);
                     })
                     .collect(Collectors.toList());
 
@@ -168,7 +189,25 @@ public class PrepareImportMapsFromServerFacadeImpl
                                 .filter(path -> !idWorkShopCustomMapList.contains(epicKf2Common.getIdWorkShopFromPath(path)))
                                 .map(path -> {
                                     Long idWorkShop = Long.parseLong(path.getFileName().toString());
-                                    return new MapToDisplay(idWorkShop, "MOD [" + idWorkShop + "]");
+
+                                    Optional<Path> steamModOptional;
+                                    try {
+                                        steamModOptional = Files.walk(Paths.get(epicPlatform.getInstallationFolder() + "/KFGame/Cache/" + idWorkShop))
+                                                .filter(Files::isRegularFile)
+                                                .filter(modPath -> modPath.getFileName().toString().toUpperCase().endsWith(".U") || modPath.getFileName().toString().toUpperCase().endsWith(".UPK"))
+                                                .findFirst();
+                                    } catch (Exception e) {
+                                        steamModOptional = Optional.empty();
+                                    }
+
+                                    if (steamModOptional.isPresent()) {
+                                        String filenameWithExtension = steamModOptional.get().getFileName().toString();
+                                        String[] array = filenameWithExtension.split("\\.");
+                                        String modName = array[0];
+                                        return new MapToDisplay(idWorkShop, modName, false);
+                                    } else {
+                                        return new MapToDisplay(idWorkShop, "MOD [" + idWorkShop + "]", false);
+                                    }
                                 })
                                 .collect(Collectors.toList())
                 );

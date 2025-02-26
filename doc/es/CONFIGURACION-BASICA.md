@@ -51,7 +51,9 @@ Si hay más de un perfil definido, puedes seleccionar a qué servidor quieres un
 * _Contraseña de servidor_: Este campo es opcional. Permite proteger tu servidor con una contraseña (se necesita conocer para poder unirse al juego).
 
 * _URL imágen servidor_: Este campo es opcional. Esta es una imágen local subida a un servidor web http embebido. La resolución de la imágen debe ser 512x256 y el formato PNG. Si es definido, será visible en la pantalla de bienvenida del servidor pero sólo si los parámetros "Tu clan", "Tu enlace web" y "Mensaje de bienvenida" son definidos también.
-  
+
+* _Tipo de IP_: Este campo es obligatorio. Indica el tipo de IP usado en la URL del banner de bienvenida. Si localhost falla, usa IP pública (el puerto por defecto 14320 debe estar abierto).
+
 * _Tu clan_: Este campo es opcional.
 
 * _Tu página web_: Este campo es opcional.

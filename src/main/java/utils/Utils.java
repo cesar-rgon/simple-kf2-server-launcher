@@ -915,12 +915,14 @@ public class Utils {
         Dialog<TableView<MapToDisplay>> dialog = new Dialog<TableView<MapToDisplay>>();
         PropertyService propertyService = new PropertyServiceImpl();
         String selectText = "";
+        String typeText = "";
         String workShopPageText = "";
         String commentaryText = "";
 
         try {
             String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             selectText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.select");
+            typeText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.type");
             workShopPageText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.workShopPage");
             commentaryText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.commentary");
             String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
@@ -942,6 +944,14 @@ public class Utils {
         selectColumn.setMinWidth(50);
 
         // Second Column
+        TableColumn<MapToDisplay, String> isMapColumn = new TableColumn<MapToDisplay, String>();
+        isMapColumn.setText(typeText);
+        isMapColumn.setCellValueFactory(cellData -> cellData.getValue().mapProperty());
+        isMapColumn.setSortable(false);
+        isMapColumn.setEditable(true);
+        isMapColumn.setMinWidth(50);
+
+        // Third Column
         TableColumn<MapToDisplay, Hyperlink> idWorkShopColumn = new TableColumn<MapToDisplay, Hyperlink>();
         idWorkShopColumn.setText(workShopPageText);
         idWorkShopColumn.setCellFactory(new Callback<TableColumn<MapToDisplay, Hyperlink>, TableCell<MapToDisplay, Hyperlink>>() {
@@ -952,7 +962,7 @@ public class Utils {
                                                     protected void updateItem(Hyperlink item, boolean empty) {
                                                         super.updateItem(item, empty);
                                                         setGraphic(empty ? null : item);
-                                                        if (!empty){
+                                                        if (!empty && item != null){
                                                             item.setOnAction(e -> {
                                                                 try {
                                                                     Desktop.getDesktop().browse(new URI(item.getText()));
@@ -981,6 +991,7 @@ public class Utils {
         commentaryColumn.setMinWidth(270);
 
         tableView.getColumns().add(selectColumn);
+        tableView.getColumns().add(isMapColumn);
         tableView.getColumns().add(idWorkShopColumn);
         tableView.getColumns().add(commentaryColumn);
         tableView.setItems(FXCollections.observableArrayList(mapList));

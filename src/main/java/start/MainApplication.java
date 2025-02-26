@@ -26,6 +26,7 @@ import java.util.Arrays;
 public class MainApplication extends Application {
 
     private static final Logger logger = LogManager.getLogger(MainApplication.class);
+    private static boolean createDatabase;
 
     private static Stage primaryStage;
     private static FXMLLoader template;
@@ -46,8 +47,8 @@ public class MainApplication extends Application {
         primaryStage.setMinWidth(1024);
         primaryStage.setMinHeight(750);
 
-        boolean createDatabase = Boolean.parseBoolean(propertyService.getPropertyValue("properties/config.properties", "prop.config.createDatabase"));
         if (createDatabase) {
+            createDatabase = false;
             Session.getInstance().setWizardMode(true);
             startWizard();
         } else {
@@ -188,4 +189,11 @@ public class MainApplication extends Application {
         MainApplication.appData = appData;
     }
 
+    public static boolean isCreateDatabase() {
+        return createDatabase;
+    }
+
+    public static void setCreateDatabase(boolean createDatabase) {
+        MainApplication.createDatabase = createDatabase;
+    }
 }

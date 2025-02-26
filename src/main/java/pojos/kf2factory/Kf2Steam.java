@@ -84,22 +84,28 @@ public abstract class Kf2Steam extends Kf2AbstractCommon {
     private String joinToKf2Server(File steamExeFile, Profile profile) {
         try {
             String serverPassword = Utils.decryptAES(profile.getServerPassword());
-            String passwordParam = "";
+            String passwordParam = StringUtils.EMPTY;
             if (StringUtils.isNotEmpty(serverPassword)) {
                 passwordParam = "?password=" + serverPassword;
             }
-            String gamePortParam = "";
+            String gamePortParam = StringUtils.EMPTY;
             if (profile.getGamePort() != null) {
                 gamePortParam = ":" + profile.getGamePort();
             }
             StringBuffer command = new StringBuffer(steamExeFile.getAbsolutePath());
-            command.append(" -applaunch 232090 ").append(Utils.getPublicIp()).append(gamePortParam).append(passwordParam).append(" -nostartupmovies");
+            String ip = StringUtils.EMPTY;
+            if (profile.getUrlImageServer().contains("localhost")) {
+                ip = "localhost";
+            } else {
+                ip = Utils.getPublicIp();
+            }
+            command.append(" -applaunch 232090 ").append(ip).append(gamePortParam).append(passwordParam).append(" -nostartupmovies");
             Runtime.getRuntime().exec(command.toString(), null, steamExeFile.getParentFile());
             StringBuffer consoleCommand = new StringBuffer();
             if (StringUtils.isBlank(passwordParam)) {
                 consoleCommand = command;
             } else {
-                consoleCommand.append(steamExeFile.getAbsolutePath()).append(" -applaunch 232090 ").append(Utils.getPublicIp()).append(gamePortParam).append("?password=*****").append(" -nostartupmovies");
+                consoleCommand.append(steamExeFile.getAbsolutePath()).append(" -applaunch 232090 ").append(ip).append(gamePortParam).append("?password=*****").append(" -nostartupmovies");
             }
             return consoleCommand.toString();
         } catch (Exception e) {

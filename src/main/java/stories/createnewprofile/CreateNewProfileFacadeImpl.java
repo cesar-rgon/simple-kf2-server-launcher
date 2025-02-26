@@ -93,7 +93,7 @@ public class CreateNewProfileFacadeImpl
                 Integer.parseInt(defaultQueryPort),
                 "My clan",
                 "https://www.myweb.com",
-                "http://" + Utils.getPublicIp() + ":" + webServerPort + "/" + facadeModelContext.getProfileName().toLowerCase() + ".png",
+                "http://localhost:" + webServerPort + "/" + facadeModelContext.getProfileName().toLowerCase() + ".png",
                 "Hi! This is my Killing Floor 2 Server.\nWelcome!",
                 null,
                 false,

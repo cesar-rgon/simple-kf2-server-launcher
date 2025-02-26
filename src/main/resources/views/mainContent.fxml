@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.web.*?>
 
-<fx:root id="centerPane" fx:id="mainContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maincontent.MainContentController">
+<fx:root id="centerPane" fx:id="mainContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maincontent.MainContentController">
     <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="20.0" />
         <ColumnConstraints minWidth="10.0" prefWidth="170.0" />
@@ -352,29 +352,41 @@
                              </GridPane.margin>
                          </Button>
 
-                        <ImageView fx:id="clanImg" fitHeight="30.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                         <ImageView fx:id="ipTypeImg" fitHeight="30.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                             <image>
+                                 <Image url="@../images/label-inverted.png" />
+                             </image>
+                         </ImageView>
+                         <Label fx:id="ipTypeLabel" styleClass="width150" text="IP TYPE" textFill="WHITE" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                             <GridPane.margin>
+                                 <Insets left="10.0" right="5.0" />
+                             </GridPane.margin>
+                         </Label>
+                         <ComboBox fx:id="ipTypeSelect" onAction="#ipTypeSelectOnAction" nodeOrientation="LEFT_TO_RIGHT" prefHeight="31.0" prefWidth="317.0" GridPane.columnIndex="3" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+
+                        <ImageView fx:id="clanImg" fitHeight="30.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                             <image>
                                 <Image url="@../images/label-inverted.png" />
                             </image>
                         </ImageView>
-                        <Label fx:id="clanLabel" styleClass="width150" text="YOUR CLAN" textFill="WHITE" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+                        <Label fx:id="clanLabel" styleClass="width150" text="YOUR CLAN" textFill="WHITE" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                             <GridPane.margin>
                                 <Insets left="10.0" right="5.0" />
                             </GridPane.margin>
                         </Label>
-                        <TextField fx:id="yourClan" opacity="0.75" GridPane.columnIndex="3" GridPane.rowIndex="2" GridPane.valignment="CENTER" />
+                        <TextField fx:id="yourClan" opacity="0.75" GridPane.columnIndex="3" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
 
-                        <ImageView fx:id="webLinkImg" fitHeight="30.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                        <ImageView fx:id="webLinkImg" fitHeight="30.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
                             <image>
                                 <Image url="@../images/label-inverted.png" />
                             </image>
                         </ImageView>
-                        <Label fx:id="webLinkLabel" styleClass="width150" text="YOUR WEB LINK" textFill="WHITE" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+                        <Label fx:id="webLinkLabel" styleClass="width150" text="YOUR WEB LINK" textFill="WHITE" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.valignment="CENTER">
                             <GridPane.margin>
                                 <Insets left="10.0" />
                             </GridPane.margin>
                         </Label>
-                        <TextField fx:id="yourWebLink" opacity="0.75" GridPane.columnIndex="3" GridPane.rowIndex="3" GridPane.valignment="CENTER" />
+                        <TextField fx:id="yourWebLink" opacity="0.75" GridPane.columnIndex="3" GridPane.rowIndex="4" GridPane.valignment="CENTER" />
 
                         <ImageView fx:id="welcomeImg" fitHeight="30.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="4" GridPane.rowSpan="3" GridPane.valignment="CENTER">
                             <image>
@@ -386,7 +398,7 @@
                                 <Insets left="10.0" />
                             </GridPane.margin>
                         </Label>
-                        <TextArea fx:id="welcomeMessage" opacity="0.75" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="4" GridPane.rowSpan="3" GridPane.valignment="CENTER" />
+                        <TextArea fx:id="welcomeMessage" opacity="0.75" wrapText="true" GridPane.columnIndex="3" GridPane.rowIndex="5" GridPane.rowSpan="2" GridPane.valignment="CENTER" />
                      </children>
                   </GridPane>
                </content>

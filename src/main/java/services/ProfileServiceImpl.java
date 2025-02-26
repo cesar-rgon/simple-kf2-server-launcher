@@ -1,13 +1,9 @@
 package services;
 
-import daos.*;
-import entities.*;
+import daos.ProfileDao;
 import entities.AbstractMap;
+import entities.*;
 import jakarta.persistence.EntityManager;
-import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -172,7 +168,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                 profileToBeCloned.getQueryPort(),
                 profileToBeCloned.getYourClan(),
                 profileToBeCloned.getYourWebLink(),
-                StringUtils.isNotBlank(profileToBeCloned.getUrlImageServer()) ? "http://" + Utils.getPublicIp() + ":" + webServerPort + "/" + newProfileName.toLowerCase() + ".png": StringUtils.EMPTY,
+                StringUtils.isNotBlank(profileToBeCloned.getUrlImageServer()) ? profileToBeCloned.getUrlImageServer(): StringUtils.EMPTY,
                 profileToBeCloned.getWelcomeMessage(),
                 profileToBeCloned.getCustomParameters(),
                 profileToBeCloned.getTakeover(),
@@ -860,7 +856,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                 } else {
                     Long idWorkShop = getIdWorkShop(profileIndex, EnumPlatform.STEAM, mapIndex, properties);
                     Boolean isMap = getIsMap(profileIndex, EnumPlatform.STEAM, mapIndex, properties);
-                    MapToDisplay mapToDisplay = new MapToDisplay(idWorkShop, mapName);
+                    MapToDisplay mapToDisplay = new MapToDisplay(idWorkShop, mapName, isMap);
                     mapToDisplay.setPlatformDescription(EnumPlatform.STEAM.getDescripcion());
                     customMapListToDisplay.add(mapToDisplay);
                     steamCustomMapList.add(new CustomMapIndex(Integer.valueOf(mapIndex), idWorkShop, isMap));
@@ -880,7 +876,7 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                 } else {
                     Long idWorkShop = getIdWorkShop(profileIndex, EnumPlatform.EPIC, mapIndex, properties);
                     Boolean isMap = getIsMap(profileIndex, EnumPlatform.EPIC, mapIndex, properties);
-                    MapToDisplay mapToDisplay = new MapToDisplay(idWorkShop, mapName);
+                    MapToDisplay mapToDisplay = new MapToDisplay(idWorkShop, mapName, isMap);
                     mapToDisplay.setPlatformDescription(EnumPlatform.EPIC.getDescripcion());
                     customMapListToDisplay.add(mapToDisplay);
                     epicCustomMapList.add(new CustomMapIndex(Integer.valueOf(mapIndex), idWorkShop, isMap));

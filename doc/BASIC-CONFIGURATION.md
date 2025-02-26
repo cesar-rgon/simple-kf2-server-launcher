@@ -50,7 +50,9 @@ If more than one profile, you can select wich server you want to join (one per p
 * _Server password_: This field is optional. It allows you to protect your server with a password (needed to known to be able to join the game).
 
 * _URL image server_: This field is optional. This is a local image uploaded to an embedded http web server. The image resolution must be 512x256 and format PNG. If defined, it will be visible in the welcome screen of the server game but only if "Your clan", "Your web link" and "Welcome message" parameters are defined too.
- 
+
+* _IP type_: This field is mandatory. It indicates IP type used in welcome banner URL. If localhost fails, use public IP (default port 14320 must be open). 
+
 * _Your clan_: This field is optional.
 
 * _Your web link_: This field is optional.

@@ -35,6 +35,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.xnio.Options;
+import pojos.enums.EnumIpType;
 import pojos.enums.EnumPlatform;
 import pojos.session.Session;
 import start.MainApplication;
@@ -242,6 +243,10 @@ public class MainContentController implements Initializable {
     @FXML private Button difficultySetup;
     @FXML private Button lengthSetup;
     @FXML private Button maxPlayersSetup;
+
+    @FXML private ImageView ipTypeImg;
+    @FXML private Label ipTypeLabel;
+    @FXML private ComboBox<EnumIpType> ipTypeSelect;
 
     public MainContentController() {
         facade = new MainContentManagerFacadeImpl();
@@ -1119,6 +1124,10 @@ public class MainContentController implements Initializable {
 
         Utils.loadTooltip(languageCode, "prop.tooltip.language", languageImg, languageLabel, languageSelect);
 
+        String ipTypeLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.ipType");
+        ipTypeLabel.setText(ipTypeLabelText);
+        Utils.loadTooltip(languageCode, "prop.tooltip.ipType", ipTypeImg, ipTypeLabel, ipTypeSelect);
+
         String gameTypeLabelText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.gameType") + "*";
         gameTypeLabel.setText(gameTypeLabelText);
         Utils.loadTooltip(languageCode, "prop.tooltip.gameType", gameTypeImg, gameTypeLabel, gameTypeSelect);
@@ -1343,6 +1352,20 @@ public class MainContentController implements Initializable {
             );
         }
 
+        if (result.getProfileDto().getUrlImageServer() == null || result.getProfileDto().getUrlImageServer().contains("localhost")) {
+            ipTypeSelect.getSelectionModel().select(
+                ipTypeSelect.getItems().indexOf(
+                        EnumIpType.LOCALHOST
+                )
+            );
+        } else {
+            ipTypeSelect.getSelectionModel().select(
+                    ipTypeSelect.getItems().indexOf(
+                            EnumIpType.PUBLIC_IP
+                    )
+            );
+        }
+
         if (result.getProfileDto().getGametype() != null) {
             gameTypeSelect.getSelectionModel().select(
                     gameTypeSelect.getItems().stream().map(GameTypeDto::getKey).collect(Collectors.toList()).indexOf(result.getProfileDto().getGametype().getKey())
@@ -1396,7 +1419,13 @@ public class MainContentController implements Initializable {
         try {
             if (StringUtils.isNotEmpty(result.getProfileDto().getUrlImageServer())) {
                 String webServerPort = facade.findPropertyValue("properties/config.properties", "prop.config.webServerPort");
-                imageWebView.getEngine().load("http://localhost:" + webServerPort + "/" + result.getProfileDto().getName().toLowerCase() + ".png");
+                String ip = StringUtils.EMPTY;
+                if (EnumIpType.LOCALHOST.equals(ipTypeSelect.getValue())) {
+                    ip = "localhost";
+                } else {
+                    ip = Utils.getPublicIp();
+                }
+                imageWebView.getEngine().load("http://" + ip + ":" + webServerPort + "/" + result.getProfileDto().getName().toLowerCase() + ".png");
                 labelWebView.setText(result.getProfileDto().getUrlImageServer());
             } else {
                 File file = new File(System.getProperty("user.dir") + "/external-images/no-server-photo.png");
@@ -1579,6 +1608,7 @@ public class MainContentController implements Initializable {
             lengthSelect.getItems().clear();
             maxPlayersSelect.getItems().clear();
 
+            ipTypeSelect.setItems(EnumIpType.listAll());
             gameTypeSelect.setItems(listValuesMainContentFacadeResult.getGameTypeDtoList());
             difficultySelect.setItems(listValuesMainContentFacadeResult.getDifficultyDtoList());
             lengthSelect.setItems(listValuesMainContentFacadeResult.getLengthDtoList());
@@ -1606,7 +1636,13 @@ public class MainContentController implements Initializable {
                 if (profileSelect.getValue() != null && StringUtils.isNotEmpty(profileSelect.getValue().getUrlImageServer())) {
                     runEmbeddedWebServer(listValuesMainContentFacadeResult.getProfileDtoList());
                     String webServerPort = facade.findPropertyValue("properties/config.properties", "prop.config.webServerPort");
-                    imageWebView.getEngine().load("http://localhost:" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase() + ".png");
+                    String ip = StringUtils.EMPTY;
+                    if (EnumIpType.LOCALHOST.equals(ipTypeSelect.getValue())) {
+                        ip = "localhost";
+                    } else {
+                        ip = Utils.getPublicIp();
+                    }
+                    imageWebView.getEngine().load("http://" + ip + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase() + ".png");
                 }
             }
             if (profileSelect.getValue() == null || StringUtils.isEmpty(profileSelect.getValue().getUrlImageServer())) {
@@ -1968,7 +2004,13 @@ public class MainContentController implements Initializable {
                 runEmbeddedWebServer(profileSelect.getItems());
 
                 String webServerPort = facade.findPropertyValue("properties/config.properties", "prop.config.webServerPort");
-                String urlImageServer = "http://localhost:" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase() + ".png";
+                String ip = StringUtils.EMPTY;
+                if (EnumIpType.LOCALHOST.equals(ipTypeSelect.getValue())) {
+                    ip = "localhost";
+                } else {
+                    ip = Utils.getPublicIp();
+                }
+                String urlImageServer = "http://" + ip + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase() + ".png";
                 labelWebView.setText(urlImageServer);
                 imageWebView.getEngine().load(urlImageServer);
 
@@ -2220,6 +2262,31 @@ public class MainContentController implements Initializable {
         } catch (Exception e) {
             logger.error(e.getMessage(), e);
             Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void ipTypeSelectOnAction() {
+        try {
+            if (profileSelect.getValue() != null && ipTypeSelect.getValue() != null) {
+                String ip = StringUtils.EMPTY;
+                if (EnumIpType.LOCALHOST.equals(ipTypeSelect.getValue())) {
+                    ip = "localhost";
+                } else {
+                    ip = Utils.getPublicIp();
+                }
+                String profileName = profileSelect.getValue().getName();
+                String webServerPort = facade.findPropertyValue("properties/config.properties", "prop.config.webServerPort");
+                String urlImageServer = "http://" + ip + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase() + ".png";
+                facade.updateProfileSetUrlImageServer(profileName, urlImageServer);
+                labelWebView.setText(urlImageServer);
+                imageWebView.getEngine().load(urlImageServer);
+            }
+
+        } catch (Exception e) {
+            String headerText = "The ip type type value could not be saved!";
+            logger.error(headerText, e);
+            Utils.errorDialog(headerText, e);
         }
     }
 }

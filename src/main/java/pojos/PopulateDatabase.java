@@ -258,7 +258,7 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
                     27015,
                     "My clan",
                     "https://www.myweb.com",
-                    "http://" + Utils.getPublicIp() + ":" + webServerPort + "/default.png",
+                    "http://localhost:" + webServerPort + "/default.png",
                     "Hi! This is my Killing Floor 2 Server.\nWelcome!",
                     null,
                     false,

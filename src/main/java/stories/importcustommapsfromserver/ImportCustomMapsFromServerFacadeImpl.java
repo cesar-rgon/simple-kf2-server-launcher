@@ -122,7 +122,7 @@ public class ImportCustomMapsFromServerFacadeImpl
             CustomMapMod customMap = createNewCustomMapFromWorkshop(
                     platformNameList,
                     ppmToImport.getMapToDisplay().getIdWorkShop(),
-                    !ppmToImport.getMapToDisplay().getCommentary().startsWith("MOD ["),
+                    ppmToImport.getMapToDisplay().isMap(),
                     ppmToImport.getMapToDisplay().getCommentary(),
                     selectedProfileNameList,
                     success,
