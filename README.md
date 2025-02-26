@@ -14,6 +14,7 @@ Languages: English, Spanish, French, Russian
 Translation to english and spanish: César Rodríguez González
 Translation to french by: -foG.Nox
 Translation to russian by: Dreadmor404
+Translation to vietnamese by: DIOS
 ```
 **Discord server: https://discord.gg/WdwRU522Fb**
 

@@ -25,7 +25,8 @@ public class MaxPlayersDtoFactory extends AbstractDtoFactory<MaxPlayers, SelectD
                 case en: description = maxPlayers.getDescription().getEnglishValue(); break;
                 case es: description = maxPlayers.getDescription().getSpanishValue(); break;
                 case fr: description = maxPlayers.getDescription().getFrenchValue(); break;
-                default: description = maxPlayers.getDescription().getRussianValue(); break;
+                case ru: description = maxPlayers.getDescription().getRussianValue(); break;
+                case vi: description = maxPlayers.getDescription().getVietnameseValue(); break;
             }
             return new SelectDto(maxPlayers.getCode(), description);
         } catch (Exception e) {

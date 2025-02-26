@@ -58,7 +58,8 @@ public class UpdateItemDescriptionFacadeImpl<E extends AbstractExtendedEntity,
             case en: newDescription.setEnglishValue(facadeModelContext.getNewDescription()); break;
             case es: newDescription.setSpanishValue(facadeModelContext.getNewDescription()); break;
             case fr: newDescription.setFrenchValue(facadeModelContext.getNewDescription()); break;
-            default: newDescription.setRussianValue(facadeModelContext.getNewDescription()); break;
+            case ru: newDescription.setRussianValue(facadeModelContext.getNewDescription()); break;
+            case vi: newDescription.setVietnameseValue(facadeModelContext.getNewDescription()); break;
         }
         new DescriptionDao(em).insert(newDescription);
 

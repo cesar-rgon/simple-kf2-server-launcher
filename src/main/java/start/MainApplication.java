@@ -36,8 +36,8 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        Font.loadFont(getClass().getClassLoader().getResource("fonts/Ubuntu-R.ttf").toExternalForm(), 13);
-        Font.loadFont(getClass().getClassLoader().getResource("fonts/Ubuntu-B.ttf").toExternalForm(), 13);
+        Font.loadFont(getClass().getClassLoader().getResource("fonts/Nunito-Regular.ttf").toExternalForm(), 13);
+        Font.loadFont(getClass().getClassLoader().getResource("fonts/Nunito-Bold.ttf").toExternalForm(), 13);
         PropertyService propertyService = new PropertyServiceImpl();
         MainApplication.primaryStage = primaryStage;
         primaryStage.getIcons().add(new Image(getClass().getClassLoader().getResourceAsStream("images/logo.png")));

@@ -432,7 +432,7 @@ public class MapsController implements Initializable {
 
         Circle circle = new Circle(0,0, 10, Color.LIGHTBLUE);
         Text numberOfMapsText = new Text(String.valueOf(numberOfMaps));
-        numberOfMapsText.setFont(Font.loadFont(getClass().getClassLoader().getResource("fonts/Ubuntu-B.ttf").toExternalForm(), 11));
+        numberOfMapsText.setFont(Font.loadFont(getClass().getClassLoader().getResource("fonts/Nunito-Bold.ttf").toExternalForm(), 11));
         numberOfMapsText.setFill(Color.DARKBLUE);
         StackPane stackPane = new StackPane(circle, numberOfMapsText);
         stackPane.setPrefWidth(30);

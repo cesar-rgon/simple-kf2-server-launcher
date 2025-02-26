@@ -17,7 +17,7 @@
 }
 
 .menu .label {
-    -fx-font-family: "Ubuntu Bold";
+    -fx-font-family: "Nunito Bold";
     -fx-text-fill: white;
     -fx-font-size: 16;
 }
@@ -27,7 +27,7 @@
 }
 
 .menu-item .label {
-    -fx-font-family: "Ubuntu Bold";
+    -fx-font-family: "Nunito Bold";
     -fx-text-fill: white;
     -fx-font-size: 14;
 }
@@ -37,13 +37,13 @@
 }
 
 .label {
-    -fx-font-family: "Ubuntu";
+    -fx-font-family: "Nunito";
     -fx-font-size: 10;
     -fx-text-fill: white;
 }
 
 .button {
-    -fx-font-family: "Ubuntu Bold";
+    -fx-font-family: "Nunito Bold";
     -fx-background-color: #4d0304;
     -fx-font-size: 11;
     -fx-text-fill: white;
@@ -51,13 +51,13 @@
 }
 
 .combo-box {
-    -fx-font-family: "Ubuntu";
+    -fx-font-family: "Nunito";
     -fx-font-size: 14;
     -fx-cursor: hand;
 }
 
 .combo-box .cell:selected {
-    -fx-font-family: "Ubuntu Bold";
+    -fx-font-family: "Nunito Bold";
     -fx-text-fill: white;
 }
 
@@ -76,7 +76,7 @@
 }
 
 .text-field, .text-area {
-    -fx-font-family: "Ubuntu Bold";
+    -fx-font-family: "Nunito Bold";
     -fx-text-box-border: transparent;
     -fx-focus-color: transparent;
     -fx-font-size: 14;
@@ -84,7 +84,7 @@
 }
 
 .check-box .text {
-    -fx-font-family: "Ubuntu";
+    -fx-font-family: "Nunito";
     -fx-font-size: 9;
     -fx-text-fill: white;
     -fx-cursor: hand;
@@ -103,13 +103,13 @@
 }
 
 .table-view .table-cell {
-    -fx-font-family: "Ubuntu";
+    -fx-font-family: "Nunito";
     -fx-font-size: 16;
     -fx-text-fill: white;
 }
 
 .table-view .table-row-cell:selected .text {
-    -fx-font-family: "Ubuntu Bold";
+    -fx-font-family: "Nunito Bold";
     -fx-font-size: 20;
     -fx-cursor: hand;
 }
@@ -135,13 +135,13 @@
 }
 
 #titleConfigLabel, #consoleLabel {
-    -fx-font-family: "Ubuntu Bold";
+    -fx-font-family: "Nunito Bold";
     -fx-text-fill: #fba140;
     -fx-font-size: 11;
 }
 
 #consoleLabel {
-    -fx-font-family: "Ubuntu Bold";
+    -fx-font-family: "Nunito Bold";
     -fx-text-fill: #fba140;
     -fx-font-size: 14;
 }
@@ -164,7 +164,7 @@
 }
 
 .tab {
-    -fx-font-family: "Ubuntu";
+    -fx-font-family: "Nunito";
     -fx-text-base-color: white;
     -fx-background-color: #191513;
     -fx-cursor: hand;
@@ -279,7 +279,7 @@
 }
 
 #customParametersFormatLabel {
-    -fx-font-family: "Ubuntu Bold";
+    -fx-font-family: "Nunito Bold";
     -fx-text-fill: white;
     -fx-font-size: 16;
 }
@@ -289,25 +289,25 @@
 }
 
 #wizardTitleLabel {
-    -fx-font-family: "Ubuntu Bold";
+    -fx-font-family: "Nunito Bold";
     -fx-font-size: 18;
     -fx-text-fill: #fba140;
 }
 
 #step1TitleLabel, #step2TitleLabel, #step3TitleLabel, #step4TitleLabel, #step5TitleLabel, #nextStep {
-    -fx-font-family: "Ubuntu";
+    -fx-font-family: "Nunito";
     -fx-font-size: 12;
     -fx-text-fill: #fba140;
 }
 
 #step1Description, #step5Description {
-    -fx-font-family: "Ubuntu";
+    -fx-font-family: "Nunito";
     -fx-font-size: 12;
     -fx-text-fill: white;
 }
 
 #previousStep, #nextStep, #switchSteamGamesServer, #switchEpicGamesServer, #finish {
-    -fx-font-family: "Ubuntu";
+    -fx-font-family: "Nunito";
     -fx-font-size: 14;
     -fx-text-fill: white;
 }

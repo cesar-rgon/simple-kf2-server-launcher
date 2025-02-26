@@ -41,6 +41,9 @@ public class DescriptionDao extends AbstractDao<Description> {
             case ru:
                 query="select d from entities.Description d where d.russianValue=:CODE";
                 break;
+            case vi:
+                query="select d from entities.Description d where d.vietnameseValue=:CODE";
+                break;
         }
         if (StringUtils.isBlank(query)) {
             return Optional.empty();

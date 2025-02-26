@@ -4,7 +4,8 @@ public enum EnumLanguage {
     en ("English"),
     es ("Español"),
     fr ("Français"),
-    ru ("Русский");
+    ru ("Русский"),
+    vi ("Tiếng Việt");
 
     private String descripcion;
 

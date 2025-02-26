@@ -137,26 +137,27 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
         populateLanguage(EnumLanguage.es.name(), EnumLanguage.es.getDescripcion());
         populateLanguage(EnumLanguage.fr.name(), EnumLanguage.fr.getDescripcion());
         populateLanguage(EnumLanguage.ru.name(), EnumLanguage.ru.getDescripcion());
+        populateLanguage(EnumLanguage.vi.name(), EnumLanguage.vi.getDescripcion());
     }
 
     @Override
     public List<Difficulty> populateDifficulties() throws Exception {
         List<Difficulty> defaultDifficultyList = new ArrayList<Difficulty>();
-        defaultDifficultyList.add(populateDifficulty("0","Normal", "Normal", "Normal", "Обычная" ));
-        defaultDifficultyList.add(populateDifficulty("1","Hard", "Difícil", "Difficile", "Трудная"));
-        defaultDifficultyList.add(populateDifficulty("2","Suicidal", "Suicida", "Suicidaire", "Убийственная" ));
-        defaultDifficultyList.add(populateDifficulty("3","Hell on Earth", "Infernal", "Enfer sur terre", "Ад на земле" ));
+        defaultDifficultyList.add(populateDifficulty("0","Normal", "Normal", "Normal", "Обычная", "Bình thường"));
+        defaultDifficultyList.add(populateDifficulty("1","Hard", "Difícil", "Difficile", "Трудная", "Cứng"));
+        defaultDifficultyList.add(populateDifficulty("2","Suicidal", "Suicida", "Suicidaire", "Убийственная", "Tự sát"));
+        defaultDifficultyList.add(populateDifficulty("3","Hell on Earth", "Infernal", "Enfer sur terre", "Ад на земле", "Địa ngục trần gian"));
         return defaultDifficultyList;
     }
 
     @Override
     public List<GameType> populateGameTypes() throws Exception {
         List<GameType> deafultGameTypeList = new ArrayList<GameType>();
-        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_Survival", true, true, "Survival", "Supervivencia", "Survie", "Выживание"));
-        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_VersusSurvival", false, false, "Versus", "Versus", "Versus", "Выживание в бою"));
-        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_WeeklySurvival", false, false, "Weekly", "Semanal", "Hebdomadaire", "Еженедельно"));
-        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_Endless", true, false, "Endless", "Sin fin", "Infini", "Без конца"));
-        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_Objective", true, false, "Objetive", "Objetivo", "Objetif", "Задача"));
+        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_Survival", true, true, "Survival", "Supervivencia", "Survie", "Выживание", "Sống sót"));
+        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_VersusSurvival", false, false, "Versus", "Versus", "Versus", "Выживание в бою","So với"));
+        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_WeeklySurvival", false, false, "Weekly", "Semanal", "Hebdomadaire", "Еженедельно", "Hàng tuần"));
+        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_Endless", true, false, "Endless", "Sin fin", "Infini", "Без конца", "Vô tận"));
+        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_Objective", true, false, "Objetive", "Objetivo", "Objetif", "Задача", "Khách quan"));
 
         return deafultGameTypeList;
     }
@@ -164,27 +165,27 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
     @Override
     public List<Length> populateLengths() throws Exception {
         List<Length> deafultLengthTypeList = new ArrayList<Length>();
-        deafultLengthTypeList.add(populateLength("0","4 waves", "4 oleadas", "4 vagues", "4 волны"));
-        deafultLengthTypeList.add(populateLength("1","7 waves", "7 oleadas", "7 vagues", "7 волн"));
-        deafultLengthTypeList.add(populateLength("2","10 waves", "10 oleadas", "10 vagues", "10 волн"));
+        deafultLengthTypeList.add(populateLength("0","4 waves", "4 oleadas", "4 vagues", "4 волны", "4 sóng"));
+        deafultLengthTypeList.add(populateLength("1","7 waves", "7 oleadas", "7 vagues", "7 волн", "7 sóng"));
+        deafultLengthTypeList.add(populateLength("2","10 waves", "10 oleadas", "10 vagues", "10 волн", "10 sóng"));
         return deafultLengthTypeList;
     }
 
     @Override
     public List<MaxPlayers> polulateMaximunPlayersList() throws Exception {
         List<MaxPlayers> deafultMaxPlayersTypeList = new ArrayList<MaxPlayers>();
-        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("12", "Twelve", "Doce", "Douze", "12"));
-        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("11", "Eleven", "Once", "Onze", "11"));
-        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("10", "Ten", "Diez", "Dix", "10"));
-        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("9", "Nine", "Nueve", "Neuf", "9"));
-        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("8", "Eight", "Ocho", "Huit", "8"));
-        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("7", "Seven", "Siete", "Sept", "7"));
-        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("6", "Six", "Seis", "Six", "6"));
-        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("5", "Five", "Cinco", "Cinq", "5"));
-        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("4", "Four", "Cuatro", "Quatre", "4"));
-        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("3", "Three", "Tres", "Trois", "3"));
-        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("2", "Two", "Dos", "Deux", "2"));
-        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("1", "One", "Uno", "Un", "1"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("12", "Twelve", "Doce", "Douze", "12", "Mười hai"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("11", "Eleven", "Once", "Onze", "11", "Mười một"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("10", "Ten", "Diez", "Dix", "10", "Mười"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("9", "Nine", "Nueve", "Neuf", "9", "Chín"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("8", "Eight", "Ocho", "Huit", "8", "Tám"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("7", "Seven", "Siete", "Sept", "7", "Bảy"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("6", "Six", "Seis", "Six", "6", "Sáu"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("5", "Five", "Cinco", "Cinq", "5", "Năm"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("4", "Four", "Cuatro", "Quatre", "4", "Bốn"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("3", "Three", "Tres", "Trois", "3", "Ba"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("2", "Two", "Dos", "Deux", "2", "Hai"));
+        deafultMaxPlayersTypeList.add(polulateMaximunPlayers("1", "One", "Uno", "Un", "1", "Một"));
         return deafultMaxPlayersTypeList;
     }
 

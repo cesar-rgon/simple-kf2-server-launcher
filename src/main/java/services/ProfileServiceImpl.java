@@ -451,7 +451,8 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                                 EnumLanguage.es.name().equals(languageCode) ? gameTypeOptional.get().getDescription().getSpanishValue():
                                         EnumLanguage.fr.name().equals(languageCode) ? gameTypeOptional.get().getDescription().getFrenchValue():
                                                 EnumLanguage.ru.name().equals(languageCode) ? gameTypeOptional.get().getDescription().getRussianValue():
-                                                        StringUtils.EMPTY:
+                                                        EnumLanguage.vi.name().equals(languageCode) ? gameTypeOptional.get().getDescription().getVietnameseValue():
+                                                            StringUtils.EMPTY:
                         StringUtils.EMPTY;
 
                 Optional<Difficulty> difficultyOptional = difficultyService.findByCode(difficultyCode);
@@ -460,7 +461,8 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                                 EnumLanguage.es.name().equals(languageCode) ? difficultyOptional.get().getDescription().getSpanishValue():
                                         EnumLanguage.fr.name().equals(languageCode) ? difficultyOptional.get().getDescription().getFrenchValue():
                                                 EnumLanguage.ru.name().equals(languageCode) ? difficultyOptional.get().getDescription().getRussianValue():
-                                                        StringUtils.EMPTY:
+                                                        EnumLanguage.vi.name().equals(languageCode) ? difficultyOptional.get().getDescription().getVietnameseValue():
+                                                            StringUtils.EMPTY:
                         StringUtils.EMPTY;
 
                 Optional<Length> lengthOptional = lengthService.findByCode(lengthCode);
@@ -469,7 +471,8 @@ public class ProfileServiceImpl extends AbstractService<Profile> implements Prof
                                 EnumLanguage.es.name().equals(languageCode) ? lengthOptional.get().getDescription().getSpanishValue():
                                         EnumLanguage.fr.name().equals(languageCode) ? lengthOptional.get().getDescription().getFrenchValue():
                                                 EnumLanguage.ru.name().equals(languageCode) ? lengthOptional.get().getDescription().getRussianValue():
-                                                        StringUtils.EMPTY:
+                                                        EnumLanguage.vi.name().equals(languageCode) ? lengthOptional.get().getDescription().getVietnameseValue():
+                                                            StringUtils.EMPTY:
                         StringUtils.EMPTY;
 
 

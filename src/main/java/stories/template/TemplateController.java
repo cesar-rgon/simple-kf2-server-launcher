@@ -190,6 +190,7 @@ public class TemplateController implements Initializable {
             String translatedToSpanishBy = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.about.translatedSpanish");
             String translatedToFrenchBy = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.about.translatedFrench");
             String translatedToRussianBy = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.about.translatedRussian");
+            String translatedToVietnameseBy = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.menu.help.about.translatedVietnamese");
             String applicationVersion = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationVersion");
 
             String headerText = versionText + ": " + applicationVersion;
@@ -198,7 +199,7 @@ public class TemplateController implements Initializable {
             Image cesarRgonImage = new Image(cesarRgonImageInputStream);
             ImageView cesarRgonImageView = new ImageView(cesarRgonImage);
             cesarRgonImageView.setPreserveRatio(true);
-            cesarRgonImageView.setFitWidth(128);
+            cesarRgonImageView.setFitWidth(100);
 
             Label developedLabel = new Label(developedText + " cesar-rgon");
             developedLabel.setPadding(new Insets(50,0,0,0));
@@ -209,16 +210,23 @@ public class TemplateController implements Initializable {
             Image noxImage = new Image(noxInputStream);
             ImageView noxImageView = new ImageView(noxImage);
             noxImageView.setPreserveRatio(true);
-            noxImageView.setFitWidth(128);
+            noxImageView.setFitWidth(100);
 
             InputStream dreadmore404InputStream = getClass().getClassLoader().getResourceAsStream("images/dreadmor404-photo.png");
             Image dreadmore404Image = new Image(dreadmore404InputStream);
             ImageView dreadmore404ImageView = new ImageView(dreadmore404Image);
             dreadmore404ImageView.setPreserveRatio(true);
-            dreadmore404ImageView.setFitWidth(128);
+            dreadmore404ImageView.setFitWidth(100);
+
+            InputStream diosInputStream = getClass().getClassLoader().getResourceAsStream("images/dios-photo.png");
+            Image diosImage = new Image(diosInputStream);
+            ImageView diosImageView = new ImageView(diosImage);
+            diosImageView.setPreserveRatio(true);
+            diosImageView.setFitWidth(100);
 
             Label frenchTranslationLabel = new Label(translatedToFrenchBy + " -foG.Nox");
             Label russianTranslationLabel = new Label(translatedToRussianBy + " Dreadmore404");
+            Label vietnameseTranslationLabel = new Label(translatedToVietnameseBy + " DIOS");
 
             GridPane gridPane = new GridPane();
             gridPane.add(cesarRgonImageView, 1, 1);
@@ -231,6 +239,9 @@ public class TemplateController implements Initializable {
 
             gridPane.add(dreadmore404ImageView, 1, 4);
             gridPane.add(russianTranslationLabel, 2, 4);
+
+            gridPane.add(diosImageView, 1, 5);
+            gridPane.add(vietnameseTranslationLabel, 2, 5);
 
             gridPane.setPrefWidth(450);
             gridPane.setHgap(10);

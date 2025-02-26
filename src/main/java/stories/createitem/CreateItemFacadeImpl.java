@@ -45,7 +45,8 @@ public class CreateItemFacadeImpl<E extends AbstractExtendedEntity,
             case en: description.setEnglishValue(facadeModelContext.getDescription()); break;
             case es: description.setSpanishValue(facadeModelContext.getDescription()); break;
             case fr: description.setFrenchValue(facadeModelContext.getDescription()); break;
-            default: description.setRussianValue(facadeModelContext.getDescription()); break;
+            case ru: description.setRussianValue(facadeModelContext.getDescription()); break;
+            case vi: description.setVietnameseValue(facadeModelContext.getDescription()); break;
         }
         new DescriptionDao(em).insert(description);
 

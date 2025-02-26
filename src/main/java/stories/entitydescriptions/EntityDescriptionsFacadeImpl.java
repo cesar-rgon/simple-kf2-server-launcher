@@ -39,6 +39,7 @@ public class EntityDescriptionsFacadeImpl
                 EnumLanguage.es.name().equals(facadeModelContext.getLanguageCode()) ? gameTypeOptional.get().getDescription().getSpanishValue():
                 EnumLanguage.fr.name().equals(facadeModelContext.getLanguageCode()) ? gameTypeOptional.get().getDescription().getFrenchValue():
                 EnumLanguage.ru.name().equals(facadeModelContext.getLanguageCode()) ? gameTypeOptional.get().getDescription().getRussianValue():
+                EnumLanguage.vi.name().equals(facadeModelContext.getLanguageCode()) ? gameTypeOptional.get().getDescription().getVietnameseValue():
                 StringUtils.EMPTY:
                 StringUtils.EMPTY;
 
@@ -48,6 +49,7 @@ public class EntityDescriptionsFacadeImpl
                 EnumLanguage.es.name().equals(facadeModelContext.getLanguageCode()) ? difficultyOptional.get().getDescription().getSpanishValue():
                 EnumLanguage.fr.name().equals(facadeModelContext.getLanguageCode()) ? difficultyOptional.get().getDescription().getFrenchValue():
                 EnumLanguage.ru.name().equals(facadeModelContext.getLanguageCode()) ? difficultyOptional.get().getDescription().getRussianValue():
+                EnumLanguage.vi.name().equals(facadeModelContext.getLanguageCode()) ? difficultyOptional.get().getDescription().getVietnameseValue():
                 StringUtils.EMPTY:
                 StringUtils.EMPTY;
 
@@ -57,6 +59,7 @@ public class EntityDescriptionsFacadeImpl
                 EnumLanguage.es.name().equals(facadeModelContext.getLanguageCode()) ? lengthOptional.get().getDescription().getSpanishValue():
                 EnumLanguage.fr.name().equals(facadeModelContext.getLanguageCode()) ? lengthOptional.get().getDescription().getFrenchValue():
                 EnumLanguage.ru.name().equals(facadeModelContext.getLanguageCode()) ? lengthOptional.get().getDescription().getRussianValue():
+                EnumLanguage.vi.name().equals(facadeModelContext.getLanguageCode()) ? lengthOptional.get().getDescription().getVietnameseValue():
                 StringUtils.EMPTY:
                 StringUtils.EMPTY;
 

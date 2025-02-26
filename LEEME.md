@@ -14,6 +14,7 @@ Idiomas: Inglés, Español, Francés, Ruso
 Traducción a inglés y español: César Rodríguez González
 Traducción a francés por: -foG.Nox
 Traducción a ruso por: Dreadmor404
+Traducción a vietnamita por: DIOS
 ```
 **Servidor Discord: https://discord.gg/WdwRU522Fb**
 
