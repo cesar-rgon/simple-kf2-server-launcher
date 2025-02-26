@@ -145,8 +145,9 @@ public class ImportCustomMapsFromServerFacadeImpl
                 logger.warn(errorMessage);
             } else {
                 List<PlatformProfileMap> platformProfileMapListToAdd = new ArrayList<PlatformProfileMap>();
+                boolean isDownloadedMap = customMapModService.isDownloadedMap(platformOptional.get(), customMap);
                 platformProfileMapListToAdd.add(
-                        new PlatformProfileMap(platformOptional.get(), profileOptional.get(), customMap, customMap.getReleaseDate(), customMap.getUrlInfo(), customMap.getUrlPhoto(), false, false)
+                        new PlatformProfileMap(platformOptional.get(), profileOptional.get(), customMap, customMap.getReleaseDate(), customMap.getUrlInfo(), customMap.getUrlPhoto(), isDownloadedMap, isDownloadedMap)
                 );
 
                 customMapModService.addPlatformProfileMapList(platformProfileMapListToAdd, success, errors);

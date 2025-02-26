@@ -12,6 +12,9 @@ import pojos.kf2factory.Kf2Factory;
 import utils.Utils;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
@@ -73,9 +76,27 @@ public class CustomMapModServiceImpl extends AbstractMapService {
 
     @Override
     public boolean isDownloadedMap(AbstractPlatform platform, AbstractMap map) throws SQLException {
-        List<PlatformProfileMap> ppmListForPlatformMap = platformProfileMapService.listPlatformProfileMaps(platform, map);
-        Optional<PlatformProfileMap> platformProfileMapOptional = ppmListForPlatformMap.stream().filter(PlatformProfileMap::isDownloaded).findFirst();
-        return platformProfileMapOptional.isPresent();
+
+        CustomMapMod customMapMod = (CustomMapMod) map;
+        File cacheMapFolder = new File(platform.getInstallationFolder() + "/KFGame/Cache/" + customMapMod.getIdWorkShop());
+        if (!cacheMapFolder.exists()) {
+            return false;
+        }
+
+        try {
+            Optional<Path> platformMapOptional = Files.walk(Paths.get(cacheMapFolder.getAbsolutePath()))
+                    .filter(Files::isRegularFile)
+                    .filter(cmPath -> cmPath.getFileName().toString().toUpperCase().endsWith(".KFM") || cmPath.getFileName().toString().toUpperCase().endsWith(".U") || cmPath.getFileName().toString().toUpperCase().endsWith(".UPK"))
+                    .findFirst();
+            if (!platformMapOptional.isPresent()) {
+                return false;
+            }
+
+            return true;
+
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public CustomMapMod deleteMap(AbstractPlatform platform, CustomMapMod map, Profile profile) throws Exception {

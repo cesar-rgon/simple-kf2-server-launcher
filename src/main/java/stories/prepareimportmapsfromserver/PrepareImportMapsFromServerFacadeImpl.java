@@ -190,18 +190,18 @@ public class PrepareImportMapsFromServerFacadeImpl
                                 .map(path -> {
                                     Long idWorkShop = Long.parseLong(path.getFileName().toString());
 
-                                    Optional<Path> steamModOptional;
+                                    Optional<Path> epicModOptional;
                                     try {
-                                        steamModOptional = Files.walk(Paths.get(epicPlatform.getInstallationFolder() + "/KFGame/Cache/" + idWorkShop))
+                                        epicModOptional = Files.walk(Paths.get(epicPlatform.getInstallationFolder() + "/KFGame/Cache/" + idWorkShop))
                                                 .filter(Files::isRegularFile)
                                                 .filter(modPath -> modPath.getFileName().toString().toUpperCase().endsWith(".U") || modPath.getFileName().toString().toUpperCase().endsWith(".UPK"))
                                                 .findFirst();
                                     } catch (Exception e) {
-                                        steamModOptional = Optional.empty();
+                                        epicModOptional = Optional.empty();
                                     }
 
-                                    if (steamModOptional.isPresent()) {
-                                        String filenameWithExtension = steamModOptional.get().getFileName().toString();
+                                    if (epicModOptional.isPresent()) {
+                                        String filenameWithExtension = epicModOptional.get().getFileName().toString();
                                         String[] array = filenameWithExtension.split("\\.");
                                         String modName = array[0];
                                         return new MapToDisplay(idWorkShop, modName, false);
