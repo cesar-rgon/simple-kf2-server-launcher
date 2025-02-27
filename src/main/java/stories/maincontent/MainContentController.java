@@ -51,6 +51,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.net.URI;
 import java.net.URL;
+import java.net.URLConnection;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -247,6 +248,7 @@ public class MainContentController implements Initializable {
     @FXML private ImageView ipTypeImg;
     @FXML private Label ipTypeLabel;
     @FXML private ComboBox<EnumIpType> ipTypeSelect;
+    @FXML private ProgressIndicator webProgressIndicator;
 
     public MainContentController() {
         facade = new MainContentManagerFacadeImpl();
@@ -2243,8 +2245,9 @@ public class MainContentController implements Initializable {
 
     @FXML
     private void ipTypeSelectOnAction() {
-        try {
-            if (profileSelect.getValue() != null && ipTypeSelect.getValue() != null) {
+        if (profileSelect.getValue() != null && ipTypeSelect.getValue() != null) {
+            String urlImageServer = StringUtils.EMPTY;
+            try {
                 String ip = StringUtils.EMPTY;
                 if (EnumIpType.LOCALHOST.equals(ipTypeSelect.getValue())) {
                     ip = "localhost";
@@ -2253,28 +2256,50 @@ public class MainContentController implements Initializable {
                 }
                 String profileName = profileSelect.getValue().getName();
                 String webServerPort = facade.findPropertyValue("properties/config.properties", "prop.config.webServerPort");
-                String urlImageServer = "http://" + ip + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase() + ".png";
+                urlImageServer = "http://" + ip + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase() + ".png";
                 facade.updateProfileSetUrlImageServer(profileName, urlImageServer);
                 labelWebView.setText(urlImageServer);
+                webProgressIndicator.setVisible(true);
 
-                InputStream inputStream = new URL(urlImageServer).openStream();
-                imageWebView.getEngine().load(urlImageServer);
+            } catch (Exception e) {
+                String headerText = "The ip type type value could not be saved!";
+                logger.error(headerText, e);
+                Utils.errorDialog(headerText, e);
+            }
+
+            String finalUrlImageServer = urlImageServer;
+            Task<Void> task = new Task<Void>() {
+                @Override
+                protected Void call() throws Exception {
+                    int timeout = Integer.parseInt(facade.findPropertyValue("properties/config.properties", "prop.config.welcomeBanner.timeout"));
+                    URL url = new URL(finalUrlImageServer);
+                    URLConnection connection = url.openConnection();
+                    connection.setConnectTimeout(timeout);
+                    connection.setReadTimeout(timeout);
+                    connection.getInputStream();
+                    return null;
+                }
+            };
+
+            task.setOnSucceeded(wse -> {
+                imageWebView.getEngine().load(finalUrlImageServer);
                 labelWebView.setVisible(true);
-            }
+                webProgressIndicator.setVisible(false);
+            });
 
-        } catch (IOException e) {
-            File file = new File(System.getProperty("user.dir") + "/external-images/no-server-photo.png");
-            if (file.exists()) {
-                imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/no-server-photo.png");
-            } else {
-                imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/no-server-photo.png").getPath());
-            }
-            labelWebView.setVisible(false);
+            task.setOnFailed(wse -> {
+                File file = new File(System.getProperty("user.dir") + "/external-images/no-server-photo.png");
+                if (file.exists()) {
+                    imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/no-server-photo.png");
+                } else {
+                    imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/no-server-photo.png").getPath());
+                }
+                labelWebView.setVisible(false);
+                webProgressIndicator.setVisible(false);
+            });
 
-        } catch (Exception e) {
-            String headerText = "The ip type type value could not be saved!";
-            logger.error(headerText, e);
-            Utils.errorDialog(headerText, e);
+            Thread thread = new Thread(task);
+            thread.start();
         }
     }
 }

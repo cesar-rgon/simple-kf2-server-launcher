@@ -226,7 +226,7 @@ public class TemplateController implements Initializable {
 
             Label frenchTranslationLabel = new Label(translatedToFrenchBy + " -foG.Nox");
             Label russianTranslationLabel = new Label(translatedToRussianBy + " Dreadmore404");
-            Label vietnameseTranslationLabel = new Label(translatedToVietnameseBy + " DIOS");
+            Label vietnameseTranslationLabel = new Label(translatedToVietnameseBy + " InsDude");
 
             GridPane gridPane = new GridPane();
             gridPane.add(cesarRgonImageView, 1, 1);

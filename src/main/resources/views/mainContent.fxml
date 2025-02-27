@@ -102,6 +102,7 @@
                         <ColumnConstraints hgrow="SOMETIMES" minWidth="253.0" prefWidth="253.0" />
                         <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="100.0" prefWidth="120.0" />
                         <ColumnConstraints />
+                        <ColumnConstraints />
                     </columnConstraints>
                     <rowConstraints>
                       <RowConstraints maxHeight="215.0" minHeight="10.0" prefHeight="215.0" vgrow="ALWAYS" />
@@ -351,6 +352,10 @@
                                  <Insets bottom="-20.0" right="20.0" />
                              </GridPane.margin>
                          </Button>
+                         <ProgressIndicator fx:id="webProgressIndicator" maxHeight="150.0" maxWidth="150.0" visible="false" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
+                           <GridPane.margin>
+                              <Insets top="30.0" />
+                           </GridPane.margin></ProgressIndicator>
 
                          <ImageView fx:id="ipTypeImg" fitHeight="30.0" fitWidth="165.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
                              <image>
