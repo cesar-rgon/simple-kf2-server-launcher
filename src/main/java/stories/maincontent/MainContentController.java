@@ -260,6 +260,9 @@ public class MainContentController implements Initializable {
         userInteractLanguageSelect = true;
         platformProfileMapSelect.setVisibleRowCount((int) Math.round(Screen.getPrimary().getBounds().getHeight() / 110) - 1);
 
+        EventHandler<MouseEvent> handler = MouseEvent::consume;
+        imageWebView.addEventFilter(MouseEvent.MOUSE_PRESSED, handler);
+
         Task<ListValuesMainContentFacadeResult> task = new Task<ListValuesMainContentFacadeResult>() {
             @Override
             protected ListValuesMainContentFacadeResult call() throws Exception {
@@ -295,6 +298,7 @@ public class MainContentController implements Initializable {
                     } else {
                         imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/no-server-photo.png").getPath());
                     }
+                    labelWebView.setVisible(false);
                 }
 
                 // Put black color for background of the browser's page
@@ -304,12 +308,7 @@ public class MainContentController implements Initializable {
                 page.setBackgroundColor((new java.awt.Color(0.0f, 0.0f, 0.0f, 1f)).getRGB());
 
                 Session.getInstance().setActualProfileName(profileSelect.getValue() != null ? profileSelect.getValue().getName(): StringUtils.EMPTY);
-                labelWebView.setStyle("-fx-font-weight: bold;");
-                if (profileSelect.getValue() != null && StringUtils.isNotBlank(profileSelect.getValue().getUrlImageServer())) {
-                    labelWebView.setVisible(true);
-                } else {
-                    labelWebView.setVisible(false);
-                }
+
                 exploreFile.setVisible(true);
                 trash.setVisible(true);
                 progressIndicator.setVisible(false);
@@ -1416,26 +1415,10 @@ public class MainContentController implements Initializable {
         customParametersTextArea.setText(result.getProfileDto().getCustomParameters());
         webPage.setSelected(result.getProfileDto().getWebPage() != null ? result.getProfileDto().getWebPage(): false);
         takeover.setSelected(result.getProfileDto().getTakeover() != null ? result.getProfileDto().getTakeover(): false);
+
+        ipTypeSelectOnAction();
+
         try {
-            if (StringUtils.isNotEmpty(result.getProfileDto().getUrlImageServer())) {
-                String webServerPort = facade.findPropertyValue("properties/config.properties", "prop.config.webServerPort");
-                String ip = StringUtils.EMPTY;
-                if (EnumIpType.LOCALHOST.equals(ipTypeSelect.getValue())) {
-                    ip = "localhost";
-                } else {
-                    ip = Utils.getPublicIp();
-                }
-                imageWebView.getEngine().load("http://" + ip + ":" + webServerPort + "/" + result.getProfileDto().getName().toLowerCase() + ".png");
-                labelWebView.setText(result.getProfileDto().getUrlImageServer());
-            } else {
-                File file = new File(System.getProperty("user.dir") + "/external-images/no-server-photo.png");
-                if (file.exists()) {
-                    imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/no-server-photo.png");
-                } else {
-                    imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/no-server-photo.png").getPath());
-                }
-                labelWebView.setText(StringUtils.EMPTY);
-            }
             serverPassword.setText(Utils.decryptAES(result.getProfileDto().getServerPassword()));
             webPassword.setText(Utils.decryptAES(result.getProfileDto().getWebPassword()));
         } catch (Exception e) {
@@ -1635,14 +1618,7 @@ public class MainContentController implements Initializable {
                 removeOldWebServerFiles();
                 if (profileSelect.getValue() != null && StringUtils.isNotEmpty(profileSelect.getValue().getUrlImageServer())) {
                     runEmbeddedWebServer(listValuesMainContentFacadeResult.getProfileDtoList());
-                    String webServerPort = facade.findPropertyValue("properties/config.properties", "prop.config.webServerPort");
-                    String ip = StringUtils.EMPTY;
-                    if (EnumIpType.LOCALHOST.equals(ipTypeSelect.getValue())) {
-                        ip = "localhost";
-                    } else {
-                        ip = Utils.getPublicIp();
-                    }
-                    imageWebView.getEngine().load("http://" + ip + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase() + ".png");
+                    ipTypeSelectOnAction();
                 }
             }
             if (profileSelect.getValue() == null || StringUtils.isEmpty(profileSelect.getValue().getUrlImageServer())) {
@@ -2012,6 +1988,7 @@ public class MainContentController implements Initializable {
                 }
                 String urlImageServer = "http://" + ip + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase() + ".png";
                 labelWebView.setText(urlImageServer);
+                labelWebView.setVisible(true);
                 imageWebView.getEngine().load(urlImageServer);
 
                 String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName() : StringUtils.EMPTY;
@@ -2046,9 +2023,8 @@ public class MainContentController implements Initializable {
             } else {
                 imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/no-server-photo.png").getPath());
             }
-            labelWebView.setText(StringUtils.EMPTY);
+            labelWebView.setVisible(false);
             String profileName = profileSelect.getValue() != null ? profileSelect.getValue().getName() : StringUtils.EMPTY;
-            facade.updateProfileSetUrlImageServer(profileName, StringUtils.EMPTY);
             ProfileDto databaseProfile = facade.findProfileDtoByName(profileSelect.getValue().getName());
             Session.getInstance().setActualProfileName(databaseProfile.getName());
 
@@ -2280,8 +2256,20 @@ public class MainContentController implements Initializable {
                 String urlImageServer = "http://" + ip + ":" + webServerPort + "/" + profileSelect.getValue().getName().toLowerCase() + ".png";
                 facade.updateProfileSetUrlImageServer(profileName, urlImageServer);
                 labelWebView.setText(urlImageServer);
+
+                InputStream inputStream = new URL(urlImageServer).openStream();
                 imageWebView.getEngine().load(urlImageServer);
+                labelWebView.setVisible(true);
             }
+
+        } catch (IOException e) {
+            File file = new File(System.getProperty("user.dir") + "/external-images/no-server-photo.png");
+            if (file.exists()) {
+                imageWebView.getEngine().load("file:" + System.getProperty("user.dir") + "/external-images/no-server-photo.png");
+            } else {
+                imageWebView.getEngine().load("file:" + getClass().getResource("/external-images/no-server-photo.png").getPath());
+            }
+            labelWebView.setVisible(false);
 
         } catch (Exception e) {
             String headerText = "The ip type type value could not be saved!";
