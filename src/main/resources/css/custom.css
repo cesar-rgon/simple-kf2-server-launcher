@@ -120,6 +120,12 @@
     -fx-background-color: #4d0304;
     -fx-opacity: 0.7;
 }
+#message {
+    -fx-font-family: "Nunito Bold";
+    -fx-font-size: 16;
+    -fx-background-color: #4d0304;
+    -fx-opacity: 0.7;
+}
 
 .table-view .table-cell:hover {
     -fx-background-color: #c15d11;
