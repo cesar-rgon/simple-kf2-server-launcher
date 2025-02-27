@@ -321,7 +321,7 @@
                         </Label>
                         <CheckBox fx:id="takeover" mnemonicParsing="false" nodeOrientation="RIGHT_TO_LEFT" onAction="#takeoverOnAction" opacity="0.75" text="Enable takeover" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.rowIndex="8" GridPane.valignment="CENTER" />
 
-                         <WebView fx:id="imageWebView" disable="true" maxHeight="300.0" maxWidth="460.0" prefHeight="300.0" prefWidth="460.0" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowSpan="2" GridPane.valignment="CENTER">
+                         <WebView fx:id="imageWebView" maxHeight="300.0" maxWidth="460.0" prefHeight="300.0" prefWidth="460.0" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowSpan="2" GridPane.valignment="CENTER">
                              <GridPane.margin>
                                  <Insets bottom="7.0" right="10.0" top="7.0" />
                              </GridPane.margin>

@@ -143,21 +143,21 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
     @Override
     public List<Difficulty> populateDifficulties() throws Exception {
         List<Difficulty> defaultDifficultyList = new ArrayList<Difficulty>();
-        defaultDifficultyList.add(populateDifficulty("0","Normal", "Normal", "Normal", "Обычная", "Bình thường"));
-        defaultDifficultyList.add(populateDifficulty("1","Hard", "Difícil", "Difficile", "Трудная", "Cứng"));
-        defaultDifficultyList.add(populateDifficulty("2","Suicidal", "Suicida", "Suicidaire", "Убийственная", "Tự sát"));
-        defaultDifficultyList.add(populateDifficulty("3","Hell on Earth", "Infernal", "Enfer sur terre", "Ад на земле", "Địa ngục trần gian"));
+        defaultDifficultyList.add(populateDifficulty("0","Normal", "Normal", "Normal", "Обычная", "Normal"));
+        defaultDifficultyList.add(populateDifficulty("1","Hard", "Difícil", "Difficile", "Трудная", "Hard"));
+        defaultDifficultyList.add(populateDifficulty("2","Suicidal", "Suicida", "Suicidaire", "Убийственная", "Suicidal"));
+        defaultDifficultyList.add(populateDifficulty("3","Hell on Earth", "Infernal", "Enfer sur terre", "Ад на земле", "Hell on Earth"));
         return defaultDifficultyList;
     }
 
     @Override
     public List<GameType> populateGameTypes() throws Exception {
         List<GameType> deafultGameTypeList = new ArrayList<GameType>();
-        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_Survival", true, true, "Survival", "Supervivencia", "Survie", "Выживание", "Sống sót"));
-        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_VersusSurvival", false, false, "Versus", "Versus", "Versus", "Выживание в бою","So với"));
-        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_WeeklySurvival", false, false, "Weekly", "Semanal", "Hebdomadaire", "Еженедельно", "Hàng tuần"));
-        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_Endless", true, false, "Endless", "Sin fin", "Infini", "Без конца", "Vô tận"));
-        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_Objective", true, false, "Objetive", "Objetivo", "Objetif", "Задача", "Khách quan"));
+        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_Survival", true, true, "Survival", "Supervivencia", "Survie", "Выживание", "Survival"));
+        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_VersusSurvival", false, false, "Versus", "Versus", "Versus", "Выживание в бою","Versus"));
+        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_WeeklySurvival", false, false, "Weekly", "Semanal", "Hebdomadaire", "Еженедельно", "Weekly"));
+        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_Endless", true, false, "Endless", "Sin fin", "Infini", "Без конца", "Endless"));
+        deafultGameTypeList.add(populateGameType("KFGameContent.KFGameInfo_Objective", true, false, "Objetive", "Objetivo", "Objetif", "Задача", "Objetive"));
 
         return deafultGameTypeList;
     }
@@ -165,9 +165,9 @@ public class PopulateDatabase extends AbstractPopulateDatabase {
     @Override
     public List<Length> populateLengths() throws Exception {
         List<Length> deafultLengthTypeList = new ArrayList<Length>();
-        deafultLengthTypeList.add(populateLength("0","4 waves", "4 oleadas", "4 vagues", "4 волны", "4 sóng"));
-        deafultLengthTypeList.add(populateLength("1","7 waves", "7 oleadas", "7 vagues", "7 волн", "7 sóng"));
-        deafultLengthTypeList.add(populateLength("2","10 waves", "10 oleadas", "10 vagues", "10 волн", "10 sóng"));
+        deafultLengthTypeList.add(populateLength("0","4 waves", "4 oleadas", "4 vagues", "4 волны", "4 waves"));
+        deafultLengthTypeList.add(populateLength("1","7 waves", "7 oleadas", "7 vagues", "7 волн", "7 waves"));
+        deafultLengthTypeList.add(populateLength("2","10 waves", "10 oleadas", "10 vagues", "10 волн", "10 waves"));
         return deafultLengthTypeList;
     }
 
