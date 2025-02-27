@@ -218,11 +218,11 @@ public class TemplateController implements Initializable {
             dreadmore404ImageView.setPreserveRatio(true);
             dreadmore404ImageView.setFitWidth(100);
 
-            InputStream diosInputStream = getClass().getClassLoader().getResourceAsStream("images/dios-photo.png");
-            Image diosImage = new Image(diosInputStream);
-            ImageView diosImageView = new ImageView(diosImage);
-            diosImageView.setPreserveRatio(true);
-            diosImageView.setFitWidth(100);
+            InputStream insdudeInputStream = getClass().getClassLoader().getResourceAsStream("images/insdude-photo.png");
+            Image insdudeImage = new Image(insdudeInputStream);
+            ImageView insdudeImageView = new ImageView(insdudeImage);
+            insdudeImageView.setPreserveRatio(true);
+            insdudeImageView.setFitWidth(100);
 
             Label frenchTranslationLabel = new Label(translatedToFrenchBy + " -foG.Nox");
             Label russianTranslationLabel = new Label(translatedToRussianBy + " Dreadmore404");
@@ -240,7 +240,7 @@ public class TemplateController implements Initializable {
             gridPane.add(dreadmore404ImageView, 1, 4);
             gridPane.add(russianTranslationLabel, 2, 4);
 
-            gridPane.add(diosImageView, 1, 5);
+            gridPane.add(insdudeImageView, 1, 5);
             gridPane.add(vietnameseTranslationLabel, 2, 5);
 
             gridPane.setPrefWidth(450);
