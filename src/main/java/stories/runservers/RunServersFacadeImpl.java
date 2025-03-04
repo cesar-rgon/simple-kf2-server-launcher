@@ -9,14 +9,11 @@ import org.apache.commons.lang3.StringUtils;
 import pojos.PlatformProfile;
 import pojos.PlatformProfileToDisplay;
 import pojos.PlatformProfileToDisplayFactory;
+import pojos.enums.EnumRunServer;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import pojos.session.Session;
 import services.*;
-import stories.installationfolder.InstallationFolderFacade;
-import stories.installationfolder.InstallationFolderFacadeImpl;
-import stories.installationfolder.InstallationFolderFacadeResult;
-import stories.installationfolder.InstallationFolderModelContext;
 import utils.Utils;
 
 import java.util.ArrayList;
@@ -53,7 +50,7 @@ public class RunServersFacadeImpl
         List<Profile> allProfileList = profileService.listAllProfiles();
         switch (allProfileList.size()) {
             case 0:
-                runServer(platformOptional.get(), Optional.empty(), em);
+                runServer(platformOptional.get(), Optional.empty(), runServersModelContext.getEnumRunServer(), em);
                 break;
 
             case 1:
@@ -61,7 +58,7 @@ public class RunServersFacadeImpl
                 Session.getInstance().setConsole(
                         (StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
                         "< " + new Date() + " - Run Server >\n" +
-                        runServer(platformOptional.get(), Optional.ofNullable(allProfileList.get(0)), em)
+                        runServer(platformOptional.get(), Optional.ofNullable(allProfileList.get(0)), runServersModelContext.getEnumRunServer(), em)
                 );
                 break;
 
@@ -74,11 +71,13 @@ public class RunServersFacadeImpl
                         em
                 );
                 assert selectedProfileList != null;
+
+
                 for (Profile profile: selectedProfileList) {
                     Session.getInstance().setConsole(
                             (StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
-                            "< " + new Date() + " - Run Server >\n" +
-                            runServer(platformOptional.get(), Optional.ofNullable(profile), em)
+                            "< " + new Date() + " - " + (EnumRunServer.TERMINAL.equals(runServersModelContext.getEnumRunServer()) ? "Run Server": "Run Service") + " >\n" +
+                            runServer(platformOptional.get(), Optional.ofNullable(profile), runServersModelContext.getEnumRunServer(), em)
                     );
                 }
                 break;
@@ -93,10 +92,10 @@ public class RunServersFacadeImpl
         kf2Common.runExecutableFile();
     }
 
-    private String runServer(AbstractPlatform platform, Optional<Profile> profileOptional, EntityManager em) {
+    private String runServer(AbstractPlatform platform, Optional<Profile> profileOptional, EnumRunServer enumRunServer, EntityManager em) {
         Kf2Common kf2Common = Kf2Factory.getInstance(platform, em);
         assert kf2Common != null;
-        return kf2Common.runServer(profileOptional.orElse(null));
+        return kf2Common.runServer(profileOptional.orElse(null), enumRunServer);
     }
 
     private List<Profile> selectProfiles(List<Profile> allProfileList, String actualSelectedProfileName, String actualSelectedLanguage, EntityManager em) throws Exception {
@@ -119,7 +118,7 @@ public class RunServersFacadeImpl
         PlatformProfileToDisplayFactory platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory(em);
         List<PlatformProfileToDisplay> platformProfileToDisplayList = platformProfileToDisplayFactory.newOnes(platformProfileList);
 
-        List<PlatformProfileToDisplay> selectedProfiles = Utils.selectPlatformProfilesDialog(message + ":", platformProfileToDisplayList, selectedProfileNameList);
+        List<PlatformProfileToDisplay> selectedProfiles = Utils.selectPlatformProfilesToRunDialog(message + ":", platformProfileToDisplayList, selectedProfileNameList);
         List<String> selectedProfileNames = selectedProfiles.stream().map(PlatformProfileToDisplay::getProfileName).collect(Collectors.toList());
 
         return selectedProfileNames.stream().map(profileName -> {

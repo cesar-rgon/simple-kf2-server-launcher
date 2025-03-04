@@ -37,6 +37,7 @@ import org.apache.logging.log4j.Logger;
 import org.xnio.Options;
 import pojos.enums.EnumIpType;
 import pojos.enums.EnumPlatform;
+import pojos.enums.EnumRunServer;
 import pojos.session.Session;
 import start.MainApplication;
 import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
@@ -115,7 +116,6 @@ public class MainContentController implements Initializable {
     @FXML private TextField lanMaxClientRate;
     @FXML private TextField internetMaxClientRate;
 
-    @FXML private Button runServer;
     @FXML private Button joinServer;
     @FXML private Button terminalButton;
     @FXML private ImageView runServerImage;
@@ -249,6 +249,8 @@ public class MainContentController implements Initializable {
     @FXML private Label ipTypeLabel;
     @FXML private ComboBox<EnumIpType> ipTypeSelect;
     @FXML private ProgressIndicator webProgressIndicator;
+
+    @FXML private Label runServerLabel;
 
     public MainContentController() {
         facade = new MainContentManagerFacadeImpl();
@@ -700,13 +702,13 @@ public class MainContentController implements Initializable {
             }
         });
 
-        runServer.setOnMouseEntered(new EventHandler<MouseEvent>() {
+        runServerLabel.setOnMouseEntered(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 runServerImage.setStyle("-fx-effect: dropshadow(three-pass-box, #c15d11, 20, 0, 0, 0);");
             }
         });
-        runServer.setOnMouseExited(new EventHandler<MouseEvent>() {
+        runServerLabel.setOnMouseExited(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent mouseEvent) {
                 runServerImage.setStyle("-fx-effect: none;");
@@ -1182,10 +1184,10 @@ public class MainContentController implements Initializable {
         );
 
         String runServerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.runServer");
-        runServer.setText(runServerText);
+        runServerLabel.setText(runServerText);
         Tooltip runServerTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.runServer"));
         runServerTooltip.setShowDuration(Duration.seconds(tooltipDuration));
-        runServer.setTooltip(runServerTooltip);
+        runServerLabel.setTooltip(runServerTooltip);
 
         String joinServerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.joinServer");
         joinServer.setText(joinServerText);
@@ -1668,9 +1670,39 @@ public class MainContentController implements Initializable {
     }
 
     @FXML
-    private void runServerOnAction() {
+    private void runTerminalServerOnAction() {
         try {
             facade.runServers(
+                    platformSelect.getValue().getKey(),
+                    profileSelect.getValue().getName(),
+                    languageSelect.getValue().getKey(),
+                    EnumRunServer.TERMINAL
+            );
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void runServiceOnAction() {
+        try {
+            facade.runServers(
+                    platformSelect.getValue().getKey(),
+                    profileSelect.getValue().getName(),
+                    languageSelect.getValue().getKey(),
+                    EnumRunServer.SERVICE
+            );
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+        }
+    }
+
+    @FXML
+    private void stopServiceOnAction() {
+        try {
+            facade.stopServices(
                     platformSelect.getValue().getKey(),
                     profileSelect.getValue().getName(),
                     languageSelect.getValue().getKey()

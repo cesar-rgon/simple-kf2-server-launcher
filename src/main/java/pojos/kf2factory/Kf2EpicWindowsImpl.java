@@ -17,9 +17,7 @@ import services.ProfileService;
 import services.ProfileServiceImpl;
 import utils.Utils;
 
-import java.io.File;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -85,7 +83,7 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
     }
 
     @Override
-    protected String runKf2Server(Profile profile) {
+    protected String runServerInTerminal(Profile profile) {
         try {
             StringBuffer command = new StringBuffer();
             command.append("cmd /C \"");
@@ -366,5 +364,82 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
         }
 
         return mapFilename;
+    }
+
+    protected String runServerAsService(Profile profile) {
+
+        StringBuffer commands = new StringBuffer();
+        try {
+            String kf2ServiceUtilPath = StringUtils.EMPTY;
+            File file = new File(System.getProperty("user.dir") + "/utils/WinSW-x64.exe");
+            if (file.exists()) {
+                kf2ServiceUtilPath = System.getProperty("user.dir") + "/utils/WinSW-x64.exe";
+            } else {
+                kf2ServiceUtilPath = getClass().getResource("/utils/WinSW-x64.exe").getPath();
+            }
+
+            File kf2ServiceUtilFile = new File(kf2ServiceUtilPath);
+            if (!kf2ServiceUtilFile.exists()) {
+                throw new RuntimeException("The tool to create KF2 server service could not be found.");
+            }
+
+            String kf2ServiceXmlPath = createKf2ServiceXmlFile(kf2ServiceUtilFile.getParent(), profile);
+
+            String commandToCheckService = kf2ServiceUtilFile.getAbsolutePath() + " status " + kf2ServiceXmlPath;
+            commands.append(commandToCheckService);
+            Process process = Runtime.getRuntime().exec(commandToCheckService, null, kf2ServiceUtilFile.getParentFile());
+            int exitVal = process.waitFor();
+
+            if (exitVal == 1) { // Active (running)
+                throw new RuntimeException("The service kf2service for profile " + profile.getCode() + " is already running.");
+            }
+
+            if (exitVal == 1060) { // NonExistent
+                String commandToInstallService = kf2ServiceUtilFile.getAbsolutePath() + " install " + kf2ServiceXmlPath;
+                commands.append(". ").append(commandToInstallService);
+                process = Runtime.getRuntime().exec(commandToInstallService, null, kf2ServiceUtilFile.getParentFile());
+                exitVal = process.waitFor();
+            }
+
+            if (exitVal == 0) { // Inactive (stopped)
+                String commandToRunService = kf2ServiceUtilFile.getAbsolutePath() + " start " + kf2ServiceXmlPath;
+                commands.append(". ").append(commandToRunService);
+                Runtime.getRuntime().exec(commandToRunService, null, kf2ServiceUtilFile.getParentFile());
+            }
+        } catch (Exception e) {
+            String message = "Error executing Killing Floor 2 server as service for profile: " + profile.getCode();
+            logger.error(message, e);
+            Utils.errorDialog(message, e);
+        }
+
+        return commands.toString();
+    }
+
+    @Override
+    public String stopService(Profile profile, boolean uninstallService) {
+        // TODO: Implementar
+        return "";
+    }
+
+    private String createKf2ServiceXmlFile(String kf2ServiceUtilFolder, Profile profile) {
+        try {
+            File kf2ServiceXml = new File(kf2ServiceUtilFolder + "/kf2service-" + profile.getCode().toLowerCase() + ".xml");
+            PrintWriter pw = new PrintWriter(new FileWriter(kf2ServiceXml.getAbsolutePath()));
+            pw.println("<service>");
+            pw.println("<id>kf2-server-" + profile.getCode().toLowerCase() + "</id>");
+            pw.println("<name>Killing Floor 2 Server " + profile.getCode() + "</name>");
+            pw.println("<description>This service runs an instance of Killing Floor 2 Server for profile " + profile.getCode() + "</description>");
+            pw.println("<priority>Normal</priority>");
+            pw.println("<startmode>Automatic</startmode>");
+            pw.println("<executable>" + platform.getInstallationFolder() + "/Binaries/Win64/KFServer.exe</executable>");
+            pw.println("<arguments>" + getParameters(profile) + "</arguments>");
+            pw.println("</service>");
+            pw.close();
+            return kf2ServiceXml.getAbsolutePath();
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
+            return StringUtils.EMPTY;
+        }
     }
 }

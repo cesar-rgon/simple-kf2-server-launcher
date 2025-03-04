@@ -2,19 +2,18 @@ package pojos.kf2factory;
 
 import entities.AbstractPlatform;
 import entities.CustomMapMod;
-import entities.PlatformProfileMap;
 import entities.Profile;
 import jakarta.persistence.EntityManager;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import pojos.enums.EnumRunServer;
 import utils.Utils;
 
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Path;
-import java.util.List;
 
 public abstract class Kf2AbstractCommon extends Kf2Utils implements Kf2Common {
 
@@ -28,13 +27,15 @@ public abstract class Kf2AbstractCommon extends Kf2Utils implements Kf2Common {
 
     public abstract boolean isValidInstallationFolder();
     public abstract boolean isValidInstallationFolder(boolean checkIfInstalled);
-    protected abstract String runKf2Server(Profile profile);
     protected abstract void executeFileBeforeRunServer(File fileToBeExecuted) throws Exception;
     public abstract Long getIdWorkShopFromPath(Path path);
     public abstract String joinServer(Profile profile);
     protected abstract boolean prepareSteamCmd();
     public abstract boolean downloadMapFromSteamCmd(CustomMapMod customMap) throws Exception;
     public abstract String copyMapToCachePlatform(CustomMapMod customMap) throws Exception;
+    protected abstract String runServerInTerminal(Profile profile);
+    protected abstract String runServerAsService(Profile profile);
+    public abstract String stopService(Profile profile, boolean uninstallService);
 
     protected boolean prerequisitesAreValid() {
         return prerequisitesAreValid(true);
@@ -44,13 +45,42 @@ public abstract class Kf2AbstractCommon extends Kf2Utils implements Kf2Common {
         return isValidInstallationFolder(checkIfInstalled) && prepareSteamCmd();
     }
 
-    public String runServer(Profile profile) {
+    protected String getParameters(Profile profile) {
+        StringBuffer parameters = new StringBuffer();
+        parameters.append(profile.getMap().getCode());
+        parameters.append("?Game=").append(profile.getGametype().getCode());
+        if (profile.getGametype().isDifficultyEnabled()) {
+            parameters.append("?Difficulty=").append(profile.getDifficulty().getCode());
+        }
+        parameters.append("?MaxPlayers=").append(profile.getMaxPlayers().getCode());
+        if (profile.getGamePort() != null) {
+            parameters.append("?Port=").append(profile.getGamePort());
+        }
+        if (profile.getQueryPort() != null) {
+            parameters.append("?QueryPort=").append(profile.getQueryPort());
+        }
+        if (StringUtils.isNotEmpty(profile.getCustomParameters())) {
+            if (profile.getCustomParameters().startsWith("?")) {
+                parameters.append(profile.getCustomParameters());
+            } else {
+                parameters.append("?").append(profile.getCustomParameters());
+            }
+        }
+        parameters.append("?ConfigSubDir=").append(profile.getCode());
+        return parameters.toString();
+    }
+
+    public String runServer(Profile profile, EnumRunServer enumRunServer) {
         try {
             String errorMessage = validateParameters(profile);
             if (StringUtils.isEmpty(errorMessage)) {
                 if (prerequisitesAreValid()) {
                     createConfigFolder(this.platform.getInstallationFolder(), profile.getCode());
-                    return runKf2Server(profile);
+                    if (EnumRunServer.TERMINAL.equals(enumRunServer)) {
+                        return runServerInTerminal(profile);
+                    } else {
+                        return runServerAsService(profile);
+                    }
                 } else {
                     installationFolderNotValid();
                 }
@@ -72,11 +102,15 @@ public abstract class Kf2AbstractCommon extends Kf2Utils implements Kf2Common {
             }
         }
         return null;
+
+        /*
+
+         */
     }
 
     public String runServerByConsole(Profile profile) {
         byConsole = true;
-        return runServer(profile);
+        return runServer(profile, EnumRunServer.TERMINAL);
     }
 
     public void runExecutableFile() {

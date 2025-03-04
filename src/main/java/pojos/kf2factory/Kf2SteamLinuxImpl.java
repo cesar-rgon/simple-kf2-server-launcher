@@ -8,8 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.session.Session;
-import services.PlatformProfileMapService;
-import services.PlatformProfileMapServiceImpl;
 import services.ProfileService;
 import services.ProfileServiceImpl;
 import utils.Utils;
@@ -222,7 +220,7 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
     }
 
     @Override
-    protected String runKf2Server(Profile profile) {
+    protected String runServerInTerminal(Profile profile) {
         try {
             StringBuffer command = new StringBuffer();
             command.append(this.platform.getInstallationFolder()).append("/Binaries/Win64/KFGameSteamServer.bin.x86_64 ");
@@ -365,5 +363,16 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
         }
 
         return mapFilename;
+    }
+
+    protected String runServerAsService(Profile profile) {
+        // TODO: Implementar
+        return "";
+    }
+
+    @Override
+    public String stopService(Profile profile, boolean uninstallService) {
+        // TODO: Implementar
+        return "";
     }
 }

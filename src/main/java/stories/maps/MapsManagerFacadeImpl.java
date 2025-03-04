@@ -138,17 +138,6 @@ public class MapsManagerFacadeImpl
     }
 
     @Override
-    public void runServer(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) throws Exception {
-        RunServersModelContext runServersModelContext = new RunServersModelContext(
-                platformName,
-                actualSelectedProfileName,
-                actualSelectedLanguage
-        );
-        RunServersFacade runServersFacade = new RunServersFacadeImpl(runServersModelContext);
-        runServersFacade.execute();
-    }
-
-    @Override
     public AddCustomMapsToProfileFacadeResult addCustomMapsToProfile(List<String> platformNameList, String profileName, String mapNameList, String languageCode, String actualSelectedProfile) throws Exception {
         AddCustomMapsToProfileModelContext addCustomMapsToProfileModelContext = new AddCustomMapsToProfileModelContext(
                 platformNameList,

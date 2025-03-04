@@ -1,12 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.image.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.web.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ProgressIndicator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.web.WebView?>
 
-<fx:root id="centerPane" fx:id="mainContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maincontent.MainContentController">
+<fx:root id="centerPane" fx:id="mainContent" alignment="CENTER" stylesheets="@../css/custom.css" type="javafx.scene.layout.GridPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="stories.maincontent.MainContentController">
     <columnConstraints>
       <ColumnConstraints hgrow="ALWAYS" minWidth="10.0" prefWidth="20.0" />
         <ColumnConstraints minWidth="10.0" prefWidth="170.0" />
@@ -767,33 +785,46 @@
         </tabs>
       </TabPane>
 
-        <ImageView fx:id="joinServerImage" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+        <ImageView fx:id="joinServerImage" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP">
             <Image url="@../images/join-server.png" />
             <GridPane.margin>
-                <Insets left="20.0" top="85.0" />
+                <Insets left="20.0" top="-5.0" />
             </GridPane.margin>
         </ImageView>
-        <Button fx:id="joinServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="171.0" mnemonicParsing="false" onAction="#joinServerOnAction" prefHeight="18.0" prefWidth="171.0" text="JOIN" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+        <Button fx:id="joinServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="171.0" mnemonicParsing="false" onAction="#joinServerOnAction" prefHeight="18.0" prefWidth="171.0" text="JOIN" GridPane.columnIndex="4" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="TOP">
             <GridPane.margin>
-                <Insets left="22.0" top="85.0" />
+                <Insets left="22.0" top="8.0" />
             </GridPane.margin>
          <padding>
             <Insets left="55.0" />
          </padding></Button>
 
-        <ImageView fx:id="runServerImage" GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
-            <Image url="@../images/run-server.png" />
+        <MenuBar id="runServerMenuBar" fx:id="runServerMenuBar" maxHeight="50.0" maxWidth="210.0" minHeight="50.0" minWidth="210.0" BorderPane.alignment="CENTER" GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="3" GridPane.valignment="TOP">
+            <menus>
+                <Menu fx:id="runServerMenu" mnemonicParsing="false">
+                    <items>
+                        <MenuItem fx:id="runTerminalServer" mnemonicParsing="false" onAction="#runTerminalServerOnAction" text="Run server in terminal" />
+                        <MenuItem fx:id="runService" mnemonicParsing="false" onAction="#runServiceOnAction" text="Run server as a service / daemon" />
+                        <MenuItem fx:id="stopService" mnemonicParsing="false" onAction="#stopServiceOnAction" text="Stop service / daemon" />
+                    </items>
+                    <graphic>
+                        <StackPane alignment="CENTER">
+                            <ImageView fx:id="runServerImage">
+                                <Image url="@../images/run-server.png" />
+                            </ImageView>
+                            <Label fx:id="runServerLabel" alignment="CENTER" contentDisplay="CENTER" graphicTextGap="0.0" text="RUN" textAlignment="CENTER">
+                        <StackPane.margin>
+                           <Insets left="40.0" />
+                        </StackPane.margin></Label>
+                        </StackPane>
+                    </graphic>
+                </Menu>
+            </menus>
          <GridPane.margin>
-            <Insets right="10.0" top="85.0" />
+            <Insets right="15.0" top="-8.0" />
          </GridPane.margin>
-        </ImageView>
-        <Button fx:id="runServer" alignment="CENTER" contentDisplay="CENTER" maxWidth="171.0" mnemonicParsing="false" onAction="#runServerOnAction" prefHeight="18.0" prefWidth="171.0" text="RUN" GridPane.columnIndex="4" GridPane.columnSpan="2" GridPane.halignment="RIGHT" GridPane.rowIndex="2" GridPane.valignment="CENTER">
-         <GridPane.margin>
-            <Insets right="17.0" top="85.0" />
-         </GridPane.margin>
-         <padding>
-            <Insets left="55.0" />
-         </padding></Button>
+        </MenuBar>
+
         <Button fx:id="terminalButton" onAction="#terminalButtonOnAction" pickOnBounds="true" GridPane.columnIndex="5" GridPane.halignment="RIGHT" GridPane.rowIndex="1" GridPane.valignment="CENTER">
             <graphic>
                 <ImageView fx:id="terminalImg" fitHeight="64.0" fitWidth="64.0" preserveRatio="true">

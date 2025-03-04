@@ -1,6 +1,7 @@
 package stories.maincontent;
 
 import dtos.ProfileDto;
+import pojos.enums.EnumRunServer;
 import stories.listvaluesmaincontent.ListValuesMainContentFacadeResult;
 import stories.loadactualprofile.LoadActualProfileFacadeResult;
 
@@ -53,7 +54,7 @@ public interface MainContentManagerFacade {
     void updateProfileSetMapObjetives(String profileName, boolean isSelected) throws Exception;
     void updateProfileSetPickupItems(String profileName, boolean isSelected) throws Exception;
     void updateProfileSetFriendlyFirePercentage(String profileName, Double friendlyFirePercentage) throws Exception;
-    void runServers(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) throws Exception;
+    void runServers(String platformName, String actualSelectedProfileName, String actualSelectedLanguage, EnumRunServer enumRunServer) throws Exception;
     void joinServer(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) throws Exception;
     boolean isCorrectInstallationFolder(String platformName) throws Exception;
     ProfileDto findProfileDtoByName(String name) throws Exception;
@@ -64,5 +65,5 @@ public interface MainContentManagerFacade {
     void updateProfileSetLanTickrate(String profileName, Integer lanTickrate) throws Exception;
     void updateProfileSetLanMaxClientRate(String profileName, Integer lanMaxClientRate) throws Exception;
     void updateProfileSetInternetMaxClientRate(String profileName, Integer internetMaxClientRate) throws Exception;
-
+    void stopServices(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) throws Exception;
 }

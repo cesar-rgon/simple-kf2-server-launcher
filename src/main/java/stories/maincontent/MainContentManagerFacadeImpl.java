@@ -3,6 +3,7 @@ package stories.maincontent;
 import dtos.ProfileDto;
 import framework.AbstractManagerFacade;
 import framework.EmptyModelContext;
+import pojos.enums.EnumRunServer;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
@@ -27,6 +28,9 @@ import stories.loadactualprofile.LoadActualProfileFacadeImpl;
 import stories.loadactualprofile.LoadActualProfileFacadeResult;
 import stories.loadactualprofile.LoadActualProfileModelContext;
 import stories.runservers.RunServersModelContext;
+import stories.stopservices.StopServicesFacade;
+import stories.stopservices.StopServicesFacadeImpl;
+import stories.stopservices.StopServicesModelContext;
 import stories.template.TemplateController;
 import stories.updateprofilesetadmincanpause.UpdateProfileSetAdminCanPauseFacade;
 import stories.updateprofilesetadmincanpause.UpdateProfileSetAdminCanPauseFacadeImpl;
@@ -391,11 +395,12 @@ public class MainContentManagerFacadeImpl
     }
 
     @Override
-    public void runServers(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) throws Exception {
+    public void runServers(String platformName, String actualSelectedProfileName, String actualSelectedLanguage, EnumRunServer enumRunServer) throws Exception {
         RunServersModelContext runServersModelContext = new RunServersModelContext(
                 platformName,
                 actualSelectedProfileName,
-                actualSelectedLanguage
+                actualSelectedLanguage,
+                enumRunServer
         );
         RunServersFacade runServersFacade = new RunServersFacadeImpl(runServersModelContext);
         runServersFacade.execute();
@@ -718,5 +723,16 @@ public class MainContentManagerFacadeImpl
         );
         UpdateProfileSetInternetMaxClientRateFacade updateProfileSetInternetMaxClientRateFacade = new UpdateProfileSetInternetMaxClientRateFacadeImpl(updateProfileSetInternetMaxClientRateModelContext);
         updateProfileSetInternetMaxClientRateFacade.execute();
+    }
+
+    @Override
+    public void stopServices(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) throws Exception {
+        StopServicesModelContext stopServicesModelContext = new StopServicesModelContext(
+                platformName,
+                actualSelectedProfileName,
+                actualSelectedLanguage
+        );
+        StopServicesFacade stopServicesFacade = new StopServicesFacadeImpl(stopServicesModelContext);
+        stopServicesFacade.execute();
     }
 }

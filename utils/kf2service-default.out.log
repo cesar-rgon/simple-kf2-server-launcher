@@ -1,0 +1,30 @@
+Warning, Unknown language extension . Defaulting to INT
+Warning, Failed to load 'Texture2D FX_GORE_TEX.FX_Gore_Blend_All_D': Failed to find object 'Texture2D FX_GORE_TEX.FX_Gore_Blend_All_D'
+Warning, The Outer object (Package ENG_EngineResources_TEX.Dither) for 'ENG_EngineResources_TEX.Dither.dither_pattern' couldn't be loaded [while loading package ENG_EngineResources_TEX]: Invalid linker index [couldn't load Package ENG_EngineResources_TEX.Dither]?
+Warning, Failed to load 'Texture2D ENG_EngineResources_TEX.Dither.dither_pattern': Failed to find object 'Texture2D ENG_EngineResources_TEX.Dither.dither_pattern'
+[TWAnalytics::requestInventoryItem] Requesting Item Id: 0 but NULL steamuser
+
+0101
+Success - 0 error(s), 0 warning(s)
+
+
+Execution of commandlet took:  34.93 seconds
+Warning, Failed to load 'Class None.': Failed to find object 'Class None.'
+Warning, Failed to find object 'Class None.'
+Warning, Failed to load 'Class None.': Failed to find object 'Class None.'
+Warning, Failed to find object 'Class None.'
+Warning, Unknown language extension . Defaulting to INT
+Warning, Failed to load 'Texture2D FX_GORE_TEX.FX_Gore_Blend_All_D': Failed to find object 'Texture2D FX_GORE_TEX.FX_Gore_Blend_All_D'
+Warning, The Outer object (Package ENG_EngineResources_TEX.Dither) for 'ENG_EngineResources_TEX.Dither.dither_pattern' couldn't be loaded [while loading package ENG_EngineResources_TEX]: Invalid linker index [couldn't load Package ENG_EngineResources_TEX.Dither]?
+Warning, Failed to load 'Texture2D ENG_EngineResources_TEX.Dither.dither_pattern': Failed to find object 'Texture2D ENG_EngineResources_TEX.Dither.dither_pattern'
+[TWAnalytics::requestInventoryItem] Requesting Item Id: 0 but NULL steamuser
+
+0101
+Success - 0 error(s), 0 warning(s)
+
+
+Execution of commandlet took:  2330.53 seconds
+Warning, Failed to load 'Class None.': Failed to find object 'Class None.'
+Warning, Failed to find object 'Class None.'
+Warning, Failed to load 'Class None.': Failed to find object 'Class None.'
+Warning, Failed to find object 'Class None.'

@@ -5,10 +5,8 @@ import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import dtos.ProfileDto;
 import dtos.SelectDto;
-import javafx.beans.InvalidationListener;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -43,8 +41,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 import pojos.*;
 import pojos.enums.EnumPlatform;
-import pojos.kf2factory.Kf2SteamLinuxImpl;
-import pojos.kf2factory.Kf2SteamWindowsImpl;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 
@@ -52,7 +48,6 @@ import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.imageio.ImageIO;
 import java.awt.*;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URI;
@@ -710,8 +705,29 @@ public class Utils {
         return new ArrayList<ProfileToDisplay>();
     }
 
-    public static List<PlatformProfileToDisplay> selectPlatformProfilesDialog(String headerText, List<PlatformProfileToDisplay> platformProfileToDisplayList, List<String> selectedProfileNameList) {
+    private static Dialog<TableView<PlatformProfileToDisplay>> getPlatformProfilesDialog(String headerText) {
+
         Dialog<TableView<PlatformProfileToDisplay>> dialog = new Dialog<TableView<PlatformProfileToDisplay>>();
+
+        PropertyService propertyService = new PropertyServiceImpl();
+        try {
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
+            dialog.setTitle(applicationTitle);
+        } catch (Exception ex) {
+            dialog.setTitle("");
+        }
+        dialog.setHeaderText(headerText);
+        dialog.setResizable(true);
+        dialog.getDialogPane().setMinWidth(800);
+        dialog.getDialogPane().setMinHeight(400);
+        dialog.setWidth(500);
+        dialog.setHeight(500);
+
+        return dialog;
+    }
+
+    private static TableView<PlatformProfileToDisplay> getPlatformProfilesTableView(List<PlatformProfileToDisplay> platformProfileToDisplayList, List<String> selectedProfileNameList) {
+
         PropertyService propertyService = new PropertyServiceImpl();
         String selectText = "";
         String profileNameText = "";
@@ -728,12 +744,9 @@ public class Utils {
             mapNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
             difficultyText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultyLowercase");
             lengthText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthLowercase");
-            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
-            dialog.setTitle(applicationTitle);
         } catch (Exception ex) {
-            dialog.setTitle("");
+            logger.error(ex.getMessage(), ex);
         }
-        dialog.setHeaderText(headerText);
 
         TableView<PlatformProfileToDisplay> tableView = new TableView<PlatformProfileToDisplay>();
 
@@ -847,15 +860,16 @@ public class Utils {
 
         tableView.setEditable(true);
 
-        dialog.getDialogPane().setContent(tableView);
-        dialog.setResizable(true);
-        dialog.getDialogPane().setMinWidth(800);
-        dialog.getDialogPane().setMinHeight(400);
+        return tableView;
+    }
 
+    private static Dialog<TableView<PlatformProfileToDisplay>> addDialogButtonsPlatformProfiles(Dialog<TableView<PlatformProfileToDisplay>> dialog, List<PlatformProfileToDisplay> platformProfileToDisplayList) {
         ButtonType buttonTypeOk = null;
         ButtonType buttonTypeCancel = null;
         ButtonType selectAll = null;
         ButtonType selectNone = null;
+
+        PropertyService propertyService = new PropertyServiceImpl();
         try {
             String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             String okText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.ok");
@@ -877,7 +891,7 @@ public class Utils {
         ButtonType finalSelectAll = selectAll;
         dialog.setResultConverter(b -> {
             if (b.equals(finalButtonTypeOk) ) {
-                return tableView;
+                return (TableView<PlatformProfileToDisplay>) dialog.getDialogPane().getContent();
             }
             if (b.equals(finalUnselectAll)) {
                 platformProfileToDisplayList.stream().forEach(p -> p.setSelected(false));
@@ -890,12 +904,57 @@ public class Utils {
             return null;
         });
 
-        dialog.setWidth(500);
-        dialog.setHeight(500);
+        return dialog;
+    }
+
+    public static StopServicesToDisplay selectPlatformProfilesToStopDialog(String headerText, List<PlatformProfileToDisplay> platformProfileToDisplayList, List<String> selectedProfileNameList) {
+
+        Dialog<TableView<PlatformProfileToDisplay>> dialog = getPlatformProfilesDialog(headerText);
+        TableView<PlatformProfileToDisplay> tableView = getPlatformProfilesTableView(platformProfileToDisplayList, selectedProfileNameList);
+
+        PropertyService propertyService = new PropertyServiceImpl();
+        String checkboxText = StringUtils.EMPTY;
+        try {
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            checkboxText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.uninstallServices");
+        } catch (Exception e) {
+            checkboxText = "Also uninstall services of selected profiles";
+        }
+        CheckBox checkbox = new CheckBox(checkboxText);
+        checkbox.setStyle("-fx-padding: 0 0 20 0;");
+        VBox content = new VBox(checkbox, tableView);
+
+        dialog.getDialogPane().setContent(content);
+        dialog = addDialogButtonsPlatformProfiles(dialog, platformProfileToDisplayList);
         Optional<TableView<PlatformProfileToDisplay>> result = dialog.showAndWait();
+
         if (result.isPresent() && result.get() != null && result.get().getItems() != null && !result.get().getItems().isEmpty()) {
             List<PlatformProfileToDisplay> selectedProfiles = new ArrayList<PlatformProfileToDisplay>();
             for (PlatformProfileToDisplay platformProfileToDisplay : platformProfileToDisplayList) {
+                TableColumn<PlatformProfileToDisplay, Boolean> selectColumn = (TableColumn<PlatformProfileToDisplay, Boolean>) tableView.getColumns().get(0);
+                Boolean isSelected = selectColumn.getCellData(platformProfileToDisplay);
+                if (isSelected != null && isSelected) {
+                    selectedProfiles.add(platformProfileToDisplay);
+                }
+            }
+            return new StopServicesToDisplay(selectedProfiles,checkbox.isSelected());
+        }
+
+        return new StopServicesToDisplay(new ArrayList<PlatformProfileToDisplay>(), false);
+    }
+
+    public static List<PlatformProfileToDisplay> selectPlatformProfilesToRunDialog(String headerText, List<PlatformProfileToDisplay> platformProfileToDisplayList, List<String> selectedProfileNameList) {
+
+        Dialog<TableView<PlatformProfileToDisplay>> dialog = getPlatformProfilesDialog(headerText);
+        TableView<PlatformProfileToDisplay> tableView = getPlatformProfilesTableView(platformProfileToDisplayList, selectedProfileNameList);
+        dialog.getDialogPane().setContent(tableView);
+        dialog = addDialogButtonsPlatformProfiles(dialog, platformProfileToDisplayList);
+        Optional<TableView<PlatformProfileToDisplay>> result = dialog.showAndWait();
+
+        if (result.isPresent() && result.get() != null && result.get().getItems() != null && !result.get().getItems().isEmpty()) {
+            List<PlatformProfileToDisplay> selectedProfiles = new ArrayList<PlatformProfileToDisplay>();
+            for (PlatformProfileToDisplay platformProfileToDisplay : platformProfileToDisplayList) {
+                TableColumn<PlatformProfileToDisplay, Boolean> selectColumn = (TableColumn<PlatformProfileToDisplay, Boolean>) tableView.getColumns().get(0);
                 Boolean isSelected = selectColumn.getCellData(platformProfileToDisplay);
                 if (isSelected != null && isSelected) {
                     selectedProfiles.add(platformProfileToDisplay);

@@ -1787,7 +1787,7 @@ public class MapsController implements Initializable {
 
             String languageCode = facade.findPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             String selectPlatformProfilesHeaderText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.selectProfiles");
-            List<PlatformProfileToDisplay> selectedPlatformProfileList = Utils.selectPlatformProfilesDialog(
+            List<PlatformProfileToDisplay> selectedPlatformProfileList = Utils.selectPlatformProfilesToRunDialog(
                     selectPlatformProfilesHeaderText + ":",
                     prepareResult.getPlatformProfileToDisplayList(),
                     prepareResult.getFullProfileNameList()

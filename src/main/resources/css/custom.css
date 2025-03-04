@@ -50,6 +50,17 @@
     -fx-cursor: hand;
 }
 
+#runServerLabel {
+    -fx-font-family: "Nunito Bold";
+    -fx-font-size: 11;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+
+#runServerLabel .img-view {
+    -fx-padding: 0 0 0 50;
+}
+
 .combo-box {
     -fx-font-family: "Nunito";
     -fx-font-size: 14;
@@ -323,4 +334,8 @@
     -fx-font-family: "Nunito";
     -fx-font-size: 14;
     -fx-text-fill: white;
+}
+
+#runServerMenuBar, #runServerMenu {
+    -fx-background-color: transparent;
 }

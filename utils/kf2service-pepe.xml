@@ -1,0 +1,9 @@
+<service>
+<id>kf2-server-pepe</id>
+<name>Killing Floor 2 Server pepe</name>
+<description>This service runs an instance of Killing Floor 2 Server for profile pepe</description>
+<priority>Normal</priority>
+<startmode>Automatic</startmode>
+<executable>D:\kf2server/Binaries/Win64/KFServer.exe</executable>
+<arguments>KF-BurningParis?Game=KFGameContent.KFGameInfo_Endless?Difficulty=0?MaxPlayers=6?Port=7777?QueryPort=27015?ConfigSubDir=pepe</arguments>
+</service>

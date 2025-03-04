@@ -42,7 +42,7 @@ public class ListSelectedPlatformsProfilesFacadeImpl
         PlatformProfileToDisplayFactory platformProfileToDisplayFactory = new PlatformProfileToDisplayFactory(em);
         List<PlatformProfileToDisplay> platformProfileToDisplayList = platformProfileToDisplayFactory.newOnes(facadeModelContext.getPlatformProfileList());
 
-        List<PlatformProfileToDisplay> selectedPlatformProfileList = Utils.selectPlatformProfilesDialog(
+        List<PlatformProfileToDisplay> selectedPlatformProfileList = Utils.selectPlatformProfilesToRunDialog(
                 headerText + ":",
                 platformProfileToDisplayList,
                 fullProfileNameList

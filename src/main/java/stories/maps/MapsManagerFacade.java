@@ -35,7 +35,6 @@ public interface MapsManagerFacade {
     List<ImportMapResultToDisplay> importOfficialMapsFromServer(List<PlatformProfileMapToImport> ppmToImportList, String profileName) throws Exception;
     List<ImportMapResultToDisplay> importCustomMapsModsFromServer(List<PlatformProfileMapToImport> ppmToImportList, String profileName) throws Exception;
     void setConfigPropertyValue(String key, String value) throws Exception;
-    void runServer(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) throws Exception;
     void updateMapsCycleFlagInMapList(String profileName,
                                       List<String> steamOfficialMapNameListToRemoveFromMapsCycle,
                                       List<String> steamCustomMapNameListToRemoveFromMapsCycle,
