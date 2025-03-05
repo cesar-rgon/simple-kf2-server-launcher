@@ -283,29 +283,47 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
         return mapFilename;
     }
 
+    private File assertKf2ServiceUtilExists() throws Exception {
+        String kf2ServiceUtilPath = StringUtils.EMPTY;
+        File file = new File(System.getProperty("user.dir") + "/utils/WinSW-x64.exe");
+        if (file.exists()) {
+            kf2ServiceUtilPath = System.getProperty("user.dir") + "/utils/WinSW-x64.exe";
+        } else {
+            kf2ServiceUtilPath = getClass().getResource("/utils/WinSW-x64.exe").getPath();
+        }
+
+        File kf2ServiceUtilFile = new File(kf2ServiceUtilPath);
+        if (!kf2ServiceUtilFile.exists()) {
+            throw new RuntimeException("The tool to create/stop KF2 server service could not be found.");
+        }
+
+        return kf2ServiceUtilFile;
+    }
+
+    private File assertKf2ProfileServiceExists(File kf2ServiceUtilFile, Profile profile) {
+        File kf2ServiceXml = new File(kf2ServiceUtilFile.getParent() + "/kf2service-" + profile.getCode().toLowerCase() + ".xml");
+        if (!kf2ServiceXml.exists()) {
+            throw new RuntimeException("The xml file for KF2's service for profile " + profile.getCode() + " could not be found.");
+        }
+        return kf2ServiceXml;
+    }
+
+    private int checkServiceStatus(File kf2ServiceUtilFile, String kf2ServiceXmlPath) throws Exception {
+        String commandToCheckService = kf2ServiceUtilFile.getAbsolutePath() + " status " + kf2ServiceXmlPath;
+        Process process = Runtime.getRuntime().exec(commandToCheckService, null, kf2ServiceUtilFile.getParentFile());
+        return process.waitFor();
+    }
+
     protected String runServerAsService(Profile profile) {
 
         StringBuffer commands = new StringBuffer();
         try {
-            String kf2ServiceUtilPath = StringUtils.EMPTY;
-            File file = new File(System.getProperty("user.dir") + "/utils/WinSW-x64.exe");
-            if (file.exists()) {
-                kf2ServiceUtilPath = System.getProperty("user.dir") + "/utils/WinSW-x64.exe";
-            } else {
-                kf2ServiceUtilPath = getClass().getResource("/utils/WinSW-x64.exe").getPath();
-            }
-
-            File kf2ServiceUtilFile = new File(kf2ServiceUtilPath);
-            if (!kf2ServiceUtilFile.exists()) {
-                throw new RuntimeException("The tool to create KF2 server service could not be found.");
-            }
-
+            File kf2ServiceUtilFile = assertKf2ServiceUtilExists();
             String kf2ServiceXmlPath = createKf2ServiceXmlFile(kf2ServiceUtilFile.getParent(), profile);
-
             String commandToCheckService = kf2ServiceUtilFile.getAbsolutePath() + " status " + kf2ServiceXmlPath;
             commands.append(commandToCheckService);
-            Process process = Runtime.getRuntime().exec(commandToCheckService, null, kf2ServiceUtilFile.getParentFile());
-            int exitVal = process.waitFor();
+
+            int exitVal = checkServiceStatus(kf2ServiceUtilFile, kf2ServiceXmlPath);
 
             if (exitVal == 1) { // Active (running)
                 throw new RuntimeException("The service kf2service for profile " + profile.getCode() + " is already running.");
@@ -314,7 +332,7 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
             if (exitVal == 1060) { // NonExistent
                 String commandToInstallService = kf2ServiceUtilFile.getAbsolutePath() + " install " + kf2ServiceXmlPath;
                 commands.append(". ").append(commandToInstallService);
-                process = Runtime.getRuntime().exec(commandToInstallService, null, kf2ServiceUtilFile.getParentFile());
+                Process process = Runtime.getRuntime().exec(commandToInstallService, null, kf2ServiceUtilFile.getParentFile());
                 exitVal = process.waitFor();
             }
 
@@ -356,8 +374,50 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
 
     @Override
     public String stopService(Profile profile, boolean uninstallService) {
-        // TODO: Implementar
-        return "";
+        StringBuffer commands = new StringBuffer();
+
+        try {
+            File kf2ServiceUtilFile = assertKf2ServiceUtilExists();
+            File kf2ServiceXml = assertKf2ProfileServiceExists(kf2ServiceUtilFile, profile);
+            int exitVal = checkServiceStatus(kf2ServiceUtilFile, kf2ServiceXml.getAbsolutePath());
+            String commandToCheckService = kf2ServiceUtilFile.getAbsolutePath() + " status " + kf2ServiceXml.getAbsolutePath();
+            commands.append(commandToCheckService);
+
+            if (exitVal == 1) { // Active (running)
+                String commandToStopService = kf2ServiceUtilFile.getAbsolutePath() + " stop " + kf2ServiceXml.getAbsolutePath();
+                Process process = Runtime.getRuntime().exec(commandToStopService, null, kf2ServiceUtilFile.getParentFile());
+                int stoppedExitVal = process.waitFor();
+                commands.append(". ").append(commandToStopService);
+
+                if (stoppedExitVal == 0 && uninstallService) {
+                    String commandToUninstallService = kf2ServiceUtilFile.getAbsolutePath() + " uninstall " + kf2ServiceXml.getAbsolutePath();
+                    process = Runtime.getRuntime().exec(commandToUninstallService, null, kf2ServiceUtilFile.getParentFile());
+                    process.waitFor();
+                    commands.append(". ").append(commandToUninstallService);
+                }
+            }
+
+            if (exitVal == 1060) { // NonExistent
+                throw new RuntimeException("The service kf2service for profile " + profile.getCode() + " is not installed.");
+            }
+
+            if (exitVal == 0) { // Inactive (stopped)
+                if (!uninstallService) {
+                    throw new RuntimeException("The service kf2service for profile " + profile.getCode() + " is already stopped.");
+                }
+                String commandToUninstallService = kf2ServiceUtilFile.getAbsolutePath() + " uninstall " + kf2ServiceXml.getAbsolutePath();
+                Process process = Runtime.getRuntime().exec(commandToUninstallService, null, kf2ServiceUtilFile.getParentFile());
+                process.waitFor();
+                commands.append(". ").append(commandToUninstallService);
+            }
+
+        } catch (Exception e) {
+            String message = "Error stopping Killing Floor 2 server as service for profile: " + profile.getCode();
+            logger.error(message, e);
+            Utils.errorDialog(message, e);
+        }
+
+        return commands.toString();
     }
 }
 

@@ -705,9 +705,7 @@ public class Utils {
         return new ArrayList<ProfileToDisplay>();
     }
 
-    private static Dialog<TableView<PlatformProfileToDisplay>> getPlatformProfilesDialog(String headerText) {
-
-        Dialog<TableView<PlatformProfileToDisplay>> dialog = new Dialog<TableView<PlatformProfileToDisplay>>();
+    private static void setPlatformProfilesDialogAttributes(Dialog dialog, String headerText) {
 
         PropertyService propertyService = new PropertyServiceImpl();
         try {
@@ -722,8 +720,6 @@ public class Utils {
         dialog.getDialogPane().setMinHeight(400);
         dialog.setWidth(500);
         dialog.setHeight(500);
-
-        return dialog;
     }
 
     private static TableView<PlatformProfileToDisplay> getPlatformProfilesTableView(List<PlatformProfileToDisplay> platformProfileToDisplayList, List<String> selectedProfileNameList) {
@@ -863,7 +859,7 @@ public class Utils {
         return tableView;
     }
 
-    private static Dialog<TableView<PlatformProfileToDisplay>> addDialogButtonsPlatformProfiles(Dialog<TableView<PlatformProfileToDisplay>> dialog, List<PlatformProfileToDisplay> platformProfileToDisplayList) {
+    private static List<ButtonType> getDialogButtonsPlatformProfiles() {
         ButtonType buttonTypeOk = null;
         ButtonType buttonTypeCancel = null;
         ButtonType selectAll = null;
@@ -885,31 +881,19 @@ public class Utils {
             buttonTypeCancel = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
         }
 
-        dialog.getDialogPane().getButtonTypes().addAll(selectAll, selectNone, buttonTypeOk, buttonTypeCancel);
-        ButtonType finalButtonTypeOk = buttonTypeOk;
-        ButtonType finalUnselectAll = selectNone;
-        ButtonType finalSelectAll = selectAll;
-        dialog.setResultConverter(b -> {
-            if (b.equals(finalButtonTypeOk) ) {
-                return (TableView<PlatformProfileToDisplay>) dialog.getDialogPane().getContent();
-            }
-            if (b.equals(finalUnselectAll)) {
-                platformProfileToDisplayList.stream().forEach(p -> p.setSelected(false));
-                dialog.showAndWait();
-            }
-            if (b.equals(finalSelectAll)) {
-                platformProfileToDisplayList.stream().forEach(p -> p.setSelected(true));
-                dialog.showAndWait();
-            }
-            return null;
-        });
+        List<ButtonType> buttonList = new ArrayList<ButtonType>();
+        buttonList.add(selectAll);
+        buttonList.add(selectNone);
+        buttonList.add(buttonTypeCancel);
+        buttonList.add(buttonTypeOk);
 
-        return dialog;
+        return buttonList;
     }
 
     public static StopServicesToDisplay selectPlatformProfilesToStopDialog(String headerText, List<PlatformProfileToDisplay> platformProfileToDisplayList, List<String> selectedProfileNameList) {
 
-        Dialog<TableView<PlatformProfileToDisplay>> dialog = getPlatformProfilesDialog(headerText);
+        Dialog<VBox> dialog = new Dialog<VBox>();
+        setPlatformProfilesDialogAttributes(dialog, headerText);
         TableView<PlatformProfileToDisplay> tableView = getPlatformProfilesTableView(platformProfileToDisplayList, selectedProfileNameList);
 
         PropertyService propertyService = new PropertyServiceImpl();
@@ -925,10 +909,34 @@ public class Utils {
         VBox content = new VBox(checkbox, tableView);
 
         dialog.getDialogPane().setContent(content);
-        dialog = addDialogButtonsPlatformProfiles(dialog, platformProfileToDisplayList);
-        Optional<TableView<PlatformProfileToDisplay>> result = dialog.showAndWait();
 
-        if (result.isPresent() && result.get() != null && result.get().getItems() != null && !result.get().getItems().isEmpty()) {
+        List<ButtonType> buttonList = getDialogButtonsPlatformProfiles();
+        for (ButtonType button: buttonList) {
+            dialog.getDialogPane().getButtonTypes().add(button);
+        }
+
+        ButtonType selectAll = buttonList.get(0);
+        ButtonType unselectAll = buttonList.get(1);
+        ButtonType buttonTypeOk = buttonList.get(3);
+
+        dialog.setResultConverter(b -> {
+            if (b.equals(buttonTypeOk) ) {
+                return content;
+            }
+            if (b.equals(unselectAll)) {
+                platformProfileToDisplayList.stream().forEach(p -> p.setSelected(false));
+                dialog.showAndWait();
+            }
+            if (b.equals(selectAll)) {
+                platformProfileToDisplayList.stream().forEach(p -> p.setSelected(true));
+                dialog.showAndWait();
+            }
+            return null;
+        });
+
+        Optional<VBox> result = dialog.showAndWait();
+
+        if (result.isPresent() && tableView.getItems() != null && !tableView.getItems().isEmpty()) {
             List<PlatformProfileToDisplay> selectedProfiles = new ArrayList<PlatformProfileToDisplay>();
             for (PlatformProfileToDisplay platformProfileToDisplay : platformProfileToDisplayList) {
                 TableColumn<PlatformProfileToDisplay, Boolean> selectColumn = (TableColumn<PlatformProfileToDisplay, Boolean>) tableView.getColumns().get(0);
@@ -945,10 +953,36 @@ public class Utils {
 
     public static List<PlatformProfileToDisplay> selectPlatformProfilesToRunDialog(String headerText, List<PlatformProfileToDisplay> platformProfileToDisplayList, List<String> selectedProfileNameList) {
 
-        Dialog<TableView<PlatformProfileToDisplay>> dialog = getPlatformProfilesDialog(headerText);
+        Dialog<TableView<PlatformProfileToDisplay>> dialog = new Dialog<TableView<PlatformProfileToDisplay>>();
+        setPlatformProfilesDialogAttributes(dialog, headerText);
+
         TableView<PlatformProfileToDisplay> tableView = getPlatformProfilesTableView(platformProfileToDisplayList, selectedProfileNameList);
         dialog.getDialogPane().setContent(tableView);
-        dialog = addDialogButtonsPlatformProfiles(dialog, platformProfileToDisplayList);
+
+        List<ButtonType> buttonList = getDialogButtonsPlatformProfiles();
+        for (ButtonType button: buttonList) {
+            dialog.getDialogPane().getButtonTypes().add(button);
+        }
+
+        ButtonType selectAll = buttonList.get(0);
+        ButtonType unselectAll = buttonList.get(1);
+        ButtonType buttonTypeOk = buttonList.get(3);
+
+        dialog.setResultConverter(b -> {
+            if (b.equals(buttonTypeOk) ) {
+                return (TableView<PlatformProfileToDisplay>) dialog.getDialogPane().getContent();
+            }
+            if (b.equals(unselectAll)) {
+                platformProfileToDisplayList.stream().forEach(p -> p.setSelected(false));
+                dialog.showAndWait();
+            }
+            if (b.equals(selectAll)) {
+                platformProfileToDisplayList.stream().forEach(p -> p.setSelected(true));
+                dialog.showAndWait();
+            }
+            return null;
+        });
+
         Optional<TableView<PlatformProfileToDisplay>> result = dialog.showAndWait();
 
         if (result.isPresent() && result.get() != null && result.get().getItems() != null && !result.get().getItems().isEmpty()) {
