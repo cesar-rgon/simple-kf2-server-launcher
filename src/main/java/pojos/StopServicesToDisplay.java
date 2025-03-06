@@ -4,21 +4,21 @@ import java.util.List;
 
 public class StopServicesToDisplay {
 
-    private List<PlatformProfileToDisplay> selectedProfiles;
+    private List<PlatformProfileToDisplay> selectedPlatformProfileList;
     private boolean uninstallServices;
 
-    public StopServicesToDisplay(List<PlatformProfileToDisplay> selectedProfiles, boolean uninstallServices) {
+    public StopServicesToDisplay(List<PlatformProfileToDisplay> selectedPlatformProfileList, boolean uninstallServices) {
         super();
-        this.selectedProfiles = selectedProfiles;
+        this.selectedPlatformProfileList = selectedPlatformProfileList;
         this.uninstallServices = uninstallServices;
     }
 
-    public List<PlatformProfileToDisplay> getSelectedProfiles() {
-        return selectedProfiles;
+    public List<PlatformProfileToDisplay> getSelectedPlatformProfileList() {
+        return selectedPlatformProfileList;
     }
 
-    public void setSelectedProfiles(List<PlatformProfileToDisplay> selectedProfiles) {
-        this.selectedProfiles = selectedProfiles;
+    public void setSelectedPlatformProfileList(List<PlatformProfileToDisplay> selectedPlatformProfileList) {
+        this.selectedPlatformProfileList = selectedPlatformProfileList;
     }
 
     public boolean isUninstallServices() {

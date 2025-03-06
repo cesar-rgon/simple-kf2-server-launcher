@@ -66,8 +66,6 @@ public class PlatformProfileToDisplayFactory {
 
             List<AbstractPlatform> platformList = platformProfileList.stream().
                     filter(pp -> {
-                        // Profile pProfile = (Profile) Hibernate.unproxy(pp.getProfile());
-                        // return pProfile.getName().equals(profile.getName());
                         return pp.getProfile().getName().equals(profile.getName());
                     }).
                     map(PlatformProfile::getPlatform).
@@ -76,16 +74,10 @@ public class PlatformProfileToDisplayFactory {
                 continue;
             }
 
-            EnumPlatform enumPlatform = null;
-            if (platformList.size() == EnumPlatform.listAll().size()) {
-                enumPlatform = EnumPlatform.ALL;
-            } else {
-                enumPlatform = EnumPlatform.getByName(platformList.get(0).getCode());
-            }
+            EnumPlatform enumPlatform = EnumPlatform.getByName(platformList.get(0).getCode());
             if (enumPlatform == null) {
                 continue;
             }
-
             result.add(newOne(profile,enumPlatform));
         }
 

@@ -395,9 +395,8 @@ public class MainContentManagerFacadeImpl
     }
 
     @Override
-    public void runServers(String platformName, String actualSelectedProfileName, String actualSelectedLanguage, EnumRunServer enumRunServer) throws Exception {
+    public void runServers(String actualSelectedProfileName, String actualSelectedLanguage, EnumRunServer enumRunServer) throws Exception {
         RunServersModelContext runServersModelContext = new RunServersModelContext(
-                platformName,
                 actualSelectedProfileName,
                 actualSelectedLanguage,
                 enumRunServer
@@ -726,9 +725,8 @@ public class MainContentManagerFacadeImpl
     }
 
     @Override
-    public void stopServices(String platformName, String actualSelectedProfileName, String actualSelectedLanguage) throws Exception {
+    public void stopServices(String actualSelectedProfileName, String actualSelectedLanguage) throws Exception {
         StopServicesModelContext stopServicesModelContext = new StopServicesModelContext(
-                platformName,
                 actualSelectedProfileName,
                 actualSelectedLanguage
         );

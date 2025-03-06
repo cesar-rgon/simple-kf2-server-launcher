@@ -6,15 +6,19 @@ import framework.AbstractTransactionalFacade;
 import framework.EmptyFacadeResult;
 import jakarta.persistence.EntityManager;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import pojos.PlatformProfile;
 import pojos.PlatformProfileToDisplay;
 import pojos.PlatformProfileToDisplayFactory;
 import pojos.StopServicesToDisplay;
+import pojos.enums.EnumPlatform;
 import pojos.enums.EnumRunServer;
 import pojos.kf2factory.Kf2Common;
 import pojos.kf2factory.Kf2Factory;
 import pojos.session.Session;
 import services.*;
+import stories.runservers.RunServersFacadeImpl;
 import utils.Utils;
 
 import java.util.ArrayList;
@@ -26,6 +30,8 @@ import java.util.stream.Collectors;
 public class StopServicesFacadeImpl
         extends AbstractTransactionalFacade<StopServicesModelContext, EmptyFacadeResult>
         implements StopServicesFacade {
+
+    private static final Logger logger = LogManager.getLogger(StopServicesFacadeImpl.class);
 
     public StopServicesFacadeImpl(StopServicesModelContext stopServicesModelContext) {
         super(stopServicesModelContext, EmptyFacadeResult.class);
@@ -41,49 +47,71 @@ public class StopServicesFacadeImpl
     @Override
     protected EmptyFacadeResult internalExecute(StopServicesModelContext stopServicesModelContext, EntityManager em) throws Exception {
         ProfileService profileService = new ProfileServiceImpl(em);
-        List<Profile> allProfileList = profileService.listAllProfiles();
         PlatformService platformService = new PlatformServiceImpl(em);
 
-        Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(stopServicesModelContext.getPlatformName());
-        if (!platformOptional.isPresent()) {
-            Utils.warningDialog("Stop operation aborted!", "The platform can not be found");
-            throw new RuntimeException("Can not stop services. The platform can not be found");
+        List<AbstractPlatform> allPlatformList = platformService.listAllPlatforms();
+        if (allPlatformList.isEmpty()) {
+            Utils.warningDialog("Stop operation aborted!", "No platforms can be found");
+            logger.warn("Can not stop services! No platforms can be found");
+            return new EmptyFacadeResult();
         }
 
-        StopServicesToDisplay stopServicesToDisplay = selectProfiles(
+        List<Profile> allProfileList = profileService.listAllProfiles();
+        if (allProfileList.isEmpty()) {
+            String message = "No profiles in launcher. The service can not be stopped.";
+            logger.error(message);
+            Utils.errorDialog(message);
+            return new EmptyFacadeResult();
+        }
+
+        StopServicesToDisplay stopServices = selectPlatformProfiles(
                 allProfileList,
                 stopServicesModelContext.getActualSelectedProfileName(),
                 stopServicesModelContext.getActualSelectedLanguage(),
                 em
         );
 
-        List<PlatformProfileToDisplay> selectedProfiles = stopServicesToDisplay.getSelectedProfiles();
-        List<String> selectedProfileNames = selectedProfiles.stream().map(PlatformProfileToDisplay::getProfileName).collect(Collectors.toList());
-
-        List<Profile> selectedProfileList = selectedProfileNames.stream().map(profileName -> {
+        for (PlatformProfileToDisplay platformProfile : stopServices.getSelectedPlatformProfileList()) {
             try {
-                Optional<Profile> profileOptional = profileService.findProfileByCode(profileName);
-                return profileOptional.orElse(null);
+                List<AbstractPlatform> selectedPlatformList = new ArrayList<AbstractPlatform>();
+                if (EnumPlatform.ALL.getDescripcion().equals(platformProfile.getPlatformName())) {
+                    selectedPlatformList.addAll(allPlatformList);
+                } else {
+                    Optional<AbstractPlatform> platformOptional = Optional.empty();
+                    if (EnumPlatform.STEAM.getDescripcion().equals(platformProfile.getPlatformName())) {
+                        platformOptional = platformService.findPlatformByName(EnumPlatform.STEAM.name());
+                    } else {
+                        platformOptional = platformService.findPlatformByName(EnumPlatform.EPIC.name());
+                    }
+                    if (!platformOptional.isPresent()) {
+                        continue;
+                    }
+                    selectedPlatformList.add(platformOptional.get());
+                }
+
+                Optional<Profile> profileOptional = profileService.findProfileByCode(platformProfile.getProfileName());
+                if (!profileOptional.isPresent()) {
+                    continue;
+                }
+                Profile profile = profileOptional.get();
+                boolean uninstallServices = stopServices.isUninstallServices();
+
+                for (AbstractPlatform platform: selectedPlatformList) {
+                    Session.getInstance().setConsole(
+                            (StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
+                                    "< " + new Date() + " - Stop Service >\n" +
+                                    stopService(platform, profile, uninstallServices, em)
+                    );
+                }
             } catch (Exception e) {
-                return null;
+                logger.error(e.getMessage(), e);
             }
-        }).collect(Collectors.toList());
-
-        boolean uninstallServices = stopServicesToDisplay.isUninstallServices();
-
-        assert selectedProfileList != null;
-        for (Profile profile: selectedProfileList) {
-            Session.getInstance().setConsole(
-                    (StringUtils.isNotBlank(Session.getInstance().getConsole())? Session.getInstance().getConsole() + "\n\n" : "") +
-                            "< " + new Date() + " - Stop Service >\n" +
-                            stopService(platformOptional.get(), Optional.ofNullable(profile), uninstallServices, em)
-            );
         }
 
         return new EmptyFacadeResult();
     }
 
-    private StopServicesToDisplay selectProfiles(List<Profile> allProfileList, String actualSelectedProfileName, String actualSelectedLanguage, EntityManager em) throws Exception {
+    private StopServicesToDisplay selectPlatformProfiles(List<Profile> allProfileList, String actualSelectedProfileName, String actualSelectedLanguage, EntityManager em) throws Exception {
         PropertyService propertyService = new PropertyServiceImpl();
         PlatformService platformService = new PlatformServiceImpl(em);
 
@@ -105,9 +133,9 @@ public class StopServicesFacadeImpl
         return Utils.selectPlatformProfilesToStopDialog(message + ":", platformProfileToDisplayList, selectedProfileNameList);
     }
 
-    private String stopService(AbstractPlatform platform, Optional<Profile> profileOptional, boolean uninstallService, EntityManager em) {
+    private String stopService(AbstractPlatform platform, Profile profile, boolean uninstallService, EntityManager em) {
         Kf2Common kf2Common = Kf2Factory.getInstance(platform, em);
         assert kf2Common != null;
-        return kf2Common.stopService(profileOptional.orElse(null), uninstallService);
+        return kf2Common.stopService(profile, uninstallService);
     }
 }

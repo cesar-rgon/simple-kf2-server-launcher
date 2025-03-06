@@ -1673,7 +1673,6 @@ public class MainContentController implements Initializable {
     private void runTerminalServerOnAction() {
         try {
             facade.runServers(
-                    platformSelect.getValue().getKey(),
                     profileSelect.getValue().getName(),
                     languageSelect.getValue().getKey(),
                     EnumRunServer.TERMINAL
@@ -1688,7 +1687,6 @@ public class MainContentController implements Initializable {
     private void runServiceOnAction() {
         try {
             facade.runServers(
-                    platformSelect.getValue().getKey(),
                     profileSelect.getValue().getName(),
                     languageSelect.getValue().getKey(),
                     EnumRunServer.SERVICE
@@ -1703,7 +1701,6 @@ public class MainContentController implements Initializable {
     private void stopServiceOnAction() {
         try {
             facade.stopServices(
-                    platformSelect.getValue().getKey(),
                     profileSelect.getValue().getName(),
                     languageSelect.getValue().getKey()
             );
