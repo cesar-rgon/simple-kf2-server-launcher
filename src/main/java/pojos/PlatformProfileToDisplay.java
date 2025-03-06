@@ -1,9 +1,7 @@
 package pojos;
 
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+import javafx.beans.value.ObservableValue;
 import pojos.enums.EnumPlatform;
 
 public class PlatformProfileToDisplay {
@@ -11,31 +9,26 @@ public class PlatformProfileToDisplay {
     private int profileFileIndex;
     private BooleanProperty selected;
     private StringProperty profileName;
-
     private StringProperty platformName;
-
-    private StringProperty gameTypeDescription;
-    private StringProperty mapName;
-    private StringProperty difficultyDescription;
-    private StringProperty lengthDescription;
+    private IntegerProperty webPort;
+    private IntegerProperty gamePort;
+    private IntegerProperty queryPort;
 
     public PlatformProfileToDisplay(EnumPlatform enumPlatform,
                                     int profileFileIndex,
                                     String profileName,
-                                    String gameTypeDescription,
-                                    String mapName,
-                                    String difficultyDescription,
-                                    String lengthDescription) {
+                                    Integer webPort,
+                                    Integer gamePort,
+                                    Integer queryPort) {
 
         super();
         this.platformName = new SimpleStringProperty(enumPlatform.getDescripcion());
         this.selected = new SimpleBooleanProperty(false);
         this.profileFileIndex = profileFileIndex;
         this.profileName = new SimpleStringProperty(profileName);
-        this.gameTypeDescription = new SimpleStringProperty(gameTypeDescription);
-        this.mapName = new SimpleStringProperty(mapName);
-        this.difficultyDescription = new SimpleStringProperty(difficultyDescription);
-        this.lengthDescription = new SimpleStringProperty(lengthDescription);
+        this.webPort = new SimpleIntegerProperty(webPort);
+        this.gamePort = new SimpleIntegerProperty(gamePort);
+        this.queryPort = new SimpleIntegerProperty(queryPort);
     }
 
     public boolean isSelected() {
@@ -82,56 +75,44 @@ public class PlatformProfileToDisplay {
         this.platformName.set(platformName);
     }
 
-    public String getGameTypeDescription() {
-        return gameTypeDescription.get();
+    public int getWebPort() {
+        return webPort.get();
     }
 
-    public StringProperty gameTypeDescriptionProperty() {
-        return gameTypeDescription;
+    public ObservableValue<Integer> webPortProperty() {
+        return webPort.asObject();
     }
 
-    public void setGameTypeDescription(String gameTypeDescription) {
-        this.gameTypeDescription.set(gameTypeDescription);
+    public void setWebPort(int webPort) {
+        this.webPort.set(webPort);
     }
 
-    public String getMapName() {
-        return mapName.get();
+    public int getGamePort() {
+        return gamePort.get();
     }
 
-    public StringProperty mapNameProperty() {
-        return mapName;
+    public ObservableValue<Integer> gamePortProperty() {
+        return gamePort.asObject();
     }
 
-    public void setMapName(String mapName) {
-        this.mapName.set(mapName);
+    public void setGamePort(int gamePort) {
+        this.gamePort.set(gamePort);
     }
 
-    public String getDifficultyDescription() {
-        return difficultyDescription.get();
+    public int getQueryPort() {
+        return queryPort.get();
     }
 
-    public StringProperty difficultyDescriptionProperty() {
-        return difficultyDescription;
+    public ObservableValue<Integer> queryPortProperty() {
+        return queryPort.asObject();
     }
 
-    public void setDifficultyDescription(String difficultyDescription) {
-        this.difficultyDescription.set(difficultyDescription);
-    }
-
-    public String getLengthDescription() {
-        return lengthDescription.get();
-    }
-
-    public StringProperty lengthDescriptionProperty() {
-        return lengthDescription;
-    }
-
-    public void setLengthDescription(String lengthDescription) {
-        this.lengthDescription.set(lengthDescription);
+    public void setQueryPort(int queryPort) {
+        this.queryPort.set(queryPort);
     }
 
     @Override
     public String toString() {
-        return gameTypeDescription + ", " + mapName + ", " + difficultyDescription + ", " + lengthDescription;
+        return webPort + ", " + gamePort + ", " + queryPort;
     }
 }

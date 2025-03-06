@@ -21,17 +21,11 @@ public class PlatformProfileToDisplayFactory {
 
     private static final Logger logger = LogManager.getLogger(PlatformProfileToDisplayFactory.class);
 
-    private final GameTypeDtoFactory gameTypeDtoFactory;
-    private final DifficultyDtoFactory difficultyDtoFactory;
-    private final LengthDtoFactory lengthDtoFactory;
     private final ProfileService profileService;
 
     public PlatformProfileToDisplayFactory(EntityManager em) {
         super();
         profileService = new ProfileServiceImpl(em);
-        this.gameTypeDtoFactory = new GameTypeDtoFactory();
-        this.difficultyDtoFactory = new DifficultyDtoFactory();
-        this.lengthDtoFactory = new LengthDtoFactory();
     }
 
     public PlatformProfileToDisplay newOne(Profile profile, EnumPlatform enumPlatform) {
@@ -39,10 +33,9 @@ public class PlatformProfileToDisplayFactory {
                 enumPlatform,
                 profile.getId(),
                 profile.getCode(),
-                profile.getGametype() != null ? gameTypeDtoFactory.newDto(profile.getGametype()).getValue(): "",
-                profile.getMap() != null ? profile.getMap().getCode(): "",
-                profile.getDifficulty() != null ? difficultyDtoFactory.newDto(profile.getDifficulty()).getValue(): "",
-                profile.getLength() != null ? lengthDtoFactory.newDto(profile.getLength()).getValue(): ""
+                profile.getWebPort(),
+                profile.getGamePort(),
+                profile.getQueryPort()
         );
     }
 

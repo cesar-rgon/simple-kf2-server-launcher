@@ -6,6 +6,7 @@ import com.vladsch.flexmark.util.data.MutableDataSet;
 import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -24,6 +25,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
@@ -727,19 +729,17 @@ public class Utils {
         PropertyService propertyService = new PropertyServiceImpl();
         String selectText = "";
         String profileNameText = "";
-        String gameTypeText = "";
-        String mapNameText = "";
-        String difficultyText = "";
-        String lengthText = "";
+        String webPortText = "";
+        String gamePortText = "";
+        String queryPortText = "";
 
         try {
             String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             selectText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.select");
             profileNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileName");
-            gameTypeText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.gametype");
-            mapNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-            difficultyText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultyLowercase");
-            lengthText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthLowercase");
+            webPortText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.webPort");
+            gamePortText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.gamePort");
+            queryPortText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.queryPort");
         } catch (Exception ex) {
             logger.error(ex.getMessage(), ex);
         }
@@ -796,49 +796,40 @@ public class Utils {
         profileNameColumn.setMinWidth(150);
         profileNameColumn.setStyle("-fx-alignment: CENTER;");
 
+
         // Fourth Column
-        TableColumn<PlatformProfileToDisplay, String> gameTypeColumn = new TableColumn<PlatformProfileToDisplay, String>();
-        gameTypeColumn.setText(gameTypeText);
-        gameTypeColumn.setCellValueFactory(cellData -> cellData.getValue().gameTypeDescriptionProperty());
-        gameTypeColumn.setSortable(false);
-        gameTypeColumn.setEditable(false);
-        gameTypeColumn.setMinWidth(150);
-        gameTypeColumn.setStyle("-fx-alignment: CENTER;");
+        TableColumn<PlatformProfileToDisplay, Integer> webPortColumn = new TableColumn<PlatformProfileToDisplay, Integer>();
+        webPortColumn.setText(webPortText);
+        webPortColumn.setCellValueFactory(cellData -> cellData.getValue().webPortProperty());
+        webPortColumn.setSortable(false);
+        webPortColumn.setEditable(false);
+        webPortColumn.setMinWidth(150);
+        webPortColumn.setStyle("-fx-alignment: CENTER;");
 
         // Fifth Column
-        TableColumn<PlatformProfileToDisplay, String> mapNameColumn = new TableColumn<PlatformProfileToDisplay, String>();
-        mapNameColumn.setText(mapNameText);
-        mapNameColumn.setCellValueFactory(cellData -> cellData.getValue().mapNameProperty());
-        mapNameColumn.setSortable(false);
-        mapNameColumn.setEditable(false);
-        mapNameColumn.setMinWidth(150);
-        mapNameColumn.setStyle("-fx-alignment: CENTER;");
+        TableColumn<PlatformProfileToDisplay, Integer> gamePortColumn = new TableColumn<PlatformProfileToDisplay, Integer>();
+        gamePortColumn.setText(gamePortText);
+        gamePortColumn.setCellValueFactory(cellData -> cellData.getValue().gamePortProperty());
+        gamePortColumn.setSortable(false);
+        gamePortColumn.setEditable(false);
+        gamePortColumn.setMinWidth(150);
+        gamePortColumn.setStyle("-fx-alignment: CENTER;");
 
         // Sixth Column
-        TableColumn<PlatformProfileToDisplay, String> difficultyColumn = new TableColumn<PlatformProfileToDisplay, String>();
-        difficultyColumn.setText(difficultyText);
-        difficultyColumn.setCellValueFactory(cellData -> cellData.getValue().difficultyDescriptionProperty());
-        difficultyColumn.setSortable(false);
-        difficultyColumn.setEditable(false);
-        difficultyColumn.setMinWidth(150);
-        difficultyColumn.setStyle("-fx-alignment: CENTER;");
-
-        // Seventh Column
-        TableColumn<PlatformProfileToDisplay, String> lengthColumn = new TableColumn<PlatformProfileToDisplay, String>();
-        lengthColumn.setText(lengthText);
-        lengthColumn.setCellValueFactory(cellData -> cellData.getValue().lengthDescriptionProperty());
-        lengthColumn.setSortable(false);
-        lengthColumn.setEditable(false);
-        lengthColumn.setMinWidth(150);
-        lengthColumn.setStyle("-fx-alignment: CENTER;");
+        TableColumn<PlatformProfileToDisplay, Integer> queryPortColumn = new TableColumn<PlatformProfileToDisplay, Integer>();
+        queryPortColumn.setText(queryPortText);
+        queryPortColumn.setCellValueFactory(cellData -> cellData.getValue().queryPortProperty());
+        queryPortColumn.setSortable(false);
+        queryPortColumn.setEditable(false);
+        queryPortColumn.setMinWidth(150);
+        queryPortColumn.setStyle("-fx-alignment: CENTER;");
 
         tableView.getColumns().add(selectColumn);
         tableView.getColumns().add(profileNameColumn);
         tableView.getColumns().add(platformColumn);
-        tableView.getColumns().add(gameTypeColumn);
-        tableView.getColumns().add(mapNameColumn);
-        tableView.getColumns().add(difficultyColumn);
-        tableView.getColumns().add(lengthColumn);
+        tableView.getColumns().add(webPortColumn);
+        tableView.getColumns().add(gamePortColumn);
+        tableView.getColumns().add(queryPortColumn);
 
         tableView.setItems(FXCollections.observableArrayList(platformProfileToDisplayList));
         boolean firstProfile = true;
@@ -1156,18 +1147,16 @@ public class Utils {
         Dialog<TableView<PlatformProfileToDisplay>> dialog = new Dialog<TableView<PlatformProfileToDisplay>>();
         PropertyService propertyService = new PropertyServiceImpl();
         String profileNameText = "";
-        String gameTypeText = "";
-        String mapNameText = "";
-        String difficultyText = "";
-        String lengthText = "";
+        String webPortText = "";
+        String gamePortText = "";
+        String queryPortText = "";
 
         try {
             String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
             profileNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileName");
-            gameTypeText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.gametype");
-            mapNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.mapName");
-            difficultyText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.difficultyLowercase");
-            lengthText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.lengthLowercase");
+            webPortText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.webPort");
+            gamePortText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.gamePort");
+            queryPortText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.queryPort");
             String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
             dialog.setTitle(applicationTitle);
         } catch (Exception ex) {
@@ -1185,38 +1174,30 @@ public class Utils {
         profileNameColumn.setMinWidth(150);
 
         // Second Column
-        TableColumn<PlatformProfileToDisplay, String> gameTypeColumn = new TableColumn<PlatformProfileToDisplay, String>();
-        gameTypeColumn.setText(gameTypeText);
-        gameTypeColumn.setCellValueFactory(cellData -> cellData.getValue().gameTypeDescriptionProperty());
-        gameTypeColumn.setSortable(false);
-        gameTypeColumn.setMinWidth(150);
+        TableColumn<PlatformProfileToDisplay, Integer> webPortColumn = new TableColumn<PlatformProfileToDisplay, Integer>();
+        webPortColumn.setText(webPortText);
+        webPortColumn.setCellValueFactory(cellData -> cellData.getValue().webPortProperty());
+        webPortColumn.setSortable(false);
+        webPortColumn.setMinWidth(150);
 
         // Third Column
-        TableColumn<PlatformProfileToDisplay, String> mapNameColumn = new TableColumn<PlatformProfileToDisplay, String>();
-        mapNameColumn.setText(mapNameText);
-        mapNameColumn.setCellValueFactory(cellData -> cellData.getValue().mapNameProperty());
-        mapNameColumn.setSortable(false);
-        mapNameColumn.setMinWidth(150);
+        TableColumn<PlatformProfileToDisplay, Integer> gamePortColumn = new TableColumn<PlatformProfileToDisplay, Integer>();
+        gamePortColumn.setText(gamePortText);
+        gamePortColumn.setCellValueFactory(cellData -> cellData.getValue().gamePortProperty());
+        gamePortColumn.setSortable(false);
+        gamePortColumn.setMinWidth(150);
 
         // Fourth Column
-        TableColumn<PlatformProfileToDisplay, String> difficultyColumn = new TableColumn<PlatformProfileToDisplay, String>();
-        difficultyColumn.setText(difficultyText);
-        difficultyColumn.setCellValueFactory(cellData -> cellData.getValue().difficultyDescriptionProperty());
-        difficultyColumn.setSortable(false);
-        difficultyColumn.setMinWidth(150);
-
-        // Fifth Column
-        TableColumn<PlatformProfileToDisplay, String> lengthColumn = new TableColumn<PlatformProfileToDisplay, String>();
-        lengthColumn.setText(lengthText);
-        lengthColumn.setCellValueFactory(cellData -> cellData.getValue().lengthDescriptionProperty());
-        lengthColumn.setSortable(false);
-        lengthColumn.setMinWidth(150);
+        TableColumn<PlatformProfileToDisplay, Integer> queryPortColumn = new TableColumn<PlatformProfileToDisplay, Integer>();
+        queryPortColumn.setText(queryPortText);
+        queryPortColumn.setCellValueFactory(cellData -> cellData.getValue().queryPortProperty());
+        queryPortColumn.setSortable(false);
+        queryPortColumn.setMinWidth(150);
 
         tableView.getColumns().add(profileNameColumn);
-        tableView.getColumns().add(gameTypeColumn);
-        tableView.getColumns().add(mapNameColumn);
-        tableView.getColumns().add(difficultyColumn);
-        tableView.getColumns().add(lengthColumn);
+        tableView.getColumns().add(webPortColumn);
+        tableView.getColumns().add(gamePortColumn);
+        tableView.getColumns().add(queryPortColumn);
 
         tableView.setItems(FXCollections.observableArrayList(platformProfileToDisplayList));
         tableView.setEditable(false);
