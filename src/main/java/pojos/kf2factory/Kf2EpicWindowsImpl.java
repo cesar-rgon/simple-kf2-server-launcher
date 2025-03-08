@@ -442,4 +442,9 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
             return StringUtils.EMPTY;
         }
     }
+
+    @Override
+    public void checkStatusServices() {
+        // No implementation
+    }
 }

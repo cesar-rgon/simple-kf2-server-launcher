@@ -805,6 +805,7 @@
                     <items>
                         <MenuItem fx:id="runTerminalServer" mnemonicParsing="false" onAction="#runTerminalServerOnAction" text="Run server in terminal" />
                         <MenuItem fx:id="runService" mnemonicParsing="false" onAction="#runServiceOnAction" text="Run server as a service / daemon" />
+                        <MenuItem fx:id="statusService" mnemonicParsing="false" onAction="#checkStatusServiceOnAction" text="Check status of service / daemon" />
                         <MenuItem fx:id="stopService" mnemonicParsing="false" onAction="#stopServiceOnAction" text="Stop service / daemon" />
                     </items>
                     <graphic>

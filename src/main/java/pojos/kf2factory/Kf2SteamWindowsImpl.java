@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import pojos.WindowsRegistry;
+import pojos.enums.EnumStatusService;
 import pojos.session.Session;
 import services.PlatformProfileMapService;
 import services.PlatformProfileMapServiceImpl;
@@ -301,7 +302,7 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
     }
 
     private File assertKf2ProfileServiceExists(File kf2ServiceUtilFile, Profile profile) {
-        File kf2ServiceXml = new File(kf2ServiceUtilFile.getParent() + "/kf2service-" + profile.getCode().toLowerCase() + ".xml");
+        File kf2ServiceXml = new File(kf2ServiceUtilFile.getParent() + "/kf2service-" + platform.getCode().toLowerCase() + "-" + profile.getCode().toLowerCase() + ".xml");
         if (!kf2ServiceXml.exists()) {
             throw new RuntimeException("The xml file for KF2's service for profile " + profile.getCode() + " could not be found.");
         }
@@ -352,7 +353,7 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
 
     private String createKf2ServiceXmlFile(String kf2ServiceUtilFolder, Profile profile) {
         try {
-            File kf2ServiceXml = new File(kf2ServiceUtilFolder + "/kf2service-" + profile.getCode().toLowerCase() + ".xml");
+            File kf2ServiceXml = new File(kf2ServiceUtilFolder + "/kf2service-" + platform.getCode().toLowerCase() + "-" + profile.getCode().toLowerCase() + ".xml");
             PrintWriter pw = new PrintWriter(new FileWriter(kf2ServiceXml.getAbsolutePath()));
             pw.println("<service>");
             pw.println("<id>kf2-service-" + platform.getCode().toLowerCase() + "-" + profile.getCode().toLowerCase() + "</id>");
@@ -418,6 +419,59 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
         }
 
         return commands.toString();
+    }
+
+    @Override
+    public void checkStatusServices() {
+        try {
+            File kf2ServiceUtilFile = assertKf2ServiceUtilExists();
+
+            List<String> kf2ServiceXmlPathList = Files.walk(Paths.get(kf2ServiceUtilFile.getParent()))
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.getFileName().toString().toLowerCase().startsWith("kf2service-"))
+                    .filter(path -> path.getFileName().toString().toLowerCase().endsWith(".xml"))
+                    .map(Path::toString)
+                    .collect(Collectors.toList());
+
+            StringBuffer message = new StringBuffer();
+            if (!kf2ServiceXmlPathList.isEmpty()) {
+                for (String kf2ServiceXmlPath: kf2ServiceXmlPathList) {
+                    int exitVal = checkServiceStatus(kf2ServiceUtilFile, kf2ServiceXmlPath);
+                    String kf2serviceName = getServiceNameFromServiceXmlFile(kf2ServiceXmlPath);
+
+                    switch (exitVal) {
+                        case 0: message.append(kf2serviceName + ": ")
+                                    .append(EnumStatusService.INACTIVE.name())
+                                    .append(" (").append(EnumStatusService.INACTIVE.toString())
+                                    .append(")\n");
+                                break;
+
+                        case 1: message.append(kf2serviceName + ": ")
+                                .append(EnumStatusService.ACTIVE.name())
+                                .append(" (").append(EnumStatusService.ACTIVE.toString())
+                                .append(")\n");
+                            break;
+
+                        case 1060: message.append(kf2serviceName + ": ")
+                                .append(EnumStatusService.NONEXISTENT.name())
+                                .append(" (").append(EnumStatusService.NONEXISTENT.toString())
+                                .append(")\n");
+                            break;
+
+                        default: message.append(kf2serviceName + ": ")
+                                .append(EnumStatusService.UNKNOWN.name())
+                                .append(" (").append(EnumStatusService.UNKNOWN.toString())
+                                .append(")\n");
+                    }
+                 }
+            }
+            String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.statusServices");
+            Utils.infoDialog(headerText, message.toString());
+        } catch (Exception e) {
+            String message = "Error checking the status of Killing Floor 2 services";
+            logger.error(message, e);
+            Utils.errorDialog(message, e);
+        }
     }
 }
 

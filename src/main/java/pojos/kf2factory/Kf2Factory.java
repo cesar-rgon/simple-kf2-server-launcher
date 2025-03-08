@@ -37,4 +37,21 @@ public class Kf2Factory {
         }
         return null;
     }
+
+    public static Kf2Common getInstance(EntityManager em) {
+        String os = System.getProperty("os.name");
+        if (StringUtils.isEmpty(os)) {
+            logger.error("Operating System not detected");
+            return null;
+        }
+
+        if (os.contains("Windows")) {
+            return new Kf2SteamWindowsImpl(em);
+        } else {
+            if (os.contains("Linux")) {
+                return new Kf2SteamLinuxImpl(em);
+            }
+        }
+        return null;
+    }
 }

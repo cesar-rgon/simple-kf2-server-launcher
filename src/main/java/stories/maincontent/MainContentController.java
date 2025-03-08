@@ -252,6 +252,12 @@ public class MainContentController implements Initializable {
 
     @FXML private Label runServerLabel;
 
+    @FXML private MenuItem runTerminalServer;
+    @FXML private MenuItem runService;
+    @FXML private MenuItem statusService;
+    @FXML private MenuItem stopService;
+
+
     public MainContentController() {
         facade = new MainContentManagerFacadeImpl();
     }
@@ -1188,6 +1194,18 @@ public class MainContentController implements Initializable {
         Tooltip runServerTooltip = new Tooltip(facade.findPropertyValue("properties/languages/" + languageCode + ".properties", "prop.tooltip.runServer"));
         runServerTooltip.setShowDuration(Duration.seconds(tooltipDuration));
         runServerLabel.setTooltip(runServerTooltip);
+
+        String runTerminalServerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.runTerminalServer");
+        runTerminalServer.setText(runTerminalServerText);
+
+        String runServiceText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.runService");
+        runService.setText(runServiceText);
+
+        String statusServiceText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.statusService");
+        statusService.setText(statusServiceText);
+
+        String stopServiceText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.stopService");
+        stopService.setText(stopServiceText);
 
         String joinServerText = facade.findPropertyValue("properties/languages/" + languageCode + ".properties","prop.label.joinServer");
         joinServer.setText(joinServerText);
@@ -2329,6 +2347,18 @@ public class MainContentController implements Initializable {
 
             Thread thread = new Thread(task);
             thread.start();
+        }
+    }
+
+    @FXML
+    private void checkStatusServiceOnAction() {
+        try {
+            facade.checkStatusServices(
+                    languageSelect.getValue().getKey()
+            );
+        } catch (Exception e) {
+            logger.error(e.getMessage(), e);
+            Utils.errorDialog(e.getMessage(), e);
         }
     }
 }

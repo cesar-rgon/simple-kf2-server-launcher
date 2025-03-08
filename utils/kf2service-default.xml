@@ -1,9 +1,0 @@
-<service>
-<id>kf2-server-default</id>
-<name>Killing Floor 2 Server Default</name>
-<description>This service runs an instance of Killing Floor 2 Server for profile Default</description>
-<priority>Normal</priority>
-<startmode>Automatic</startmode>
-<executable>D:\kf2server/Binaries/Win64/KFServer.exe</executable>
-<arguments>KF-BurningParis?Game=KFGameContent.KFGameInfo_Survival?Difficulty=0?MaxPlayers=6?Port=7777?QueryPort=27015?ConfigSubDir=Default</arguments>
-</service>

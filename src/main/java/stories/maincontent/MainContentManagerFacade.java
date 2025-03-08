@@ -66,4 +66,5 @@ public interface MainContentManagerFacade {
     void updateProfileSetLanMaxClientRate(String profileName, Integer lanMaxClientRate) throws Exception;
     void updateProfileSetInternetMaxClientRate(String profileName, Integer internetMaxClientRate) throws Exception;
     void stopServices(String actualSelectedProfileName, String actualSelectedLanguage) throws Exception;
+    void checkStatusServices(String actualSelectedLanguage) throws Exception;
 }

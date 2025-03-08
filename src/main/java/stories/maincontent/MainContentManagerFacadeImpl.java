@@ -7,6 +7,9 @@ import pojos.enums.EnumRunServer;
 import services.PropertyService;
 import services.PropertyServiceImpl;
 import start.MainApplication;
+import stories.checkstatusservices.CheckStatusServicesFacade;
+import stories.checkstatusservices.CheckStatusServicesFacadeImpl;
+import stories.checkstatusservices.CheckStatusServicesModelContext;
 import stories.findprofilebyname.FindProfileByNameFacade;
 import stories.findprofilebyname.FindProfileByNameFacadeImpl;
 import stories.findprofilebyname.FindProfileByNameFacadeResult;
@@ -732,5 +735,14 @@ public class MainContentManagerFacadeImpl
         );
         StopServicesFacade stopServicesFacade = new StopServicesFacadeImpl(stopServicesModelContext);
         stopServicesFacade.execute();
+    }
+
+    @Override
+    public void checkStatusServices(String actualSelectedLanguage) throws Exception {
+        CheckStatusServicesModelContext checkStatusServicesModelContext = new CheckStatusServicesModelContext(
+                actualSelectedLanguage
+        );
+        CheckStatusServicesFacade checkStatusServicesFacade = new CheckStatusServicesFacadeImpl(checkStatusServicesModelContext);
+        checkStatusServicesFacade.execute();
     }
 }

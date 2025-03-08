@@ -18,4 +18,5 @@ public interface Kf2Common {
     boolean downloadMapFromSteamCmd(CustomMapMod customMap) throws Exception;
     String copyMapToCachePlatform(CustomMapMod customMap) throws Exception;
     String stopService(Profile profile, boolean uninstallService);
+    void checkStatusServices();
 }

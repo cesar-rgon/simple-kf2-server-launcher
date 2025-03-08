@@ -8,9 +8,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
 import pojos.enums.EnumRunServer;
 import utils.Utils;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.*;
 import java.net.URL;
 import java.nio.file.Path;
@@ -36,6 +40,7 @@ public abstract class Kf2AbstractCommon extends Kf2Utils implements Kf2Common {
     protected abstract String runServerInTerminal(Profile profile);
     protected abstract String runServerAsService(Profile profile);
     public abstract String stopService(Profile profile, boolean uninstallService);
+    public abstract void checkStatusServices();
 
     protected boolean prerequisitesAreValid() {
         return prerequisitesAreValid(true);
@@ -170,5 +175,14 @@ public abstract class Kf2AbstractCommon extends Kf2Utils implements Kf2Common {
                 }
             }
         }
+    }
+
+    protected String getServiceNameFromServiceXmlFile(String xmlPath) throws Exception {
+        File xmlFile = new File(xmlPath);
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document document = builder.parse(xmlFile);
+        NodeList nodeList = document.getElementsByTagName("name");
+        return nodeList.item(0).getTextContent();
     }
 }

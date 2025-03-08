@@ -375,4 +375,9 @@ public class Kf2SteamLinuxImpl extends Kf2Steam {
         // TODO: Implementar
         return "";
     }
+
+    @Override
+    public void checkStatusServices() {
+        // TODO: Implementar
+    }
 }
