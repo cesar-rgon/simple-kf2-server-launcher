@@ -423,12 +423,12 @@ public class Kf2EpicWindowsImpl extends Kf2Epic {
 
     private String createKf2ServiceXmlFile(String kf2ServiceUtilFolder, Profile profile) {
         try {
-            File kf2ServiceXml = new File(kf2ServiceUtilFolder + "/kf2service-" + profile.getCode().toLowerCase() + ".xml");
+            File kf2ServiceXml = new File(kf2ServiceUtilFolder + "/kf2service-" + profile.getId() + ".xml");
             PrintWriter pw = new PrintWriter(new FileWriter(kf2ServiceXml.getAbsolutePath()));
             pw.println("<service>");
             pw.println("<id>kf2-server-" + profile.getCode().toLowerCase() + "</id>");
-            pw.println("<name>Killing Floor 2 Server " + profile.getCode() + "</name>");
-            pw.println("<description>This service runs an instance of Killing Floor 2 Server for profile " + profile.getCode() + "</description>");
+            pw.println("<name>Killing Floor 2 Server " + profile.getId() + "</name>");
+            pw.println("<description>This service runs an instance of Killing Floor 2 Server for profile " + profile.getId() + "</description>");
             pw.println("<priority>Normal</priority>");
             pw.println("<startmode>Automatic</startmode>");
             pw.println("<executable>" + platform.getInstallationFolder() + "/Binaries/Win64/KFServer.exe</executable>");

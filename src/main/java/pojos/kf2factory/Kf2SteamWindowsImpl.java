@@ -1,6 +1,8 @@
 package pojos.kf2factory;
 
 import com.github.tuupertunut.powershelllibjava.PowerShell;
+import daos.ProfileDao;
+import entities.AbstractPlatform;
 import entities.CustomMapMod;
 import entities.PlatformProfileMap;
 import entities.Profile;
@@ -10,13 +12,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import pojos.WindowsRegistry;
+import pojos.*;
 import pojos.enums.EnumStatusService;
 import pojos.session.Session;
-import services.PlatformProfileMapService;
-import services.PlatformProfileMapServiceImpl;
-import services.ProfileService;
-import services.ProfileServiceImpl;
+import services.*;
 import utils.Utils;
 
 import java.io.*;
@@ -25,7 +24,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -302,7 +303,7 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
     }
 
     private File assertKf2ProfileServiceExists(File kf2ServiceUtilFile, Profile profile) {
-        File kf2ServiceXml = new File(kf2ServiceUtilFile.getParent() + "/kf2service-" + platform.getCode().toLowerCase() + "-" + profile.getCode().toLowerCase() + ".xml");
+        File kf2ServiceXml = new File(kf2ServiceUtilFile.getParent() + "/kf2service-" + platform.getCode().toLowerCase() + "-" + profile.getId() + ".xml");
         if (!kf2ServiceXml.exists()) {
             throw new RuntimeException("The xml file for KF2's service for profile " + profile.getCode() + " could not be found.");
         }
@@ -353,12 +354,12 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
 
     private String createKf2ServiceXmlFile(String kf2ServiceUtilFolder, Profile profile) {
         try {
-            File kf2ServiceXml = new File(kf2ServiceUtilFolder + "/kf2service-" + platform.getCode().toLowerCase() + "-" + profile.getCode().toLowerCase() + ".xml");
+            File kf2ServiceXml = new File(kf2ServiceUtilFolder + "/kf2service-" + platform.getCode().toLowerCase() + "-" + profile.getId() + ".xml");
             PrintWriter pw = new PrintWriter(new FileWriter(kf2ServiceXml.getAbsolutePath()));
             pw.println("<service>");
-            pw.println("<id>kf2-service-" + platform.getCode().toLowerCase() + "-" + profile.getCode().toLowerCase() + "</id>");
-            pw.println("<name>Killing Floor 2 Service [" + platform.getDescription() + "-" + profile.getCode() + "]</name>");
-            pw.println("<description>This service runs an instance of Killing Floor 2 Server for platform " + platform.getDescription() + " and profile " + profile.getCode() + "</description>");
+            pw.println("<id>kf2-service-" + platform.getCode().toLowerCase() + "-" + profile.getId() + "</id>");
+            pw.println("<name>Killing Floor 2 Service [" + platform.getDescription() + "-" + profile.getId() + "]</name>");
+            pw.println("<description>This service runs an instance of Killing Floor 2 Server for platform " + platform.getDescription() + " and idProfile " + profile.getId() + "</description>");
             pw.println("<priority>Normal</priority>");
             pw.println("<startmode>Automatic</startmode>");
             pw.println("<executable>" + platform.getInstallationFolder() + "/Binaries/Win64/KFServer.exe</executable>");
@@ -433,40 +434,61 @@ public class Kf2SteamWindowsImpl extends Kf2Steam {
                     .map(Path::toString)
                     .collect(Collectors.toList());
 
-            StringBuffer message = new StringBuffer();
+            List<PlatformProfileDaemon> platformProfileDaemonList = new ArrayList<PlatformProfileDaemon>();
+
             if (!kf2ServiceXmlPathList.isEmpty()) {
                 for (String kf2ServiceXmlPath: kf2ServiceXmlPathList) {
+                    StringBuffer serviceStatusMessage = new StringBuffer();
                     int exitVal = checkServiceStatus(kf2ServiceUtilFile, kf2ServiceXmlPath);
-                    String kf2serviceName = getServiceNameFromServiceXmlFile(kf2ServiceXmlPath);
 
                     switch (exitVal) {
-                        case 0: message.append(kf2serviceName + ": ")
+                        case 0: serviceStatusMessage
                                     .append(EnumStatusService.INACTIVE.name())
                                     .append(" (").append(EnumStatusService.INACTIVE.toString())
                                     .append(")\n");
                                 break;
 
-                        case 1: message.append(kf2serviceName + ": ")
+                        case 1: serviceStatusMessage
                                 .append(EnumStatusService.ACTIVE.name())
                                 .append(" (").append(EnumStatusService.ACTIVE.toString())
                                 .append(")\n");
                             break;
 
-                        case 1060: message.append(kf2serviceName + ": ")
+                        case 1060: serviceStatusMessage
                                 .append(EnumStatusService.NONEXISTENT.name())
                                 .append(" (").append(EnumStatusService.NONEXISTENT.toString())
                                 .append(")\n");
                             break;
 
-                        default: message.append(kf2serviceName + ": ")
+                        default: serviceStatusMessage
                                 .append(EnumStatusService.UNKNOWN.name())
                                 .append(" (").append(EnumStatusService.UNKNOWN.toString())
                                 .append(")\n");
                     }
+
+                    PlatformService platformService = new PlatformServiceImpl(em);
+                    ProfileDao profileDao = new ProfileDao(em);
+
+                    String[] array = kf2ServiceXmlPath.split("\\.")[0].split("-");
+                    String platformName = kf2ServiceXmlPath.split("\\.")[0].split("-")[array.length-2].toUpperCase();
+                    String idProfile = kf2ServiceXmlPath.split("\\.")[0].split("-")[array.length-1];
+                    Optional<AbstractPlatform> platformOptional = platformService.findPlatformByName(platformName);
+
+                    if (platformOptional.isPresent()) {
+                        platformProfileDaemonList.add( new PlatformProfileDaemon(
+                                platformOptional.get(),
+                                profileDao.get(idProfile),
+                                serviceStatusMessage.toString()
+                        ));
+                    }
                  }
             }
             String headerText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.statusServices");
-            Utils.infoDialog(headerText, message.toString());
+            PlatformProfileDaemonToDisplayFactory platformprofileDaemonToDisplayFactory = new PlatformProfileDaemonToDisplayFactory(em);
+            List<PlatformProfileDaemonToDisplay> platformProfileDaemonToDisplayList = platformprofileDaemonToDisplayFactory.newOnes(platformProfileDaemonList);
+
+            Utils.showServicesInfo(headerText, platformProfileDaemonToDisplayList);
+
         } catch (Exception e) {
             String message = "Error checking the status of Killing Floor 2 services";
             logger.error(message, e);

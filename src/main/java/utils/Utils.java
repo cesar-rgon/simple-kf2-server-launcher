@@ -7,6 +7,7 @@ import dtos.ProfileDto;
 import dtos.SelectDto;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -1904,5 +1905,109 @@ public class Utils {
             replaceAll("Ó", "O").
             replaceAll("Ú", "U").
             replaceAll("Ñ", "N");
+    }
+
+    public static void showServicesInfo(String headerText, List<PlatformProfileDaemonToDisplay> platformProfileDaemonToDisplayList) {
+        Dialog<TableView<PlatformProfileDaemonToDisplay>> dialog = new Dialog<TableView<PlatformProfileDaemonToDisplay>>();
+        PropertyService propertyService = new PropertyServiceImpl();
+        String profileNameText = "";
+        String platformNameText = "";
+        String serviceStatusText = "";
+        String webPortText = "";
+        String gamePortText = "";
+        String queryPortText = "";
+
+        try {
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            profileNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.profileName");
+            platformNameText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.platform.lowercase");
+            serviceStatusText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.serviceStatus");
+            webPortText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.webPort");
+            gamePortText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.gamePort");
+            queryPortText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.label.queryPort");
+            String applicationTitle = propertyService.getPropertyValue("properties/config.properties", "prop.config.applicationTitle");
+            dialog.setTitle(applicationTitle);
+        } catch (Exception ex) {
+            dialog.setTitle("");
+        }
+        dialog.setHeaderText(headerText);
+
+        TableView<PlatformProfileDaemonToDisplay> tableView = new TableView<PlatformProfileDaemonToDisplay>();
+
+        // First Column
+        TableColumn<PlatformProfileDaemonToDisplay, String> profileNameColumn = new TableColumn<PlatformProfileDaemonToDisplay, String>();
+        profileNameColumn.setText(profileNameText);
+        profileNameColumn.setCellValueFactory(cellData -> cellData.getValue().profileNameProperty());
+        profileNameColumn.setSortable(false);
+        profileNameColumn.setEditable(false);
+        profileNameColumn.setMinWidth(150);
+
+        // Second Column
+        TableColumn<PlatformProfileDaemonToDisplay, String> platformColumn = new TableColumn<PlatformProfileDaemonToDisplay, String>();
+        platformColumn.setText(platformNameText);
+        platformColumn.setCellValueFactory(cellData -> cellData.getValue().platformNameProperty());
+        platformColumn.setSortable(false);
+        platformColumn.setEditable(false);
+        platformColumn.setMinWidth(150);
+
+        // Third Column
+        TableColumn<PlatformProfileDaemonToDisplay, Integer> webPortColumn = new TableColumn<PlatformProfileDaemonToDisplay, Integer>();
+        webPortColumn.setText(webPortText);
+        webPortColumn.setCellValueFactory(cellData -> cellData.getValue().webPortProperty());
+        webPortColumn.setSortable(false);
+        webPortColumn.setEditable(false);
+        webPortColumn.setMinWidth(100);
+
+        // Fourth Column
+        TableColumn<PlatformProfileDaemonToDisplay, Integer> gamePortColumn = new TableColumn<PlatformProfileDaemonToDisplay, Integer>();
+        gamePortColumn.setText(gamePortText);
+        gamePortColumn.setCellValueFactory(cellData -> cellData.getValue().gamePortProperty());
+        gamePortColumn.setSortable(false);
+        gamePortColumn.setEditable(false);
+        gamePortColumn.setMinWidth(100);
+
+        // Fifth Column
+        TableColumn<PlatformProfileDaemonToDisplay, Integer> queryPortColumn = new TableColumn<PlatformProfileDaemonToDisplay, Integer>();
+        queryPortColumn.setText(queryPortText);
+        queryPortColumn.setCellValueFactory(cellData -> cellData.getValue().queryPortProperty());
+        queryPortColumn.setSortable(false);
+        queryPortColumn.setEditable(false);
+        queryPortColumn.setMinWidth(100);
+
+        // Sixth Column
+        TableColumn<PlatformProfileDaemonToDisplay, String> serviceStatusColumn = new TableColumn<PlatformProfileDaemonToDisplay, String>();
+        serviceStatusColumn.setText(serviceStatusText);
+        serviceStatusColumn.setCellValueFactory(cellData -> cellData.getValue().serviceStatusInfoProperty());
+        serviceStatusColumn.setSortable(false);
+        serviceStatusColumn.setEditable(false);
+        serviceStatusColumn.setMinWidth(300);
+
+        tableView.getColumns().add(profileNameColumn);
+        tableView.getColumns().add(platformColumn);
+        tableView.getColumns().add(webPortColumn);
+        tableView.getColumns().add(gamePortColumn);
+        tableView.getColumns().add(queryPortColumn);
+        tableView.getColumns().add(serviceStatusColumn);
+        tableView.setItems(FXCollections.observableArrayList(platformProfileDaemonToDisplayList));
+        tableView.setEditable(true);
+
+        dialog.getDialogPane().setContent(tableView);
+        dialog.setResizable(true);
+        dialog.getDialogPane().setMinWidth(950);
+        dialog.getDialogPane().setMinHeight(400);
+
+        ButtonType buttonTypeOk = null;
+        try {
+            String languageCode = propertyService.getPropertyValue("properties/config.properties", "prop.config.selectedLanguageCode");
+            String okText = propertyService.getPropertyValue("properties/languages/" + languageCode + ".properties", "prop.message.ok");
+            buttonTypeOk = new ButtonType(okText, ButtonBar.ButtonData.OK_DONE);
+        } catch (Exception e) {
+            buttonTypeOk = new ButtonType("Okay", ButtonBar.ButtonData.OK_DONE);
+        }
+
+        dialog.getDialogPane().getButtonTypes().addAll(buttonTypeOk);
+        dialog.setWidth(500);
+        dialog.setHeight(500);
+        dialog.showAndWait();
     }
 }
