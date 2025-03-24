@@ -6,7 +6,7 @@
 
     <groupId>SimpleKF2ServerLauncher</groupId>
     <artifactId>SimpleKF2ServerLauncher</artifactId>
-    <version>2.2.5</version>
+    <version>2.3.0</version>
 
     <build>
         <plugins>
@@ -42,7 +42,7 @@
                 <version>3.1.0</version>
                 <executions>
                     <execution>
-                        <id>copy-resource-one</id>
+                        <id>copy-images</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -60,7 +60,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>copy-resources</id>
+                        <id>copy-properties</id>
                         <phase>validate</phase>
                         <goals>
                             <goal>copy-resources</goal>
@@ -70,6 +70,22 @@
                             <resources>
                                 <resource>
                                     <directory>src/main/resources/properties</directory>
+                                    <filtering>true</filtering>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-utils</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}/build/utils</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>utils</directory>
                                     <filtering>true</filtering>
                                 </resource>
                             </resources>
