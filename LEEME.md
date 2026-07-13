@@ -16,7 +16,7 @@ Traducción a francés por: -foG.Nox
 Traducción a ruso por: Dreadmor404
 Traducción a vietnamita por: InsDude
 ```
-**Servidor Discord: https://discord.gg/WdwRU522Fb**
+**Servidor Discord: https://discord.gg/C6GhvPjukg**
 
 *Ejemplo de configuración*
 
